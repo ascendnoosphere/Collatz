@@ -1,0 +1,251 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For positive additive generalized Collatz maps, the greatest common divisor
+of the offset and divisor determines access to division. We prove the unique
+access index, recover its entire raw block, and construct an explicit finite
+first-division core. A signed reference subtraction gives an exact geometric
+entry budget, including its conversion to the original instruction count.
+Inaccessible states have explicit affine-only escaping tails.
+\end{abstract}
+
+\section{The additive map}
+
+% The positive domain is retained throughout the first-division construction.
+\begin{definition}[Additive dynamics]
+Fix integers \(c\geq1\) and \(D\geq2\). On positive integers define
+\[
+ T(n)=\begin{cases}n/D,&D\mid n,\\ n+c,&D\nmid n.\end{cases}
+\]
+Write \(T^j\) for the \(j\)-fold iterate, with \(T^0(n)=n\). Put
+\[
+ g=\gcd(c,D),\qquad L=D/g,\qquad
+ B=c(L-1),\qquad N=\left\lfloor\frac{B}{D-1}\right\rfloor.
+\]
+A state is accessible when \(g\mid n\), and inaccessible otherwise.
+\end{definition}
+
+\section{Access and raw reconstruction}
+
+% Cancellation after dividing by the gcd supplies existence and uniqueness together.
+\begin{theorem}[Unique access]
+For a positive integer \(n\), an integer \(j\geq0\) with \(D\mid n+jc\)
+exists if and only if \(g\mid n\). When \(g\mid n\), there is exactly one
+\(0\leq\ell<L\) with this property. No \(0\leq j<\ell\) satisfies
+\(D\mid n+jc\).
+\end{theorem}
+
+\begin{proof}
+If \(D\mid n+jc\), then \(g\) divides both \(n+jc\) and \(jc\), so it
+divides \(n\). Conversely, suppose \(n=ga\), and write \(c=gb\), \(D=gL\).
+Then \(\gcd(b,L)=1\). The congruence \(a+jb\equiv0\pmod L\) therefore
+has exactly one residue class of solutions modulo \(L\), obtained by
+multiplying \(-a\) by the inverse of \(b\). Choose its representative
+\(\ell\) in \(0,\ldots,L-1\). If \(L=1\), that set consists only of
+\(0\) and the congruence is automatic. If another \(j\) in this interval
+were a solution, cancellation of the unit \(b\) would give
+\(j\equiv\ell\pmod L\), hence \(j=\ell\). An earlier solution would
+be another representative in the same interval, which is impossible.
+\end{proof}
+
+% The guards establish the exact raw clock rather than just the endpoint equation.
+\begin{theorem}[Exact first-division block]
+For an accessible state \(n\), let \(\ell\) be the index above and set
+\[
+ H(n)=\frac{n+\ell c}{D}.
+\]
+Then \(H(n)\) is a positive integer and
+\[
+ T^j(n)=n+jc\quad(0\leq j\leq\ell),\qquad
+ T^{\ell+1}(n)=H(n).
+\]
+For an inaccessible state, \(T^j(n)=n+jc\) for every \(j\geq0\), and this
+full sequence tends to infinity.
+\end{theorem}
+
+\begin{proof}
+Every pre-division state \(n+jc\), \(j<\ell\), fails the divisibility guard,
+so induction gives the stated affine prefix. At index \(\ell\) the division
+guard holds and the next raw instruction divides by \(D\). The numerator
+is a positive multiple of \(D\), proving positivity of the endpoint.
+For an inaccessible state, the preceding theorem rules out division at every
+affine index. Induction therefore gives the infinite affine tail. Since
+\(c\geq1\), it is at least \(n+j\) and tends to infinity.
+\end{proof}
+
+\section{Finite first-division cores}
+
+% Strict integer descent removes all dependence on arbitrarily large starting states.
+\begin{theorem}[Finite core]
+Every accessible state satisfies \(D H(n)\leq n+B\). If \(n>N\), then
+\(H(n)<n\); if \(n\leq N\), then \(H(n)\leq N\). Also \(N\leq c\).
+Every positive seed reaches a positive state at most \(N\), or reaches an
+inaccessible state, at a finite raw time.
+\end{theorem}
+
+\begin{proof}
+The bound \(\ell\leq L-1\) gives
+\(D H(n)=n+\ell c\leq n+B\). If \(n>N\), integrality gives
+\((D-1)n>B\), whence \(n+B<Dn\) and \(H(n)<n\). If \(n\leq N\), use
+\(B<(D-1)(N+1)\) to obtain
+\[
+ D H(n)\leq N+B<D(N+1).
+\]
+Thus the integer \(H(n)\) is at most \(N\). Since \(L\leq D\), we have
+\(B\leq c(D-1)\), giving \(N\leq c\).
+
+For the finite-time assertion, use strong induction on the positive seed.
+A seed already in the core or inaccessible needs no instruction. Otherwise
+it is accessible and above \(N\), so its first-division endpoint is a
+smaller positive integer. Apply the induction hypothesis to that endpoint
+and prepend its \(\ell+1\) raw instructions. This constructs a finite raw
+witness with the same core-or-inaccessible conclusion. The induction uses
+only smaller positive integers. Core and inaccessible states provide its
+base cases.
+\end{proof}
+
+% Coprimality removes traps; an empty core instead forces an affine escaping tail.
+\begin{theorem}[Boundary cases]
+If \(g=1\), every positive seed reaches the set \(\{1,\ldots,c\}\).
+All its accessible first-division edges stay within this set. If \(N=0\),
+every positive raw orbit tends to infinity.
+\end{theorem}
+
+\begin{proof}
+For \(g=1\), every state is accessible, \(L=D\), and \(N=c\).
+The finite-core theorem therefore cannot terminate at an inaccessible state
+and gives the claimed entry and invariance. If \(N=0\), no positive state
+is in the core. The same theorem supplies a raw time \(t\) at which the
+state \(x=T^t(n)\) is inaccessible. Its subsequent orbit is \(x+jc\).
+For every sufficiently large raw time \(k\), write \(k=t+j\); then
+\(T^k(n)=x+(k-t)c\), proving full-sequence divergence, not merely an
+unbounded subsequence.
+\end{proof}
+
+\section{A geometric instruction budget}
+
+% Reference subtraction cancels the repeated additive displacement without an error term.
+\begin{definition}[Shifted coordinate]
+For any integer state set
+\[
+ \delta(n)=(D-1)n-B,\qquad \varepsilon=\delta(N+1).
+\]
+Writing \(B=(D-1)N+r\), with \(0\leq r<D-1\), gives
+\(\varepsilon=D-1-r\), hence \(1\leq\varepsilon\leq D-1\).
+\end{definition}
+
+% The same integer threshold works for every legal path, including paths ending at a trap.
+\begin{theorem}[Geometric entry and raw recovery]
+Let \(h\geq0\) satisfy
+\[
+ D^h\varepsilon>\delta(n).
+\]
+Then the raw orbit of \(n\) reaches the core or an inaccessible state at some
+time \(t\leq hL\). Such an \(h\) always exists; the least one is an exact
+integer geometric budget.
+\end{theorem}
+
+\begin{proof}
+For an accessible edge \(n\mapsto m=H(n)\), multiply the endpoint inequality
+by \(D-1>0\) and subtract \(DB\):
+\[
+ D\delta(m)\leq(D-1)(n+B)-DB=\delta(n).
+\]
+For any path \(n_0=n,n_1,\ldots,n_h\) of legal first-division edges,
+induction, multiplying each inequality by the positive power \(D^i\), gives
+\(D^h\delta(n_h)\leq\delta(n)\). If \(n_h>N\), then
+\(\delta(n_h)\geq\delta(N+1)=\varepsilon\), contradicting the assumed
+strict budget inequality. Hence the last endpoint lies in the core.
+
+Construct edges successively only while the current state is accessible and
+outside the core. If construction stops before \(h\) edges, its endpoint
+already has the required alternative. Otherwise the preceding inequality
+forces the \(h\)-th endpoint into the core. This reasoning also covers
+\(h=0\): the budget inequality then directly gives \(n\leq N\).
+
+If \(k\leq h\) edges were used, let their access indices be
+\(\ell_0,\ldots,\ell_{k-1}\). Their exact raw expansion has length
+\[
+ t=\sum_{i=0}^{k-1}(\ell_i+1)\leq kL\leq hL.
+\]
+Composition of the exact raw-block identities proves that its endpoint is
+\(T^t(n)\). No guard or intermediate instruction is discarded.
+Finally, \(\varepsilon\geq1\), \(D\geq2\), and the integer powers of
+\(D\) are unbounded; hence a suitable finite \(h\) exists. The least one
+is obtained by repeated exact multiplication and comparison.
+\end{proof}
+
+\section{Finite graphs and examples}
+
+The core is a finite set of first-division states, not a raw-state bound.
+Each accessible core state has its unique edge \(n\mapsto H(n)\); an
+inaccessible state retains its affine-only tail instead of being given a
+spurious fixed-point edge. The exact raw word and its length accompany
+every first-division edge. This construction does not assert a classification
+of the resulting cycles.
+
+For \((c,D)=(6,4)\), the constants are \(g=2\), \(L=2\), \(N=2\).
+The accessible state \(2\) has raw cycle \(2\mapsto8\mapsto2\), while
+\(4\mapsto1\) reaches the inaccessible tail \(1,7,13,\ldots\).
+For \((c,D)=(2,4)\), the radius is zero, so every positive seed escapes.
+With \(c=1\), \(D=37\), the seed \(53\cdot37^{300}\) reaches \(1\)
+in \(302\) first-division edges and \(358\) raw instructions: after the
+first \(300\) divisions, \(53\) needs \(21\) additions to reach \(74\),
+then division gives \(2\), which needs \(35\) additions before division
+gives \(1\).
+
+\section{Formal and computational statements}
+
+The Lean development proves access and uniqueness, all raw guards and block
+identities, strict descent, core invariance, finite raw recovery, the shifted
+path inequality, the unconditional geometric raw-time budget, coprime core
+entry, and full-sequence escape for the zero-core case.
+The arithmetic bounds also permit \(c=0\); the divergence statements
+explicitly require \(c>0\). The present positive-offset theorem makes no
+negative-divisor or signed-state assertion.
+
+The Go executable uses exact integer modular inversion and arbitrary-precision
+values. A certificate records its seed, first core-or-inaccessible endpoint,
+raw instruction count, edge count, least geometric budget, and alternative.
+Verification recomputes these fields without changing the supplied
+certificate. The bounded family comprises \(32\cdot47\cdot128=192{,}512\)
+certificates, with the large entry above as a separate check. These finite
+checks concern the implementation; the universal statements follow from the
+proofs, independently of the tested range.
+
+\end{document}

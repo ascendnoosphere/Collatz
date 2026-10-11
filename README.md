@@ -136,6 +136,27 @@ remains fixed; the positive cycles are exactly the one-point cycles on
 positive \(D\)-free integers. Every iterate is at most its seed. This supplies
 the unit-multiplier boundary outside the \(q,D\ge2\) dichotomy.
 
+### Additive access and finite cores
+
+[QCD.Additive.001](QCD.Additive.001/README.md) treats \(q=1\), \(c\ge1\),
+and \(D\ge2\). Put
+\[
+g=\gcd(c,D),\qquad L=D/g,\qquad
+B=c(L-1),\qquad N=\left\lfloor\frac{B}{D-1}\right\rfloor.
+\]
+An inaccessible state \(g\nmid n\) has the exact escaping tail \(n+jc\).
+Otherwise there is a unique \(0\le\ell<L\) with \(D\mid n+\ell c\);
+its first-division endpoint is \((n+\ell c)/D\), reached in exactly
+\(\ell+1\) raw instructions. These endpoints strictly decrease above \(N\)
+and remain in the core when accessible below it. Every positive seed reaches
+this finite core or an inaccessible state. With
+\[
+\delta(n)=(D-1)n-B,\qquad 1\le\varepsilon=\delta(N+1)\le D-1,
+\]
+the exact condition \(D^h\varepsilon>\delta(n)\) gives a raw entry bound
+\(hL\). Coprime offsets have \(N=c\) and no traps; an empty core forces
+full-sequence escape.
+
 ## Other map conventions
 
 A residue-wise affine map has the form
