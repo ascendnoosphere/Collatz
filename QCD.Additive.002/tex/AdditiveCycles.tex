@@ -1,0 +1,418 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We classify every positive cycle of the additive raw map by a filtered
+permutation of residues modulo the divisor-coprime part of its offset.
+The filter is an exact integer window, including when the extracted scaling
+factor is not coprime to the divisor. Both reconstruction directions preserve
+the original instruction count and least period. We derive the grouped raw
+period formula, identify the precise multiplicative order, and give a finite
+cycle enumeration with separate preprocessing, arithmetic, and output costs.
+\end{abstract}
+
+\section{Raw steps and first-division endpoints}
+
+Fix integers $c\ge1$ and $D\ge2$. On the positive integers, let
+\[
+T(n)=\begin{cases}n/D,&D\mid n,\\n+c,&D\nmid n.\end{cases}
+\]
+Division has precedence. The iterate $T^r$ counts $r$ original instructions.
+Put
+\[
+g=\gcd(c,D),\quad L=D/g,\quad B=c(L-1),\quad
+N=\left\lfloor\frac{B}{D-1}\right\rfloor.
+\]
+We use the access and core results of
+\href{../../QCD.Additive.001/tex/Additive.tex}{QCD.Additive.001}.
+A state $n$ is accessible precisely when $g\mid n$. In that case there is a
+unique index $0\le\ell<L$ with $D\mid n+\ell c$, every earlier state is
+nondivisible, and
+\[
+H(n)=\frac{n+\ell c}{D}=T^{\ell+1}(n).
+\]
+An H edge contains exactly one division, even if another division immediately
+follows. An inaccessible state has the exact raw tail $n+jc$.
+Every positive seed reaches a state at most $N$ or an inaccessible state;
+accessible endpoints within $1,\ldots,N$ stay there. Also $N\le c$.
+
+For a path $x_0,\ldots,x_h$ of H endpoints, write its indices as
+$\ell_0,\ldots,\ell_{h-1}$ and its raw clock as
+\[
+R_h=\sum_{i=0}^{h-1}(\ell_i+1).
+\]
+Its exact equations are $Dx_{i+1}=x_i+\ell_i c$.
+An H cycle is primitive if $x_h=x_0$ and $x_i\ne x_0$ for $0<i<h$.
+A raw cycle has the analogous least positive return period. Cycles are
+identified up to cyclic change of starting phase, not by their chosen clocks.
+
+\section{Offset decomposition and the exact window}
+
+% Gcd removal is a terminating construction, not a factorization assumption.
+\begin{theorem}[Divisor-supported factor extraction]
+\label{thm:decomposition}
+There are positive integers $s,t$ and an integer $k\ge0$ such that
+\[
+c=st,\qquad \gcd(t,D)=1,\qquad s\mid D^k.
+\]
+Every divisor of $c$ coprime to $D$ divides $t$. In particular $t$ is the
+unique divisibility-maximal divisor of $c$ coprime to $D$.
+\end{theorem}
+\begin{proof}
+Apply strong induction to the positive offset. If $\gcd(c,D)=1$, take
+$s=1,t=c,k=0$. Otherwise put $a=\gcd(c,D)>1$. The positive quotient $c/a$
+is smaller than $c$, so write $c/a=s't$, where $t$ is coprime to $D$ and
+$s'\mid D^{k'}$. Then $s=as'$ satisfies $st=c$ and $s\mid D^{k'+1}$,
+since $a\mid D$. This proves existence by a strictly decreasing induction.
+If $u\mid c$ and $\gcd(u,D)=1$, then $\gcd(u,s)=1$, because $s\mid D^k$.
+Euclid's lemma applied to $u\mid st$ gives $u\mid t$.
+If another factor has the same maximality property, each divides the other;
+positive divisibility in both directions gives equality.
+\end{proof}
+
+Define the normalized window
+\[
+M=\left\lfloor\frac{t(L-1)}{D-1}\right\rfloor.
+\]
+Since $L\le D$, we have $M\le t$. There can be no positive representative
+when $M=0$. No condition $\gcd(s,D)=1$ is imposed.
+
+% The supported factor is recovered from a return equation, not cancelled through D.
+\begin{theorem}[Necessary cycle window]
+\label{thm:necessary}
+Every positive closed H path of length $h>0$ satisfies
+\[
+s\mid x_i,\qquad x_i\le N\qquad(0\le i\le h).
+\]
+Writing $x_i=sm_i$ therefore gives $1\le m_i\le M$ and
+\[
+Dm_{i+1}\equiv m_i\pmod t\qquad(0\le i<h).
+\]
+Conversely the scaled bound satisfies $sm\le N$ if and only if $m\le M$.
+\end{theorem}
+\begin{proof}
+Successively multiplying the edge equations gives
+\[
+D^h x_h=x_0+cK_h,\qquad K_h=\sum_{i=0}^{h-1}D^i\ell_i.
+\]
+Closure yields $(D^h-1)x_0=cK_h$. Since $s\mid c$ and
+$\gcd(s,D^h-1)=1$, we obtain $s\mid x_0$. The coprimality follows from
+$s\mid D^k$ and $\gcd(D,D^h-1)=1$.
+Starting with $s\mid x_h=x_0$, the equation
+$x_i=Dx_{i+1}-\ell_i c$ propagates divisibility backwards to every vertex.
+This subtracts multiples of $s$; it does not cancel $D$.
+
+Let $\delta(x)=(D-1)x-B$. The core estimate gives
+$D\delta(x_{i+1})\le\delta(x_i)$. Iterating and using closure gives
+$D^h\delta(x_0)\le\delta(x_0)$. Since $D^h>1$, this forces
+$\delta(x_0)\le0$ and hence $x_0\le N$. Core invariance bounds all subsequent
+vertices. For a nonnegative integer $m$,
+\[
+\begin{aligned}
+sm\le N &\iff (D-1)sm\le st(L-1)\\
+ &\iff (D-1)m\le t(L-1)\iff m\le M.
+\end{aligned}
+\]
+Here $s>0$ justifies cancellation. Dividing the edge equation by $s$ gives
+$Dm_{i+1}=m_i+\ell_i t$, which proves the residue relation.
+\end{proof}
+
+% The window makes a residue edge a first-division edge with every early guard.
+\begin{theorem}[Legal modular edge]
+\label{thm:edge}
+Suppose $1\le m,m'\le M$ and $Dm'\equiv m\pmod t$. Then
+\[
+\ell=\frac{Dm'-m}{t}
+\]
+is a nonnegative integer less than $L$. The states $sm$ and $sm'$ are joined
+by exactly $\ell$ additions and one division. No earlier division is legal.
+\end{theorem}
+\begin{proof}
+If $Dm'<m$, the positive difference $m-Dm'$ is a multiple of $t$, but it is
+strictly smaller than $t$ because $m\le M\le t$ and $Dm'\ge1$. This is
+impossible. Thus $Dm'-m\ge0$, and the congruence gives its divisibility by $t$.
+Furthermore
+\[
+\ell t=(D-1)m'+m'-m
+\le t(L-1)+t-1<Lt.
+\]
+The first inequality uses $(D-1)m'\le t(L-1)$, $m'\le t$, and $m\ge1$.
+Consequently $0\le\ell<L$. Scaling gives
+$Dsm'=sm+\ell c$. Thus $g\mid sm$, and access-index uniqueness identifies
+$\ell$ with its first division index. Every smaller index fails the division
+guard. The endpoint is $sm'$ at raw time $\ell+1$.
+\end{proof}
+
+\section{Raw recovery and primitive cycles}
+
+% Segmentation preserves the same raw path and its original total clock.
+\begin{theorem}[Exact segmentation]
+\label{thm:segmentation}
+Every positive raw return of period $p>0$ has a forward phase $x\le N$.
+Its length-$p$ raw segment from that phase decomposes into a closed H path
+with exactly the same total raw clock $R_h=p$.
+A raw cycle's least return period is unchanged by a forward phase shift.
+\end{theorem}
+\begin{proof}
+The core-or-trap reduction supplies a reached core state or a trap. A reached
+trap has a strictly increasing tail $n+jc$ and cannot return, whereas every
+forward phase of a period-$p$ orbit still returns after $p$ steps. Therefore
+a core phase exists and is positive.
+
+We first segment any raw path starting in the positive core and ending there,
+by strong induction on its raw length $r$. Length zero gives the empty path.
+For $r>0$, the first $r$ instructions cannot all be additions: their endpoint
+would be $x+rc>c$, contrary to its bound $N\le c$. Let $\ell<r$ be the first
+division index. By access uniqueness, $\ell<L$, and the first endpoint is
+$H(x)$. It is positive and in the core. The remaining segment has length
+$r-(\ell+1)<r$, so the induction hypothesis segments it. Prepending this
+first legal block recovers the same original segment and clock $r$.
+Applying this to a return gives a closed H path; its length is positive
+because its raw clock is $p>0$.
+
+For phase transport, let $x=T^u(n)$ and $T^p(n)=n$. Commutation of powers
+gives $T^p(x)=x$. If $T^v(x)=x$, choose $a$ with $ap\ge u$ and apply
+$T^{ap-u}$ to this equality. Since $T^{ap}(n)=n$, it follows that
+$T^v(n)=n$. Thus the sets of return times at these two phases coincide.
+This argument uses a complementary iterate along this particular periodic
+orbit, not global injectivity of $T$.
+\end{proof}
+
+% The two maps preserve least periods and can be inverted using division endpoints.
+\begin{theorem}[Cycle classification with primitive recovery]
+\label{thm:classification}
+The positive primitive raw cycles, up to cyclic phase, correspond bijectively
+to the primitive cycles of multiplication by $D^{-1}$ modulo $t$ whose
+positive representatives all lie in $1,\ldots,M$.
+Residue zero is represented by $t$, not by zero. Each modular edge expands
+as in Theorem~\ref{thm:edge}; every raw cycle is recovered in this way, with
+its original least raw period.
+\end{theorem}
+\begin{proof}
+Coprimality makes multiplication by $D^{-1}$ a permutation of $\Z/t\Z$.
+Positive representatives $1,\ldots,t$ are unique, including the zero class.
+Theorem~\ref{thm:edge} expands every edge of a modular cycle wholly within
+the window into a legal raw block. Its concatenation is a raw return with
+clock $R_h$.
+
+Suppose the modular cycle is primitive but a raw return $0<r<R_h$ exists.
+Its endpoint is the same positive core state, so
+Theorem~\ref{thm:segmentation} segments it into $k$ H blocks of total clock
+$r$. The bounded first access index is unique. Induction therefore identifies
+the common prefix of this path with that of the original H path, including
+both states and clocks. If $k<h$, its endpoint is an earlier modular return,
+contrary to primitiveness. If $k\ge h$, positivity of every block length gives
+$r\ge R_h$, also impossible. Thus the expanded raw period is least.
+
+Conversely, take a primitive raw cycle and shift to a core phase.
+Segmentation and Theorem~\ref{thm:necessary} produce a closed modular path
+inside the window with raw clock equal to its least period. An earlier
+modular return would reconstruct a smaller positive raw return, so the
+modular path is primitive. Phase transport preserves the original least
+period.
+
+Finally, each division endpoint lies at most $N\le c$. Every intermediate
+addition state is $x+jc>c$ for $j\ge1$. Thus the raw cycle's states at most
+$c$ are exactly its H endpoints. Dividing these by $s$ recovers its modular
+cycle, up to phase. Conversely the modular edges and their unique indices
+fix the full expansion. Hence the correspondence is both injective and
+surjective on cyclic phases.
+\end{proof}
+
+\section{Grouped clocks and marked multiplicative orders}
+
+% Summing before dividing is essential; individual rounded contributions are invalid.
+\begin{theorem}[Exact grouped raw period]
+\label{thm:clock}
+For a closed H path of length $h$,
+\[
+c\sum_{i=0}^{h-1}\ell_i=(D-1)\sum_{i=0}^{h-1}x_i.
+\]
+Its raw clock, and for a primitive path its least raw period, is
+\[
+P=h+\frac{(D-1)\sum_{i=0}^{h-1}x_i}{c}
+ =h+\frac{(D-1)\sum_{i=0}^{h-1}m_i}{t}.
+\]
+Both quotients are integers. The sums must be grouped before division.
+\end{theorem}
+\begin{proof}
+Sum $Dx_{i+1}=x_i+\ell_i c$. Closure identifies
+$\sum_{i<h}x_{i+1}=\sum_{i<h}x_i$, so subtraction yields the first identity.
+Because $c>0$, its quotient by $c$ is exactly $\sum\ell_i$. Substitute this
+in $P=\sum(\ell_i+1)$. For $x_i=sm_i$ and $c=st$, cancellation of the
+positive factor $s$ gives $t\sum\ell_i=(D-1)\sum m_i$, establishing both
+integrality and the normalized formula. Primitiveness follows from
+Theorem~\ref{thm:classification}.
+\end{proof}
+
+Our multiplicative-order convention is the order in the finite unit group;
+standard group terminology is as in Dummit--Foote~\cite{DummitFoote04}.
+The next proof also gives the finite bound directly.
+
+% The effective modulus depends on the marked state, not solely on the ambient offset.
+\begin{theorem}[Exact order and finite length bound]
+\label{thm:order}
+Let $m_0,\ldots,m_h=m_0$ be a primitive modular cycle. Put
+\[
+a=\gcd(m_0,t),\qquad \lambda=t/a.
+\]
+Then $h=\operatorname{ord}_{\lambda}(D)$ and $1\le h\le\lambda\le t\le c$.
+For $\lambda=1$, the order is one.
+\end{theorem}
+\begin{proof}
+Iterating the residue equations gives $D^i m_i\equiv m_0\pmod t$.
+Since $D$ is a unit and positive representatives up to $t$ are unique,
+\[
+m_i=m_0
+\iff D^i m_0\equiv m_0\pmod t
+\iff D^i\equiv1\pmod\lambda.
+\]
+For the last equivalence write $m_0=av$ and $t=a\lambda$ with
+$\gcd(v,\lambda)=1$, cancel $a$, and use Euclid's lemma to cancel $v$.
+The least positive return is therefore exactly the asserted order.
+If two powers $D^i,D^j$, with $0\le i<j<h$, were equal modulo $\lambda$,
+cancelling the unit $D^i$ would give $D^{j-i}\equiv1$, contradicting
+minimality. There are $h$ distinct residues among the $\lambda$ residue
+classes, so $h\le\lambda$. Finally $\lambda\le t$ and $t\le st=c$.
+At modulus one the unit group is a singleton and the least positive order
+is one, consistent with the representative $t$ of its zero class.
+\end{proof}
+
+\section{Finite enumeration and costs}
+
+% Exhaustion scans full permutation orbits and rejects any orbit failing the window.
+\begin{theorem}[Finite complete cycle enumeration]
+\label{thm:enumeration}
+After factor extraction and modular inversion, all positive raw cycles can
+be enumerated by at most $t$ modular-state visits. One must keep a permutation
+orbit if and only if every positive representative lies at most $M$.
+The total number of surviving representatives is at most $t$, and their
+complete raw expansions have total length at most $tL$.
+\end{theorem}
+\begin{proof}
+Maintain a visited table on $1,\ldots,t$. Starting at the least unvisited
+representative, apply inverse multiplication until it returns to that
+representative. A permutation orbit cannot merge into a previously completed
+orbit; otherwise applying inverse steps would put its starting point in that
+orbit as well. Mark each encountered vertex, including those beyond the
+window. The resulting disjoint orbits exhaust all representatives, each
+visited once. Reject an orbit if any vertex exceeds $M$. Theorem~\ref{thm:classification}
+proves that the retained orbits, and only those, reconstruct positive raw
+cycles. At $M=0$ there are no positive cycles without any graph traversal.
+Each retained H block has length $\ell+1\le L$. Disjointness gives a total
+of at most $t$ retained H vertices and hence at most $tL$ raw instructions.
+\end{proof}
+
+The state-visit bound is not a total bit-complexity bound.
+Repeated gcd removal takes at most $\lfloor\log_2 s\rfloor$ rounds, because
+the product of the removed factors is $s$ and each is at least two.
+For $c=2^a,D=2$, there are exactly $a$ rounds while $t=1$ remains fixed.
+Modular inversion is another preprocessing operation. Big-integer division,
+multiplication, gcd, and output copying have parameter-dependent bit costs.
+Explicit raw expansion also has its own output cost: $c=1$ gives a cycle
+with $t=h=1$ but raw period $D$, arbitrarily large.
+
+The \href{../go/AdditiveCycles.go}{exact executable} stores parameters,
+representatives, and periods with arbitrary precision. Enumeration uses a
+machine-sized budget supplied by the caller. A capacity refusal or
+callback interruption is an unfinished search, not a complete zero-cycle
+answer. An empty window is a separate algebraic zero-cycle certificate.
+Certificates record the canonical modular orbit, its H period, effective
+modulus, and grouped raw period. Verification checks every edge, first-access
+index, absence of an early root return, and every claimed field without raw
+replay. Callback certificates are borrowed; retained copies own their
+integer storage.
+
+\section{Boundary calculations and formal proofs}
+
+For $c=10,D=6$, the decomposition is $s=2,t=5$ and the window is $M=2$.
+The representatives 1 and 2 give raw cycles $2\to12\to2$ and
+$4\to14\to24\to4$, with periods 2 and 3. Representative 3 is excluded.
+Indeed scaling the legal $c=5,D=6$ cycle starting at 3 by 2 would start at 6,
+which immediately divides to 1 rather than following that scaled word.
+
+For $c=5,D=2$, the modular orbit $(1,3,4,2)$ has indices $(1,1,0,0)$.
+It expands to $1\to6\to3\to8\to4\to2\to1$, with raw period 6.
+The grouped formula gives $4+10/5=6$; termwise integer division would fail.
+For $c=10,D=4$, $M=1$ but the modular successor of 1 is 4, so no orbit
+survives merely because its initial vertex lies in the window.
+For $c=8,D=6$, $N=3$ but $M=0$: a nonempty core need not contain a cycle.
+For $c=5,D=6$, representative 5 is residue zero and gives order one and
+raw period 6; the positive zero-class representative is retained.
+
+The \href{../lean/AdditiveCycles.lean}{Lean development} follows the same
+steps, with the following principal declarations.
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Mathematical step & Lean declaration\\
+\midrule
+Factor extraction & \texttt{AdditiveOffsetDecomposition}\\
+Coprime-factor maximality & \texttt{AdditiveCoprimeFactorMaximal}\\
+Closed endpoint support & \texttt{AdditiveClosedPathSupported}\\
+Closed endpoint core & \texttt{AdditiveClosedPathCore}\\
+Exact scaled window & \texttt{AdditiveScaledCoreIff}\\
+Guarded edge recovery & \texttt{AdditiveModularEdgeLegal}\\
+Exact raw segmentation & \texttt{AdditiveEndingCorePath}\\
+Return phase transport & \texttt{IterateReturnAlongCycle}\\
+Raw-to-modular primitive map & \texttt{AdditiveRawPrimitiveToModular}\\
+Primitive lift and clock & \texttt{AdditiveModularPrimitiveRaw}\\
+Effective order & \texttt{AdditivePrimitiveOrder}\\
+Finite length bound & \texttt{AdditivePrimitiveLengthBound}\\
+Permutation edges & \texttt{AdditiveResiduePermutationEdge}\\
+Positive representatives & \texttt{AdditivePositiveResidueUnique}\\
+\bottomrule
+\end{tabular}
+\end{center}
+The declaration \texttt{AdditiveRawPrimitiveClassification} combines the
+forward data in one modular witness carrying its clock, order, and bound.
+The cycle correspondence up to phase is assembled from these maps and the
+endpoint recognition argument above; no separate phase-quotient API is used.
+
+The test suite compares 25,506 cycles across all 4,512 pairs
+$1\le c\le96$, $2\le D\le48$ with independently extracted raw cycles in
+$1,\ldots,cD$. The executable enumerates and verifies the same catalogue
+using its own certificate checker. A separate certificate has raw period
+$2^{200}$ and is checked
+algebraically, not by traversing that many instructions. These finite checks
+validate the executable within their stated scope; the theorems above and
+the formal proofs establish the universal positive cycle classification.
+Neither signed parameters nor zero offset are asserted here.
+
+\bibliographystyle{amsalpha}
+\bibliography{AdditiveCycles}
+\end{document}

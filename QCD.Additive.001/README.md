@@ -94,7 +94,8 @@ with exact integer powers, not floating-point logarithms.
 
 The arithmetic lemmas also allow zero offset; the escape results explicitly
 require a positive offset. No signed-state or negative-divisor claim is made.
-This result gives a finite reduction, not an enumeration of its cycles.
+This result gives a finite reduction. [QCD.Additive.002](../QCD.Additive.002/README.md)
+classifies its positive cycles and recovers their exact primitive raw periods.
 
 ## Exact computation
 

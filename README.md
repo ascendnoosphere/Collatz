@@ -157,6 +157,27 @@ the exact condition \(D^h\varepsilon>\delta(n)\) gives a raw entry bound
 \(hL\). Coprime offsets have \(N=c\) and no traps; an empty core forces
 full-sequence escape.
 
+### Complete positive additive cycle classification
+
+[QCD.Additive.002](QCD.Additive.002/README.md) classifies every positive raw
+cycle for \(q=1\), \(c\ge1\), and \(D\ge2\). Extract
+\[
+c=st,\qquad \gcd(t,D)=1,\qquad s\mid D^k,
+\qquad M=\left\lfloor\frac{t(D/\gcd(c,D)-1)}{D-1}\right\rfloor.
+\]
+The primitive cycles are exactly the full orbits of inverse multiplication by
+\(D\) modulo \(t\) whose positive representatives all lie at most \(M\).
+An edge \(m\to m'\) expands into \((Dm'-m)/t\) additions and one division
+starting at \(sm\), preserving its least raw period. For modular period \(h\),
+\[
+h=\operatorname{ord}_{t/\gcd(m_0,t)}(D),\qquad
+P=h+\frac{(D-1)\sum_{i<h}m_i}{t},\qquad h\le t\le c.
+\]
+Residue zero is represented by \(t\); modulus-one order is one. The window
+prevents noncoprime scaling ghosts, and the raw clock is grouped before
+division. Complete enumeration consumes at most \(t\) modular-state visits,
+with preprocessing, big-integer arithmetic and expansion costs separate.
+
 ## Other map conventions
 
 A residue-wise affine map has the form
