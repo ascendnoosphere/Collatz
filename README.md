@@ -35,6 +35,21 @@ The classical raw map is \(F_{3,1,2}\).
 - A target-reflecting semiconjugacy transfers capture at the same time.
 - A variable-clock semiconjugacy transfers forward capture at the accumulated time.
 
+## Reductions
+
+### Coprime scaling and offset normalization
+
+[QCD.Scaling.001](QCD.Scaling.001/README.md) proves that coprime scaling preserves
+the exact raw clock. If
+\[
+\gcd(|c|,|d|)=1,
+\qquad c\mid q^k,
+\]
+then every signed integer orbit enters \(c\mathbb Z\) after at most \(k\) affine
+events. From that entry onward it is exactly \(c\) times an orbit of
+\(F_{q,1,d}\). This gives an all-seed capture equivalence for arbitrary targets,
+with a positive-domain version when \(q\ge0\), \(c>0\), and \(d>0\).
+
 ## Other map conventions
 
 A residue-wise affine map has the form

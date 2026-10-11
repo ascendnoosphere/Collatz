@@ -1,0 +1,254 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Coprime scaling and offset normalization}
+
+% All state and parameter signs remain part of the declared dynamics.
+\begin{definition}
+For integers \(q,c,d\) with \(|d|\ge2\), write
+\[
+F_{q,c,d}(n)=
+\begin{cases}
+n/d,&d\mid n,\\
+qn+c,&d\nmid n.
+\end{cases}
+\]
+Its state space is \(\Z\). The division branch takes precedence at zero.
+For a scale \(h\in\Z\), scaling the parameters means replacing \(c\) by \(hc\),
+without changing \(q\) or the signed divisor \(d\).
+\end{definition}
+
+% Coprimality is used on the branch guard before comparing arithmetic values.
+\begin{lemma}[QCD.Scaling.001.1a]
+If \(\gcd(|h|,|d|)=1\), then, for every \(n\in\Z\),
+\[
+d\mid hn\quad\Longleftrightarrow\quad d\mid n.
+\]
+\end{lemma}
+\begin{proof}
+The reverse implication follows by multiplication. For the forward implication,
+B\'ezout's identity gives integers \(u,v\) such that \(uh+vd=1\)
+\cite{Lang02}. Multiplying by \(n\) gives \(n=u(hn)+v(dn)\).
+Both terms on the right are divisible by \(d\), so \(d\mid n\).
+\end{proof}
+
+% Both branches and every raw return time are preserved, not just rational values.
+\begin{theorem}[QCD.Scaling.001.1]
+Suppose \(\gcd(|h|,|d|)=1\). Then
+\[
+F_{q,hc,d}(hn)=hF_{q,c,d}(n)
+\]
+for every integer \(n\). Consequently, for every \(s\in\N\),
+\[
+F_{q,hc,d}^{\,s}(hn)=hF_{q,c,d}^{\,s}(n).
+\]
+Moreover, \(h\ne0\), and
+\[
+F_{q,hc,d}^{\,s}(hn)=hn
+\quad\Longleftrightarrow\quad
+F_{q,c,d}^{\,s}(n)=n.
+\]
+In particular, the complete sets of return times and primitive raw periods agree.
+\end{theorem}
+\begin{proof}
+The guard lemma makes the two maps choose the same branch. On the division branch,
+write \(n=da\); then \((hn)/d=ha=h(n/d)\), including negative \(d\).
+On the affine branch,
+\[
+q(hn)+hc=h(qn+c).
+\]
+Induction on \(s\), starting at \(s=0\), proves the iterate identity.
+If \(h=0\), the coprimality hypothesis would give \(|d|=1\), contradicting
+\(|d|\ge2\). Multiplication by the nonzero integer \(h\) is injective, which proves
+the return-time equivalence. The least positive return time therefore agrees
+whenever such a return time exists.
+\end{proof}
+
+% The event count follows the chronological first-step recursion of the actual orbit.
+\begin{definition}
+For fixed parameters, abbreviate \(F=F_{q,c,d}\). Let \(A(t,n)\) count the affine
+instructions among the first \(t\) raw steps from \(n\). Equivalently,
+\[
+A(0,n)=0,\qquad
+A(t+1,n)=
+\begin{cases}
+A(t,F(n)),&d\mid n,\\
+A(t,F(n))+1,&d\nmid n.
+\end{cases}
+\]
+This counts affine events, not raw time or accelerated steps.
+\end{definition}
+
+% The division coordinate of the entry rank strictly decreases whenever it is used.
+\begin{lemma}[QCD.Scaling.001.2a]
+If \(n\ne0\) and \(d\mid n\), then
+\[
+|F(n)|=|n|/|d|<|n|.
+\]
+\end{lemma}
+\begin{proof}
+Write \(n=da\). Since \(n\ne0\), both \(d\) and \(a\) are nonzero, and
+\(|n|=|d||a|\). Since \(|d|\ge2\), the quotient \(|a|\) is strictly smaller than
+\(|n|\).
+\end{proof}
+
+% The prepared divisibility condition survives division and consumes one affine event.
+\begin{theorem}[QCD.Scaling.001.2]
+Suppose \(\gcd(|c|,|d|)=1\). If \(r\in\N\) and \(c\mid q^r n\), there exists
+\(t\in\N\) such that
+\[
+c\mid F^t(n),\qquad A(t,n)\le r.
+\]
+\end{theorem}
+\begin{proof}
+Use well-founded induction on \((r,|n|)\in\N^2\), ordered lexicographically.
+If \(c\mid n\), choose \(t=0\). Otherwise \(n\ne0\), because every integer divides
+zero. The case \(r=0\) is impossible: its hypothesis would already give
+\(c\mid n\). Write \(r=j+1\).
+
+If \(d\mid n\), write \(n=dm\). The hypothesis gives
+\(c\mid d q^{j+1}m\). Coprimality permits cancellation of \(d\), so
+\(c\mid q^{j+1}m\). The first coordinate of the rank is unchanged, while
+\(|m|<|n|\) by the magnitude lemma. Induction gives \(s\) with
+\(c\mid F^s(m)\) and \(A(s,m)\le j+1\). Choose \(t=s+1\); the first instruction
+is division, so it adds no affine event.
+
+If \(d\nmid n\), put \(m=qn+c\). Then
+\[
+q^j m=q^{j+1}n+q^j c
+\]
+is divisible by \(c\). The first coordinate decreases from \(j+1\) to \(j\),
+regardless of how large \(|m|\) becomes. Induction gives \(s\) with
+\(c\mid F^s(m)\) and \(A(s,m)\le j\). Again choose \(t=s+1\); this time
+\(A(t,n)=A(s,m)+1\le j+1\).
+
+In both branches, \(F^{s+1}(n)=F^s(F(n))=F^s(m)\). Each recursive call decreases
+the declared rank, and the case \(c\mid n\) supplies the base case.
+\end{proof}
+
+% Entry is followed by an exact full-sequence correspondence with offset one.
+\begin{theorem}[QCD.Scaling.001.3]
+Suppose \(\gcd(|c|,|d|)=1\), \(k\in\N\), and \(c\mid q^k\). For every
+\(n\in\Z\), there are \(t\in\N\) and \(m\in\Z\) such that
+\[
+F_{q,c,d}^{\,t}(n)=cm,\qquad A(t,n)\le k,
+\]
+and, for every \(s\in\N\),
+\[
+F_{q,c,d}^{\,t+s}(n)=cF_{q,1,d}^{\,s}(m).
+\]
+\end{theorem}
+\begin{proof}
+The power divisibility hypothesis gives \(c\mid q^k n\). Budgeted entry supplies
+\(t\) with \(c\mid F_{q,c,d}^{\,t}(n)\) and \(A(t,n)\le k\). Thus write that
+state as \(cm\). Apply the scaling theorem to \((q,1,d)\) with scale \(c\), and
+split the raw time into the initial \(t\) steps and the following \(s\) steps.
+\end{proof}
+
+% The two directions retain every seed and a single common capture witness.
+\begin{theorem}[QCD.Scaling.001.4]
+Under the hypotheses of the unit-offset tail theorem, let \(T\subseteq\Z\) be any
+set. The following obligations are equivalent:
+\begin{enumerate}[label=(\roman*)]
+\item For every \(m\in\Z\), some raw time \(s\) satisfies
+\(cF_{q,1,d}^{\,s}(m)\in T\).
+\item For every \(n\in\Z\), some iterate \(F_{q,c,d}^{\,u}(n)\) belongs to \(T\).
+\end{enumerate}
+No invariance assumption is imposed on \(T\). In particular, for any
+\(S\subseteq\Z\), all-seed capture in \(cS\) is equivalent to all-seed
+unit-offset capture in \(S\).
+\end{theorem}
+\begin{proof}
+Assume (i). For the tail witnesses \(t,m\) supplied by the preceding theorem,
+choose \(s\) with \(cF_{q,1,d}^{\,s}(m)\in T\). At the single raw time \(u=t+s\),
+the tail identity gives \(F_{q,c,d}^{\,u}(n)\in T\).
+
+Conversely, assume (ii) and apply it to the particular seed \(cm\). At its capture
+time \(u\), the scaling theorem gives
+\[
+cF_{q,1,d}^{\,u}(m)=F_{q,c,d}^{\,u}(cm)\in T.
+\]
+This proves (i) without any target invariance or pointwise reversal before entry.
+
+For \(T=cS\), membership \(cx\in cS\) means \(cx=cy\) for some \(y\in S\).
+Since \(c\ne0\), cancellation is equivalent to \(x=y\in S\), which proves the
+last assertion.
+\end{proof}
+
+% Positivity shows that normalization remains inside the original positive domain.
+\begin{theorem}[QCD.Scaling.001.5]
+Suppose \(q\ge0\), \(c>0\), and \(d>0\). Every positive state has a positive
+successor under \(F_{q,c,d}\). Under the additional hypotheses of the unit-offset
+tail theorem, a positive seed has a tail witness with \(m>0\). Consequently, the
+capture reduction remains valid after restricting both universal quantifiers to
+positive seeds.
+\end{theorem}
+\begin{proof}
+If \(d\mid n\), write \(n=da\). Positivity of \(n\) and \(d\) gives \(a>0\), so
+the division successor is positive. Otherwise \(qn\ge0\), and hence
+\(qn+c>0\). Induction proves positivity of every raw iterate.
+
+For the entry witness \(F_{q,c,d}^{\,t}(n)=cm\), both the left side and \(c\) are
+positive, so \(m>0\). The forward capture argument therefore applies its
+unit-offset premise only to a positive seed. In the reverse direction, a positive
+unit-offset seed \(m\) corresponds to the positive original seed \(cm\). The same
+scaling identity proves the target equivalence.
+\end{proof}
+
+\section{The reduction and its boundary}
+
+For \(|c|>1\), the capture reduction replaces a nonunit offset by offset one while
+retaining \(q\), the signed divisor \(d\), every integer seed, the exact target
+correspondence \(T\leftrightarrow\{m:cm\in T\}\), and the raw clock after
+entry. Its additional work is the terminating entry calculation. The decreasing
+resource in that calculation is the lexicographic rank \((r,|n|)\), not
+monotonicity of the raw orbit.
+The replacement obligation is capture for \(F_{q,1,d}\); the theorem does not assert
+that this replacement obligation is true. For \(|c|=1\), the tail is already
+available at time zero, and scaling is an identity or reflection rather than
+an offset decrease. The case \(c=0\) is excluded by coprimality and \(|d|\ge2\).
+
+Coprimality is a preservation condition, not a guard that may be discarded.
+For example, for \((q,c,d)=(3,1,2)\), scaling by \(h=2\) gives
+\[
+F_{3,2,2}(2)=1\ne8=2F_{3,1,2}(1).
+\]
+Thus arbitrary integer scaling is not a raw semiconjugacy.
+
+\bibliographystyle{amsalpha}
+\bibliography{Scaling}
+\end{document}
