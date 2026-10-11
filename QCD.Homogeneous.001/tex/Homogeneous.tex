@@ -1,0 +1,265 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{microtype}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{array}
+
+\geometry{margin=1in}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Map}{\mathcal{T}}
+\newcommand{\Iter}{\Map^{\langle k\rangle}}
+
+\title{Multiplicatively Independent Homogeneous Raw Maps}
+\author{Ascedete et Ambulate}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For integers $q,D\geq 2$, consider the homogeneous raw map that divides by
+$D$ on divisible states and multiplies by $q$ otherwise.  If no positive
+power of $q$ equals a positive power of $D$, every positive orbit is
+injective and tends to infinity.  The proof retains the raw clock and every
+branch guard.  A complete factor-free test for the power relation supplies
+finite executable certificates without replacing the universal proof.
+\end{abstract}
+
+\section{Statement and conventions}
+
+\begin{definition}[Positive homogeneous raw map]
+Let $q,D\in\N$ satisfy $q,D\geq 2$.  For $n\in\N_{>0}$, define
+\[
+ \Map_{q,D}(n)=
+ \begin{cases}
+  n/D,&D\mid n,\\
+  qn,&D\nmid n.
+ \end{cases}
+\]
+The division branch has precedence.  Iteration is at the raw one-instruction
+clock; no run of divisions is compressed.
+\end{definition}
+
+\begin{definition}[Multiplicative independence]
+The pair $(q,D)$ is multiplicatively independent if
+\[
+ q^a\neq D^b
+ \qquad\text{for every }a,b\in\N_{>0}.
+\]
+This is stronger than neither coprimality nor distinctness.  For example,
+$6$ and $4$ are independent although they have a common prime factor.
+\end{definition}
+
+\begin{theorem}[Independent homogeneous escape]\label{thm:escape}
+Let $q,D\geq 2$ be multiplicatively independent.  For every $n\geq 1$,
+the raw orbit $k\mapsto\Iter_{q,D}(n)$ is injective and
+\[
+ \Iter_{q,D}(n)\longrightarrow\infty
+ \qquad (k\longrightarrow\infty).
+\]
+Equivalently, for every $B\in\N$ there is $K$ such that
+$\Iter_{q,D}(n)>B$ for all $k\geq K$.
+\end{theorem}
+
+The conclusion is genuine convergence to infinity, not merely unboundedness
+and not merely the absence of cycles.
+
+\section{Guarded word calculation}
+
+Let a finite legal raw word $w$ contain $A(w)$ multiplication instructions
+and $E(w)$ division instructions.  Thus
+\[
+ A(w)+E(w)=|w|.
+\]
+The order of these instructions controls legality, but in the homogeneous
+case it does not change the relaxed monomial represented by the word.
+
+\begin{lemma}[Exact homogeneous word law]\label{lem:word}
+If a legal word $w$ carries a positive integer $x$ to $y$, then
+\[
+ D^{E(w)}y=q^{A(w)}x.
+\]
+In particular, every guard occurring in $w$ is retained in the hypothesis.
+\end{lemma}
+
+\begin{proof}
+Associate to a multiplication instruction the rational affine data
+$(P,B,Q)=(q,0,1)$ and to a division instruction the data $(1,0,D)$.
+Chronological affine composition multiplies the numerators and denominators
+and leaves the offset zero.  Induction on $w$ therefore gives
+\[
+ (P(w),B(w),Q(w))=(q^{A(w)},0,D^{E(w)}).
+\]
+Legal execution identifies $y$ with
+$(P(w)x+B(w))/Q(w)$, which gives the displayed integer equation.  No
+cancellation or converse legality assertion is used.
+\end{proof}
+
+\begin{lemma}[No nonempty positive return]\label{lem:noreturn}
+Under the assumptions of Theorem~\ref{thm:escape}, no nonempty legal word
+can carry a positive integer $x$ back to $x$.
+\end{lemma}
+
+\begin{proof}
+Suppose a nonempty legal word returns $x>0$ to itself.  By
+Lemma~\ref{lem:word},
+\[
+ (D^{E(w)}-q^{A(w)})x=0,
+\]
+so $D^{E(w)}=q^{A(w)}$.  Both instruction counts are positive.  Indeed, if
+$A(w)=0$, then $D^{E(w)}=1$; because $D\geq2$, this forces $E(w)=0$.
+Similarly, $E(w)=0$ forces $A(w)=0$.  Either conclusion contradicts
+$|w|=A(w)+E(w)>0$.  Hence $A(w),E(w)>0$, and their equality of powers
+contradicts multiplicative independence.
+\end{proof}
+
+\section{Recovery of full escape}
+
+\begin{lemma}[Positivity]
+Every raw iterate of a positive state is positive.
+\end{lemma}
+
+\begin{proof}
+A multiplication step sends $x>0$ to $qx>0$.  If $D\mid x$, then
+$x\geq D$ and the division step sends $x$ to the positive integer $x/D$.
+Induction on the raw clock proves the claim.
+\end{proof}
+
+\begin{proposition}[Raw-time injectivity]\label{prop:injective}
+Under multiplicative independence, the orbit of every positive seed is
+injective.
+\end{proposition}
+
+\begin{proof}
+Suppose the states at raw times $i<j$ coincide.  Determinism makes the
+segment of length $j-i>0$ a legal return word at the positive intermediate
+state.  This contradicts Lemma~\ref{lem:noreturn}.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:escape}]
+Proposition~\ref{prop:injective} shows that the orbit is an injective
+sequence in $\N_{>0}$.  Fix $B\in\N$.  At most $B$ orbit terms can lie in
+the finite set $\{1,\ldots,B\}$.  Their time indices form a finite set, so
+a time $K$ exceeds every one of them.  Consequently
+$\Iter_{q,D}(n)>B$ for every $k\geq K$.  This is precisely convergence to
+infinity.
+\end{proof}
+
+This last finite-set argument is the closing resource: a bounded interval
+has only finitely many available values, and raw-time injectivity spends each
+value at most once.  It upgrades the no-return obstruction to the required
+full-sequence limit.
+
+\section{A complete factor-free dependence test}
+
+The executable checker compares the increasing lists
+\[
+ q,q^2,\ldots,q^{L_D}
+ \quad\text{and}\quad
+ D,D^2,\ldots,D^{L_q},
+\]
+where $L_D$ and $L_q$ may be taken as the binary bit lengths of $D$ and $q$.
+At each comparison it advances the smaller power.  Thus it either returns
+an exact equality $q^a=D^b$ or certifies that the two finite lists are
+disjoint.
+
+\begin{proposition}[Completeness of the finite test]\label{prop:test}
+Positive powers of $q$ and $D$ coincide if and only if they coincide within
+those two finite lists.
+\end{proposition}
+
+\begin{proof}
+Only completeness needs proof.  Suppose $q^a=D^b$ for some positive
+$a,b$, and divide $(a,b)$ by their greatest common divisor.  Unique prime
+factorization, in its standard proportional-exponent form
+\cite[Ch.~I]{HardyWright08}, gives an integer $t\geq2$ and coprime positive
+integers $a_0,b_0$ such that
+\[
+ q=t^{b_0},\qquad D=t^{a_0}.
+\]
+Therefore $2^{a_0}\leq D$ and $2^{b_0}\leq q$.  Hence $a_0$ is no larger
+than the binary bit length of $D$, and $b_0$ is no larger than that of $q$.
+The finite merge must encounter the equality
+$q^{a_0}=D^{b_0}$.  Soundness is immediate because every reported equality
+is evaluated with exact integers.
+\end{proof}
+
+The test uses no factorization.  For example, it finds
+\[
+ (2^{100})^{101}=(2^{101})^{100}
+\]
+by exact power comparison.  Its output decides whether
+Theorem~\ref{thm:escape} applies; it does not estimate an orbit.
+
+\section{Example and boundaries}
+
+\begin{example}
+For $(q,D)=(6,4)$, the prime $3$ divides every $6^a$ and no $4^b$, so the
+pair is independent.  Starting from $1$, the orbit begins
+\[
+ 1,6,36,9,54,324,81,486,2916,729,\ldots.
+\]
+The decreases at division times show why monotonicity is unavailable.
+Nevertheless, Theorem~\ref{thm:escape} proves that no state repeats and that
+the complete sequence tends to infinity.
+\end{example}
+
+\begin{remark}[Excluded cases]
+The theorem does not classify multiplicatively dependent pairs.  It also
+does not cover $q=1$, $D=1$, zero or negative states, nonzero offsets, or
+signed divisors.  These are separate dynamical regimes; none is inferred
+from the independent positive theorem.
+\end{remark}
+
+\section{Formal and executable correspondence}
+
+The Lean development proves the following chain:
+\begin{enumerate}[label=(\roman*)]
+ \item the two letter counts partition every raw word;
+ \item the exact homogeneous word data are
+       $(q^{A(w)},0,D^{E(w)})$;
+ \item a nonempty positive guarded return contradicts independence;
+ \item the natural positive map agrees at every raw time with the
+       foundational signed-integer raw map on natural casts;
+ \item every orbit is positive and injective;
+ \item injectivity implies convergence to the top filter on $\N$.
+\end{enumerate}
+
+The arbitrary-precision executable checker independently verifies the
+monomial invariant
+\[
+ x_jD^{E_j}=x_0q^{A_j}
+\]
+along bounded prefixes and checks that no positive prefix returns to its
+seed.  Its exhaustive test covers $q,D\in\{2,\ldots,32\}$, seeds
+$1\leq n\leq30$, and fifteen raw steps for every independent pair: exactly
+$27060$ certificates and $432960$ endpoint-inclusive states.  A separate
+finite test compares the power-relation detector with a redundant exact
+search on all $q,D\in\{2,\ldots,128\}$.  These finite checks validate the
+implementation; the universal conclusion is supplied by the Lean proof.
+
+\bibliographystyle{amsalpha}
+\bibliography{Homogeneous}
+
+\end{document}

@@ -6,6 +6,7 @@ defaultTargets = [
   "GeneralizedScaling",
   "TimeCompression",
   "AffineEscape",
+  "Homogeneous",
 ]
 
 [[require]]
@@ -60,3 +61,7 @@ srcDir = "QCD.TimeCompression.001/lean"
 [[lean_lib]]
 name = "AffineEscape"
 srcDir = "QCD.AffineEscape.001/lean"
+
+[[lean_lib]]
+name = "Homogeneous"
+srcDir = "QCD.Homogeneous.001/lean"

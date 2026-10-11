@@ -83,6 +83,20 @@ q^j x+c\frac{q^j-1}{q-1},
 so every positive seed tends to infinity. The condition is sufficient rather
 than necessary and supplies no conclusion for the classical cell.
 
+### Multiplicatively independent homogeneous escape
+
+[QCD.Homogeneous.001](QCD.Homogeneous.001/README.md) proves a positive escape
+theorem for the homogeneous case \(c=0\) when \(q,D\ge2\) and
+\[
+q^a\ne D^b
+\qquad\text{for all }a,b\ge1.
+\]
+Every positive raw orbit is injective and tends to infinity. A nonempty return
+would force an equality \(q^A=D^E\) from its affine and division counts;
+injectivity then upgrades to a full-sequence limit because each bounded set of
+positive integers is finite. An exact factor-free power search decides whether
+the independence hypothesis holds.
+
 ## Other map conventions
 
 A residue-wise affine map has the form
