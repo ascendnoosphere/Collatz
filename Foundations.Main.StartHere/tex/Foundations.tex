@@ -1,0 +1,345 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Signed raw dynamics and legal words}
+
+% The declared domain matches Parameters and does not silently assume positivity.
+\begin{definition}
+Parameters are integers \(q,c,d\) with \(|d|\ge2\). On all of \(\Z\), define
+\[
+F(n)=\begin{cases}
+n/d,&d\mid n,\\
+qn+c,&d\nmid n.
+\end{cases}
+\]
+Division is exact on its branch. The sign of \(d\) is retained, and division has
+precedence at zero. The two instructions \(A,D\) define partial maps
+\[
+A(n)=qn+c\quad(d\nmid n),\qquad D(n)=n/d\quad(d\mid n).
+\]
+Outside the displayed domain the instruction is undefined.
+\end{definition}
+
+% The pointwise case proof includes all undefined intermediate states.
+\begin{lemma}[Partial composition]
+For partial maps, let \(f;g\) mean execute \(f\) and then \(g\): it is undefined when
+\(f\) is undefined or when \(g\) is undefined at its output. This composition is
+associative, and the everywhere-defined identity is a left and right identity.
+\end{lemma}
+\begin{proof}
+Fix an input \(x\). If \(f(x)\) is undefined, both parenthesizations are undefined.
+Otherwise write \(f(x)=y\). If \(g(y)\) is undefined, both are again undefined.
+Otherwise write \(g(y)=z\); both parenthesizations are exactly \(h(z)\), including
+its possible undefinedness. The identity changes neither the input nor any output,
+so it also preserves undefinedness. Pointwise equality proves all three laws.
+\end{proof}
+
+% Concatenation keeps a single intermediate witness common to both words.
+\begin{theorem}[Guarded concatenation]
+For chronological words \(u,v\), executing \(uv\) means executing \(u\) first.
+It succeeds from \(n\) to \(m\) exactly when there is an integer \(k\) such that
+\(u\) succeeds from \(n\) to \(k\) and \(v\) succeeds from \(k\) to \(m\).
+\end{theorem}
+\begin{proof}
+The empty word is the identity. For a word beginning with one instruction, its
+execution is that instruction followed by the tail execution. Induction on the
+length of \(u\), using partial associativity, gives
+\(F_{uv}=F_u;F_v\). The definition of partial composition then gives exactly the
+stated common intermediate witness. No affine relaxation was used.
+\end{proof}
+
+% Raw recovery proves the finite-to-word bridge in both directions.
+\begin{theorem}[Exact raw itinerary recovery]
+If a word \(w\) succeeds from \(n\) to \(m\), then
+\(m=F^{|w|}(n)\), and \(w\) is precisely the first \(|w|\) raw branch choices of
+that orbit. Conversely, for every \(k\ge0\), those first \(k\) branch choices form
+a legal word from \(n\) to \(F^k(n)\).
+\end{theorem}
+\begin{proof}
+At each state, exactly one of \(d\mid n\) and \(d\nmid n\) holds, so exactly one
+instruction is legal; its output is \(F(n)\). For a successful nonempty word,
+its first instruction is therefore forced. Its tail succeeds from \(F(n)\).
+Induction on the tail length gives both its forced itinerary and its endpoint.
+The iteration identity \(F^k(F(n))=F^{k+1}(n)\) follows by induction on \(k\).
+For the converse, choose the legal instruction at the current state and repeat.
+Induction on \(k\) proves legality, length \(k\), and the stated endpoint.
+The case \(k=0\) is the empty word at \(n\).
+\end{proof}
+
+\section{Affine presentations and the additive offset}
+
+% The denominator is nonzero, but the presentation has no arithmetic guards.
+\begin{definition}
+An affine presentation is integer data \(a=(P,B,Q)\) with \(Q\ne0\), acting on
+\(\Q\) by \(a(x)=(Px+B)/Q\). Here \(B\) is the \emph{full} offset.
+The identity presentation is \((1,0,1)\).
+\end{definition}
+
+% These unreduced data are the same fields used by AffineThen.
+\begin{theorem}[Composition]
+For two presentations, execution of the first followed by the second gives
+\[
+(P_2P_1,\ P_2B_1+B_2Q_1,\ Q_2Q_1).
+\]
+Its rational action is exactly the composition. Unreduced presentation composition
+is associative and has \((1,0,1)\) as a two-sided identity.
+\end{theorem}
+\begin{proof}
+The product denominator is nonzero. Direct substitution gives
+\[
+\frac{P_2(P_1x+B_1)/Q_1+B_2}{Q_2}
+=\frac{P_2P_1x+P_2B_1+B_2Q_1}{Q_2Q_1}.
+\]
+For three presentations, both parenthesizations have multiplier \(P_3P_2P_1\),
+denominator \(Q_3Q_2Q_1\), and offset
+\(P_3P_2B_1+P_3B_2Q_1+B_3Q_2Q_1\).
+The identity laws follow by substitution in all three fields.
+\end{proof}
+
+% The recursion separates the unscaled exponent offset from the full offset.
+\begin{definition}
+An exponent letter \(a\in\N\) presents \((qx+c)/d^a\), with \(d\ne0\).
+For a chronological exponent list \(w\), put \(B_{\varnothing}=0\) and
+\[
+B_{a::w}=q^{|w|}+d^aB_w.
+\]
+Zero exponents are permitted in this algebraic definition; it is not an
+exact accelerated-itinerary definition.
+\end{definition}
+
+% The induction also applies to empty, zero-exponent and signed-base cases.
+\begin{theorem}[Exponent-word data]
+The exponent word \(w\) has presentation
+\[
+P=q^{|w|},\qquad Q=d^{\sum_{a\in w}a},\qquad B_{\rm full}=cB_w.
+\]
+Appending lists is chronological affine composition.
+\end{theorem}
+\begin{proof}
+The empty list gives \((1,0,1)\). Suppose the claim holds for \(w\).
+Composing the head letter \((q,c,d^a)\) with the tail gives multiplier
+\(q^{|w|}q=q^{|w|+1}\), denominator
+\(d^{\sum w}d^a=d^{a+\sum w}\), and full offset
+\(q^{|w|}c+cB_wd^a=c(q^{|w|}+d^aB_w)\).
+This is the defining recursion. Induction and affine associativity prove the
+append law. No positivity, primality or coprimality is needed.
+\end{proof}
+
+% The relaxation recovers values only when the original partial program is legal.
+\begin{theorem}[Guarded affine agreement]
+Give a raw \(A\)-letter the presentation \((q,c,1)\) and a raw \(D\)-letter
+\((1,0,d)\), composing chronologically. If the raw word succeeds from integer
+\(n\) to integer \(m\), its rational presentation sends \(n\) to \(m\).
+\end{theorem}
+\begin{proof}
+For a legal affine letter the formula is its integer output. For a legal division,
+write \(n=dm\); since \(d\ne0\), rational division gives \(n/d=m\), including
+negative \(d\). The empty word agrees with the identity. A legal nonempty word
+has one legal first output and a legal tail. Induction and the affine composition
+identity prove agreement for the whole word.
+\end{proof}
+
+\section{Closure and the scalar conductor}
+
+% Neutral determinants remain in the equation rather than being divided away.
+\begin{theorem}[Fixed-point equation]
+Let \(\Delta=Q-P\). A rational \(x\) is fixed by \((P,B,Q)\) exactly when
+\(\Delta x=B\). If \(\Delta\ne0\), its unique rational fixed point is
+\(B/\Delta\). If a raw word is legally closed at integer \(n\), then
+\(\Delta n=B\) and hence \(\Delta\mid B\). If that legally closed word is
+neutral, \(\Delta=0\), then \(B=0\).
+\end{theorem}
+\begin{proof}
+Since \(Q\ne0\), multiply \((Px+B)/Q=x\) by \(Q\) and rearrange to get
+\((Q-P)x=B\); the steps are reversible. A nonzero \(\Delta\) permits division.
+For a legally closed raw word, guarded affine agreement supplies the fixed-point
+hypothesis. Its integer state is the divisibility witness. At \(\Delta=0\),
+the equation is \(0=B\), not an invitation to divide by zero.
+\end{proof}
+
+% This criterion is for scalar closure, not for simultaneous intermediate guards.
+\begin{theorem}[Scalar conductor criterion]
+For integers \(\Delta\ne0,b,c\), let
+\[
+g=\gcd(|\Delta|,|b|),\qquad \gamma=|\Delta|/g.
+\]
+Then \(\gamma\mid |c|\) if and only if \(\Delta\mid bc\), if and only if there
+exists \(n\in\Z\) with \(\Delta n=cb\).
+\end{theorem}
+\begin{proof}
+The common divisor \(g\) is positive and divides both \(\Delta\) and \(b\).
+B\'ezout's identity \cite{Lang02} gives integers \(u,v\) with \(g=\Delta u+bv\).
+If \(\Delta\mid bc\), multiplying this identity by \(c\) shows
+\(\Delta\mid gc\). Cancelling the nonzero common factor \(g\) gives
+\(\Delta/g\mid c\), equivalently \(|\Delta/g|\mid |c|\).
+Exact divisibility implies \(|\Delta/g|=|\Delta|/g=\gamma\).
+Conversely, \(\Delta/g\mid c\) implies \(\Delta\mid gc\); because \(g\mid b\),
+it implies \(\Delta\mid bc\). Finally, integer divisibility is exactly the
+existence of the displayed multiplication witness. This proof never uses an
+intermediate branch guard, so the conclusion alone cannot certify a cycle.
+\end{proof}
+
+\section{Labelled graphs and marked systems}
+
+% Edge identities and labels are not replaced by a simple adjacency relation.
+\begin{definition}
+A labelled graph is \((V,E,\Sigma,s,t,\ell)\), where \(s,t:E\to V\) and
+\(\ell:E\to\Sigma\). A morphism consists of maps on vertices, edges and labels,
+commuting with all three maps. A marked system consists of two graph morphisms
+\(\mathcal T\to\mathcal L\to\mathcal X\). Its morphisms consist of three graph
+morphisms commuting with both marking squares.
+\end{definition}
+
+% These are actual category laws, not a claimed equivalence with an unformalized functor category.
+\begin{theorem}[The two category structures]
+Labelled graphs and their morphisms form a category. Marked systems and their
+square-preserving morphisms form a category. Neither construction silently
+requires injective marks, determinism, invariant targets, order, or measure.
+\end{theorem}
+\begin{proof}
+The graph identity is identity on vertices, edges and labels. Composition is
+composition of each of these three functions. For example, composing the source
+square for \(f\) with that for \(g\) gives
+\(g_Vf_Vs=s g_Ef_E\); the target and label squares are identical calculations.
+Function associativity and identity give the graph category laws.
+For marked systems take identities and composition at all three stages.
+If \(f\) and \(g\) preserve a marking map \(j\), associativity and their two
+squares give \(j;f;g=f;j';g=f;g;j''\). Apply this argument to each mark.
+The component function laws then give associativity and both identity laws,
+including the two compatibility squares. These calculations use none of the
+additional properties listed in the statement.
+\end{proof}
+
+\section{Target reflection and variable clocks}
+
+% A commuting map does not automatically reflect a marked target.
+\begin{theorem}[Target-reflecting semiconjugacy]
+Suppose \(h\circ f=g\circ h\), and predicates \(A,B\) satisfy
+\(B(h(x))\Rightarrow A(x)\) for every \(x\).
+Then \(h(f^n(x))=g^n(h(x))\) for every \(n\ge0\). If the latter orbit ever enters
+\(B\), the original orbit enters \(A\) at the same step.
+\end{theorem}
+\begin{proof}
+The iterate identity follows from the zero-step identity and induction, applying
+the commuting equation at each successor. If \(B(g^n(h(x)))\), replace its
+argument by \(h(f^n(x))\) and apply target reflection at that one source state.
+This uses a single common capture time. No injectivity or surjectivity is assumed.
+\end{proof}
+
+% Positive clocks are needed for unbounded raw time, but not for the finite forward-capture identity.
+\begin{theorem}[Clock]
+Let the clock \(\tau\) be natural-valued and suppose
+\[
+h(f(x))=g^{\tau(x)}(h(x)).
+\]
+Define
+\[
+T_0(x)=0,\qquad T_{n+1}(x)=T_n(x)+\tau(f^n(x)).
+\]
+Then \(h(f^n(x))=g^{T_n(x)}(h(x))\).
+If \(A(x)\Rightarrow B(h(x))\), capture of the \(f\)-orbit in \(A\) implies
+capture of the \(g\)-orbit in \(B\). If \(\tau(x)\ge1\) at every state, then
+\(T_n(x)\ge n\). No reverse capture assertion is made.
+\end{theorem}
+\begin{proof}
+Induction on \(n\), using \(g^{a+b}=g^b\circ g^a\), gives the exact iterate
+identity. A source capture at time \(n\) maps into \(B\) and occurs in the raw
+orbit at time \(T_n(x)\). Positivity gives
+\(T_{n+1}(x)\ge T_n(x)+1\); induction from \(T_0=0\) proves the lower bound.
+\end{proof}
+
+\section{Counterexamples}
+
+% Signed division invalidates an unsigned absorption argument.
+\begin{theorem}[A nonzero signed cycle]
+For \((q,c,d)=(2,2,-2)\), the orbit of \(1\) is the cycle
+\(1\to4\to-2\to1\). In particular, this orbit does not reach zero.
+\end{theorem}
+\begin{proof}
+Since \(-2\nmid1\), the first image is \(2\cdot1+2=4\).
+The next two images are exact divisions: \(4/(-2)=-2\) and
+\((-2)/(-2)=1\). Thus the set \(\{1,4,-2\}\) is forward-invariant.
+Induction on the number of steps places every iterate in this set, which excludes zero.
+\end{proof}
+
+% Keeping c is necessary even for a one-letter exponent word.
+\begin{theorem}[Offset dependence]
+For \((q,c,d)=(3,5,2)\), the raw word \(ADD\) closes at \(5\).
+Its exponent-two presentation fixes \(5\); changing \(c\) to one does not.
+\end{theorem}
+\begin{proof}
+The legal raw steps are \(5\to20\to10\to5\): the first state is odd and
+both division states are even. The rational presentation is
+\((3x+5)/4\), so its value at \(5\) is \(20/4=5\).
+After replacing the offset by one, the value is \(16/4=4\ne5\).
+\end{proof}
+
+% Scalar closure leaves the guards of zero-exponent words unresolved.
+\begin{theorem}[An illegal rational fixed word]
+For \((q,c,d)=(3,1,2)\), the exponent word \((0,0,3,4)\) fixes \(1\)
+rationally, but its raw expansion is not legal at \(1\).
+\end{theorem}
+\begin{proof}
+Its data are \(P=3^4=81\), \(Q=2^7=128\), and
+\(B=27+9+3+8=47\). Hence \((81\cdot1+47)/128=1\).
+The raw expansion starts with two affine letters. Its first letter sends
+\(1\) to \(4\), where the division branch is mandatory. The second affine
+letter is therefore illegal.
+\end{proof}
+
+% Word-specific noncoprime scaling can work without defining a global conjugacy.
+\begin{theorem}[Scaling]
+For parameters
+\[
+(q,c,d)=(-5,31,-6),
+\]
+the word \(AAD\) closes at \(4\).
+Multiplying the offset and state by two preserves this word;
+multiplying both by three makes its first letter illegal.
+\end{theorem}
+\begin{proof}
+The unscaled steps are \(4\to11\to-24\to4\).
+Neither \(4\) nor \(11\) is divisible by six, and \(-24\) is divisible by \(-6\).
+At offset \(62\), the steps are \(8\to22\to-48\to8\), with the same legal guards.
+At offset \(93\), the proposed starting state is \(12\); because \(-6\mid12\),
+its first instruction must be a division, not the proposed affine letter.
+\end{proof}
+
+\bibliographystyle{amsalpha}
+\bibliography{Foundations}
+
+\end{document}

@@ -1,6 +1,6 @@
 name = "GeneralizedCollatzLibrary"
 version = "0.1.0"
-defaultTargets = ["HomomorphismTheorems"]
+defaultTargets = ["HomomorphismTheorems", "GeneralizedCollatz"]
 
 [[require]]
 name = "mathlib"
@@ -10,3 +10,35 @@ rev = "v4.32.2"
 [[lean_lib]]
 name = "HomomorphismTheorems"
 srcDir = "Templates/lean"
+
+[[lean_lib]]
+name = "GuardedDynamics"
+srcDir = "Foundations.Main.StartHere/lean"
+
+[[lean_lib]]
+name = "AffineWords"
+srcDir = "Foundations.Main.StartHere/lean"
+
+[[lean_lib]]
+name = "DynamicalMorphisms"
+srcDir = "Foundations.Main.StartHere/lean"
+
+[[lean_lib]]
+name = "MarkedGraphs"
+srcDir = "Foundations.Main.StartHere/lean"
+
+[[lean_lib]]
+name = "GuardedRecovery"
+srcDir = "Foundations.Main.StartHere/lean"
+
+[[lean_lib]]
+name = "Conductors"
+srcDir = "Foundations.Main.StartHere/lean"
+
+[[lean_lib]]
+name = "RecoveryControls"
+srcDir = "Foundations.Main.StartHere/lean"
+
+[[lean_lib]]
+name = "GeneralizedCollatz"
+srcDir = "Foundations.Main.StartHere/lean"

@@ -1,93 +1,60 @@
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
 # Generalized Collatz Library
 
-This library stores reductions and related data for generalized Collatz maps and their
-residue-class affine forms \(qx+c \bmod d\). Integers \(q,c\) and \(d\geq2\) define
-the branching map below. Positive-integer dynamics additionally require positive outputs.
+## Raw map
 
-## Default map
-
+For \(q,c,d\in\mathbb Z\) with \(|d|\ge2\), define
 \[
-T_{q,c,d}(x)=
+F_{q,c,d}(n)=
 \begin{cases}
-x/d & \text{if }d\mid x\\
-qx+c & \text{if }d\nmid x
+n/d,&d\mid n,\\
+qn+c,&d\nmid n.
 \end{cases}
 \]
+The divisor retains its sign. Division has precedence, including at zero.
+The classical raw map is \(F_{3,1,2}\).
 
-Recovers \(3x+1\) at \(d=2\), \(q=3\), \(c=1\).
+## Foundations
 
-## Stored variants
+[Definitions and theorems](Foundations.Main.StartHere/README.md) ·
+[Detailed proofs](Foundations.Main.StartHere/tex/Foundations.tex) ·
+[Formal proofs](Foundations.Main.StartHere/lean/GeneralizedCollatz.lean) ·
+[Exact arithmetic](Foundations.Main.StartHere/go/Dynamics.go)
 
-Single-\(q\) residue form:
+- A legal word is the unique raw itinerary of the same length.
+- Chronological affine composition retains the full additive offset.
+- Legal cycle closure implies \((Q-P)n=B\).
+- For \(\Delta\ne0\),
+  \[
+  \frac{|\Delta|}{\gcd(|\Delta|,|b|)}\mid |c|
+  \quad\Longleftrightarrow\quad
+  \exists n\in\mathbb Z:\ \Delta n=cb.
+  \]
+  This scalar equation does not imply intermediate branch legality.
+- Labelled graphs and marked systems form categories.
+- A target-reflecting semiconjugacy transfers capture at the same time.
+- A variable-clock semiconjugacy transfers forward capture at the accumulated time.
 
+## Other map conventions
+
+A residue-wise affine map has the form
 \[
-T(x)=\frac{qx+c_{x\bmod d}}{d},\qquad c_r\equiv -qr\pmod{d}
+T(n)=\frac{q_r n+c_r}{d},\qquad r=n\bmod d,
+\qquad c_r\equiv-q_r r\pmod d.
 \]
-
-Fully general residue form:
-
-\[
-T(x)=\frac{q_rx+c_r}{d}\quad\text{on each residue }r\bmod d,
-\qquad c_r\equiv-q_rr\pmod d
-\]
-
-## Layout
-
-PascalCase content filenames and declared functions. Keep the conventional tool filenames
-and language directories listed below; Go's entry point remains `main`.
-
-Every content folder: `DOMAIN.SUBDOMAIN.[Concept or ID]/`
-
-Under each such folder, as needed: `lean/`, `tex/`, `go/`, `other/`.
-
-`Foundations.*` holds definitions and foundations.
-
-```
-Foundations.Main.StartHere/             empty definitions stub
-Templates/
-  lean/HomomorphismTheorems.lean
-  lean/HomomorphismTheorems/{Group,Ring,Module}.lean
-  tex/Template.tex
-  tex/Template.bib
-  go/HomomorphismTheorems.go
-  go/HomomorphismTheorems_test.go
-  other/                               generated plots (gitignored)
-Scripts/
-  CheckIgnoredPdfs.sh
-  CheckIgnoredTexTemps.sh
-AGENTS.md
-README.md
-lakefile.toml
-lake-manifest.json
-go.mod
-go.sum
-lean-toolchain
-Makefile
-.gitignore
-LICENSE.md
-```
+A common multiplier is the special case \(q_r=q\).
+This is a different map from raw branching. Shortcut, odd-accelerated and
+first-division maps also have their own definitions and clocks.
 
 ## Build
 
-The Makefile prepends `$(HOME)/.local/go/bin` to `PATH`.
-Install the toolchain named by `lean-toolchain`, the Go version in `go.mod`, and
-`latexmk` with pdfLaTeX and BibTeX before running:
+`make` and `make lean` build the formal library. The `tex` profile uses pdfLaTeX
+and BibTeX with `amsalpha`; the `go` profile uses `CGO_ENABLED=0`.
 
-```sh
-make lean
-make tex TEXFILE=Templates/tex/Template.tex
-make go GOFILE=Templates/go/HomomorphismTheorems.go
-bash Scripts/CheckIgnoredPdfs.sh
-bash Scripts/CheckIgnoredTexTemps.sh
-PATH="$HOME/.local/go/bin:$PATH" CGO_ENABLED=0 go test ./Templates/go
-```
-
-The Go profile uses `CGO_ENABLED=0` and pure-Go Gonum. Optional BLAS backends are
-not implemented by these templates. The plot is a vector 6in×4in PDF in
-`Templates/other/`, with Latin Modern math glyphs and 16/14/12pt title/axis/tick
-sizes. Its math handler supports the three documented TeX expressions only.
-The TeX profile cleans document-specific temporary files on success and failure.
+[Homomorphism theorem examples](Templates/lean/HomomorphismTheorems.lean) ·
+[TeX example](Templates/tex/Template.tex) ·
+[Go example](Templates/go/HomomorphismTheorems.go)
 
 ## License
 
-`CC-BY-4.0`; see `LICENSE.md`.
+[CC-BY-4.0](LICENSE.md).
