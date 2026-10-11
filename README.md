@@ -97,6 +97,29 @@ injectivity then upgrades to a full-sequence limit because each bounded set of
 positive integers is finite. An exact factor-free power search decides whether
 the independence hypothesis holds.
 
+### Multiplicatively dependent homogeneous periodicity
+
+[QCD.Homogeneous.002](QCD.Homogeneous.002/README.md) classifies the complementary
+homogeneous case. If \(q^a=D^b\) for some positive \(a,b\), there is a
+primitive presentation
+\[
+q=t^u,\qquad D=t^v,\qquad \gcd(u,v)=1.
+\]
+Writing a positive seed as \(rt^k\) with \(t\nmid r\) makes \(r\) invariant and
+reduces the raw dynamics to
+\[
+k\longmapsto
+\begin{cases}
+k-v,&v\le k,\\
+k+u,&k<v.
+\end{cases}
+\]
+After a strictly decreasing transient, this is addition by \(u\) modulo
+\(u+v\). Every positive orbit therefore enters a primitive raw cycle of length
+\(u+v\), and every iterate is at most \(qDn\). Together with
+`QCD.Homogeneous.001`, this is a complete positive homogeneous dichotomy for
+\(q,D\ge2\).
+
 ## Other map conventions
 
 A residue-wise affine map has the form

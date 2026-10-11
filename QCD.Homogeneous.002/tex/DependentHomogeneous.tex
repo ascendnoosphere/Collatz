@@ -1,0 +1,334 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Let $q,D\geq2$ and let the positive homogeneous raw map divide by $D$ when
+possible and multiply by $q$ otherwise.  Suppose $q^a=D^b$ for some positive
+$a,b$.  A primitive common-base normal form $q=t^u$, $D=t^v$ converts the
+integer dynamics into an exact exponent recurrence.  Its transient has a
+strictly decreasing exponent, and its recurrent part is a coprime rotation
+on $u+v$ residues.  Consequently every positive orbit has an eventually
+primitive-periodic tail of raw period $u+v$, and every raw iterate is at most
+$qDn$.  The proof reconstructs every integer state at the original raw clock.
+\end{abstract}
+
+\section{Raw dynamics and the target}
+
+\begin{definition}[Positive homogeneous raw map]
+For $q,D\in\N$ with $q,D\geq2$, define
+\[
+ T_{q,D}(n)=
+ \begin{cases}
+  n/D,&D\mid n,\\
+  qn,&D\nmid n
+ \end{cases}
+ \qquad(n\in\N_{>0}).
+\]
+The divisibility test is made before every instruction.  Thus one division is
+one raw step, even if further divisions immediately follow.
+\end{definition}
+
+\begin{definition}[Multiplicative dependence]
+The coefficients $q,D\geq2$ are multiplicatively dependent if there are
+$a,b\in\N_{>0}$ such that
+\[
+ q^a=D^b.
+\]
+\end{definition}
+
+The obstruction is the unbounded integer state.  The reduction below removes
+that obstruction without changing the clock: an invariant factor is retained
+exactly, while a single natural-number exponent first decreases and then
+enters a finite rotation.
+
+\section{Primitive common-base normal form}
+
+\begin{lemma}[Common-base extraction]
+\label{lem:normal-form}
+If $q,D\geq2$ and $q^a=D^b$ for positive $a,b$, then there exist
+$t,u,v\in\N$ such that
+\[
+ t\geq2,\qquad u,v\geq1,\qquad \gcd(u,v)=1,
+ \qquad q=t^u,\qquad D=t^v.
+\]
+\end{lemma}
+
+\begin{proof}
+Let $g=\gcd(a,b)$ and write $a=gv$ and $b=gu$.  Then
+\[
+ (q^v)^g=(D^u)^g.
+\]
+Positive integer powers are injective, so $q^v=D^u$, and
+$\gcd(u,v)=1$.
+
+For each prime $p$, let $\alpha_p$ and $\beta_p$ be its exponents in $q$ and
+$D$.  Unique prime factorization gives
+\[
+ v\alpha_p=u\beta_p.
+\]
+Since $u$ and $v$ are coprime, $u\mid\alpha_p$ and $v\mid\beta_p$.  Write
+$\alpha_p=u\gamma_p$ and $\beta_p=v\gamma_p$.  The finite product
+\[
+ t=\prod_p p^{\gamma_p}
+\]
+then satisfies $q=t^u$ and $D=t^v$.  Because $q\geq2$ and $u>0$, one has
+$t\geq2$.  This is the standard prime-factorization argument; see
+\cite[Chapter I]{HardyWright08}.
+\end{proof}
+
+Dividing $a,b$ by their gcd is essential.  Without the coprimality condition,
+the exponent rotation can return before the displayed nonprimitive length.
+
+\section{Exact exponent dynamics}
+
+Fix a primitive presentation
+\[
+ q=t^u,\qquad D=t^v,
+ \qquad t\geq2,\quad u,v\geq1,\quad\gcd(u,v)=1.
+\]
+
+\begin{lemma}[Canonical factorization]
+\label{lem:canonical-factorization}
+For every $n\in\N_{>0}$ there is a unique pair $(r,k)$ with
+\[
+ n=rt^k,\qquad k\in\N,\qquad t\nmid r.
+\]
+\end{lemma}
+
+\begin{proof}
+The set $\{e\in\N:t^e\mid n\}$ is nonempty and finite, because $t\geq2$.
+Let $k$ be its maximum and put $r=n/t^k$.  Maximality gives $t\nmid r$.
+If $rt^k=r't^{k'}$ with both $r,r'$ not divisible by $t$, then $k<k'$
+would imply $t\mid r$, and $k'<k$ would imply $t\mid r'$.  Hence $k=k'$
+and then $r=r'$.
+\end{proof}
+
+\begin{definition}[Exponent map]
+Define $F\colon\N\to\N$ by
+\[
+ F(k)=
+ \begin{cases}
+  k-v,&v\leq k,\\
+  k+u,&k<v.
+ \end{cases}
+\]
+\end{definition}
+
+\begin{lemma}[One-step reconstruction]
+\label{lem:one-step}
+If $n=rt^k$ with $t\nmid r$, then
+\[
+ T_{q,D}(n)=rt^{F(k)}.
+\]
+In particular, the factor $r$ is invariant.
+\end{lemma}
+
+\begin{proof}
+Because $D=t^v$ and $t\nmid r$, one has
+\[
+ D\mid rt^k\quad\Longleftrightarrow\quad v\leq k.
+\]
+When $v\leq k$, the division branch gives
+$rt^k/t^v=rt^{k-v}$.  When $k<v$, the affine branch gives
+$t^u rt^k=rt^{k+u}$.  These are exactly the two clauses defining $F$.
+\end{proof}
+
+\begin{theorem}[Exact raw reconstruction]
+\label{thm:reconstruction}
+Let $n=rt^{k_0}$ be the canonical factorization.  For every $j\in\N$,
+\[
+ T_{q,D}^{j}(n)=rt^{F^j(k_0)}.
+\]
+The exponent on the right is evaluated after exactly $j$ raw instructions.
+\end{theorem}
+
+\begin{proof}
+The assertion at $j=0$ is the canonical factorization.  If it holds at $j$,
+Lemma~\ref{lem:one-step} applied to $rt^{F^j(k_0)}$ gives
+\[
+ T_{q,D}^{j+1}(n)=rt^{F(F^j(k_0))}=rt^{F^{j+1}(k_0)}.
+\]
+Induction proves the formula for every $j$.
+\end{proof}
+
+\section{Finite recurrent rotation}
+
+Put $m=u+v$.
+
+\begin{lemma}[Entry into the recurrent interval]
+\label{lem:entry}
+For every $k\in\N$, some iterate $F^s(k)$ lies in
+$\{0,1,\ldots,m-1\}$.
+\end{lemma}
+
+\begin{proof}
+If $k<m$, take $s=0$.  If $k\geq m$, then $k\geq v$ and
+$F(k)=k-v<k$.  Strong induction on $k$ therefore supplies a finite entry
+time.  The decreasing resource is the exponent itself, and each unresolved
+noncore step lowers it by the fixed positive amount $v$.
+\end{proof}
+
+\begin{lemma}[Rotation formula]
+\label{lem:rotation}
+If $0\leq k<m$, then
+\[
+ F(k)\equiv k+u\pmod m
+ \qquad\text{and}\qquad 0\leq F(k)<m.
+\]
+Consequently, for every $j\in\N$,
+\[
+ F^j(k)\equiv k+ju\pmod m.
+\]
+\end{lemma}
+
+\begin{proof}
+If $k<v$, then $F(k)=k+u<m$.  If $v\leq k<m$, then
+\[
+ F(k)=k-v=k+u-(u+v)=k+u-m.
+\]
+This proves the one-step congruence and interval preservation.  The iterated
+formula follows by induction on $j$.
+\end{proof}
+
+\begin{lemma}[Primitive exponent period]
+\label{lem:primitive-exponent}
+For every $0\leq k<m$,
+\[
+ F^m(k)=k.
+\]
+If $0<j<m$, then $F^j(k)\neq k$.
+\end{lemma}
+
+\begin{proof}
+Lemma~\ref{lem:rotation} gives
+$F^m(k)\equiv k+mu\equiv k\pmod m$.  Both terms lie in the recurrent
+interval, so they are equal.  Conversely, if $F^j(k)=k$, then
+$m\mid ju$.  Since
+\[
+ \gcd(u,m)=\gcd(u,u+v)=\gcd(u,v)=1,
+\]
+one has $m\mid j$.  This is impossible when $0<j<m$.
+\end{proof}
+
+\begin{theorem}[Eventual primitive periodicity]
+\label{thm:periodicity}
+Every positive orbit of $T_{q,D}$ enters a raw cycle of primitive period
+\[
+ u+v.
+\]
+More precisely, for every $n>0$ there is an $s\in\N$ such that
+\[
+ T_{q,D}^{u+v}(T_{q,D}^s(n))=T_{q,D}^s(n),
+\]
+and no positive $j<u+v$ returns the tail state.
+\end{theorem}
+
+\begin{proof}
+Write $n=rt^{k_0}$.  By Lemma~\ref{lem:entry}, choose $s$ so that
+$k_s=F^s(k_0)<u+v$.  Theorem~\ref{thm:reconstruction} and
+Lemma~\ref{lem:primitive-exponent} give the return after $u+v$ raw steps.
+If an earlier positive return occurred, cancellation of the positive factor
+$r$ would give $t^{F^j(k_s)}=t^{k_s}$.  Since $t\geq2$, equality of powers
+forces $F^j(k_s)=k_s$, contradicting primitive exponent period.
+\end{proof}
+
+\section{Uniform height}
+
+\begin{lemma}[Invariant exponent bound]
+\label{lem:exponent-bound}
+For all $k,j\in\N$,
+\[
+ F^j(k)<\max\{k+1,u+v\}.
+\]
+\end{lemma}
+
+\begin{proof}
+Let $B=\max\{k+1,u+v\}$.  Initially $k<B$.  Suppose $x<B$.
+If $v\leq x$, then $F(x)=x-v<x<B$.  If $x<v$, then
+$F(x)=x+u<u+v\leq B$.  Thus the strict bound is invariant, and induction on
+$j$ proves the claim.
+\end{proof}
+
+\begin{theorem}[Source-relative height bound]
+\label{thm:height}
+For every $n>0$ and every raw time $j$,
+\[
+ T_{q,D}^j(n)\leq qDn.
+\]
+\end{theorem}
+
+\begin{proof}
+Write $n=rt^{k_0}$.  Lemma~\ref{lem:exponent-bound} implies
+$F^j(k_0)\leq k_0+u+v$.  Hence
+\[
+ T_{q,D}^j(n)
+ =rt^{F^j(k_0)}
+ \leq rt^{k_0+u+v}
+ =t^{u+v}n
+ =qDn.
+\]
+This includes the transient and the periodic tail.
+\end{proof}
+
+\section{Reduction certificate and scope}
+
+The original obligation is the orbit classification for every positive seed
+under zero offset, $q,D\geq2$, and a positive power relation.  The replacement
+obligations are common-base extraction, exponent recurrence, and exact
+reconstruction.  Lemma~\ref{lem:entry} supplies a well-founded decrease, and
+Lemmas~\ref{lem:rotation}--\ref{lem:primitive-exponent} solve the finite
+recurrent problem.  Theorem~\ref{thm:reconstruction} is the recovery map and
+retains every raw instruction.  Thus no convergence argument, accelerated
+clock, or unproved all-seed assertion is used.
+
+The Lean development proves the common-base normal form, the modular exponent
+formula, entry into the recurrent interval, exact state reconstruction,
+primitive tail period, and the height bound.  It also identifies the natural
+map with the positive restriction of the signed foundational raw map.  The Go
+checker constructs the transient and all $u+v$ cycle states with
+arbitrary-precision integers; its bounded executable family checks $61{,}250$
+certificates and a separate $42$-step large-integer cycle.
+
+The theorem excludes nonzero offsets, zero and negative seeds, signed
+moduli, and coefficients below two.  It does not imply universal classical
+Collatz capture.  Paired with the multiplicatively independent escape theorem,
+it completes the positive homogeneous dichotomy for $q,D\geq2$.
+
+\bibliographystyle{amsalpha}
+\bibliography{DependentHomogeneous}
+
+\end{document}

@@ -7,6 +7,7 @@ defaultTargets = [
   "TimeCompression",
   "AffineEscape",
   "Homogeneous",
+  "DependentHomogeneous",
 ]
 
 [[require]]
@@ -65,3 +66,7 @@ srcDir = "QCD.AffineEscape.001/lean"
 [[lean_lib]]
 name = "Homogeneous"
 srcDir = "QCD.Homogeneous.001/lean"
+
+[[lean_lib]]
+name = "DependentHomogeneous"
+srcDir = "QCD.Homogeneous.002/lean"
