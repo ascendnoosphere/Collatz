@@ -5,6 +5,9 @@ defaultTargets = [
   "GeneralizedCollatz",
   "GeneralizedScaling",
   "TimeCompression",
+  "CompressionOutcomes",
+  "CompressionPeriods",
+  "CompressionCycleClasses",
   "AffineEscape",
   "Homogeneous",
   "DependentHomogeneous",
@@ -62,6 +65,18 @@ srcDir = "QCD.Scaling.001/lean"
 [[lean_lib]]
 name = "TimeCompression"
 srcDir = "QCD.TimeCompression.001/lean"
+
+[[lean_lib]]
+name = "CompressionOutcomes"
+srcDir = "QCD.TimeCompression.002/lean"
+
+[[lean_lib]]
+name = "CompressionPeriods"
+srcDir = "QCD.TimeCompression.002/lean"
+
+[[lean_lib]]
+name = "CompressionCycleClasses"
+srcDir = "QCD.TimeCompression.002/lean"
 
 [[lean_lib]]
 name = "AffineEscape"

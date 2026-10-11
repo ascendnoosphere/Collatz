@@ -64,6 +64,23 @@ therefore recovers original target capture for every signed seed. If \(a>0\)
 and \((Q,C)\ne(0,0)\), this is a strict reduction in the coefficient height
 \(\max\{|q|,|c|\}\); the zero pair gives transport without strict decrease.
 
+### Full-orbit recovery and primitive cycles
+
+[QCD.TimeCompression.002](QCD.TimeCompression.002/README.md) recovers every raw
+intermediate state in the common-power reduction, for all signed coefficients
+and seeds with \(|d|\ge2\). Same-seed magnitude boundedness, full-sequence
+magnitude escape and eventual periodicity are equivalent. Target capture is
+bidirectional under the sufficient condition that the target retains each
+legal division; the exact classical target \(1\) satisfies this condition.
+No classical convergence assertion follows.
+
+A primitive compressed cycle of length \(h\), with \(r\) affine instructions,
+expands to a primitive raw cycle of length \(h+ar\). Every nonzero raw cycle
+recovers at an affine phase, and zero has period one. Expansion induces a
+bijection of periodic mutual-reachability classes, not a one-step conjugacy
+or a bijection of periodic point sets at their original seeds. Signed raw
+replay checks the bounded sample independently of the universal formal proofs.
+
 ### Gcd division barrier and affine escape
 
 [QCD.AffineEscape.001](QCD.AffineEscape.001/README.md) classifies every positive

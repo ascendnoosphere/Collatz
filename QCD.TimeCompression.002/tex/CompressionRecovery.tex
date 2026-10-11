@@ -1,0 +1,393 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Removing a common power of the signed divisor gives an exact variable-clock
+identity. We recover every intermediate raw state, prove preservation of
+boundedness, full-sequence magnitude escape and eventual periodicity, and
+identify a sufficient condition for bidirectional target capture. Primitive
+periods require an additional exclusion of returns inside division blocks.
+That exclusion also yields a bijection of periodic cycle classes. All statements
+hold on the signed integer state space; no independence or coprimality
+assumption is used.
+\end{abstract}
+
+\section{Parameters and the exact block identity}
+
+% The compressed coefficients are lowercase, matching the formal parameterization.
+\begin{definition}
+Fix \(d,q,c\in\Z\), \(|d|\ge2\), and \(a\in\N\). For integers \(u,v\), define
+\[
+F_{u,v,d}(x)=\begin{cases}x/d,&d\mid x,\\ux+v,&d\nmid x.\end{cases}
+\]
+Put \(F=F_{d^a q,d^a c,d}\) and \(G=F_{q,c,d}\). Division precedes the affine
+branch, including at zero, and retains the sign of \(d\). Define
+\[
+\tau(x)=\begin{cases}1,&d\mid x,\\a+1,&d\nmid x.\end{cases}
+\]
+\[
+R(k,n)=\#\{j<k:d\nmid G^j(n)\},\qquad
+T(k,n)=\sum_{j<k}\tau(G^j(n)).
+\]
+Empty sums and counts are zero.
+\end{definition}
+
+The common-power block identity \cite{AscendCompressionI} is
+\begin{equation}\label{BlockIdentity}
+F^{\tau(x)}(x)=G(x),\qquad
+G^k(n)=F^{T(k,n)}(n),\qquad T(k,n)=k+aR(k,n).
+\end{equation}
+Indeed, division is unchanged. On an affine input, the first raw state is
+\(d^a(qx+c)\); the following \(a\) instructions divide away the displayed
+factors. Composing these blocks proves the iterate identity by induction.
+This identity is not a one-step conjugacy.
+
+\section{Every raw time and its intermediate state}
+
+% The finite interval between consecutive accumulated times contains every raw time.
+\begin{lemma}[Positive-clock coverage]\label{ClockCover}
+For every \(n\in\Z\) and \(r\in\N\), there exist \(k,s\in\N\) such that
+\[
+k\le r,\qquad s<\tau(G^k(n)),\qquad r=T(k,n)+s.
+\]
+Moreover \(T(k,n)\) is strictly increasing in \(k\) and
+\(k\le T(k,n)\le(a+1)k\). If \(r\ge T(K,n)\), any such block index satisfies
+\(k\ge K\).
+\end{lemma}
+\begin{proof}
+Each increment \(T(k+1,n)-T(k,n)=\tau(G^k(n))\) lies between one and \(a+1\).
+Summing these inequalities gives both bounds and strict increase. For coverage,
+induct on \(r\). At zero choose \(k=s=0\). Given a block containing \(r\),
+if \(s+1<\tau(G^k(n))\), keep \(k\) and replace \(s\) by \(s+1\).
+Otherwise \(s+1=\tau(G^k(n))\); use block \(k+1\) with offset zero.
+The bound \(k\le r\) is preserved because each new block consumes at least
+one raw step. Finally, if \(k<K\), then \(k+1\le K\), and the interior
+condition implies \(r<T(k+1,n)\le T(K,n)\), contradicting \(r\ge T(K,n)\).
+\end{proof}
+
+% Exact signed quotients expose all hidden states, not just the endpoint.
+\begin{lemma}[Division prefixes and affine intermediates]\label{Intermediates}
+For \(b,s\in\N\) with \(s\le b\),
+\[
+F^s(d^b x)=d^{b-s}x.
+\]
+If \(d\nmid x\) and \(1\le s\le a+1\), then
+\[
+F^s(x)=d^{a+1-s}G(x).
+\]
+Consequently every positive-time interior of an affine block is divisible by
+\(d\).
+\end{lemma}
+\begin{proof}
+During the first \(s\) instructions on \(d^b x\), each current state contains
+an explicit factor \(d\); exact signed division removes that factor. Induction
+proves the first formula, including zero and negative \(d\).
+For the second, the initial affine instruction gives \(d^aG(x)\).
+Apply the first formula to the next \(s-1\) instructions. At an interior time
+\(0<s<a+1\), the remaining exponent \(a+1-s\) is positive, so the state is
+divisible by \(d\).
+\end{proof}
+
+% Both endpoints are retained to avoid losing a lower bound near a division run.
+\begin{lemma}[Adjacent-state magnitude bounds]\label{MagnitudeBounds}
+For every \(x\in\Z\) and \(0\le s<\tau(x)\),
+\[
+\min(|x|,|G(x)|)\le |F^s(x)|
+\le |d|^a\max(|x|,|G(x)|).
+\]
+\end{lemma}
+\begin{proof}
+At \(s=0\), the state is \(x\), and \(|d|^a\ge1\). If \(s>0\), a
+division block of length one is impossible. The block is affine and
+Lemma~\ref{Intermediates} gives
+\(|F^s(x)|=|d|^{a+1-s}|G(x)|\). Its factor lies between one and \(|d|^a\),
+which proves both bounds. No inequality between \(|x|\) and \(|G(x)|\) is assumed.
+\end{proof}
+
+\section{Full-sequence orbit properties}
+
+% The definitions specify the exact quantifiers used by the Lean statements.
+\begin{definition}
+For \(f:\Z\to\Z\), the orbit of \(n\) is magnitude bounded if
+\(\exists M\in\N\ \forall r\in\N:\ |f^r(n)|\le M\). It escapes in magnitude
+if \(\forall M\in\N\ \exists R\in\N\ \forall r\ge R:\ |f^r(n)|>M\).
+It is eventually periodic if there exist \(u,h\in\N\), \(h>0\), with
+\(f^{u+h}(n)=f^u(n)\).
+\end{definition}
+
+% Full recovery uses clock coverage rather than an assertion about sampled limits.
+\begin{theorem}[QCD.TimeCompression.002.1]\label{Outcomes}
+Fix \(n\in\Z\). Each of magnitude boundedness, full-sequence magnitude
+escape and eventual periodicity holds for \(F\) if and only if that same
+property holds for \(G\).
+\end{theorem}
+\begin{proof}
+If the raw orbit is bounded by \(M\), its sampled compressed states are
+bounded by \(M\) using \eqref{BlockIdentity}. Conversely, if all compressed
+states are bounded by \(M\), cover any raw time by Lemma~\ref{ClockCover}.
+The raw state is \(F^s(G^k(n))\); both adjacent compressed states have magnitude
+at most \(M\). Lemma~\ref{MagnitudeBounds} bounds it by \(|d|^aM\).
+
+For escape from \(F\) to \(G\), a raw cutoff \(R\) is also a compressed
+cutoff: for \(k\ge R\), \(T(k,n)\ge k\ge R\). For the reverse direction,
+fix \(M\) and choose \(K\) after which every compressed magnitude exceeds
+\(M\). If \(r\ge T(K,n)\), its covering block has \(k\ge K\).
+Both \(|G^k(n)|\) and \(|G^{k+1}(n)|\) exceed \(M\), so the lower bound in
+Lemma~\ref{MagnitudeBounds} proves \(|F^r(n)|>M\).
+
+For any deterministic map on \(\Z\), eventual periodicity implies boundedness:
+a return after \(u\) steps with period \(h>0\) reduces every later iterate to
+one of the finite first \(u+h\) iterates. Conversely, a magnitude bound \(M\)
+places every state in the \(2M+1\) element interval \([-M,M]\).
+Among the first \(2M+2\) states, two coincide, giving a positive return after
+a finite prefix. Thus boundedness is equivalent to eventual periodicity;
+its already proved transfer yields the third assertion.
+\end{proof}
+
+% Guarded closure is a sufficient target condition, not an assertion of necessity.
+\begin{theorem}[QCD.TimeCompression.002.2]\label{Capture}
+Let \(S\subseteq\Z\) satisfy
+\[
+x\in S,\ d\mid x\quad\Longrightarrow\quad x/d\in S.
+\]
+Then for each \(n\in\Z\), \(\exists r:F^r(n)\in S\) if and only if
+\(\exists k:G^k(n)\in S\). Without this condition, compressed capture still
+implies raw capture.
+\end{theorem}
+\begin{proof}
+A compressed hit is a raw hit at its accumulated time. For a raw hit, cover its
+time as \(T(k,n)+s\). At \(s=0\) it is the compressed state \(G^k(n)\).
+At \(s>0\), Lemma~\ref{Intermediates} writes it as
+\(d^{a+1-s}G^{k+1}(n)\). Repeatedly apply the target condition along those
+remaining forced divisions to obtain \(G^{k+1}(n)\in S\).
+\end{proof}
+
+For \(d=2,q=3,c=1\), both \(S=\{1\}\) and \(S=\{1,2\}\) satisfy the
+condition: one is not divisible by two, and two divides to one.
+Thus the scaled family has the same exact target-one capture question as the
+classical raw map, for each signed seed. No assertion that all positive seeds
+are captured follows. An arbitrary converse is false: \(F_{4,4,2}(1)=8\), but
+the \(F_{1,1,2}\) orbit of one remains in \(\{1,2\}\).
+
+\section{Primitive periods}
+
+% A return is distinguished from its least positive period throughout.
+\begin{definition}
+A primitive period of \(x\) for a map \(f\) is an integer \(h>0\) such that
+\(f^h(x)=x\) and every positive return time is at least \(h\).
+A periodic point is one admitting any positive return.
+\end{definition}
+
+% This elementary cancellation is valid only on points with a common return.
+\begin{lemma}[Periodic predecessor uniqueness]\label{Predecessors}
+If \(f^h(x)=x\), \(f^h(y)=y\), \(h>0\), and \(f(x)=f(y)\), then \(x=y\).
+Points with separate positive return periods \(h_x,h_y\) have the common return
+period \(h_xh_y\).
+\end{lemma}
+\begin{proof}
+Apply \(f^{h-1}\) to the image equality. The two sides become \(x\) and \(y\).
+A return propagates to every phase because iterates commute. Repeating the
+\(h_x\)-return \(h_y\) times, and the \(h_y\)-return \(h_x\) times, gives
+the common product period. No global injectivity of \(f\) is required.
+\end{proof}
+
+% The product period handles different cycles, which is needed for quotient injectivity.
+\begin{lemma}[No periodic interior points]\label{NoInterior}
+If \(x,y\) are periodic for \(G\), no positive-time interior of any expanded
+block starting on the \(G\)-orbit of \(x\) equals \(y\).
+\end{lemma}
+\begin{proof}
+First let \(z,y\) be periodic for \(G\) with \(d\nmid z\).
+Suppose \(y=d^eG(z)\) for some \(e>0\). The first \(e-1\) instructions
+from \(y\) are forced divisions and reach \(w=dG(z)\).
+This phase is periodic with every return period of \(y\), and
+\(G(w)=G(z)\). Choose a common positive return period for \(w,z\).
+Lemma~\ref{Predecessors} gives \(w=z\), contrary to \(d\mid w\) and
+\(d\nmid z\).
+
+Now take an interior time of a block based at \(z=G^k(x)\).
+It forces \(d\nmid z\), and Lemma~\ref{Intermediates} expresses the state
+as \(d^eG(z)\) for \(e>0\). The preceding argument excludes every periodic
+\(y\), even if its cycle is different from that of \(x\).
+\end{proof}
+
+% Minimality must also exclude shorter returns between sampled times.
+\begin{theorem}[QCD.TimeCompression.002.3]\label{Primitive}
+For \(n\in\Z\) and \(h\in\N\), \(h\) is a primitive period for
+\(G\) at \(n\) if and only if \(h+aR(h,n)\) is a primitive period for
+\(F\) at that same seed.
+\end{theorem}
+\begin{proof}
+Suppose first that \(h\) is primitive for \(G\). Its expanded time
+\(T(h,n)\) is positive and returns under \(F\).
+Any other positive raw return is covered by a block. Lemma~\ref{NoInterior},
+with the periodic target \(n\), forces its offset to be zero, so the return is
+\(T(k,n)\) for a positive compressed return index \(k\). Primitiveness gives
+\(h\le k\), and the increasing clock gives \(T(h,n)\le T(k,n)\).
+Thus the expanded return is primitive.
+
+Conversely, suppose \(T(h,n)\) is a primitive raw period. It is positive, so
+\(h>0\), and \eqref{BlockIdentity} gives \(G^h(n)=n\).
+Every positive compressed return \(k\) expands to a positive raw return
+\(T(k,n)\), necessarily at least \(T(h,n)\). Strict increase of the clock
+then gives \(h\le k\). The formula for \(T\) proves the displayed assertion.
+\end{proof}
+
+% Affine-phase recovery avoids the false converse at an arbitrary raw periodic seed.
+\begin{theorem}[QCD.TimeCompression.002.4]\label{RawRecovery}
+Every nonzero primitive raw cycle has a phase \(x=F^k(n)\), \(k<P\), with
+\(d\nmid x\), and a primitive compressed period \(h\) at that phase, such that
+\(P=h+aR(h,x)\). Zero has primitive period one for both maps.
+\end{theorem}
+\begin{proof}
+If all \(P>0\) instructions of a return were divisions, their exact product
+would give \(d^Pn=n\). Since \(|d|^P>1\), this forces \(n=0\).
+A nonzero cycle therefore has an affine phase \(x\). The raw primitive period
+is unchanged by that phase shift: a shorter return at \(x\), shifted back by
+\(P-k\) instructions, would be a shorter return at \(n\).
+
+Cover the positive raw return from \(x\). Any positive block interior is
+divisible by \(d\), whereas \(x\) is not. Hence the return is a boundary
+\(T(h,x)=P\), with \(h>0\) and \(G^h(x)=x\).
+The reflection direction of Theorem~\ref{Primitive} proves compressed
+primitiveness. Zero always takes division and remains zero; its least positive
+return is one.
+\end{proof}
+
+For clarity, raw periodicity need not imply compressed periodicity at the
+original seed. The raw map \(F_{4,4,2}\) has cycle
+\(8\to4\to2\to1\to8\), but \(F_{1,1,2}\) sends eight through
+\(8,4,2,1,2,1,\ldots\); eight is transient. The affine phase one supplies
+the compressed cycle \(1\leftrightarrow2\), with raw period \(2+2\cdot1=4\).
+A signed-divisor control is \(F_{2,2,-2}:1\to4\to-2\to1\), compressed to
+\(F_{-1,-1,-2}:1\to-2\to1\), with period \(2+1\cdot1=3\).
+For the homogeneous control \(F_{2,0,2}\), the raw cycle \(1\to2\to1\)
+compresses to the fixed point one of \(F_{1,0,2}\); its expanded period is
+\(1+1\cdot1=2\). In each example the compressed cycle class maps to the
+specified raw cycle class. The zero class, whose period is one and affine
+count is zero, is retained separately.
+
+\section{Periodic cycle classes}
+
+% Restriction to periodic points prevents transient singleton classes from being called cycles.
+\begin{definition}
+For a map \(f\), write \(x\sim_f y\) when there are nonnegative integers
+\(r,s\) with \(f^r(x)=y\) and \(f^s(y)=x\). On the periodic point set,
+this is an equivalence relation: zero witnesses reflexivity, exchanging paths
+proves symmetry, and concatenating both directed paths proves transitivity.
+Its quotient is the set of periodic cycle classes.
+\end{definition}
+
+% Both forward paths must expand, and reflection requires both representatives periodic.
+\begin{theorem}[QCD.TimeCompression.002.5]\label{CycleClasses}
+Expansion induces a bijection from the periodic cycle classes of \(G\) to
+those of \(F\). It sends the class of a compressed-periodic point \(x\) to
+its raw cycle class and includes the zero class.
+\end{theorem}
+\begin{proof}
+A positive compressed return expands to a positive raw return. Also, any
+compressed path to an endpoint expands with its own accumulated clock to a
+raw path with that same endpoint. Thus expansion preserves both directions
+of mutual reachability and defines a map on the quotient classes.
+
+For injectivity, let \(x,y\) be periodic for \(G\), and suppose a raw path
+from \(x\) reaches \(y\). Cover its time by a compressed block. The target
+\(y\) is periodic, so Lemma~\ref{NoInterior} forces offset zero; the path is
+already a compressed path. Apply the same reasoning to the reverse path.
+Thus two compressed classes with one raw image were already equal.
+
+For surjectivity, take any raw periodic point. If it is zero, use zero.
+Otherwise the all-division calculation in Theorem~\ref{RawRecovery} supplies
+an affine phase on its raw cycle. Its raw return is a compressed boundary,
+with positive compressed index, so this phase is periodic for \(G\).
+The original raw point reaches that phase within the cycle, and the phase
+reaches it by the remaining instructions of the return. Their raw classes
+coincide, giving a preimage for every raw class.
+\end{proof}
+
+\section{Reduction resource and exact finite certificates}
+
+The original and replacement obligations have the same signed seeds and the
+same divisor. The preceding theorems recover boundedness, magnitude escape and
+eventual periodicity in both directions, capture under the sufficient target
+condition, and primitive cycles after the stated phase selection. The height
+\(H(u,v)=\max(|u|,|v|)\) satisfies
+\[
+H(d^a q,d^a c)=|d|^aH(q,c).
+\]
+For \(a>0\) and \((q,c)\ne(0,0)\), the right factor exceeds one and the
+compressed height is positive, so removing the power strictly lowers this
+natural-number resource. The cases \(a=0\) and \((q,c)=(0,0)\) have no strict
+decrease. The finite block formulas and bounds above account for every skipped
+raw time; no unresolved recovery oracle is used. The corresponding target
+problem for \(G\) remains the replacement obligation, not an assumed theorem.
+
+The exact Go checker uses signed arbitrary-precision integers and eight
+independent seed chunks. It examines
+\[
+\begin{aligned}
+d&\in\{-5,-4,-3,-2,2,3,4,5\},& a&\in\{0,1,2,3\},\\
+q,c&\in\{-3,-2,-1,0,1,2,3\},& -30&\le n\le30.
+\end{aligned}
+\]
+Each compressed search stops after 32 steps. The first repeated state selects
+a primitive compressed cycle. If its length is \(h\) with \(r\) affine
+instructions, the checker replays all \(h+ar\) raw steps, rejects any earlier
+positive return to its selected phase, and checks the final endpoint.
+The grid contains 95,648 seed-parameter cases; the reference run gives 58,864
+expansion certificates, not 58,864 distinct cycles. No-repeat cases are
+undecided, not certified escape. The finite checks illustrate the universally
+proved statements; they do not replace their proofs or solve the remaining
+capture problem.
+
+The formal statements are organized as follows.
+\begin{itemize}
+\item \texttt{CompressionOutcomes.lean}: full-time recovery and capture.
+\item \texttt{CompressionPeriods.lean}: primitive periods and affine-phase recovery.
+\item \texttt{CompressionCycleClasses.lean}: periodic cycle quotients.
+\end{itemize}
+The corresponding main declarations include:
+\begin{itemize}
+\item \texttt{CompressionClassicalCaptureOneIff}, for the exact target one;
+\item \texttt{CompressionPrimitivePeriodFormula}, for the expanded least period;
+\item \texttt{CompressionCycleMapBijective}, for the cycle-class bijection.
+\end{itemize}
+
+\bibliographystyle{amsalpha}
+\bibliography{CompressionRecovery}
+
+\end{document}
