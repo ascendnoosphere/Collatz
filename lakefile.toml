@@ -11,6 +11,7 @@ defaultTargets = [
   "UnitHomogeneous",
   "Additive",
   "AdditiveCycles",
+  "AdditiveOutcome",
 ]
 
 [[require]]
@@ -85,3 +86,7 @@ srcDir = "QCD.Additive.001/lean"
 [[lean_lib]]
 name = "AdditiveCycles"
 srcDir = "QCD.Additive.002/lean"
+
+[[lean_lib]]
+name = "AdditiveOutcome"
+srcDir = "QCD.Additive.003/lean"

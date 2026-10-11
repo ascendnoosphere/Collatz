@@ -1,0 +1,304 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section*{Positive additive all-seed outcomes}
+
+Throughout, fix integers $c\ge1$ and $D\ge2$. The multiplier is exactly $q=1$.
+On the positive integers define the original raw map
+\[
+ C(n)=\begin{cases}n/D,&D\mid n,\\ n+c,&D\nmid n.\end{cases}
+\]
+Division has precedence. Write $C^k$ for $k$ original instructions, and put
+\[
+ g=\gcd(c,D),\quad L=D/g,\quad B=c(L-1),\quad
+ N=\left\lfloor\frac{B}{D-1}\right\rfloor.
+\]
+The \href{../../QCD.Additive.001/tex/Additive.tex}{access and core theorems}
+will be used with their exact raw clocks. Their needed statements are
+recalled below. The
+\href{../../QCD.Additive.002/tex/AdditiveCycles.tex}{cycle classification}
+identifies all positive periodic states by whole modular orbits; it does
+not identify basin membership from the initial residue alone.
+
+\section{Legal events and stopped traps}
+
+\begin{lemma}[First division and finite core]\label{LemmaAccess}
+If $g\mid n$, there is a unique integer $\ell(n)$ with
+$0\le\ell(n)<L$ and $D\mid n+\ell(n)c$. Every preceding affine instruction is
+legal, and
+\[
+ H(n)=\frac{n+\ell(n)c}{D}=C^{\ell(n)+1}(n)>0.
+\]
+If $g\nmid n$, then no division is possible and $C^j(n)=n+jc$ for every
+$j\ge0$. For accessible $n>N$, one has $H(n)<n$. For accessible
+$1\le n\le N$, one has $1\le H(n)\le N$. In particular, every positive seed
+reaches a positive core state or an inaccessible state.
+\end{lemma}
+
+\begin{proof}
+Write $c=gc_0$ and $D=gL$, where $\gcd(c_0,L)=1$. If $g\mid n$, the
+congruence $\ell c_0\equiv-n/g\pmod L$ has exactly one solution in
+$\{0,\ldots,L-1\}$. No smaller nonnegative index can give a division,
+by uniqueness. The quotient is positive because its positive numerator
+is divisible by $D$. If $g\nmid n$, divisibility of $n+jc$ by $D$ would
+force $g\mid n$, a contradiction. Finally
+\[
+ DH(n)=n+\ell(n)c\le n+B.
+\]
+For $n>N$ the inequality $(D-1)n>B$ implies $H(n)<n$.
+For $n\le N$, one has $n+B<D(N+1)$, since $B<(D-1)(N+1)$;
+the integral quotient is therefore at most $N$. Iterating while above the
+core and accessible strictly decreases a positive integer. This iteration
+terminates; it does not require a bound on an unknown infinite orbit.
+\end{proof}
+
+For the finite-state argument define a stopped event model
+\[
+ e(n)=\begin{cases}H(n),&g\mid n,\\ n,&g\nmid n,\end{cases}
+ \qquad
+ w(n)=\begin{cases}\ell(n)+1,&g\mid n,\\0,&g\nmid n.\end{cases}
+\]
+The stopped value is not a raw fixed point. Its zero clock records that the
+event path has stopped at an affine trap. Define accumulated raw clocks by
+\[
+ K_0=0,\qquad K_{i+1}=K_i+w(e^i(n)).
+\]
+
+\begin{lemma}[Exact event recovery]\label{LemmaRecovery}
+For every $i\ge0$, one has $e^i(n)=C^{K_i}(n)$ and $0\le K_i\le iL$.
+The clocks are nondecreasing. An accessible phase contributes a strictly
+positive increment. A positive core state remains in $\{1,\ldots,N\}$ under
+$e$, including after stopping.
+\end{lemma}
+
+\begin{proof}
+For an accessible phase, Lemma~\ref{LemmaAccess} gives
+$e(x)=C^{w(x)}(x)$ and $1\le w(x)\le L$. For an inaccessible phase,
+$e(x)=x=C^0(x)$ and $w(x)=0$. Induct on $i$, using
+$C^{a+b}(n)=C^b(C^a(n))$, to recover the same endpoint at the same clock.
+Summing $0\le w\le L$ gives the upper bound and monotonicity.
+Core invariance follows from Lemma~\ref{LemmaAccess} in the accessible case
+and from $e(x)=x$ in the stopped case.
+\end{proof}
+
+\section{Finite core outcomes and recovery}
+
+\begin{theorem}[Core return or true trap]\label{TheoremCore}
+For every $1\le r\le N$, there is $a\le NL$ such that either
+\[
+ g\nmid C^a(r),
+\]
+or there is a positive integer $p\le NL$ with
+\[
+ C^{a+p}(r)=C^a(r).
+\]
+\end{theorem}
+
+\begin{proof}
+The $N+1$ event states $r,e(r),\ldots,e^N(r)$ all belong to the $N$-element
+positive core. If some state $e^i(r)$, $i\le N$, is inaccessible, choose
+$a=K_i\le NL$ and use Lemma~\ref{LemmaRecovery}.
+Otherwise the pigeonhole principle gives $0\le i<j\le N$ with
+$e^i(r)=e^j(r)$. In this second case the phase $e^i(r)$ is accessible, so
+$K_{i+1}>K_i$, and clock monotonicity yields $K_j>K_i$.
+Choose the common witness
+\[
+ a=K_i,\qquad p=K_j-K_i.
+\]
+It satisfies $0<p\le NL$ and $a\le NL$; recovery gives the displayed raw
+return. A repeated stopped state is never used as a positive-period witness.
+If $N=0$ there is no positive $r\le N$, so no base case has been omitted.
+\end{proof}
+
+\begin{theorem}[All-seed dichotomy]\label{TheoremOutcome}
+For every positive seed $n$, exactly one of the following alternatives holds:
+\begin{enumerate}
+\item There are integers $u\ge0$ and $p\ge1$ such that
+$C^{u+p}(n)=C^u(n)$; the trajectory is eventually periodic.
+\item There is $u\ge0$ such that $g\nmid C^u(n)$ and
+\[
+ C^{u+j}(n)=C^u(n)+jc\quad(j\ge0).
+\]
+The entire raw sequence tends to infinity.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Lemma~\ref{LemmaAccess} supplies one entry witness $v$, with
+$r=C^v(n)>0$ either in the core or inaccessible. In the latter case the
+exact affine tail begins at $u=v$. In the core case apply
+Theorem~\ref{TheoremCore} to this same $r$. If it produces a trap at clock
+$a$, put $u=v+a$. If it produces a return of length $p$ at clock $a$, use
+the same $u=v+a$ and the iteration identity to obtain
+$C^{u+p}(n)=C^u(n)$. Thus witnesses from separate trajectories are never
+combined.
+
+The affine tail tends to infinity because $c>0$; removing its finite prefix
+does not change the full-sequence limit. Conversely a returned phase $r$
+recurs at all times $u+kp$, $k\ge0$. These times tend to infinity and their
+values stay equal to $r$, excluding a full-sequence limit of infinity.
+Determinism makes the finite raw block of length $p$ repeat forever.
+The alternatives are therefore exhaustive and disjoint.
+\end{proof}
+
+\begin{theorem}[Uniform explicit witness bound]\label{TheoremBudget}
+Define
+\[
+ \delta(x)=(D-1)x-B,\qquad \epsilon=\delta(N+1).
+\]
+Then $1\le\epsilon\le D-1$. For every integer $h\ge0$ with
+$\delta(n)<D^h\epsilon$, the witness $u$ in Theorem~\ref{TheoremOutcome}
+can be chosen with
+\[
+ u\le(h+N)L,
+\]
+and a return witness can be chosen with $0<p\le NL$.
+The nonoptimal choice $h=n$ always satisfies the hypothesis.
+\end{theorem}
+
+\begin{proof}
+Write $B=(D-1)N+r$ with $0\le r<D-1$. Then
+$\epsilon=D-1-r$, proving its bounds. For every accessible event,
+\[
+ D\delta(H(x))\le\delta(x),
+\]
+as follows by substituting $DH(x)\le x+B$.
+If the first $h$ events all remain accessible and above the core, iteration
+gives $D^h\delta(H^h(n))\le\delta(n)$. But an above-core endpoint has
+$\delta(H^h(n))\ge\epsilon$, contradicting the strict budget hypothesis.
+Thus the core or a trap is reached after at most $h$ events and at raw time
+$v\le hL$. If entry is into the core, Theorem~\ref{TheoremCore} supplies
+$a\le NL$ and the same-witness recovery uses $u=v+a$.
+This proves the bounds without estimating an unknown transient separately.
+For $h=0$, the strict defect condition already places a positive seed in the
+core; no event needs to be taken.
+
+Finally Bernoulli's inequality gives
+\[
+ \delta(n)\le n(D-1)<1+n(D-1)\le D^n\le D^n\epsilon.
+\]
+Hence $h=n$ is an explicit finite choice. This is a bound in the numeric
+seed and parameters, not a uniform polynomial bit-complexity assertion.
+\end{proof}
+
+\section{Exact basin and parameter criteria}
+
+\begin{theorem}[Periodicity criteria]\label{TheoremCoprime}
+A positive seed is eventually periodic if and only if
+$g\mid C^t(n)$ for every $t\ge0$. Consequently,
+\[
+ \text{every positive seed is eventually periodic}
+ \quad\Longleftrightarrow\quad \gcd(c,D)=1.
+\]
+For a fixed positive seed, full-sequence escape occurs if and only if a
+finite inaccessible-state witness is reached.
+\end{theorem}
+
+\begin{proof}
+Suppose a raw return occurs at clocks $u,u+p$, with $p>0$, and a trap is
+reached at any clock $t$. Applying $C^t$ to the return identity gives
+$C^{u+p+t}(n)=C^{u+t}(n)$. Both times are after the trap, so its exact affine
+tail gives two values differing by $pc>0$, a contradiction. Thus a periodic
+tail cannot coexist with a trap at any clock. The converse follows from the
+exhaustive dichotomy: if every raw state is accessible, the trap alternative
+is excluded. If $g=1$, every raw state of every positive seed is accessible.
+If all positive seeds are eventually periodic, apply the criterion to seed
+$1$ at clock zero to obtain $g\mid1$, hence $g=1$.
+The escape equivalence follows from the exact affine tail and the fact that
+a returned phase cannot escape, as proved in Theorem~\ref{TheoremOutcome}.
+\end{proof}
+
+\begin{theorem}[No-cycle criterion]\label{TheoremNoCycle}
+Every positive seed escapes if and only if there is no positive raw periodic
+state. Therefore the complete finite cycle test of
+\href{../../QCD.Additive.002/README.md}{QCD.Additive.002} decides universal
+escape when its whole-orbit enumeration is complete.
+\end{theorem}
+
+\begin{proof}
+A positive periodic state cannot escape. Conversely, if a seed does not
+escape, Theorem~\ref{TheoremOutcome} produces a positive returned phase,
+which is a positive raw periodic state. The companion cycle theorem
+exhausts such states by whole orbits in its explicit finite modular window.
+A truncated enumeration or a count from an incomplete search is not used
+in this recovery argument. Finite orbit and order methods are discussed
+in \cite{DummitFoote04}.
+\end{proof}
+
+\subsection*{Separating examples and boundaries}
+For $(c,D)=(9,6)$, one has $N=1$ but the companion window is empty;
+therefore every positive seed escapes despite the nonempty core.
+For $(c,D)=(10,4)$, the supported decomposition is $c=2\cdot5$ and the
+window radius is $1$. Its only possible representative is $1$, but its
+successor under multiplication by $4^{-1}\equiv4\pmod5$ is $4$.
+No whole orbit fits, so again every positive seed escapes.
+For $(c,D)=(6,4)$, the raw cycle is $2\mapsto8\mapsto2$, whereas the initially
+accessible seed $4$ divides to $1$ and then follows $1+6j$.
+Initial access is not a sufficient basin criterion.
+
+All escape claims require $c>0$. At $c=0$, inaccessible states are raw fixed
+points, not escaping tails; the homogeneous unit-multiplier theorem applies.
+Several event and finite-budget lemmas allow this zero-offset arithmetic
+boundary, but the positive-offset dichotomy and its escape criteria do not.
+No assertion here concerns a multiplier other than $q=1$.
+
+\section{Finite certificates and bounded computation}
+
+The Go implementation stores arbitrary-precision seed, phase, raw prefix
+clock, and positive return clock. An event consumes $\ell+1$ original
+instructions, even when this number is too large for machine integers.
+A trap certificate records its inaccessible phase and zero return interval.
+A periodic certificate records one prefix and a positive closed event
+interval, not a certificate of least period.
+The verifier recomputes legal first-division events without using the
+classifier's finite-core history. It checks the same prefix phase and clock,
+and then checks either true inaccessibility or the exact positive raw return.
+For example, $c=1$, $D=2^{200}$, and seed $1$ yield one event whose raw return
+period is $2^{200}$; verification uses its congruence, not literal replay of
+all affine instructions.
+
+The classifier has separate event and core-storage limits. Their failure
+produces no new outcome certificate. A zero-event inaccessible state can
+still be certified with a zero event budget. Dense core storage is needed
+only after accessible core entry; every concurrent worker owns its cache
+and arithmetic workspace. Numeric integer fields are distinct from
+machine-sized event counts and resource limits. The bounded raw-reference
+tests are computational checks, not a replacement for the all-seed proof.
+
+\bibliographystyle{amsalpha}
+\bibliography{AdditiveOutcome}
+\end{document}

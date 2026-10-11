@@ -178,6 +178,23 @@ prevents noncoprime scaling ghosts, and the raw clock is grouped before
 division. Complete enumeration consumes at most \(t\) modular-state visits,
 with preprocessing, big-integer arithmetic and expansion costs separate.
 
+### Positive additive all-seed outcomes
+
+[QCD.Additive.003](QCD.Additive.003/README.md) closes the positive all-seed
+classification for exactly \(q=1\), \(c\ge1\), and \(D\ge2\). Every seed
+is eventually periodic or reaches an inaccessible phase with an exact
+escaping affine tail. In particular,
+\[
+\text{every positive seed is eventually periodic}
+\quad\Longleftrightarrow\quad \gcd(c,D)=1.
+\]
+With the same core radius \(N\) and access length \(L\), a seed \(n\) has
+an outcome phase at raw time \(u\le(n+N)L\), and a return witness has
+\(0<p\le NL\). Escape is equivalent to a finite trap witness; universal
+escape is equivalent to the absence of a positive raw cycle, decidable by
+the complete whole-orbit test above. The bounded arbitrary-precision outcome
+checker distinguishes resource refusal from certified periodicity or escape.
+
 ## Other map conventions
 
 A residue-wise affine map has the form
