@@ -1,0 +1,272 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For the positive raw map that divides by \(D\) on divisible inputs and applies
+\(n\mapsto qn+c\) otherwise, a simple greatest-common-divisor obstruction
+completely determines a large family of orbits. If
+\(\gcd(q,D)\nmid c\), every positive seed has a finite initial run of divisions
+followed by an affine tail. We prove the exact time-indexed formula for that
+tail and deduce escape to infinity for every positive seed. The argument works
+for composite \(D\), uses no probabilistic branch model, and states explicitly
+what remains unresolved when the obstruction fails.
+\end{abstract}
+
+\section{Map and hypotheses}
+
+Fix integers
+\[
+q\ge2,\qquad c\ge1,\qquad D\ge2.
+\]
+The positive raw map is
+\[
+F(n)=
+\begin{cases}
+n/D,&D\mid n,\\
+qn+c,&D\nmid n,
+\end{cases}
+\qquad n\in\N_{>0}.
+\]
+Both branches preserve positivity. Put
+\[
+g=\gcd(q,D)
+\]
+and impose the arithmetic obstruction
+\[
+g\nmid c.                                                    \tag{1}
+\]
+Only elementary divisibility properties of the greatest common divisor are
+used; standard background may be found in Hardy and Wright
+\cite{HardyWright08}.
+
+For \(j\in\N\), define the geometric recurrence
+\[
+G_0(q)=0,
+\qquad
+G_{j+1}(q)=qG_j(q)+1.                                         \tag{2}
+\]
+Induction in (2) gives
+\[
+G_j(q)=1+q+\cdots+q^{j-1}=\frac{q^j-1}{q-1}                  \tag{3}
+\]
+for \(j\ge1\), with the empty sum interpreted as zero.
+
+\section{The division barrier}
+
+\begin{lemma}[Gcd division barrier]
+\label{lem:barrier}
+Under (1), for every positive integer \(y\),
+\[
+D\nmid qy+c.
+\]
+\end{lemma}
+
+\begin{proof}
+Suppose instead that \(D\mid qy+c\). Since \(g\mid D\), transitivity of
+divisibility gives \(g\mid qy+c\). Also \(g\mid q\), hence \(g\mid qy\).
+Subtracting these two divisible integers gives \(g\mid c\), contrary to
+(1). Therefore \(D\nmid qy+c\).
+\end{proof}
+
+\begin{remark}
+The lemma is deterministic. It does not estimate how often divisions occur;
+it proves that after any affine instruction no later division can occur. The
+conclusion uses the actual divisor \(D\), not a prime factor or a randomized
+residue model.
+\end{remark}
+
+\section{Canonical initial divisions}
+
+\begin{lemma}[Whole-base factorization]
+\label{lem:factorization}
+For every \(n\in\N_{>0}\), there is a unique pair \((k,x)\) with
+\[
+k\in\N,
+\qquad
+x\in\N_{>0},
+\qquad
+n=D^k x,
+\qquad
+D\nmid x.                                                     \tag{4}
+\]
+For this pair,
+\[
+F^i(n)=D^{k-i}x\quad(0\le i\le k),                           \tag{5}
+\]
+and in particular \(F^k(n)=x\).
+\end{lemma}
+
+\begin{proof}
+Consider the set
+\[
+S=\{r\in\N:D^r\mid n\}.
+\]
+It is nonempty because \(0\in S\). If \(r\in S\), positivity gives
+\(D^r\le n\). Since \(D\ge2\), this bounds \(r\), so \(S\) has a largest
+element \(k\). Write \(n=D^k x\). The quotient \(x\) is positive. If
+\(D\mid x\), then \(D^{k+1}\mid n\), contradicting maximality. Thus
+\(D\nmid x\).
+
+For uniqueness, suppose also \(n=D^\ell y\) with \(D\nmid y\). If
+\(\ell<k\), then \(y=D^{k-\ell}x\), so \(D\mid y\), a contradiction. The
+same argument with the pairs reversed excludes \(k<\ell\). Hence
+\(k=\ell\) and then \(x=y\).
+
+For (5), induction on \(i\) suffices. The case \(i=0\) is (4). If \(i<k\)
+and \(F^i(n)=D^{k-i}x\), then the exponent \(k-i\) is positive, so this
+state is divisible by \(D\). The raw map therefore selects its division
+branch and
+\[
+F^{i+1}(n)=D^{k-i-1}x.
+\]
+This proves (5) through \(i=k\).
+\end{proof}
+
+The exponent \(k\) in Lemma~\ref{lem:factorization} is a whole-base order.
+No primality or prime-power hypothesis on \(D\) is present. For example, if
+\(D=6\), then \(k\) counts powers of \(6\), not the separate \(2\)-adic or
+\(3\)-adic valuations.
+
+\section{Exact affine tail and escape}
+
+\begin{theorem}[All-seed affine escape]
+\label{thm:escape}
+Assume (1), let \(n\in\N_{>0}\), and let \((k,x)\) be the unique pair from
+Lemma~\ref{lem:factorization}. Then for every \(j\in\N\),
+\begin{align}
+F^{k+j}(n)&=q^j x+cG_j(q),                                   \tag{6}\\
+D&\nmid F^{k+j}(n).                                           \tag{7}
+\end{align}
+Consequently,
+\[
+F^{k+j}(n)\longrightarrow\infty
+\qquad\text{as }j\longrightarrow\infty.                    \tag{8}
+\]
+Thus every positive seed escapes to infinity.
+\end{theorem}
+
+\begin{proof}
+By Lemma~\ref{lem:factorization}, \(F^k(n)=x\) and \(D\nmid x\). This proves
+(6) and (7) at \(j=0\), because \(G_0(q)=0\).
+
+Assume (6) and (7) at an index \(j\), and write
+\[
+y=F^{k+j}(n)=q^j x+cG_j(q).
+\]
+Since \(D\nmid y\), the next raw instruction is affine. Therefore
+\begin{align*}
+F^{k+j+1}(n)
+ &=qy+c\\
+ &=q\bigl(q^j x+cG_j(q)\bigr)+c\\
+ &=q^{j+1}x+c\bigl(qG_j(q)+1\bigr)\\
+ &=q^{j+1}x+cG_{j+1}(q).
+\end{align*}
+This is (6) at \(j+1\). Lemma~\ref{lem:barrier}, applied to the positive
+state \(y\), shows that this new affine output is not divisible by \(D\).
+Hence (7) also holds at \(j+1\), completing the simultaneous induction.
+
+All terms in (6) are nonnegative and \(x\ge1\), so
+\[
+F^{k+j}(n)\ge q^j x\ge q^j.
+\]
+Because \(q\ge2\), the sequence \(q^j\) tends to infinity. This proves (8).
+The seed \(n\) was arbitrary, so the conclusion holds for every positive
+seed.
+\end{proof}
+
+\section{Example and exact recovery}
+
+Take
+\[
+(q,c,D)=(6,1,4),
+\qquad
+n=64.
+\]
+Here \(g=\gcd(6,4)=2\nmid1\). The canonical factorization is
+\(64=4^3\cdot1\), so \(k=3\) and \(x=1\). The initial prefix is
+\[
+64\longmapsto16\longmapsto4\longmapsto1.
+\]
+Theorem~\ref{thm:escape} now gives
+\[
+F^{3+j}(64)=6^j+G_j(6).
+\]
+For \(j=0,1,2,3,4\), this produces
+\[
+1,
+\quad 7,
+\quad 43,
+\quad 259,
+\quad 1555.
+\]
+Every number in this tail is congruent to either \(1\) or \(3\) modulo
+\(4\), as guaranteed by the theorem.
+
+The recovery statement is exact. Given \(n\), the factorization (4)
+reconstructs every state before time \(k\) via (5), while (6) reconstructs
+every state from time \(k\) onward. The branch guards are also recovered:
+times before \(k\) use division, and all later times use the affine branch.
+No subsequence, accelerated clock, or discarded residue class occurs.
+
+\section{Reduction certificate and boundaries}
+
+The original obligation in the parameter region (1) is to classify every
+positive raw orbit. The replacement obligations are finite extraction of the
+maximal initial power \(D^k\) and evaluation of (6). Lemma
+\ref{lem:factorization} and Theorem~\ref{thm:escape} prove recovery in both
+directions of time indexing: together they cover every raw time and preserve
+every branch condition.
+
+A concrete resource strictly decreases. Before using (1), an orbit may appear
+to have unboundedly many unresolved future choices between division and the
+affine branch. After the finite prefix, Lemma~\ref{lem:barrier} reduces the
+number of unresolved future branch choices to zero. The remaining recurrence
+is explicit and its lower bound proves (8). The argument therefore closes the
+all-seed obligation in this region rather than transferring it to another
+unknown dynamical system.
+
+The hypothesis (1) is sufficient, not necessary. When \(g\mid c\), the proof
+of Lemma~\ref{lem:barrier} yields no contradiction, and this article makes no
+claim about the resulting cell. In particular, the classical cell
+\((q,c,D)=(3,1,2)\) cannot satisfy (1), because its gcd is one. The theorem
+also does not cover signed states, signed coefficients, zero seeds, or
+\(q<2\). These are domain boundaries, not conclusions about those omitted
+systems.
+
+\bibliographystyle{amsalpha}
+\bibliography{AffineEscape}
+
+\end{document}

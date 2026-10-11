@@ -64,6 +64,25 @@ therefore recovers original target capture for every signed seed. If \(a>0\)
 and \((Q,C)\ne(0,0)\), this is a strict reduction in the coefficient height
 \(\max\{|q|,|c|\}\); the zero pair gives transport without strict decrease.
 
+### Gcd division barrier and affine escape
+
+[QCD.AffineEscape.001](QCD.AffineEscape.001/README.md) classifies every positive
+raw orbit when
+\[
+q\ge2,
+\qquad c\ge1,
+\qquad D\ge2,
+\qquad \gcd(q,D)\nmid c.
+\]
+After the finite initial run that removes the largest whole-base power of
+\(D\) from the seed, no further division is possible. If the remaining state
+is \(x\), then the exact tail is
+\[
+q^j x+c\frac{q^j-1}{q-1},
+\]
+so every positive seed tends to infinity. The condition is sufficient rather
+than necessary and supplies no conclusion for the classical cell.
+
 ## Other map conventions
 
 A residue-wise affine map has the form

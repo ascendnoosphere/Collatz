@@ -5,6 +5,7 @@ defaultTargets = [
   "GeneralizedCollatz",
   "GeneralizedScaling",
   "TimeCompression",
+  "AffineEscape",
 ]
 
 [[require]]
@@ -55,3 +56,7 @@ srcDir = "QCD.Scaling.001/lean"
 [[lean_lib]]
 name = "TimeCompression"
 srcDir = "QCD.TimeCompression.001/lean"
+
+[[lean_lib]]
+name = "AffineEscape"
+srcDir = "QCD.AffineEscape.001/lean"
