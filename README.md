@@ -50,6 +50,20 @@ events. From that entry onward it is exactly \(c\) times an orbit of
 \(F_{q,1,d}\). This gives an all-seed capture equivalence for arbitrary targets,
 with a positive-domain version when \(q\ge0\), \(c>0\), and \(d>0\).
 
+### Common-power time compression
+
+[QCD.TimeCompression.001](QCD.TimeCompression.001/README.md) proves the exact
+variable-clock transport
+\[
+(q,c,d)=(d^aQ,d^aC,d)\longmapsto(Q,C,d).
+\]
+A compressed division costs one original raw step, while a compressed affine
+event costs \(a+1\). After \(k\) compressed steps with \(r\) affine events, the
+same state occurs at original raw time \(k+ar\). Compressed target capture
+therefore recovers original target capture for every signed seed. If \(a>0\)
+and \((Q,C)\ne(0,0)\), this is a strict reduction in the coefficient height
+\(\max\{|q|,|c|\}\); the zero pair gives transport without strict decrease.
+
 ## Other map conventions
 
 A residue-wise affine map has the form

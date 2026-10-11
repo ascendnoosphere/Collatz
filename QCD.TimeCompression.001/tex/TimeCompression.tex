@@ -1,0 +1,240 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Common-power time compression}
+
+% The signed divisor and the raw branch order remain part of the definition.
+\begin{definition}
+For integers \(q,c,d\) with \(|d|\ge2\), let
+\[
+F_{q,c,d}(n)=
+\begin{cases}
+n/d,&d\mid n,\\
+qn+c,&d\nmid n.
+\end{cases}
+\]
+Suppose that, for some \(a\in\N\) and \(Q,C\in\Z\),
+\[
+q=d^aQ,
+\qquad
+c=d^aC.
+\]
+Write \(F=F_{q,c,d}\) for the original map and \(G=F_{Q,C,d}\) for the
+compressed map. Define the state-dependent block length
+\[
+\tau(n)=
+\begin{cases}
+1,&d\mid n,\\
+a+1,&d\nmid n.
+\end{cases}
+\]
+Both maps act on all of \(\Z\), and the divisor retains its sign.
+\end{definition}
+
+% The forced divisions are proved directly and do not use an accelerated map.
+\begin{lemma}[QCD.TimeCompression.001.1a]
+For every \(b\in\N\) and \(x\in\Z\),
+\[
+F^b(d^b x)=x.
+\]
+\end{lemma}
+\begin{proof}
+Induct on \(b\). The case \(b=0\) is the identity. If the assertion holds for
+\(b\), then
+\[
+d^{b+1}x=d(d^b x)
+\]
+is divisible by \(d\), including when \(d<0\). The first raw instruction is
+therefore division and sends this state to \(d^b x\). The next \(b\)
+instructions send it to \(x\) by the induction hypothesis.
+\end{proof}
+
+% Each branch is compared at its actual raw time rather than at one artificial step.
+\begin{theorem}[QCD.TimeCompression.001.1]
+For every \(n\in\Z\),
+\[
+F^{\tau(n)}(n)=G(n).
+\]
+The clock is positive: \(\tau(n)\ge1\).
+\end{theorem}
+\begin{proof}
+If \(d\mid n\), both maps take the division branch, and \(\tau(n)=1\), so both
+values are \(n/d\).
+
+Suppose \(d\nmid n\). The original affine instruction gives
+\[
+F(n)=qn+c=d^a(Qn+C).
+\]
+The factor \(d^a\) makes the following \(a\) original instructions forced
+divisions. Lemma~QCD.TimeCompression.001.1a sends their starting state to
+\(Qn+C\). Since the compressed guard is the same and \(d\nmid n\), this is
+exactly \(G(n)\). Here \(\tau(n)=a+1\). Both possible values of \(\tau\) are at
+least one.
+\end{proof}
+
+\section{The complete sampled trajectory}
+
+% The event count uses precisely the states at which a compressed instruction starts.
+\begin{definition}
+For \(k\in\N\), let
+\[
+R(k,n)=\#\{j:0\le j<k,\ d\nmid G^j(n)\}
+\]
+be the number of affine instructions among the first \(k\) compressed steps.
+Let
+\[
+T(k,n)=\sum_{j=0}^{k-1}\tau(G^j(n))
+\]
+be the accumulated original raw time, with both quantities zero when \(k=0\).
+\end{definition}
+
+% An affine block has one sampled instruction and \(a\) extra divisions.
+\begin{lemma}[QCD.TimeCompression.001.2a]
+For every \(k\in\N\) and \(n\in\Z\),
+\[
+T(k,n)=k+aR(k,n).
+\]
+In particular, \(T(k,n)\ge k\).
+\end{lemma}
+\begin{proof}
+Each of the \(k-R(k,n)\) division instructions contributes one to the sum. Each
+of the \(R(k,n)\) affine instructions contributes \(a+1\). Therefore
+\[
+T(k,n)=(k-R(k,n))+(a+1)R(k,n)=k+aR(k,n).
+\]
+The final inequality follows because \(aR(k,n)\ge0\).
+\end{proof}
+
+% Induction composes blocks in chronological order and accounts for every sampled state.
+\begin{theorem}[QCD.TimeCompression.001.2]
+For every \(k\in\N\) and \(n\in\Z\),
+\[
+G^k(n)=F^{T(k,n)}(n)=F^{\,k+aR(k,n)}(n).
+\]
+\end{theorem}
+\begin{proof}
+Induct on \(k\). At \(k=0\), both iterates equal \(n\), and \(T(0,n)=0\).
+Assume the first equality at time \(k\). Splitting the original clock after the
+first \(T(k,n)\) steps and applying the one-block theorem at \(G^k(n)\) gives
+\[
+F^{\,T(k,n)+\tau(G^k(n))}(n)
+ =F^{\tau(G^k(n))}(G^k(n))
+ =G^{k+1}(n).
+\]
+The exponent on the left is \(T(k+1,n)\) by definition. This proves the first
+equality at \(k+1\); the clock formula proves the second.
+\end{proof}
+
+\section{Recovery and limitations}
+
+% The return statement concerns the exact expanded time and makes no minimality inference.
+\begin{theorem}[QCD.TimeCompression.001.3]
+For every \(k\in\N\) and \(n\in\Z\),
+\[
+F^{\,k+aR(k,n)}(n)=n
+\quad\Longleftrightarrow\quad
+G^k(n)=n.
+\]
+Thus a closed compressed itinerary of length \(k\), containing \(r\) affine
+events, expands to a closed original raw itinerary of length \(k+ar\).
+\end{theorem}
+\begin{proof}
+At the displayed original time, the sampled-trajectory theorem identifies the
+left-hand iterate with \(G^k(n)\). Substitution gives the equivalence. If the
+itinerary has \(r=R(k,n)\) affine events, the same identity gives the stated
+length.
+\end{proof}
+
+% Arbitrary targets need no invariance because the compressed endpoint is an actual raw state.
+\begin{theorem}[QCD.TimeCompression.001.4]
+Let \(S\subseteq\Z\) be arbitrary. If
+\[
+\forall n\in\Z\ \exists k\in\N:\ G^k(n)\in S,
+\]
+then
+\[
+\forall n\in\Z\ \exists t\in\N:\ F^t(n)\in S.
+\]
+For a witness \(k\) in the first assertion, one may take
+\(t=k+aR(k,n)\) in the second.
+\end{theorem}
+\begin{proof}
+Fix \(n\), and choose \(k\) such that \(G^k(n)\in S\). The sampled-trajectory
+theorem gives
+\[
+F^{\,k+aR(k,n)}(n)=G^k(n)\in S.
+\]
+This uses the same initial state and the same target set, so no target invariance
+or reconstruction of a different seed is required.
+\end{proof}
+
+Define the intrinsic coefficient height by
+\[
+h(u,v)=\max\{|u|,|v|\}.
+\]
+The factorization gives the exact natural-number identity
+\[
+h(q,c)=|d|^a h(Q,C).
+\]
+If \(a>0\) and \((Q,C)\ne(0,0)\), then \(|d|^a>1\) and \(h(Q,C)>0\), so
+\[
+h(Q,C)<h(q,c).
+\]
+Thus the replacement is a strict reduction in coefficient height precisely in
+this nondegenerate case. The divisor, signed state domain, guards, all initial
+states, and every sampled state are retained. If \((Q,C)=(0,0)\), the original
+and compressed coefficient pairs are both zero; the theorem remains exact
+transport but supplies no strict decrease. Recovery is the identity of
+Theorem~QCD.TimeCompression.001.2. The new obligation is the corresponding target
+statement for \(G\); the theorem does not assume that obligation is true.
+
+The identity state correspondence need not intertwine the maps one step at a
+time. For example,
+\[
+F_{4,4,2}(1)=8\ne2=F_{1,1,2}(1),
+\]
+but the full expanded block is
+\[
+1\longmapsto8\longmapsto4\longmapsto2,
+\qquad
+F_{4,4,2}^{\,3}(1)=F_{1,1,2}(1).
+\]
+The return theorem states the exact expanded return time. It does not assert that
+this return is primitive, nor does forward target transport supply a converse for
+an arbitrary target that may be met only inside a skipped block.
+
+\end{document}

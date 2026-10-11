@@ -1,6 +1,11 @@
 name = "GeneralizedCollatzLibrary"
 version = "0.1.0"
-defaultTargets = ["HomomorphismTheorems", "GeneralizedCollatz", "GeneralizedScaling"]
+defaultTargets = [
+  "HomomorphismTheorems",
+  "GeneralizedCollatz",
+  "GeneralizedScaling",
+  "TimeCompression",
+]
 
 [[require]]
 name = "mathlib"
@@ -46,3 +51,7 @@ srcDir = "Foundations.Main.StartHere/lean"
 [[lean_lib]]
 name = "GeneralizedScaling"
 srcDir = "QCD.Scaling.001/lean"
+
+[[lean_lib]]
+name = "TimeCompression"
+srcDir = "QCD.TimeCompression.001/lean"
