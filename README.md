@@ -120,6 +120,22 @@ After a strictly decreasing transient, this is addition by \(u\) modulo
 `QCD.Homogeneous.001`, this is a complete positive homogeneous dichotomy for
 \(q,D\ge2\).
 
+### Unit-multiplier homogeneous fixed points
+
+[QCD.Homogeneous.003](QCD.Homogeneous.003/README.md) classifies the boundary
+case \(q=1\), \(c=0\), and \(D\ge2\). Every positive seed has a unique form
+\[
+n=rD^k,\qquad D\nmid r,
+\]
+and its exact raw orbit is
+\[
+T_D^j(n)=rD^{k-j},
+\]
+with truncated subtraction. Hence it first reaches \(r\) at time \(k\), then
+remains fixed; the positive cycles are exactly the one-point cycles on
+positive \(D\)-free integers. Every iterate is at most its seed. This supplies
+the unit-multiplier boundary outside the \(q,D\ge2\) dichotomy.
+
 ## Other map conventions
 
 A residue-wise affine map has the form

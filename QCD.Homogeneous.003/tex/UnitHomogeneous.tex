@@ -1,0 +1,204 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Let $D\geq2$.  The unit-multiplier homogeneous raw map divides a positive
+integer by $D$ when possible and otherwise leaves it fixed.  Writing the seed
+uniquely as $n=rD^k$ with $D\nmid r$ gives the exact raw-time formula
+$T_D^j(n)=rD^{k-j}$, where subtraction is truncated at zero.  Thus the orbit
+first reaches $r$ at time $k$, remains there, and never exceeds its seed.  The
+argument classifies all positive fixed points and cycles and includes an
+arbitrary-precision executable certificate.
+\end{abstract}
+
+\section{Raw map and canonical data}
+
+\begin{definition}[Unit homogeneous map]
+For an integer $D\geq2$, define
+\[
+ T_D(n)=
+ \begin{cases}
+  n/D,&D\mid n,\\
+  n,&D\nmid n
+ \end{cases}
+ \qquad(n\in\N_{>0}).
+\]
+The divisibility test precedes the two branch formulas.  In particular, if
+the map is extended to zero, then zero takes the division branch and remains
+zero.
+\end{definition}
+
+\begin{lemma}[Canonical whole-base decomposition]
+\label{lem:decomposition}
+For every $n\in\N_{>0}$ there is a unique pair $(r,k)$ such that
+\[
+ n=rD^k,\qquad r\in\N_{>0},\qquad k\in\N,
+ \qquad D\nmid r.
+\]
+\end{lemma}
+
+\begin{proof}
+The nonempty finite set
+\[
+ \{e\in\N:D^e\mid n\}
+\]
+has a largest member $k$: indeed $D^e\geq2^e>n$ for every sufficiently large
+$e$.  Put $r=n/D^k$.  Then $n=rD^k$, and $D\mid r$ would imply
+$D^{k+1}\mid n$, contrary to maximality.  Positivity of $r$ follows from
+positivity of $n$.
+
+For uniqueness, suppose
+$rD^k=sD^\ell$ with $D\nmid r$ and $D\nmid s$.  If $k<\ell$, cancellation of
+$D^k$ gives $r=sD^{\ell-k}$, so $D\mid r$, a contradiction.  If $\ell<k$,
+the symmetric argument gives $D\mid s$.  Hence $k=\ell$, and cancellation
+gives $r=s$.
+\end{proof}
+
+\begin{definition}[Entry certificate]
+For $n=rD^k$ as in Lemma~\ref{lem:decomposition}, call $r$ the
+\emph{canonical fixed factor} and $k$ the \emph{entry time}.
+\end{definition}
+
+\section{Exact raw-time classification}
+
+\begin{lemma}[One-step exponent update]
+\label{lem:one-step}
+If $D\nmid r$, then for every $e\in\N$,
+\[
+ T_D(rD^e)=rD^{e-1},
+\]
+where $e-1$ is truncated at zero.
+\end{lemma}
+
+\begin{proof}
+If $e=0$, then $rD^e=r$ is not divisible by $D$, so the fixed branch gives
+$r$.  If $e>0$, then $D\mid rD^e$, and the division branch gives
+$rD^e/D=rD^{e-1}$.
+\end{proof}
+
+\begin{theorem}[Exact iterate formula]
+\label{thm:iterate}
+Let $n=rD^k$ be the canonical decomposition of a positive seed.  For every
+$j\in\N$,
+\[
+ T_D^j(n)=rD^{k-j},
+\]
+with truncated subtraction.
+\end{theorem}
+
+\begin{proof}
+Induct on $j$.  At $j=0$ the formula is the decomposition of $n$.  If it
+holds at $j$, Lemma~\ref{lem:one-step} gives
+\[
+ T_D^{j+1}(n)=T_D(rD^{k-j})=rD^{(k-j)-1}=rD^{k-(j+1)}.
+\]
+The final equality is the associativity of truncated subtraction on natural
+numbers.
+\end{proof}
+
+\begin{theorem}[Exact entry and fixed tail]
+\label{thm:entry}
+For the same data, $T_D^k(n)=r$, and
+\[
+ T_D^{k+j}(n)=r
+ \qquad\text{for every }j\in\N.
+\]
+If $0\leq j<k$, then $T_D^j(n)>r$.  Consequently $k$ is the first hitting
+time of the canonical fixed factor.
+\end{theorem}
+
+\begin{proof}
+Theorem~\ref{thm:iterate} at $j=k$ gives $rD^0=r$.  At time $k+j$, truncated
+subtraction again gives exponent zero.  If $j<k$, then $k-j>0$.  Since
+$D\geq2$ and $r>0$, one has $D^{k-j}>1$ and hence
+$rD^{k-j}>r$.  This also proves that no earlier time reaches $r$.
+\end{proof}
+
+\begin{theorem}[Fixed points, cycles, and height]
+\label{thm:classification}
+For $n\in\N_{>0}$, the following are equivalent:
+\[
+ T_D(n)=n,
+ \qquad D\nmid n.
+\]
+Every positive orbit is eventually fixed, every positive periodic orbit is
+already fixed, and
+\[
+ T_D^j(n)\leq n
+ \qquad\text{for all }j\in\N.
+\]
+Thus the positive cycles are exactly the one-point cycles supported on the
+positive integers not divisible by $D$.
+\end{theorem}
+
+\begin{proof}
+If $D\nmid n$, the second branch fixes $n$.  If $D\mid n$, then
+$T_D(n)=n/D<n$ because $n>0$ and $D\geq2$, so $n$ is not fixed.
+Theorem~\ref{thm:entry} proves eventual fixation.  A periodic orbit cannot
+contain a strict decrease and later return, because each step is either a
+division by $D$ or equality.  It is therefore fixed at every step.  Finally,
+Theorem~\ref{thm:iterate} gives
+$rD^{k-j}\leq rD^k=n$.
+\end{proof}
+
+\section{Reconstruction and computation}
+
+For the positive homogeneous raw map with $q=1$, $c=0$, and $D\geq2$, the
+canonical pair $(r,k)$ determines the entire orbit.
+Lemma~\ref{lem:decomposition} proves that these data exist uniquely, and
+Theorem~\ref{thm:iterate} reconstructs every raw iterate without changing the
+clock.  Before entry, the remaining exponent $k-j$ is positive and drops by
+one on each division step.  After exactly $k$ steps it is zero, and the
+base-free state $r$ remains fixed.
+
+The executable checker uses arbitrary-precision integers.  For each of the
+$95$ divisors $2\leq D\leq96$ and all $4096$ seeds
+$1\leq n\leq4096$, it constructs the canonical factor and entry time, replays
+every strict pre-entry step, and verifies the fixed tail.  This is
+\[
+ 95\cdot4096=389{,}120
+\]
+bounded certificates.  A separate seed $53\cdot37^{300}$ checks entry time
+$300$ and fixed factor $53$.  These finite checks validate the implementation;
+the universal conclusion is supplied by the proof above.
+
+This result treats only $q=1$ and zero offset.  It does not classify positive
+offsets, multipliers $q\geq2$, signed states, or divisors of absolute value
+at least two with negative sign.  The positive map has infinitely many fixed
+points, so the theorem does not assert a finite global attractor.
+
+\end{document}

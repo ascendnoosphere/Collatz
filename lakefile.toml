@@ -8,6 +8,7 @@ defaultTargets = [
   "AffineEscape",
   "Homogeneous",
   "DependentHomogeneous",
+  "UnitHomogeneous",
 ]
 
 [[require]]
@@ -70,3 +71,7 @@ srcDir = "QCD.Homogeneous.001/lean"
 [[lean_lib]]
 name = "DependentHomogeneous"
 srcDir = "QCD.Homogeneous.002/lean"
+
+[[lean_lib]]
+name = "UnitHomogeneous"
+srcDir = "QCD.Homogeneous.003/lean"
