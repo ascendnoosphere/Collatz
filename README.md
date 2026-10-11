@@ -81,6 +81,28 @@ bijection of periodic mutual-reachability classes, not a one-step conjugacy
 or a bijection of periodic point sets at their original seeds. Signed raw
 replay checks the bounded sample independently of the universal formal proofs.
 
+### Common-base super-offset escape
+
+[QCD.CommonBase.001](QCD.CommonBase.001/README.md) classifies every signed seed
+for
+\[
+Q=t^u,\qquad D=t^v,\qquad C=t^a s,\qquad
+t\ge2,\quad 0<u<v,\quad \gcd(u,v)=1,\quad a\ge u+v,\quad s\ne0.
+\]
+The base may be composite and the offset residual need not be a unit.
+For a nonzero seed, a finite legal division prefix and a complete phase sweep
+give the exact same-seed raw ray
+\[
+F^{r_0+j(u+v)}(n)
+=x+j\,s\,t^{a-u-v+1+k}\sum_{i=0}^{v-1}t^i.
+\]
+Every nonzero signed seed escapes along the full raw sequence and eventually
+has the offset's sign, with explicit magnitude and sign budgets. Zero is the
+only periodic point. At the lower threshold, \((Q,C,D)=(2,4,4)\) has the
+primitive positive raw cycle \(1,6,16,4\), refuting a uniform lowering by one.
+The divisor here is positive; other offset regimes and negative divisors are
+separate families.
+
 ### Gcd division barrier and affine escape
 
 [QCD.AffineEscape.001](QCD.AffineEscape.001/README.md) classifies every positive

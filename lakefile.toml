@@ -8,6 +8,12 @@ defaultTargets = [
   "CompressionOutcomes",
   "CompressionPeriods",
   "CompressionCycleClasses",
+  "CommonBaseHighOffset",
+  "CommonBaseHighOffsetKernel",
+  "CommonBaseHighOffsetClock",
+  "CommonBaseHighOffsetNormalization",
+  "CommonBaseHighOffsetEscape",
+  "CommonBaseHighOffsetOutcomes",
   "AffineEscape",
   "Homogeneous",
   "DependentHomogeneous",
@@ -77,6 +83,30 @@ srcDir = "QCD.TimeCompression.002/lean"
 [[lean_lib]]
 name = "CompressionCycleClasses"
 srcDir = "QCD.TimeCompression.002/lean"
+
+[[lean_lib]]
+name = "CommonBaseHighOffset"
+srcDir = "QCD.CommonBase.001/lean"
+
+[[lean_lib]]
+name = "CommonBaseHighOffsetKernel"
+srcDir = "QCD.CommonBase.001/lean"
+
+[[lean_lib]]
+name = "CommonBaseHighOffsetClock"
+srcDir = "QCD.CommonBase.001/lean"
+
+[[lean_lib]]
+name = "CommonBaseHighOffsetNormalization"
+srcDir = "QCD.CommonBase.001/lean"
+
+[[lean_lib]]
+name = "CommonBaseHighOffsetEscape"
+srcDir = "QCD.CommonBase.001/lean"
+
+[[lean_lib]]
+name = "CommonBaseHighOffsetOutcomes"
+srcDir = "QCD.CommonBase.001/lean"
 
 [[lean_lib]]
 name = "AffineEscape"

@@ -1,0 +1,387 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+A positive common-base divisor and a sufficiently divisible offset force every
+nonzero signed raw orbit to escape in magnitude and ultimately have the
+offset's sign. A complete phase sweep gives an exact arithmetic progression at
+fixed raw times. Whole-base order permits composite bases and nonunit
+residuals. Sign-qualified intermediate bounds recover the full raw sequence
+with an explicit finite budget. Zero is the only periodic point. A primitive
+cycle at the preceding offset threshold shows that the sufficient threshold
+cannot uniformly be lowered by one.
+\end{abstract}
+
+\section{Parameters, clocks and scope}
+
+% These are the exact common hypotheses of the formal escape statements.
+\begin{definition}
+Let \(t,u,v,a\in\N\) and \(s\in\Z\) satisfy
+\[
+t\ge2,\qquad 0<u<v,\qquad \gcd(u,v)=1,\qquad a\ge u+v,\qquad s\ne0.
+\]
+Put \(Q=t^u\), \(D=t^v>0\), \(C=t^a s\), and define the raw map
+\[
+F(n)=\begin{cases}n/D,&D\mid n,\\Qn+C,&D\nmid n.\end{cases}
+\]
+Division has priority, including at zero. Both seeds and offsets may be
+negative; the divisor in this theorem is positive.
+Write \(G_v(t)=\sum_{j=0}^{v-1}t^j\).
+\end{definition}
+
+The positive-offset common-base regimes are organized in the source guide
+\cite{QcdPowerPhase}. Here we prove the super-offset branch \(a\ge u+v\),
+with a signed extension. Neither primality of \(t\), coprimality of \(s,t\),
+nor \(t\nmid s\) is imposed. The sub-offset, intermediate and critical regimes
+are separate obligations. The broader signed-divisor family is not identified
+with this branch.
+
+For later use define a normalized event and its actual raw clock by
+\[
+\tau(x)=
+\begin{cases}2,&D\mid F(x),\\1,&D\nmid F(x),\end{cases}
+\qquad E(x)=F^{\tau(x)}(x).
+\]
+On the normalized states considered below, this performs one affine instruction
+followed by every immediately available division, whose number is zero or one.
+It is not a first-division map or an odd shortcut.
+
+\section{Whole-base order and initial divisions}
+
+% Whole-base order uses integer cancellation, not prime valuations.
+\begin{definition}
+A nonzero integer has whole-base order \(k\) at base \(t\) if
+\[
+n=t^k w,\qquad t\nmid w.
+\]
+The residual \(w\) may share primes with \(t\). For example, two has order zero
+at base four, and \(-32=4^2(-2)\) has order two.
+\end{definition}
+
+% Strict magnitude descent constructs the witness and terminates the initial prefix.
+\begin{lemma}[Initial divisions]\label{Normalize}
+A nonzero seed \(n\in\Z\) has a legal raw division prefix of length
+\(r_0\le |n|\) reaching \(x=t^k w\), where
+\[
+0\le k<v,\qquad t\nmid w,\qquad |x|\le|n|.
+\]
+In particular \(D\nmid x\).
+\end{lemma}
+\begin{proof}
+If \(t\mid n\), division by \(t\) preserves nonzeroness and strictly decreases
+magnitude, since \(t\ge2\). Repeating therefore terminates at a nonzero \(w\)
+not divisible by \(t\), and produces \(n=t^m w\). Cancellation shows the
+order is exact: an additional factor \(t\) in \(n\) would divide \(w\).
+Since \(|w|\ge1\), one has \(t^m\le|n|\), and \(m\le t^m\) gives
+\(m\le|n|\).
+
+Write \(m=vr_0+k\), \(0\le k<v\). Then
+\(n=D^{r_0}t^k w\); the first \(r_0\) raw instructions are legal divisions and
+reach \(x=t^k w\). Their quotients are exact, so \(|x|\le|n|\), and
+\(r_0\le m\le|n|\). If \(D\mid x\), then \(t^{k+1}\mid x\), because
+\(k+1\le v\). Canceling \(t^k\) would give \(t\mid w\), a contradiction.
+\end{proof}
+
+\section{The deterministic phase sweep}
+
+% The high offset removes cancellation in the leading whole-base factor.
+\begin{lemma}[One legal normalized event]\label{Event}
+If \(x=t^k w\), \(k<v\), and \(t\nmid w\), then
+\[
+Qx+C=t^{k+u}\bigl(w+s\,t^{a-u-k}\bigr)
+\]
+has exact whole-base order \(k+u\). The normalized event uses zero divisions
+when \(k+u<v\), and one division otherwise. Its next phase is
+\((k+u)\bmod v\), with residual \(w+s\,t^{a-u-k}\).
+\end{lemma}
+\begin{proof}
+The exponent \(a-u-k\) is at least one, since \(a\ge u+v\) and \(k<v\).
+Thus the correction is divisible by \(t\), while \(w\) is not; their sum
+is not divisible by \(t\) and is nonzero. This proves exact order \(k+u\),
+without any assumption on the sign or prime factors of \(w,s\).
+Because \(0\le k+u<2v\), division by \(t^v\) is either unavailable or occurs
+exactly once. In the latter case the quotient has order \(k+u-v<v\).
+The initial normalized state is not divisible by \(D\), so the first raw
+instruction really is affine. Both subsequent possibilities are legal and
+exhaustive.
+\end{proof}
+
+% Cancellation modulo v closes all phases rather than selecting favorable ones.
+\begin{lemma}[Phase permutation and raw clock]\label{Permutation}
+Let \(k_0=k\), \(k_i=(k+iu)\bmod v\). For \(0\le i<v\), these phases
+permute \(\{0,\ldots,v-1\}\). In the first \(i\) normalized events the
+division count and raw clock are
+\[
+e_i=\left\lfloor\frac{k+iu}{v}\right\rfloor,\qquad T_i=i+e_i.
+\]
+In particular a sweep of \(v\) events has \(u\) divisions and raw length
+\(P=u+v\).
+\end{lemma}
+\begin{proof}
+If \(k_i=k_j\), then \(v\mid u(i-j)\). Coprimality gives
+\(v\mid(i-j)\); since \(0\le i,j<v\), this forces \(i=j\).
+An injective map of the finite \(v\)-element phase set to itself is a
+permutation. This argument requires \(\gcd(u,v)=1\), not that the base be prime.
+
+At each step Lemma~\ref{Event} increases the phase by \(u\), subtracting
+\(v\) exactly when a division occurs. Telescoping gives
+\(k_i=k+iu-ve_i\), with \(0\le k_i<v\), so \(e_i\) is the stated quotient.
+Each event has one affine instruction and its zero or one division, hence
+\(T_i=i+e_i\). At \(i=v\), \(k_v=k\) and
+\(e_v=\lfloor(k+vu)/v\rfloor=u\), proving the final claim.
+\end{proof}
+
+% The finite geometric kernel supplies a nonzero, phase-preserving translation.
+\begin{theorem}[Exact same-seed raw ray]\label{Ray}
+For the normalized state \(x=t^k w\), put
+\[
+\beta_k=s\,t^{a-u-v+1+k}G_v(t),\qquad P=u+v.
+\]
+Then \(F^{jP}(x)=x+j\beta_k\) for every \(j\in\N\).
+For the initial prefix of Lemma~\ref{Normalize},
+\[
+F^{r_0+jP}(n)=x+j\beta_k
+\]
+at the same original signed seed.
+\end{theorem}
+\begin{proof}
+Each normalized event adds \(s\,t^{a-u-k_i}\) to the residual.
+After \(v\) events the phase is again \(k\), and the residual addition is
+\[
+s\sum_{i=0}^{v-1}t^{a-u-k_i}
+=s\,t^{a-u-v+1}\sum_{i=0}^{v-1}t^{v-1-k_i}
+=s\,t^{a-u-v+1}G_v(t).
+\]
+All exponents are nonnegative, and Lemma~\ref{Permutation} justifies the
+last equality over the complete phase set. Multiplication by \(t^k\)
+gives \(F^P(x)=x+\beta_k\).
+
+The exponent \(a-u-v+1+k\) is at least \(k+1\). Therefore
+\(\beta_k/t^k\) is an integer divisible by \(t\), and
+\(w+j\beta_k/t^k\) remains not divisible by \(t\) for every \(j\).
+All translated states have the same phase \(k\) and are nonzero.
+The same legal sweep applies at each endpoint, so induction proves the
+ray formula. Composing the legal initial prefix proves its same-seed version.
+\end{proof}
+
+\section{Full raw recovery and the signed escape budget}
+
+% The sign hypothesis prevents cancellation between the affine state and the offset.
+\begin{lemma}[Aligned intermediate bound]\label{Aligned}
+If a normalized state \(x=t^k w\) satisfies \(sx\ge0\), then for every
+raw future state \(z=F^r(x)\),
+\[
+t^k|z|\ge|x|.
+\]
+If \(sx>0\), every raw future state also has strict sign \(sz>0\).
+\end{lemma}
+\begin{proof}
+After \(i\) events, the residual has the form
+\[
+w+sB_i,\qquad
+B_i=\sum_{j<i}t^{a-u-k_j}\ge0.
+\]
+The phase is \(k_i\ge0\). Since \(sw\ge0\), adding \(sB_i\) cannot reduce
+the magnitude of \(w\), so every event endpoint has magnitude at least
+\(|w|\). When an event has an interior raw state, it is the affine value
+before its division. The multiplier \(Q=t^u\ge2\) is positive and the
+offset has sign \(s\); under alignment its magnitude is at least that
+of the event input, and hence at least \(|w|\).
+
+Every raw time lies in an event block because its clock is positive.
+For completeness, accumulated clocks increase by one or two; induction on
+the raw time either increases its interior offset or passes to the next block.
+This is the positive-clock coverage principle of \cite{AscendCompressionII}.
+Consequently \(|z|\ge|w|\) at every raw time and
+\(t^k|z|\ge t^k|w|=|x|\). If the initial product with \(s\) is positive,
+affine instructions retain that sign by addition of a same-sign offset,
+and division by positive \(D\) retains it as well.
+\end{proof}
+
+The hypothesis cannot be discarded. For \((Q,C,D)=(2,8,4)\), a raw sweep
+from \(-5\) is
+\[
+-5\longrightarrow-2\longrightarrow4\longrightarrow1.
+\]
+Its phase is zero, and the interior magnitude two is smaller than five.
+Even the coarser factor \(D^u=4\) fails at the last magnitude one.
+The ray nonetheless has translation six and subsequently aligns.
+
+% Integer ray crossing precedes application of the sign-qualified lower bound.
+\begin{theorem}[Effective full-sequence escape]\label{Escape}
+For every nonzero \(n\in\Z\) and \(M,r\in\N\), define
+\[
+B(n,M)=|n|+\bigl(|n|+1+MD^u\bigr)(u+v).
+\]
+If \(B(n,M)\le r\), then \(|F^r(n)|>M\).
+For every \(r\ge B(n,0)\), one also has \(sF^r(n)>0\).
+\end{theorem}
+\begin{proof}
+Normalize \(n\) as in Lemma~\ref{Normalize}. Put \(K=t^k\).
+One has \(1\le K\le D^u\), because \(k<v\) and \(u\ge1\).
+The integer \(\beta_k\) is nonzero, has the sign of \(s\), and
+\(|\beta_k|\ge1\). Choose
+\[
+J=|x|+1+MK,\qquad y=x+J\beta_k.
+\]
+If \(\beta_k>0\), then \(y\ge-|x|+J>MK\).
+If \(\beta_k<0\), then \(y\le|x|-J<-MK\).
+Thus \(sy>0\) and \(|y|>MK\). By Theorem~\ref{Ray}, this state occurs
+at raw time \(r_0+JP\), and retains phase \(k\).
+
+Apply Lemma~\ref{Aligned} from \(y\), now that its sign hypothesis holds.
+Every later raw state \(z\) satisfies \(K|z|\ge|y|>MK\);
+since \(K>0\), it follows that \(|z|>M\).
+The time used obeys
+\[
+r_0+JP\le |n|+\bigl(|n|+1+MD^u\bigr)P=B(n,M),
+\]
+using \(r_0\le|n|\) and \(|x|\le|n|\). This proves the assertion for
+every raw time beyond the displayed budget, not only sweep endpoints.
+For sign alone take \(M=0\); the same crossing and the strict-sign part of
+Lemma~\ref{Aligned} retain \(sz>0\) at all later raw times.
+\end{proof}
+
+% Escape excludes every positive return while zero retains its legal division loop.
+\begin{theorem}[Periodic points]\label{Periodic}
+Zero is the only periodic point of \(F\), and its primitive period is one.
+\end{theorem}
+\begin{proof}
+Zero takes division and is fixed. Suppose a nonzero \(n\) had a positive
+return time \(h\). Determinism propagates this return to every multiple
+\(jh\). Choose a multiple beyond \(B(n,|n|)\). Theorem~\ref{Escape} then gives
+\(|F^{jh}(n)|>|n|\), contradicting \(F^{jh}(n)=n\).
+The least positive return at zero is one.
+\end{proof}
+
+\section{Threshold and concrete arithmetic}
+
+% A primitive legal boundary cycle refutes a uniform lowering of the threshold.
+\begin{theorem}[Boundary obstruction]\label{Boundary}
+At \(a=u+v-1\), the parameter choice
+\[
+(t,u,v,a,s)=(2,1,2,2,1)
+\]
+has the primitive positive raw cycle
+\[
+1\longrightarrow6\longrightarrow16\longrightarrow4\longrightarrow1.
+\]
+Hence the uniform sufficient threshold cannot be replaced by \(a\ge u+v-1\).
+\end{theorem}
+\begin{proof}
+Here \(Q=2,C=4,D=4\). One and six are not divisible by four, so their
+successors are \(2\cdot1+4=6\) and \(2\cdot6+4=16\).
+Sixteen and four take legal divisions to four and one.
+None of the first three positive times returns to one, proving primitiveness.
+At this threshold the leading residual correction in Lemma~\ref{Event}
+need not contain a factor \(t\). Indeed the second affine value has extra
+divisibility and permits two successive divisions; the higher-offset phase
+argument no longer applies.
+\end{proof}
+
+For \((t,u,v,a,s)=(3,2,3,5,1)\), one has \(Q=9,C=243,D=27\) and
+\[
+1\longrightarrow252\longrightarrow2511\longrightarrow93
+\longrightarrow1080\longrightarrow40.
+\]
+There are three affine instructions and two divisions, so \(P=5\).
+The kernel is \(\beta_0=3(1+3+9)=39\); the next endpoint is \(79\).
+
+For \((t,u,v,a,s)=(4,1,3,4,2)\), \(Q=4,C=512,D=64\), and
+\[
+32\longrightarrow640\longrightarrow10\longrightarrow552\longrightarrow2720.
+\]
+Here \(32=4^2\cdot2\), so \(k=2\) with a nonunit residual.
+The offset residual two is also nonunit modulo four.
+The raw clock is four and \(\beta_2=2\cdot4^3(1+4+16)=2688\).
+This explicitly tests why whole-base order must not be replaced by a prime
+valuation or a unit-residual assumption.
+
+\section{Reduction certificate and finite computation}
+
+The original obligation is the orbit classification of every signed seed in
+the stated super-offset parameter family. The replacement data are a finite
+legal division prefix, a phase \(k<v\), an explicitly evaluated finite kernel,
+and a nonzero signed arithmetic progression. The initial prefix terminates
+by a strictly decreasing integer magnitude. The high-offset condition removes
+leading-order cancellation, and the finite coprime sweep closes every phase.
+The sign-qualified intermediate bound and positive-clock coverage reconstruct
+every raw time with the displayed budget. Thus this is a proved solvable
+parameter subclass; no infinite-orbit oracle or unproved uniform estimate
+has been hidden in the replacement data. The budget is effective in integer
+values, not claimed polynomial in their bit lengths.
+
+The Go implementation replays two raw sweeps, checking every branch, phase,
+division count, clock and translation endpoint. The main grid uses
+\[
+\begin{aligned}
+2&\le t\le9,&2&\le v\le8,&0&<u<v,\quad\gcd(u,v)=1,\\
+u+v&\le a\le u+v+2,&-8&\le s\le8,\quad t\nmid s.
+\end{aligned}
+\]
+It uses ordinary nonzero seeds in \([-128,128]\) and all phases \(t^k w\),
+\(k<v\), with \(-8\le w\le8\), \(t\nmid w\). Its reference count is
+2,186,784 two-sweep certificates, not distinct orbits.
+Separate tests include offsets \(\pm3\cdot2^{204}\), opposite signs,
+a divisible offset residual and the exact boundary cycle.
+Sign-qualified magnitude checks are deliberately skipped before alignment.
+
+The public finite checker refuses parameters outside its explicit contract:
+\(2\le t\le9\), \(0<u<v\le8\), coprimality,
+\(u+v\le a\le256\), and \(0<|s|\le8\).
+It does not require \(t\nmid s\).
+Its reserved seed bit limit is
+\(\max(8,(v-1)\operatorname{BitLen}(t)+4)\);
+nil, unconfigured, mismatched, oversized or zero seed requests are rejected
+before replay. These limits restrict computation, not the mathematical
+theorem. Disjoint reusable buffers and cached powers provide zero warmed
+allocations on the four tested configurations; no arbitrary-size performance
+assertion follows. Finite replay is distinct from the universal proof.
+
+The six formal proof modules are
+\begin{itemize}
+\item \texttt{CommonBaseHighOffset.lean}: whole-base order and legal events;
+\item \texttt{CommonBaseHighOffsetKernel.lean}: complete phase kernel;
+\item \texttt{CommonBaseHighOffsetClock.lean}: actual raw clocks and rays;
+\item \texttt{CommonBaseHighOffsetNormalization.lean}: the legal initial prefix;
+\item \texttt{CommonBaseHighOffsetEscape.lean}: full raw magnitude and sign;
+\item \texttt{CommonBaseHighOffsetOutcomes.lean}: periodicity and threshold.
+\end{itemize}
+
+\bibliographystyle{amsalpha}
+\bibliography{CommonBaseHighOffset}
+\end{document}
