@@ -14,6 +14,7 @@ defaultTargets = [
   "CommonBaseHighOffsetNormalization",
   "CommonBaseHighOffsetEscape",
   "CommonBaseHighOffsetOutcomes",
+  "CommonBaseRebasing",
   "AffineEscape",
   "Homogeneous",
   "DependentHomogeneous",
@@ -107,6 +108,10 @@ srcDir = "QCD.CommonBase.001/lean"
 [[lean_lib]]
 name = "CommonBaseHighOffsetOutcomes"
 srcDir = "QCD.CommonBase.001/lean"
+
+[[lean_lib]]
+name = "CommonBaseRebasing"
+srcDir = "QCD.CommonBase.002/lean"
 
 [[lean_lib]]
 name = "AffineEscape"

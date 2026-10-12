@@ -103,6 +103,21 @@ primitive positive raw cycle \(1,6,16,4\), refuting a uniform lowering by one.
 The divisor here is positive; other offset regimes and negative divisors are
 separate families.
 
+### Exact common-base gcd rebasing
+
+[QCD.CommonBase.002](QCD.CommonBase.002/README.md) removes the preceding
+coprime-exponent restriction without changing the raw map. With
+\[
+g=\gcd(u,v),\quad T=t^g,\quad U=u/g,\quad V=v/g,\quad
+A=a/g,\quad S=t^{a\bmod g}s,
+\]
+the coefficients are exactly \(Q=T^U\), \(D=T^V\), \(C=T^A S\), and
+\(\gcd(U,V)=1\). Every nonzero signed seed again has full raw magnitude
+escape and eventual offset sign, with sweep clock \(U+V=(u+v)/g\).
+The base and carried residual satisfy \(T\le Q\) and \(|S|\le|C|\).
+For \(g>1\), the phase count decreases from \(v\) to \(v/g\). The result
+retains positive divisors, \(0<u<v\), and the super-offset threshold.
+
 ### Gcd division barrier and affine escape
 
 [QCD.AffineEscape.001](QCD.AffineEscape.001/README.md) classifies every positive

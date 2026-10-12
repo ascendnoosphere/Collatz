@@ -1,0 +1,309 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Exact exponent gcd rebasing removes the coprimality restriction from a
+positive-divisor common-base escape theorem. The new presentation has identical
+integer coefficients and preserves every raw branch and seed. Its complete
+phase sweep has fewer phases when the exponent gcd exceeds one. We obtain
+exact signed rays, explicit bounds for every raw time, eventual agreement with
+the offset's sign, and zero as the only periodic point. Composite bases and
+nonunit residuals are allowed.
+\end{abstract}
+
+\section{Raw dynamics and parameters}
+
+For integers \(Q,C,D\), with \(D\ge2\), define
+\[
+F(n)=
+\begin{cases}
+n/D,&D\mid n,\\
+Qn+C,&D\nmid n.
+\end{cases}
+\]
+Division has priority, including at zero. Throughout this article,
+\begin{equation}\label{Parameters}
+\begin{gathered}
+Q=t^u,\qquad D=t^v,\qquad C=t^a s,\\
+t\ge2,\quad 0<u<v,\quad a\ge u+v,\quad s\in\Z\setminus\{0\}.
+\end{gathered}
+\end{equation}
+The exponents are natural numbers. No coprimality of \(u,v\) is assumed.
+The base \(t\) may be composite, and neither the offset residual nor a state
+residual is required to be a unit.
+
+The coprime phase theorem is proved in \cite{AscendCommonBase}.
+The prime-source forced itinerary in \cite{QcdSigned} uses
+\(g=\gcd(u,v)\), \(L=v/g\), and \(E=u/g\). The present result treats its
+positive-divisor, positive pure-multiplier intersection, with \(0<u<v\).
+It does not assert a negative-divisor transfer or a result for the other
+offset regimes or nontrivial residual multipliers.
+
+\section{An identical coprime presentation}
+
+\begin{definition}[Rebased parameters]\label{RebaseDefinition}
+Put
+\[
+\begin{gathered}
+g=\gcd(u,v),\qquad T=t^g,\qquad U=u/g,\\
+V=v/g,\qquad A=a/g,\qquad S=t^{a\bmod g}s.
+\end{gathered}
+\]
+All quotients and remainders here are natural-number quotients and remainders.
+\end{definition}
+
+\begin{lemma}[Admissibility and reconstruction]\label{Reconstruction}
+Under \eqref{Parameters},
+\[
+g>0,\quad T\ge2,\quad 0<U<V,\quad \gcd(U,V)=1,\quad
+A\ge U+V,\quad S\ne0,
+\]
+and
+\begin{equation}\label{IdenticalCoefficients}
+Q=T^U,\qquad D=T^V,\qquad C=T^A S.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Since \(u>0\), its gcd with \(v\) is positive. The gcd divides both exponents,
+so \(u=gU\) and \(v=gV\). Since \(g\le u\), \(U\ge1\).
+Multiplication by positive \(g\) preserves strict inequalities; hence
+\(u<v\) implies \(U<V\). The integer identity
+\[
+\gcd(gU,gV)=g\gcd(U,V)
+\]
+therefore gives \(g=g\gcd(U,V)\), and cancellation of \(g>0\) gives
+\(\gcd(U,V)=1\). Since \(g\ge1\), \(t^g\ge t\ge2\).
+
+The sum \(u+v=g(U+V)\) is divisible by \(g\). Dividing \(a\ge u+v\) by
+positive \(g\), and using monotonicity of the floor quotient, gives
+\(A\ge U+V\). The power identities
+\[
+(t^g)^U=t^{gU}=t^u,\qquad (t^g)^V=t^{gV}=t^v
+\]
+prove the first two reconstruction equations. Euclidean division gives
+\(a=gA+(a\bmod g)\), so
+\[
+T^A S=t^{gA}t^{a\bmod g}s=t^a s.
+\]
+Finally, \(t^{a\bmod g}\) is positive and \(s\ne0\), so \(S\ne0\).
+Every equality holds in the integers, including negative \(s\).
+\end{proof}
+
+\begin{lemma}[Phase and parameter bounds]\label{Bounds}
+The rebased parameters satisfy
+\[
+T\le Q,\qquad |S|\le |C|.
+\]
+If \(g>1\), then \(V<v\).
+\end{lemma}
+
+\begin{proof}
+The positive gcd satisfies \(g\le u\). Powers of a base at least two are
+nondecreasing, so \(T=t^g\le t^u=Q\).
+Since \(a\bmod g\le a\), positivity of the powers gives
+\[
+|S|=t^{a\bmod g}|s|\le t^a|s|=|C|.
+\]
+Also \(v=gV\) and \(V\ge1\). If \(g>1\), then \(gV>V\), hence \(v>V\).
+When \(g=1\), the instance is already coprime; no strict phase decrease is
+claimed.
+\end{proof}
+
+Equations \eqref{IdenticalCoefficients} identify the raw functions, not merely
+a quotient or a selected sequence of times. For every integer, the divisor,
+division test, quotient, and affine expression are identical. The seed is
+unchanged. Thus the coprime theorem applies without a state conversion or a
+new orbit estimate. There is only one replacement instance, and the bounds
+in Lemma~\ref{Bounds} prevent hidden growth of the base and offset residual.
+
+\section{Every rebased phase and its raw clock}
+
+\begin{definition}[Whole-base order]\label{Order}
+A nonzero integer \(x\) has whole-base \(T\) order \(k\) if
+\(x=T^k w\) for an integer \(w\) such that \(T\nmid w\).
+This is not a prime valuation. In particular, \(w\) may share prime factors
+with \(T\).
+\end{definition}
+
+For \(k<V\), a state of order \(k\) is division-free because \(D=T^V\).
+Put
+\[
+G_V(T)=\sum_{i=0}^{V-1}T^i,\qquad
+P=U+V,\qquad
+\beta_k=S T^{A-U-V+1+k}G_V(T).
+\]
+
+\begin{theorem}[Exact raw ray]\label{RawRay}
+Let \(x\) have whole-base \(T\) order \(k<V\).
+For every natural \(j\),
+\[
+F^{jP}(x)=x+j\beta_k,
+\]
+and the whole-base \(T\) order of this state remains \(k\).
+A sweep has \(V\) affine edges and \(U\) division edges.
+Moreover
+\[
+P=\frac{u+v}{g}.
+\]
+\end{theorem}
+
+\begin{proof}
+Lemma~\ref{Reconstruction} supplies exactly the hypotheses of the coprime
+raw-ray theorem of \cite{AscendCommonBase}, with base \(T\), exponents \(U,V\),
+offset exponent \(A\), and signed residual \(S\). Its whole-base order
+condition is precisely Definition~\ref{Order}. That theorem proves the complete
+phase permutation, legal raw clocks, and phase-preserving ray for every
+\(j\); its increment is the displayed \(\beta_k\).
+Equation \eqref{IdenticalCoefficients} identifies its raw map with \(F\) at
+every step, so both its endpoint identity and its intermediate itinerary
+apply to the original coefficients. Nothing requires a unit residual.
+The inherited phase sweep contains \(V\) affine and \(U\) division edges.
+Finally, \(u+v=g(U+V)\) and \(g>0\), so division gives the last identity.
+\end{proof}
+
+The increment is nonzero: all powers and the geometric sum are positive,
+and \(S\ne0\). Its order-preserving property is inherited from the full
+coprime theorem, rather than inferred from endpoint equality alone.
+
+\section{Every signed seed and every raw time}
+
+\begin{theorem}[Full-sequence escape]\label{Escape}
+For every \(n\in\Z\setminus\{0\}\), \(M\in\N\), and \(r\in\N\),
+\begin{equation}\label{EscapeBudget}
+|n|+(|n|+1+M D^U)P\le r
+\quad\Longrightarrow\quad
+M<|F^r(n)|.
+\end{equation}
+In particular, \(|F^r(n)|\) tends to infinity as \(r\) tends to infinity.
+Also
+\begin{equation}\label{SignBudget}
+|n|+(|n|+1)P\le r
+\quad\Longrightarrow\quad
+sF^r(n)>0.
+\end{equation}
+Thus the orbit eventually has the offset's sign.
+\end{theorem}
+
+\begin{proof}
+Apply the coprime full-raw escape theorem with the parameters of
+Lemma~\ref{Reconstruction}. Its initial normalization removes only legal
+divisions and requires at most \(|n|\) raw steps. Its subsequent argument
+first crosses the signed ray into alignment with \(S\), then bounds every
+intervening raw step. The inherited quantitative bound is
+\[
+|n|+(|n|+1+M(T^V)^U)(U+V)\le r
+\quad\Longrightarrow\quad M<|F^r(n)|.
+\]
+By \eqref{IdenticalCoefficients}, \(T^V=D\), and \(P=U+V\).
+This proves \eqref{EscapeBudget} without discarding any raw time.
+For each fixed \(M\), its left side is a finite natural threshold, so the
+inequality holds for all sufficiently large \(r\). This is the asserted
+full-sequence limit, not a limit along sweep endpoints alone.
+
+The inherited sign threshold gives \(S F^r(n)>0\) after
+\(|n|+(|n|+1)P\). Since \(S=t^{a\bmod g}s\) and the power is positive, this
+is equivalent to \(sF^r(n)>0\). The factor \(t^a\) in \(C=t^a s\) is
+also positive, so this is agreement with the offset's sign.
+\end{proof}
+
+The sign qualification on the inherited intermediate bound is essential.
+Neither \eqref{EscapeBudget} nor its proof assigns an aligned bound to an
+opposite-sign initial segment. The initial prefix and the crossing time
+are already included in the thresholds.
+
+\begin{theorem}[Periodicity]\label{Periodic}
+The point zero is fixed and is the only periodic integer point of \(F\).
+\end{theorem}
+
+\begin{proof}
+Since \(D\mid0\), division priority gives \(F(0)=0\). For nonzero points,
+Lemma~\ref{Reconstruction} allows direct application of the zero-only
+periodicity theorem in \cite{AscendCommonBase}; its map is identical to \(F\).
+Equivalently, a nonzero periodic orbit repeats a finite set of magnitudes,
+contradicting the full-sequence limit in Theorem~\ref{Escape}.
+\end{proof}
+
+\section{Nonunit controls}
+
+For \((t,u,v,a,s)=(2,2,4,7,1)\), rebasing gives
+\[
+(T,U,V,A,S)=(4,1,2,3,2),\qquad (Q,C,D)=(4,128,16).
+\]
+The carried residual is not a unit modulo the new base. The two phases give
+\[
+\begin{aligned}
+1&\longmapsto132\longmapsto656\longmapsto41,\\
+2&\longmapsto136\longmapsto672\longmapsto42,\\
+4&\longmapsto144\longmapsto9\longmapsto164.
+\end{aligned}
+\]
+For phase zero, \(\beta_0=2\cdot4\cdot(1+4)=40\); for phase one,
+\(\beta_1=160\). Each displayed path has physical raw length three.
+
+A composite original base also works. The parameters
+\((t,u,v,a,s)=(6,2,4,7,1)\) give \(T=36\), \(S=6\),
+\(Q=36\), \(D=1296\), and \(C=279936\). The path
+\[
+1\longmapsto279972\longmapsto10358928\longmapsto7993
+\]
+has increment \(6\cdot36\cdot37=7992\). No prime-base identification is used.
+
+\section{Formal and computational statements}
+
+The Lean module \texttt{CommonBaseRebasing.lean} proves admissibility,
+coefficient reconstruction, nonzero residual, exact rays, explicit raw
+escape, the full-sequence limit, eventual sign, periodicity, phase decrease,
+and parameter bounds. The mathematical hypotheses are \eqref{Parameters};
+there is no original coprimality or residual-unit hypothesis.
+
+The independent Go replay constructs both coefficient tuples with exact
+signed integers and compares them. It strips only legal initial divisions,
+checks every raw branch in two sweeps, counts all affine and division edges,
+and tests the intermediate inequality only after alignment.
+The finite sample has 807744 certificates, including repeated states and maps;
+it is not an infinite-orbit proof. Original bases two through nine,
+\(v\le8\), noncoprime exponents, three offset exponents, sixteen signed
+residuals, ordinary signed seeds, and forced-phase seeds define that sample.
+Zero, invalid parameter contracts, and oversized seeds are refused, not
+classified by the sample. Larger exponents and signed initial division
+prefixes are separate tests. Cached powers and disjoint reserved buffers have
+zero warmed allocations on four measured configurations; no arbitrary-size
+performance claim is made.
+
+\bibliographystyle{amsalpha}
+\bibliography{CommonBaseRebasing}
+\end{document}
