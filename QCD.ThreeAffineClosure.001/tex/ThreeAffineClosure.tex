@@ -1,0 +1,154 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{The three-letter determinant divides the numerator}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For positive integers \(a,b,c,q\) and integers \(x,y,z\) linked by one pass of the three affine letters \(2^{a}y=qx+1\), \(2^{b}z=qy+1\), and \(2^{c}x=qz+1\), the determinant \(\Delta=2^{a+b+c}-q^{3}\) divides the closure numerator \(B=q^{2}+q2^{a}+2^{a+b}\). The third odd state is the same quotient formed from the rotated numerator \(q^{2}+q2^{c}+2^{c+a}\). The argument is the elimination identity alone.
+\end{abstract}
+
+\section{Closure numerator}
+
+Let \(a,b,c,q\) be positive integers and set \(K=a+b+c\). Write
+\[
+B(a,b;q)=q^{2}+q\,2^{a}+2^{a+b},
+\qquad
+T(c,a;q)=q^{2}+q\,2^{c}+2^{c+a},
+\]
+and \(\Delta(a,b,c;q)=2^{K}-q^{3}\). Thus \(B(a,b;q)\) is the closure numerator of the word \((a,b,c)\), and \(T(c,a;q)\) is the closure numerator of the rotated word \((c,a,b)\).
+
+\begin{lemma}
+\label{lem:numerator-seven}
+If \(e,f,r\) are positive integers, then
+\[
+r^{2}+r\,2^{e}+2^{e+f}\ge 7.
+\]
+In particular \(B(a,b;q)\ge 7\) and \(T(c,a;q)\ge 7\).
+\end{lemma}
+
+\begin{proof}
+Since \(r\ge 1\), one has \(r^{2}\ge 1\). Since \(e\ge 1\), one has \(2^{e}\ge 2\), and therefore \(r\,2^{e}\ge 2\). Since \(e+f\ge 2\), one has \(2^{e+f}=4\cdot 2^{e+f-2}\ge 4\). Adding these three estimates gives
+\[
+r^{2}+r\,2^{e}+2^{e+f}\ge 1+2+4=7.
+\]
+The two particular cases are \((e,f,r)=(a,b,q)\) and \((e,f,r)=(c,a,q)\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:identity}
+Let \(e_{1},e_{2},e_{3}\) be natural numbers and let \(q,u,v,w\in\Z\) satisfy
+\[
+2^{e_{1}}u=qv+1,
+\qquad
+2^{e_{2}}v=qw+1,
+\qquad
+2^{e_{3}}w=qu+1.
+\]
+Then
+\[
+\bigl(2^{e_{1}+e_{2}+e_{3}}-q^{3}\bigr)u
+  =q^{2}+q\,2^{e_{3}}+2^{e_{3}+e_{2}}.
+\]
+\end{lemma}
+
+\begin{proof}
+Multiply the first equation by \(2^{e_{2}+e_{3}}\):
+\[
+2^{e_{1}+e_{2}+e_{3}}u
+  =2^{e_{2}+e_{3}}(qv+1)
+  =q\,2^{e_{2}+e_{3}}v+2^{e_{2}+e_{3}}.
+\]
+Split the remaining power and apply the second equation:
+\[
+2^{e_{2}+e_{3}}v=2^{e_{3}}(qw+1),
+\]
+so
+\[
+2^{e_{1}+e_{2}+e_{3}}u
+  =q\,2^{e_{3}}(qw+1)+2^{e_{2}+e_{3}}
+  =q\bigl(q\,2^{e_{3}}w+2^{e_{3}}\bigr)+2^{e_{2}+e_{3}}.
+\]
+The third equation replaces \(2^{e_{3}}w\) by \(qu+1\):
+\begin{align*}
+2^{e_{1}+e_{2}+e_{3}}u
+  &=q\bigl(q(qu+1)+2^{e_{3}}\bigr)+2^{e_{2}+e_{3}}\\
+  &=q^{3}u+q^{2}+q\,2^{e_{3}}+2^{e_{2}+e_{3}}.
+\end{align*}
+Subtract \(q^{3}u\). The exponent \(e_{2}+e_{3}\) may be written \(e_{3}+e_{2}\), which is the stated numerator.
+\end{proof}
+
+\begin{theorem}
+\label{thm:three-affine-closure}
+Let \(a,b,c,q\) be positive integers and let \(x,y,z\in\Z\) satisfy
+\[
+2^{a}y=qx+1,
+\qquad
+2^{b}z=qy+1,
+\qquad
+2^{c}x=qz+1.
+\]
+Set \(\Delta=\Delta(a,b,c;q)\), \(B=B(a,b;q)\), and \(T=T(c,a;q)\). Then \(\Delta x=B\), \(\Delta\) divides \(B\), \(\Delta z=T\), \(z=T/\Delta\), and \(\Delta\neq 0\). Both numerators are at least \(7\).
+\end{theorem}
+
+\begin{proof}
+Apply Lemma \ref{lem:identity} to the ordered equations
+\[
+2^{c}x=qz+1,
+\qquad
+2^{b}z=qy+1,
+\qquad
+2^{a}y=qx+1.
+\]
+The resulting coefficient is \(2^{c+b+a}-q^{3}=\Delta\), and the resulting numerator is \(q^{2}+q\,2^{a}+2^{a+b}=B\). Thus \(\Delta x=B\), so \(\Delta\) divides \(B\).
+
+Apply the same lemma to
+\[
+2^{b}z=qy+1,
+\qquad
+2^{a}y=qx+1,
+\qquad
+2^{c}x=qz+1.
+\]
+The coefficient is again \(\Delta\), and the numerator is \(q^{2}+q\,2^{c}+2^{c+a}=T\). Thus \(\Delta z=T\).
+
+Lemma \ref{lem:numerator-seven} gives \(B\ge 7\). If \(\Delta=0\), then \(B=\Delta x=0\), contradicting \(B\ge 7\). Hence \(\Delta\neq 0\), and dividing \(\Delta z=T\) by \(\Delta\) yields \(z=T/\Delta\). The same lower bound gives \(T\ge 7\).
+\end{proof}
+
+\begin{remark}
+\label{rem:not-claimed}
+Divisibility is necessary for an integer solution of the three equations. It is not a legal cycle: positivity of the states, oddness, exact powers of two, and a minimum state are further conditions. The identity does not classify \(x^{2}+7=2^{n}\), does not classify \(x^{2}+D=2^{n}\), and does not bound \(x^{3}+D=2^{n}\). It does not force a unique odd multiplier, does not empty the range \(K>7\), and does not prove \(2\rho\le\mu\le 4\rho\).
+\end{remark}
+
+\end{document}

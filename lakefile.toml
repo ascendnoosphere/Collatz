@@ -75,6 +75,7 @@ defaultTargets = [
   "FamilySplit",
   "LatticeEntry",
   "MirrorSign",
+  "ThreeAffineClosure",
 ]
 
 [[require]]
@@ -405,3 +406,7 @@ srcDir = "QCD.LatticeEntry.001/lean"
 [[lean_lib]]
 name = "MirrorSign"
 srcDir = "QCD.MirrorSign.001/lean"
+
+[[lean_lib]]
+name = "ThreeAffineClosure"
+srcDir = "QCD.ThreeAffineClosure.001/lean"
