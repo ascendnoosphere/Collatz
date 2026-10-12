@@ -1,0 +1,206 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Two-affine congruence}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Let \(\Delta=2^{K}-q^{2}\). Integrality of \((q+2^{a})/\Delta\) is the congruence \(2^{a}\equiv -q\pmod{\Delta}\). If \(\Delta\) is odd and \(a\le K\), the partner numerator \(q+2^{K-a}\) is divisible by \(\Delta\) as well, and the quotient is odd when \(a<K\). The two quotients agree only for the unit seed \(K=2a\), \(q=2^{a}-1\), and value \(1\). They therefore disagree whenever \(K\) is odd. Equality is not forbidden for even \(K\).
+\end{abstract}
+
+\section{Denominator and congruence}
+
+Throughout, \(K\) and \(a\) are nonnegative integers and \(q\) is an integer. Write \(\Delta=2^{K}-q^{2}\).
+
+\begin{definition}
+The first numerator is \(q+2^{a}\). When \(a\le K\), the partner numerator is \(q+2^{K-a}\).
+\end{definition}
+
+\begin{lemma}
+\label{lem:pow-positive}
+For every nonnegative integer \(k\), one has \(0<2^{k}\) in \(\Z\).
+\end{lemma}
+
+\begin{proof}
+Proceed by induction on \(k\). The case \(k=0\) is \(2^{0}=1\). If \(0<2^{k}\), then \(2^{k+1}=2^{k}\cdot 2=2^{k}+2^{k}\), and the sum of a positive integer with itself is positive.
+\end{proof}
+
+\begin{lemma}
+\label{lem:odd-divisor}
+An odd natural divisor of \(2^{K}\) equals \(1\).
+\end{lemma}
+
+\begin{proof}
+Let \(d\) be odd and suppose \(d\) divides \(2^{K}\). If \(K=0\), then \(d\) divides \(1\), so \(d=1\). If the claim holds at \(K\) and \(d\) divides \(2^{K+1}=2^{K}\cdot 2\), then \(d\) is coprime to \(2\) because \(d\) is odd. Euclid's lemma yields that \(d\) divides \(2^{K}\), and the inductive hypothesis gives \(d=1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:congruence}
+\(\Delta\) divides \(q+2^{a}\) if and only if \(2^{a}\equiv -q\pmod{\Delta}\).
+\end{theorem}
+
+\begin{proof}
+By definition of congruence, \(2^{a}\equiv -q\pmod{\Delta}\) means that \(\Delta\) divides \(-q-2^{a}\). The integer \(-q-2^{a}\) equals \(-(q+2^{a})\), and a divisor of an integer is the same as a divisor of its negative.
+\end{proof}
+
+The argument does not use the sign of \(\Delta\) or the parity of \(\Delta\).
+
+\section{Coprimeness and the partner}
+
+\begin{lemma}
+\label{lem:coprime}
+If \(\Delta\) is odd, then \(\gcd(\Delta,q)=1\).
+\end{lemma}
+
+\begin{proof}
+Let \(g=\gcd(\Delta,q)\), read as a nonnegative integer. Then \(g\) divides both \(\Delta\) and \(q\), so \(g\) divides \(q^{2}\). Since \(\Delta+q^{2}=2^{K}\), the same \(g\) divides \(2^{K}\). The divisor \(g\) is odd: an even \(g\) would make \(\Delta\) even. Lemma~\ref{lem:odd-divisor} gives \(g=1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:partner-divides}
+Assume that \(\Delta\) is odd and that \(a\le K\). If \(\Delta\) divides \(q+2^{a}\), then \(\Delta\) divides \(q+2^{K-a}\).
+\end{theorem}
+
+\begin{proof}
+The relation \(\Delta=2^{K}-q^{2}\) rearranges to \(q^{2}=2^{K}-\Delta\). Therefore
+\begin{align*}
+q\bigl(q+2^{K-a}\bigr)
+&=q^{2}+2^{K-a}q\\
+&=2^{K}-\Delta+2^{K-a}q\\
+&=2^{K-a}\cdot 2^{a}+2^{K-a}q-\Delta\\
+&=2^{K-a}\bigl(q+2^{a}\bigr)-\Delta.
+\end{align*}
+The exponent identity \((K-a)+a=K\) was used to split \(2^{K}\). The right-hand side is a difference of two multiples of \(\Delta\), because \(\Delta\) divides \(q+2^{a}\) and \(\Delta\) divides \(\Delta\). Hence \(\Delta\) divides \(q(q+2^{K-a})\). Lemma~\ref{lem:coprime} and Euclid's lemma cancel the factor \(q\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:partner-odd}
+Assume that \(\Delta\) is odd and that \(a<K\). If \(q+2^{K-a}=y\Delta\), then \(y\) is odd.
+\end{theorem}
+
+\begin{proof}
+The inequality \(a<K\) forces \(K\ge 1\), so \(2^{K}\) is even. If \(q\) were even, then \(q^{2}\) would be even and \(\Delta=2^{K}-q^{2}\) would be a difference of even integers, contradicting oddness of \(\Delta\). Thus \(q\) is odd. The remaining exponent \(K-a\) is positive, so \(2^{K-a}\) is even. The sum of the odd integer \(q\) and this even power is odd. That sum equals \(y\Delta\). A product is odd only when both factors are odd, and \(\Delta\) is odd, so \(y\) is odd.
+\end{proof}
+
+\begin{corollary}
+\label{cor:lane}
+Assume \(0<\Delta\), assume that \(\Delta\) is odd, and assume \(a<K\). If \(2^{a}\equiv -q\pmod{\Delta}\), then there are integers \(n\) and \(y\) such that
+\[
+q+2^{a}=n\Delta,\qquad q+2^{K-a}=y\Delta,
+\]
+the integer \(y\) is odd, and \(K\) odd implies \(n\neq y\).
+\end{corollary}
+
+\begin{proof}
+Theorem~\ref{thm:congruence} supplies an integer quotient \(n\) of the first numerator. Theorem~\ref{thm:partner-divides} supplies an integer quotient \(y\) of the partner numerator, and Theorem~\ref{thm:partner-odd} makes \(y\) odd. If \(K\) is odd and \(n=y\), Theorem~\ref{thm:equal} below yields \(K=2a\), which is even.
+\end{proof}
+
+\section{Products and exact powers of two}
+
+\begin{theorem}
+\label{thm:product}
+Assume \(0<\Delta\) and \(a\le K\). If \(q+2^{a}=n\Delta\) and \(q+2^{K-a}=y\Delta\), then
+\[
+qn+1=2^{a}y\qquad\text{and}\qquad qy+1=2^{K-a}n.
+\]
+\end{theorem}
+
+\begin{proof}
+Substitute \(n\Delta=q+2^{a}\) and \(\Delta=2^{K}-q^{2}\):
+\begin{align*}
+(qn+1)\Delta
+&=q(n\Delta)+\Delta\\
+&=q\bigl(q+2^{a}\bigr)+2^{K}-q^{2}\\
+&=2^{a}q+2^{K}.
+\end{align*}
+Since \(a+(K-a)=K\), the power \(2^{K}\) splits as \(2^{a}\cdot 2^{K-a}\), and the right-hand side equals \(2^{a}(q+2^{K-a})=2^{a}(y\Delta)\). Thus \((qn+1)\Delta=(2^{a}y)\Delta\). The difference of the two parenthesized integers, multiplied by \(\Delta\), is zero. Because \(\Delta\neq 0\), the parenthesized integers agree. The symmetric calculation, using \((K-a)+a=K\), gives \(qy+1=2^{K-a}n\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:exact}
+Assume \(a\le K\), \(qn+1=2^{a}y\), \(qy+1=2^{K-a}n\), and assume that both \(n\) and \(y\) are odd. Then both \(qn+1\) and \(qy+1\) are even if and only if \(1\le a<K\).
+\end{theorem}
+
+\begin{proof}
+If \(a=0\), the first identity says \(qn+1=y\), which is odd. If \(a=K\), then \(K-a=0\) and the second identity says \(qy+1=n\), which is odd. Conversely, if \(1\le a<K\), both exponents are positive, so both powers of two are even. The product of an even integer with any integer is even, and the two identities identify the seeds with those products.
+\end{proof}
+
+\section{Equal quotients}
+
+\begin{theorem}
+\label{thm:equal}
+Assume \(0<\Delta\) and \(a\le K\). If \(q+2^{a}=n\Delta\), \(q+2^{K-a}=y\Delta\), and \(n=y\), then
+\[
+K=2a,\qquad q=2^{a}-1,\qquad n=y=1.
+\]
+\end{theorem}
+
+\begin{proof}
+Equality of the quotients makes the numerators equal, so \(2^{a}=2^{K-a}\). Injectivity of \(k\mapsto 2^{k}\) on the nonnegative integers, which holds because the base is at least \(2\), gives \(a=K-a\). Adding \(a\) to both sides and using \(a\le K\) gives \(K=a+a=2a\).
+
+Write \(d=2^{a}-q\) and \(s=2^{a}+q\). Then
+\[
+ds=(2^{a}-q)(2^{a}+q)=2^{2a}-q^{2}=2^{K}-q^{2}=\Delta.
+\]
+The first quotient equation says \(s=n\Delta\). Hence \(s=n(ds)=(dn)s\), so \(s(dn-1)=0\). The factor \(s\) is nonzero: otherwise \(\Delta=ds=0\). Therefore \(dn=1\). Passing to absolute values, \(d\) and \(n\) are units of absolute value \(1\), and in particular the absolute value of \(d\) is \(1\). Thus \(d=1\) or \(d=-1\).
+
+If \(d=1\), then \(q=2^{a}-1\) and \(n=1\). The hypothesis \(n=y\) gives \(y=1\).
+
+If \(d=-1\), then \(q=2^{a}+1\) and \(s=2^{a}+q=2\cdot 2^{a}+1\). Lemma~\ref{lem:pow-positive} makes this sum positive, while \(\Delta=ds=-s\) is negative, contradicting \(0<\Delta\).
+\end{proof}
+
+\begin{corollary}
+\label{cor:odd-k}
+Under the hypotheses of Theorem~\ref{thm:equal}, if \(K\) is odd then \(n\neq y\).
+\end{corollary}
+
+\begin{proof}
+The relation \(K=2a\) exhibited by Theorem~\ref{thm:equal} says that \(K\) is even.
+\end{proof}
+
+\begin{remark}
+Equality is possible when \(K\) is even. For \(K=4\), \(q=3\), and \(a=2\), one has \(\Delta=16-9=7\) and
+\[
+n=\frac{3+2^{2}}{7}=1,\qquad y=\frac{3+2^{2}}{7}=1.
+\]
+Here \(q=2^{2}-1\) and \(K=2\cdot 2\). The same pattern with the two exponents exchanged is unequal and has odd length: for \(K=5\), \(q=5\), and \(a=1\), one has \(\Delta=7\), \(n=1\), and \(y=3\).
+
+Oddness of the partner uses a positive remaining exponent. For \(K=1\), \(q=1\), and \(a=1\), one has \(\Delta=1\) and partner quotient \((1+2^{0})/1=2\), which is even.
+\end{remark}
+
+\begin{remark}
+The classification does not assert that an even length admits no quotient of absolute value at least \(3\). It does not use a finiteness theorem for the equation \(x^{2}+D=2^{n}\). It says nothing about residue order, repunit divisors, profiles, discriminators, phase rigidity, a parent identity, a family split, excursions, cyclic gaps, a terminal power, a marginal repair, or the comparison \(2\rho\le\mu\le 4\rho\).
+\end{remark}
+
+\end{document}
