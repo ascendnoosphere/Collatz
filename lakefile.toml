@@ -71,6 +71,7 @@ defaultTargets = [
   "BurstGrowth",
   "TwoAffineCongruence",
   "TwoAffineEven",
+  "OneExcursion",
 ]
 
 [[require]]
@@ -385,3 +386,7 @@ srcDir = "QCD.TwoAffineCongruence.001/lean"
 [[lean_lib]]
 name = "TwoAffineEven"
 srcDir = "QCD.TwoAffineEven.001/lean"
+
+[[lean_lib]]
+name = "OneExcursion"
+srcDir = "QCD.OneExcursion.001/lean"

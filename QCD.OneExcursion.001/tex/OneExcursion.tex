@@ -1,0 +1,229 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{One odd excursion and the length-six exit}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For an odd seed \(n=2^a u-1\), the single-even exit is \(y=(3^a u-1)/2\). The quarter and half parents of that exit lie strictly below \(n\) exactly when two explicit linear forms in \(u\) are positive. Those forms are positive only for \(a\le 2\) and \(a\le 3\) respectively, so both fail for every positive \(u\) once \(a\ge 4\). For \(a\ge 2\) the same exit obeys \(9(n+1)\le 8(y+1)\). Six such steps force the exit to be at least \(2n+1\), and then none of the four elementary cleared-parent inequalities is strict.
+\end{abstract}
+
+\section{Seed, shortcut, and coefficients}
+
+\begin{definition}
+The shortcut \(T\) sends an even positive integer to its half and an odd positive integer to \((3n+1)/2\). For \(a\in\N\) and a positive odd integer \(u\), write \(n=2^a u-1\). The run of \(a\) odd shortcuts is the sequence \(3^j 2^{a-j}u-1\) for \(0\le j\le a\).
+\end{definition}
+
+\begin{definition}
+The quarter and half coefficients are the integers
+\[
+C_1(a)=2^{a+3}-3^{a+1},\qquad C_2(a)=2^{a+2}-3^a.
+\]
+\end{definition}
+
+\begin{lemma}
+\label{lem:recurrence}
+\(C_1(a)=C_2(a+1)\) and \(C_2(a+1)=2C_2(a)-3^a\). The values \(C_2(0),C_2(1),C_2(2),C_2(3),C_2(4)\) are \(3,5,7,5,-17\).
+\end{lemma}
+
+\begin{proof}
+The exponent identity \((a+1)+2=a+3\) gives the first equality. For the recurrence,
+\[
+2^{a+3}-3^{a+1}=2\cdot(2^{a+2}-3^a)-3^a,
+\]
+which is \(2C_2(a)-3^a\). The five numerical values are immediate.
+\end{proof}
+
+\begin{theorem}
+\label{thm:signs}
+\(C_2(a)>0\) if and only if \(a\le 3\), and \(C_2(a)<0\) if and only if \(a\ge 4\). Equivalently, \(C_1(a)>0\) if and only if \(a\le 2\), and \(C_1(a)<0\) if and only if \(a\ge 3\).
+\end{theorem}
+
+\begin{proof}
+Lemma~\ref{lem:recurrence} gives positivity through order three. If \(C_2(a)<0\), then
+\[
+C_2(a+1)=2C_2(a)-3^a<0
+\]
+because \(3^a>0\). Starting from \(C_2(4)=-17\), every later value is negative. The two equivalences for \(C_1\) are the same statements shifted by one.
+\end{proof}
+
+\section{Parent comparisons}
+
+\begin{theorem}
+\label{thm:comparisons}
+Let \(u>0\) and \(2^a u\ge 1\). Then
+\[
+3^{a+1}u-1<8(2^a u-1)\iff 7<C_1(a)\,u.
+\]
+If also \(3\le 3^a u\), then
+\[
+3^a u-3<4(2^a u-1)\iff 1<C_2(a)\,u.
+\]
+\end{theorem}
+
+\begin{proof}
+The hypothesis \(u>0\) gives \(3^{a+1}u\ge 1\). Expanding the first proposed inequality in \(\Z\) produces
+\[
+3^{a+1}u-1<2^{a+3}u-8,
+\]
+and rearranging the constant terms yields \(7<(2^{a+3}-3^{a+1})u\). The same expansion with the hypothesis \(3\le 3^a u\) turns the second inequality into \(3^a u-3<2^{a+2}u-4\), hence \(1<C_2(a)\,u\). Both directions reverse because every step was an equivalence of integer inequalities and the natural-number subtractions were exact under the stated bounds.
+\end{proof}
+
+\begin{corollary}
+\label{cor:ranges}
+Let \(u>0\). If \(a=2\) and \(u\ge 3\), then both inequalities of Theorem~\ref{thm:comparisons} hold, since \(C_1(2)=5\) and \(C_2(2)=7\). If \(a=3\), then \(C_1(3)=C_2(4)=-17<0\), so the quarter inequality fails, while \(C_2(3)=5\) makes the half inequality hold. If \(a\ge 4\), both coefficients are negative, so both inequalities fail.
+\end{corollary}
+
+\begin{corollary}
+\label{cor:parents}
+If \(8\) divides \(3^{a+1}u-1\) and \(7<C_1(a)\,u\), the quotient \((3^{a+1}u-1)/8\) is strictly less than \(n\). If \(4\) divides \(3^a u-3\), \(3\le 3^a u\), and \(1<C_2(a)\,u\), the quotient \((3^a u-3)/4\) is strictly less than \(n\). In both cases multiplication by the denominator recovers the numerator.
+\end{corollary}
+
+\begin{proof}
+Theorem~\ref{thm:comparisons} supplies the inequality before division. Dividing by a positive integer preserves the strict inequality, and divisibility restores the numerator.
+\end{proof}
+
+\section{Shifted growth and the length-six block}
+
+\begin{lemma}
+\label{lem:gap}
+If \(a\ge 2\), then \(9\cdot 2^a\le 4\cdot 3^a\).
+\end{lemma}
+
+\begin{proof}
+The case \(a=2\) is \(36\le 36\). If the inequality holds at \(a\), then
+\[
+9\cdot 2^{a+1}=2(9\cdot 2^a)\le 2(4\cdot 3^a)=8\cdot 3^a\le 12\cdot 3^a=4\cdot 3^{a+1}.
+\]
+\end{proof}
+
+\begin{theorem}
+\label{thm:slack}
+Let \(a\ge 2\) and let \(u\) be odd. Then \(2\) divides \(3^a u-1\), and the exit \(y=(3^a u-1)/2\) satisfies
+\[
+9(2^a u-1)+u(4\cdot 3^a-9\cdot 2^a)+5=8y.
+\]
+In particular \(9(2^a u-1)+5\le 8y\) and \(9(n+1)\le 8(y+1)\).
+\end{theorem}
+
+\begin{proof}
+Oddness of \(u\) and the relation \(3\equiv 1\pmod{2}\) give \(3^a u\equiv 1\pmod{2}\), so the displayed division is exact. Lemma~\ref{lem:gap} makes the coefficient of \(u\) nonnegative. Set \(A=3^a\), \(B=2^a\), and \(g=u(4A-9B)\). The two elementary restorations
+\[
+9(Bu-1)+9=9Bu,\qquad u(4A-9B)+u(9B)=u(4A)
+\]
+and the companion identity \(4(Au-1)+4=4Au\) rearrange to
+\[
+9(Bu-1)+g+5=4(Au-1).
+\]
+Doubling the exact half \(Au-1=2y\) replaces the right side by \(8y\). Dropping the nonnegative summand \(g\) gives \(9(n)+5\le 8y\). Adding \(4\) produces \(9(n)+9\le 8y+4\). The left side is \(9(n+1)\), and \(8y+4\le 8y+8=8(y+1)\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:chain}
+If \(9(x_i+1)\le 8(x_{i+1}+1)\) for every \(i<k\), then \(9^k(x_0+1)\le 8^k(x_k+1)\).
+\end{lemma}
+
+\begin{proof}
+The case \(k=0\) is equality. The inductive step multiplies the previous bound by \(9\) and the last hypothesis by \(8^k\), then uses \(9\cdot 8^k=8^k\cdot 9\) and \(8^k\cdot 8=8^{k+1}\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:six}
+Suppose \(9^k(n+1)\le 8^k(y+1)\) and \(2\cdot 8^k\le 9^k\). If \(y\le 2n\), the two inequalities cannot hold simultaneously. In particular \(2\cdot 8^6\le 9^6\), so six growth steps force \(y\ge 2n+1\). The fifth power does not satisfy the same numerical hypothesis, because \(2\cdot 8^5>9^5\). Once \(y\ge 2n+1\), none of \(3y+1<4n\), \(y-1<2n\), \(2y-1<3n\), and \(y<2n\) holds.
+\end{theorem}
+
+\begin{proof}
+From \(y\le 2n\) one has \(y+1\le 2n+1<2(n+1)\). Multiplication by the positive integer \(8^k\) preserves the last strict inequality. Combining it with the chain and with \(2\cdot 8^k\le 9^k\) produces
+\[
+2\cdot 8^k(n+1)\le 9^k(n+1)\le 8^k(y+1)\le 8^k(2n+1)<8^k\cdot 2(n+1),
+\]
+which is absurd. The two power comparisons are the integers \(531441\ge 524288\) and \(59049<65536\). If \(y\ge 2n+1\), then \(3y+1\ge 6n+4>4n\), \(y-1\ge 2n\), \(2y-1\ge 4n+1>3n\), and \(y>2n\).
+\end{proof}
+
+\section{Orbit identities}
+
+\begin{lemma}
+\label{lem:step}
+If \(b\ge 1\) and \(u\) is odd, one odd shortcut sends \(2^b 3^j u-1\) to \(2^{b-1}3^{j+1}u-1\).
+\end{lemma}
+
+\begin{proof}
+The factor \(2^b=2\cdot 2^{b-1}\) makes the displayed state odd. Writing \(M=2^b 3^j u\) and \(P=2^{b-1}3^{j+1}u\), the relation \(2P=3M\) rearranges to \(3(M-1)+1=2(P-1)\). The shortcut therefore divides the left side by \(2\) and returns \(P-1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:run}
+If \(u\) is odd and \(j\le a\), then \(T^j(2^a u-1)=3^j 2^{a-j}u-1\). If moreover \(3^a u\equiv 3\pmod{4}\), then \(T^{a+1}(n)=y\).
+\end{theorem}
+
+\begin{proof}
+The case \(j=0\) is the seed. Lemma~\ref{lem:step} advances the induction while \(j<a\), because the remaining power of two is then at least \(2^1\). At \(j=a\) the state is \(3^a u-1\). The congruence modulo \(4\) means that this integer is twice an odd positive integer, so the next shortcut is the displayed half.
+\end{proof}
+
+\begin{theorem}
+\label{thm:meeting}
+Let \(a\ge 1\), let \(u\) be odd, and let \(u\equiv(-1)^a\pmod{4}\). Then \(4\) divides \(3^a u-1\), and both \(T^{a+2}(2^a u-1)\) and \(T^{a+1}(2^{a-1}u-1)\) equal \((3^a u-1)/4\).
+\end{theorem}
+
+\begin{proof}
+The congruence on \(u\) is exactly the condition that \(3^a u\equiv 1\pmod{4}\), so the numerator of the quarter is divisible by \(4\). Theorem~\ref{thm:run} reaches \(3^a u-1\) in \(a\) shortcuts, and two exact halvings remain. The predecessor \(2^{a-1}u-1\) has weight \(3^{a-1}u\equiv 3\pmod{4}\). One further odd shortcut from its single-even exit clears the same quarter: if \(q\) is that exit, then \(2q=3^{a-1}u-1\) and
+\[
+2(3q+1)=3(3^{a-1}u-1)+2=3^a u-1.
+\]
+Dividing by \(4\) gives the common value.
+\end{proof}
+
+\begin{theorem}
+\label{thm:free}
+If \(a\ge 1\), then \(3\) does not divide \(3^a u+1\). If \(3^a u=3^{a'}u'\) with \(3\nmid u\) and \(3\nmid u'\), then \(a=a'\) and \(u=u'\).
+\end{theorem}
+
+\begin{proof}
+For \(a\ge 1\) the power \(3^a\) is divisible by \(3\), so \(3^a u+1\equiv 1\pmod{3}\). For the uniqueness statement, suppose \(a\le a'\) and write \(a'=a+k\). Cancelling the positive factor \(3^a\) yields \(u=3^k u'\). If \(k\ge 1\), then \(3\) divides \(u\), contrary to hypothesis. Thus \(k=0\) and \(u=u'\). The opposite order of the exponents is the same argument.
+\end{proof}
+
+\begin{theorem}
+\label{thm:example}
+The integer \(75=2^2\cdot 19-1\) has odd part \(19\equiv 3\pmod{4}\). Its single-even exit is \(85=(3^2\cdot 19-1)/2\), and the quarter parent is \(64=(3\cdot 85+1)/4\), which is strictly less than \(75\).
+\end{theorem}
+
+\begin{proof}
+Each equality is a direct arithmetic evaluation, and \(64<75\).
+\end{proof}
+
+\begin{remark}
+The identities above do not assert that every residual excursion is finite, that joins of several excursions cover every seed, or that every orbit converges. They do not classify terminal powers, and they do not make the length-five cutoff uniform. The nonnegativity in Theorem~\ref{thm:slack} is a slack in \(8y-9n\), not a proof that \(y/n\) increases with \(u\).
+\end{remark}
+
+\end{document}
