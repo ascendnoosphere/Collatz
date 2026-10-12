@@ -1,0 +1,267 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{An odd burst from a string of ones}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+The Collatz shortcut halves an even natural number and sends an odd natural number \(n\) to \((3n+1)/2\). For every natural number \(a\), including zero, the first \(a\) iterates of \(2^{a}-1\) are given by \(3^{k}2^{a-k}-1\). Those \(a\) steps are odd steps, and the state after them is \(3^{a}-1\). That arrival value is even. If \(a\ge 2\), then \(3^{a}-1>2^{a}-1\). No claim is made that an iterate equals \(1\).
+\end{abstract}
+
+\begin{definition}
+\label{def:shortcut}
+Let \(\N\) contain \(0\). For \(n\in\N\), define \(T(n)=n/2\) when \(2\mid n\), and \(T(n)=(3n+1)/2\) when \(2\nmid n\). Write \(T^{0}(n)=n\) and \(T^{k+1}(n)=T(T^{k}(n))\). If \(n\) is odd, then \(3n+1\) is even, so the second branch is an integer. Call that branch an odd step.
+\end{definition}
+
+\begin{lemma}
+\label{lem:split}
+Let \(a,k\in\N\) satisfy \(k<a\). Then
+\[
+2^{a-k}=2\cdot 2^{a-(k+1)},
+\]
+and therefore
+\[
+3^{k}2^{a-k}=2\cdot\bigl(3^{k}2^{a-(k+1)}\bigr).
+\]
+The integer \(q=3^{k}2^{a-(k+1)}\) is at least \(1\).
+\end{lemma}
+
+\begin{proof}
+Since \(k<a\), the difference \(a-k\) is a positive integer and equals \(a-(k+1)+1\). Hence
+\[
+2^{a-k}=2^{a-(k+1)+1}=2^{a-(k+1)}\cdot 2=2\cdot 2^{a-(k+1)}.
+\]
+Multiplying by \(3^{k}\) and using commutativity of multiplication gives the second identity. Every factor \(3^{k}\) and \(2^{a-(k+1)}\) is a positive integer, so their product \(q\) is at least \(1\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:restore}
+For all \(a,k\in\N\),
+\[
+\bigl(3^{k}2^{a-k}-1\bigr)+1=3^{k}2^{a-k}.
+\]
+The subtraction is exact because \(3^{k}2^{a-k}\ge 1\).
+\end{lemma}
+
+\begin{proof}
+Both \(3^{k}\) and \(2^{a-k}\) are at least \(1\), so the product is at least \(1\). Subtracting \(1\) and then adding \(1\) returns that product.
+\end{proof}
+
+\begin{lemma}
+\label{lem:odd}
+Let \(a,k\in\N\) satisfy \(k<a\). Then \(3^{k}2^{a-k}-1\) is odd.
+\end{lemma}
+
+\begin{proof}
+Lemma~\ref{lem:split} writes \(3^{k}2^{a-k}=2q\) with \(q=3^{k}2^{a-(k+1)}\). Lemma~\ref{lem:restore} then gives
+\[
+\bigl(3^{k}2^{a-k}-1\bigr)+1=2q.
+\]
+Thus \(2\) divides the successor of the closed term. The residue of a natural number modulo \(2\) is \(0\) or \(1\). If the closed term were even, its successor would be congruent to \(1\) modulo \(2\), contradicting divisibility by \(2\). Therefore the closed term is congruent to \(1\) modulo \(2\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:numerator}
+Let \(q\) be a positive integer. Then
+\[
+3(2q-1)+1=2(3q-1).
+\]
+\end{lemma}
+
+\begin{proof}
+Positivity of \(q\) gives \(6q\ge 6\), hence \(6q\ge 3\) and \(6q\ge 2\). Therefore
+\begin{align*}
+3(2q-1)+1&=(6q-3)+1=6q-2,\\
+2(3q-1)&=6q-2.
+\end{align*}
+The two sides agree.
+\end{proof}
+
+\begin{lemma}
+\label{lem:step}
+Let \(a,k\in\N\) satisfy \(k<a\). Then
+\[
+\frac{3\bigl(3^{k}2^{a-k}-1\bigr)+1}{2}=3^{k+1}2^{a-(k+1)}-1.
+\]
+\end{lemma}
+
+\begin{proof}
+Set \(q=3^{k}2^{a-(k+1)}\). Lemma~\ref{lem:split} gives \(q\ge 1\) and \(3^{k}2^{a-k}=2q\), so Lemma~\ref{lem:restore} yields
+\[
+3^{k}2^{a-k}-1=2q-1.
+\]
+The same restoration at index \(k+1\), together with \(3^{k+1}=3\cdot 3^{k}\), yields
+\[
+3^{k+1}2^{a-(k+1)}=3q,
+\]
+and therefore
+\[
+3^{k+1}2^{a-(k+1)}-1=3q-1.
+\]
+Lemma~\ref{lem:numerator} now gives
+\[
+3\bigl(3^{k}2^{a-k}-1\bigr)+1=3(2q-1)+1=2(3q-1)=2\bigl(3^{k+1}2^{a-(k+1)}-1\bigr).
+\]
+Dividing by \(2\) is exact and produces the required identity.
+\end{proof}
+
+\begin{lemma}
+\label{lem:branch}
+If \(n\in\N\) is odd, then \(T(n)=(3n+1)/2\).
+\end{lemma}
+
+\begin{proof}
+An odd natural number is not divisible by \(2\), so Definition~\ref{def:shortcut} selects the odd branch.
+\end{proof}
+
+\begin{lemma}
+\label{lem:closed}
+Let \(a\in\N\). For every \(k\le a\),
+\[
+T^{k}(2^{a}-1)=3^{k}2^{a-k}-1.
+\]
+\end{lemma}
+
+\begin{proof}
+Proceed by induction on \(k\).
+
+If \(k=0\), then \(T^{0}(2^{a}-1)=2^{a}-1\) and \(3^{0}2^{a-0}-1=2^{a}-1\).
+
+Suppose the identity holds at \(k\), and assume \(k+1\le a\). Then \(k<a\). The inductive value \(3^{k}2^{a-k}-1\) is odd by Lemma~\ref{lem:odd}, so Lemma~\ref{lem:branch} and Lemma~\ref{lem:step} give
+\begin{align*}
+T^{k+1}(2^{a}-1)
+&=T\bigl(T^{k}(2^{a}-1)\bigr)
+=\frac{3\bigl(3^{k}2^{a-k}-1\bigr)+1}{2}
+=3^{k+1}2^{a-(k+1)}-1.
+\end{align*}
+This is the identity at \(k+1\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:powers}
+For every \(n\in\N\),
+\[
+2^{n+1}<3^{n+1}.
+\]
+\end{lemma}
+
+\begin{proof}
+For \(n=0\), the comparison is \(2<3\).
+
+Assume \(2^{n+1}<3^{n+1}\). The power \(2^{n+1}\) is positive. Adding it to the double of itself gives
+\[
+2\cdot 2^{n+1}<2\cdot 2^{n+1}+2^{n+1}=3\cdot 2^{n+1}.
+\]
+Multiplying the inductive inequality by the positive integer \(3\) gives \(3\cdot 2^{n+1}<3\cdot 3^{n+1}\). Therefore
+\begin{align*}
+2^{n+2}
+&=2\cdot 2^{n+1}
+<3\cdot 2^{n+1}
+<3\cdot 3^{n+1}
+=3^{n+2}.
+\end{align*}
+\end{proof}
+
+\begin{lemma}
+\label{lem:strict}
+If \(a\ge 2\), then \(2^{a}-1<3^{a}-1\).
+\end{lemma}
+
+\begin{proof}
+The hypothesis \(a\ge 2\) forces \(a=(a-1)+1\) with \(a-1\in\N\). Lemma~\ref{lem:powers} at \(n=a-1\) gives \(2^{a}<3^{a}\). A strict inequality \(x<y\) of natural numbers implies \(x\le y-1\). Also \(2^{a}\ge 1\), so \(2^{a}-1<2^{a}\). Combining these comparisons yields
+\[
+2^{a}-1<2^{a}\le 3^{a}-1,
+\]
+and hence \(2^{a}-1<3^{a}-1\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:even}
+For every \(a\in\N\), the integer \(3^{a}\) is odd, and \(3^{a}-1\) is even.
+\end{lemma}
+
+\begin{proof}
+The power \(3^{0}=1\) is odd. If \(3^{a}\) is odd, then \(3^{a+1}=3\cdot 3^{a}\) is a product of odd integers, hence odd. Thus \(3^{a}\) is odd for every \(a\).
+
+An odd natural number has the form \(2t+1\). Taking \(3^{a}=2t+1\) gives \(3^{a}-1=2t\), so \(3^{a}-1\) is even.
+\end{proof}
+
+\begin{theorem}
+\label{thm:burst-growth}
+Let \(a\in\N\), where \(0\in\N\), and let \(T\) be the shortcut of Definition~\ref{def:shortcut}. For every \(k\le a\),
+\[
+T^{k}(2^{a}-1)=3^{k}2^{a-k}-1.
+\]
+In particular,
+\[
+T^{a}(2^{a}-1)=3^{a}-1.
+\]
+For every \(k<a\), the state \(T^{k}(2^{a}-1)\) is odd, and
+\[
+T^{k+1}(2^{a}-1)=\frac{3\,T^{k}(2^{a}-1)+1}{2}.
+\]
+Thus the first \(a\) steps of the orbit of \(2^{a}-1\) are odd steps, and the state after those steps is \(3^{a}-1\). The integer \(3^{a}-1\) is even. If \(a\ge 2\), then
+\[
+3^{a}-1>2^{a}-1.
+\]
+\end{theorem}
+
+\begin{proof}
+The closed formula is Lemma~\ref{lem:closed}. Setting \(k=a\) gives
+\[
+T^{a}(2^{a}-1)=3^{a}2^{a-a}-1=3^{a}\cdot 2^{0}-1=3^{a}-1,
+\]
+since \(2^{0}=1\).
+
+Fix \(k<a\). Lemma~\ref{lem:closed} and Lemma~\ref{lem:odd} show that \(T^{k}(2^{a}-1)\) is odd. Lemma~\ref{lem:branch} therefore selects the odd branch, and Lemma~\ref{lem:step} identifies the next state:
+\[
+T^{k+1}(2^{a}-1)=\frac{3\,T^{k}(2^{a}-1)+1}{2}.
+\]
+Every one of the \(a\) steps, from time \(0\) through time \(a-1\), is an odd step, and the state at time \(a\) is \(3^{a}-1\).
+
+Lemma~\ref{lem:even} shows that \(3^{a}-1\) is even. If \(a\ge 2\), Lemma~\ref{lem:strict} gives \(2^{a}-1<3^{a}-1\), which is the same comparison as \(3^{a}-1>2^{a}-1\).
+\end{proof}
+
+\begin{remark}
+\label{rem:examples}
+For \(a=2\), the orbit is \(3,5,8\). Both steps are odd, \(8=3^{2}-1\) is even, and \(8>3\). For \(a=3\), the orbit is \(7,11,17,26\). The three steps are odd, \(26=3^{3}-1\) is even, and \(26>7\).
+\end{remark}
+
+\begin{remark}
+\label{rem:not-one}
+Theorem~\ref{thm:burst-growth} does not assert that \(T^{k}(2^{a}-1)=1\) for any \(k\), and it does not assert that every positive integer reaches \(1\).
+\end{remark}
+
+\end{document}

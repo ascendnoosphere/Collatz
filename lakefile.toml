@@ -67,6 +67,8 @@ defaultTargets = [
   "UniformContraction",
   "CyclicGap",
   "CarryGap",
+  "TwoAffineWindow",
+  "BurstGrowth",
 ]
 
 [[require]]
@@ -365,3 +367,11 @@ srcDir = "QCD.CyclicGap.001/lean"
 [[lean_lib]]
 name = "CarryGap"
 srcDir = "QCD.CarryGap.001/lean"
+
+[[lean_lib]]
+name = "TwoAffineWindow"
+srcDir = "QCD.TwoAffineWindow.001/lean"
+
+[[lean_lib]]
+name = "BurstGrowth"
+srcDir = "QCD.BurstGrowth.001/lean"
