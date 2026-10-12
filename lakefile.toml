@@ -18,6 +18,7 @@ defaultTargets = [
   "AdditiveDivisibleOffset",
   "CommonBaseGeneralHighOffset",
   "CommonBaseGeneralHighOffsetRay",
+  "ClassicalAbsorption",
   "AffineEscape",
   "Homogeneous",
   "DependentHomogeneous",
@@ -127,6 +128,10 @@ srcDir = "QCD.CommonBase.003/lean"
 [[lean_lib]]
 name = "CommonBaseGeneralHighOffsetRay"
 srcDir = "QCD.CommonBase.003/lean"
+
+[[lean_lib]]
+name = "ClassicalAbsorption"
+srcDir = "QCD.ClassicalRecovery.001/lean"
 
 [[lean_lib]]
 name = "AffineEscape"

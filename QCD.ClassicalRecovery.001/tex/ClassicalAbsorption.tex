@@ -1,0 +1,413 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{ascendnoosphere}
+\date{\today}
+
+
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+The raw maps with coefficients \(3\cdot2^a,2^a3^b,2\) have the same
+positive universal capture obligation as the classical raw map.
+Binary compression preserves the exact odd target \(3^b\).
+A finite prefix enters the invariant ternary lattice, after at most \(b\)
+compressed affine instructions, and one common entry witness determines
+the entire subsequent tail. We retain both the original raw clock and
+the separate classical variable clock. The designated cycle has
+primitive original period \(a+3\). No classical convergence hypothesis
+is proved or assumed in the equivalence theorem.
+\end{abstract}
+
+\section{Parameters and the exact target}
+
+Throughout, \(a,b\in\N\), with zero allowed, and \(\sigma=3^b\).
+For every signed integer state, define
+\[
+F_{a,b}(n)=
+\begin{cases}
+n/2,&2\mid n,\\
+2^a(3n+\sigma),&2\nmid n.
+\end{cases}
+\]
+Division has precedence, including at zero. Put \(G_b=F_{0,b}\) and
+\(H=F_{0,0}\). Thus \(H\) is the classical raw map, with odd instruction
+\(3n+1\), not the shortcut map with odd instruction \((3n+1)/2\).
+Iterates are indexed by \(\N\), including time zero.
+
+The archived transcript records this family and its designated cycle in
+formulas (18)--(20) \cite{QcdRV43}. It also identifies the equivalent
+positive convergence obligations. The proofs below use exact coprime scaling
+\cite{AscendScaling}, binary block compression \cite{AscendCompressionI},
+and full raw-time target recovery \cite{AscendCompressionII}.
+The universal assertions always quantify over positive seeds.
+Pointwise compression identities retain every signed seed.
+
+% Oddness is the branch information needed for both scaling and target reflection.
+\begin{lemma}[Ternary scale]\label{ScaleOdd}
+The integer \(\sigma\) is positive, satisfies \(\gcd(\sigma,2)=1\), and is odd.
+For every \(m\in\Z\),
+\[
+G_b(\sigma m)=\sigma H(m),
+\qquad
+F_{a,b}(\sigma m)=\sigma F_{a,0}(m).
+\]
+Consequently, both equalities hold for every iterate with the same raw time.
+\end{lemma}
+
+\begin{proof}
+Positivity follows from \(3>0\). Every power of \(3\) is coprime to \(2\),
+so \(\sigma\) is odd. Hence \(2\mid\sigma m\) if and only if \(2\mid m\).
+On this legal division branch, \(\sigma m/2=\sigma(m/2)\).
+On the other branch,
+\[
+3\sigma m+\sigma=\sigma(3m+1),
+\qquad
+2^a(3\sigma m+\sigma)=\sigma\,2^a(3m+1).
+\]
+This proves both one-step identities. Induction on the number of raw
+steps proves their iterate versions: substitute the preceding iterate
+as \(m\) into the one-step identity. The image \(\sigma\Z\) is therefore
+invariant. Multiplication by \(\sigma\) is a bijection from \(\Z\) to
+this invariant lattice, not to the whole original state space.
+\end{proof}
+
+\section{Binary blocks and full target reflection}
+
+Let \(R_b(k,n)\) count the affine instructions among the first \(k\)
+steps of \(G_b\) from \(n\), and put
+\[
+\tau_{a,b}(k,n)=k+aR_b(k,n).
+\]
+This count refers to actual compressed endpoint states.
+
+% Every block is legal, including when its affine endpoint is zero.
+\begin{lemma}[Exact block clock]\label{BlockClock}
+For every \(n\in\Z\) and \(k\in\N\),
+\[
+F_{a,b}^{\,\tau_{a,b}(k,n)}(n)=G_b^k(n).
+\]
+At an even compressed state a block has length one.
+At an odd compressed state \(x\) a block has length \(a+1\), and
+\[
+F_{a,b}^{\,\ell}(x)=2^{a+1-\ell}(3x+\sigma)
+\qquad(1\le\ell\le a+1).
+\]
+Every strict interior state of this latter block is even.
+\end{lemma}
+
+\begin{proof}
+For even \(x\), both maps use the same division \(x/2\).
+For odd \(x\), the first raw state is \(2^a(3x+\sigma)\).
+For \(1\le\ell<a+1\), the displayed exponent is positive, so division by
+\(2\) is legal and removes one binary factor. Induction proves the formula
+through its endpoint \(3x+\sigma=G_b(x)\). The argument also applies when
+that endpoint is zero, since division is then still legal.
+When \(a=0\), the block consists only of its endpoint and has no interior.
+
+Concatenate these blocks along the actual \(G_b\) orbit.
+Each compressed division contributes one original step and each affine
+instruction contributes \(a+1\). Induction on \(k\) gives the endpoint
+identity and the clock formula.
+\end{proof}
+
+% Strictly positive clock increments account for every original raw time.
+\begin{theorem}[Exact odd-target reflection]\label{TargetReflection}
+For every signed \(n\),
+\[
+\bigl(\exists r\in\N:F_{a,b}^r(n)=\sigma\bigr)
+\quad\Longleftrightarrow\quad
+\bigl(\exists k\in\N:G_b^k(n)=\sigma\bigr).
+\]
+\end{theorem}
+
+\begin{proof}
+A compressed hit expands to a raw hit by Lemma~\ref{BlockClock}.
+Conversely, consecutive clock values differ by one or by \(a+1\),
+and \(\tau_{a,b}(k,n)\ge k\). For each raw time \(r\), there is a largest
+\(k\) with \(\tau_{a,b}(k,n)\le r\): the set is nonempty because it contains
+zero and finite because \(k\le r\). Thus
+\[
+\tau_{a,b}(k,n)\le r<\tau_{a,b}(k+1,n).
+\]
+If \(r\) is not the left endpoint, it is a strict block interior.
+Such a state is even by Lemma~\ref{BlockClock}, whereas \(\sigma\) is odd
+by Lemma~\ref{ScaleOdd}. A hit must therefore occur at an endpoint, which
+is the same compressed state. This proves reflection at every raw time,
+not only at a selected subsequence.
+\end{proof}
+
+\section{Finite entry and one common tail}
+
+% The induction preserves the inherited divisibility obligation at every child.
+\begin{lemma}[Finite ternary entry]\label{FiniteEntry}
+For every \(n>0\) there are \(t\in\N\) and \(m>0\) such that
+\[
+G_b^t(n)=\sigma m,
+\qquad
+A_{G_b}(t,n)\le b.
+\]
+Here \(A_{G_b}\) counts the affine instructions in that compressed raw
+prefix. It does not count divisions.
+\end{lemma}
+
+\begin{proof}
+More generally, suppose \(x>0\), \(r\in\N\), and \(\sigma\mid3^r x\).
+We prove finite entry with at most \(r\) future affine instructions by
+well-founded induction on the lexicographic pair \((r,x)\in\N^2\).
+
+If \(\sigma\mid x\), use time zero. If not, then \(r>0\), because the
+case \(r=0\) would already give \(\sigma\mid x\).
+If \(x\) is even, write \(x=2y\). Positivity gives \(0<y<x\).
+Since \(\sigma\) is coprime to \(2\), the inherited relation
+\(\sigma\mid 2\cdot3^r y\) implies \(\sigma\mid3^r y\).
+The legal division thus preserves \(r\), strictly decreases \(x\), and
+uses no affine instruction. Apply the induction hypothesis at \((r,y)\).
+
+If \(x\) is odd, its next state \(y=3x+\sigma\) is positive.
+The two relations
+\[
+\sigma\mid3^r x,\qquad
+\sigma\mid3^{r-1}\sigma
+\]
+give \(\sigma\mid3^{r-1}y\).
+The legal affine instruction decreases the first component to \(r-1\),
+regardless of the increase in \(y\). Its cost is one affine instruction;
+the induction hypothesis supplies at most \(r-1\) additional ones.
+In both branches, prepend the legal step to the finite inductive prefix.
+This proves entry, the affine budget and compatibility of the same path.
+
+Initially take \(r=b\), since \(\sigma=3^b\mid3^b n\).
+Every state is positive: legal positive even division stays positive,
+and \(3x+\sigma>0\) on the affine branch. At the entered state
+\(\sigma m>0\), the quotient \(m\) is therefore positive.
+\end{proof}
+
+% The entry witness is chosen once and retained for all future times.
+\begin{theorem}[Common compressed and original tails]\label{CommonTail}
+For every \(n>0\), one pair \(t\in\N,m>0\) satisfies
+\[
+G_b^t(n)=\sigma m,\qquad A_{G_b}(t,n)\le b,
+\]
+and, for every \(s\in\N\),
+\[
+G_b^{t+s}(n)=\sigma H^s(m).
+\]
+At the original entry time \(r=\tau_{a,b}(t,n)\), the same \(m\) satisfies
+\[
+F_{a,b}^{r+s}(n)=\sigma F_{a,0}^{s}(m)
+\qquad\text{for every }s\in\N.
+\]
+\end{theorem}
+
+\begin{proof}
+Choose \(t,m\) once by Lemma~\ref{FiniteEntry}.
+Iterate composition and Lemma~\ref{ScaleOdd} give
+\(G_b^{t+s}(n)=G_b^s(\sigma m)=\sigma H^s(m)\) for every \(s\).
+Lemma~\ref{BlockClock} gives \(F_{a,b}^{r}(n)=\sigma m\).
+Applying the second identity of Lemma~\ref{ScaleOdd} at this same entered
+state yields \(F_{a,b}^{r+s}(n)=\sigma F_{a,0}^{s}(m)\).
+No subsequent choice of an entry witness is made.
+\end{proof}
+
+The second tail uses the original raw time \(s\).
+Comparison with the classical map instead has the clock
+\[
+F_{a,b}^{\,r+u+aR_0(u,m)}(n)=\sigma H^u(m).
+\]
+Indeed apply Lemma~\ref{BlockClock} with \(b=0\) to the right-hand side
+of the original tail. The two clock statements are distinct.
+The entered seed \(m\) is not asserted to equal the original \(n\).
+
+\section{The remaining positive capture obligation}
+
+% Both implications retain the exact targets and their positive domains.
+\begin{theorem}[Positive capture]\label{CaptureEquivalence}
+For each fixed \(a,b\in\N\),
+\[
+\begin{aligned}
+&\bigl(\forall n\in\Z,\ n>0\Longrightarrow
+          \exists r\in\N:F_{a,b}^r(n)=3^b\bigr)\\
+&\qquad\Longleftrightarrow
+\bigl(\forall m\in\Z,\ m>0\Longrightarrow
+          \exists u\in\N:H^u(m)=1\bigr).
+\end{aligned}
+\]
+\end{theorem}
+
+\begin{proof}
+Assume first the family assertion. Given any \(m>0\), the seed
+\(\sigma m\) is positive. Its family orbit hits \(\sigma\).
+Theorem~\ref{TargetReflection} yields a compressed hit
+\(G_b^k(\sigma m)=\sigma\). Lemma~\ref{ScaleOdd} identifies that state
+with \(\sigma H^k(m)\). Since \(\sigma\ne0\), cancellation gives
+\(H^k(m)=1\). This holds for every positive classical seed \(m\).
+
+Conversely assume the classical assertion and take an arbitrary \(n>0\).
+Use the common entry \(G_b^t(n)=\sigma m\) from
+Theorem~\ref{CommonTail}, where \(m>0\).
+There is \(u\in\N\) with \(H^u(m)=1\).
+The compressed tail gives \(G_b^{t+u}(n)=\sigma\), and
+Theorem~\ref{TargetReflection} recovers an original raw hit.
+The seed \(n\) was arbitrary, so the family assertion follows.
+\end{proof}
+
+This theorem proves an equivalence of universal positive obligations.
+It does not prove the classical assertion and does not assert a pointwise
+comparison with classical capture at the same original seed.
+The finite entry obligations are solved by Lemma~\ref{FiniteEntry};
+the remaining universal obligation is precisely the one displayed
+in Theorem~\ref{CaptureEquivalence}.
+
+\section{The designated primitive original cycle}
+
+% All intermediate division guards and every shorter positive return are checked.
+\begin{theorem}[Primitive raw period]\label{PrimitiveCycle}
+The state \(\sigma\) has primitive original raw period \(a+3\).
+Its complete trace is
+\[
+\sigma,\ 2^{a+2}\sigma,\ 2^{a+1}\sigma,\ \ldots,\ 2\sigma,\ \sigma,
+\]
+and more precisely
+\[
+F_{a,b}^{j+1}(\sigma)=2^{a+2-j}\sigma
+\qquad(0\le j\le a+2).
+\]
+\end{theorem}
+
+\begin{proof}
+Oddness of \(\sigma\) forces its affine branch, whose image is
+\(2^a(3\sigma+\sigma)=2^{a+2}\sigma\).
+Each subsequent positive binary exponent gives an even state and hence
+a legal division by \(2\). Induction proves the trace through exponent zero,
+which occurs at time \(a+3\).
+
+If \(0<r<a+3\) were a return, put \(j=r-1\).
+The trace would give
+\(\sigma=2^{a+2-j}\sigma\), with \(a+2-j>0\).
+Canceling \(\sigma\ne0\) forces a strictly positive power of \(2\) to
+equal one, a contradiction. Thus every positive return time is at least
+\(a+3\), proving primitive minimality against all original raw returns.
+No universal convergence assumption enters this argument.
+\end{proof}
+
+\section{Concrete instances and finite replay}
+
+The exponent-zero instance has the raw cycle \(1,4,2,1\).
+At \((a,b)=(2,1)\), the designated cycle is
+\[
+3,\ 48,\ 24,\ 12,\ 6,\ 3.
+\]
+The seed \(1\) enters \(3\Z\) along \(1,24,12,6\), at original time three
+with normalized seed two, and then reaches the target three.
+Its compressed prefix is \(1,6\), with one affine instruction.
+
+At \((a,b)=(1,2)\), the designated cycle is \(9,72,36,18,9\).
+The original seed-one prefix is
+\[
+1,\ 24,\ 12,\ 6,\ 3,\ 36,\ 18.
+\]
+It enters \(9\Z\) at time six with normalized seed two.
+The compressed prefix \(1,12,6,3,18\) uses two affine instructions,
+and its expanded time is \(4+1\cdot2=6\).
+The next original state is the target nine.
+
+The exact signed replay uses arbitrary-precision integers and checks every
+division guard, binary block endpoint, strict interior, entry affine budget,
+same-clock original tail and separate classical variable clock.
+Its main box is
+\[
+0\le a\le16,\qquad 0\le b\le12,\qquad1\le|n|\le64,
+\]
+containing \(17\cdot13\cdot128=28288\) seed certificates.
+These are not distinct-orbit counts or an infinite capture proof.
+
+The callable resource bounds are \(a\le64\), \(b\le32\) and at most
+\(512\) seed bits. A compressed prefix cap of \(4096\), an original tail of
+\(32\) steps and a classical comparison of \(16\) steps bound computation
+only. A refused prefix is not a noncapture certificate.
+Zero, nil, oversized and unconfigured seed inputs are refused.
+
+Eight chunks have disjoint workspaces and result slots.
+Operands reserve \(2048\) bits before replay.
+For the allowed ternary exponent, \(3^{32}=1853020188851841<2^{51}\).
+The entry budget permits at most \(32\) compressed affine instructions,
+each satisfying
+\[
+|3x+\sigma|\le4\max\{|x|,\sigma\}.
+\]
+Thus compressed prefix states are smaller in magnitude than \(2^{576}\),
+and binary interiors than \(2^{640}\).
+After entry, allowing the scale separately gives the conservative bounds
+\(2^{755}\) for the original \(32\)-step tail and \(2^{723}\) for the
+expanded \(16\)-step classical comparison.
+These operand bounds fit the reservation; they do not assert universal
+zero allocation. Warmed zero allocation is measured only at the four
+tested pairs \((0,0),(16,12),(64,32),(3,0)\) with seed \(27\).
+Cycle replay covers all \(65\cdot33=2145\) bounded exponent presentations,
+not all cycles.
+
+\section{Formal correspondence and domain boundaries}
+
+The formal file is \texttt{ClassicalAbsorption.lean}.
+Its parameter definition retains signed integer coefficients and the
+division-first guard. The principal correspondences are:
+\begin{itemize}
+\item \texttt{ClassicalAbsorptionCompressionCaptureIff}:
+      Theorem~\ref{TargetReflection}, for every signed seed.
+\item \texttt{ClassicalAbsorptionCompressedTail}:
+      compressed entry, affine budget and one common classical tail.
+\item \texttt{ClassicalAbsorptionRawTail}:
+      the original raw tail, Theorem~\ref{CommonTail}.
+\item \texttt{ClassicalAbsorptionPositiveCaptureIff}:
+      positive capture, Theorem~\ref{CaptureEquivalence}.
+\item \texttt{ClassicalAbsorptionCycleTrace}:
+      the explicit division phases, Theorem~\ref{PrimitiveCycle}.
+\item \texttt{ClassicalAbsorptionPrimitiveCycle}:
+      minimal return time, Theorem~\ref{PrimitiveCycle}.
+\end{itemize}
+The finite-entry proof uses the existing guarded offset-entry induction;
+the raw-tail proof uses the existing binary endpoint identity and
+coprime scaling on the invariant lattice.
+The formal first-recursion affine count used in the entry budget and
+the endpoint-recursion compression count are separate APIs.
+No additional formal equality of these APIs is asserted here.
+
+Finally, the broader source family \((3c,c,2)\), with \(c=2^a u\) and odd
+\(u\), compresses to \((3u,u,2)\). Coprime offset normalization leaves
+\((3u,1,2)\), which is classical only when \(u=1\).
+It is not covered by silently replacing that multiplier by \(3\).
+
+\bibliographystyle{amsalpha}
+\bibliography{ClassicalAbsorption}
+\end{document}

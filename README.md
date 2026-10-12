@@ -140,6 +140,26 @@ clock \((u+v)/g\). Composite bases and nonunit residuals are allowed.
 Negative divisors, nontrivial multiplier residuals and other offset regimes
 remain separate families.
 
+### Classical capture recovery and absorbing tails
+
+[QCD.ClassicalRecovery.001](QCD.ClassicalRecovery.001/README.md) treats
+\[
+(q,c,d)=(3\cdot2^a,2^a3^b,2),\qquad a,b\in\mathbb N.
+\]
+Every positive compressed seed enters \(3^b\mathbb Z\) with at most \(b\)
+affine instructions. One common entry witness determines its whole tail.
+At the original entry time, scaling preserves the original raw clock;
+comparison with the classical raw map requires the separate binary clock.
+The odd target \(3^b\) cannot occur at a strict compression-block interior.
+
+For each fixed \(a,b\), all positive original seeds reach the exact target
+\(3^b\) if and only if all positive classical raw seeds reach \(1\).
+This is a proved equivalence, not a proof of classical convergence or a
+pointwise comparison at the same original seed. The designated original
+cycle has primitive raw period \(a+3\), with every division phase retained.
+The more general normalized multiplier \(3u\), for odd \(u\ne1\), is not
+silently identified with the classical multiplier \(3\).
+
 ### Gcd division barrier and affine escape
 
 [QCD.AffineEscape.001](QCD.AffineEscape.001/README.md) classifies every positive
