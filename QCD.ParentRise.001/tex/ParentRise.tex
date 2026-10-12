@@ -1,0 +1,188 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{A parent above the seed}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+The shortcut that halves an even natural number and sends an odd natural number \(n\) to \((3n+1)/2\) carries \(27\) through the prefix \(27\), \(41\), \(62\), \(31\), \(47\), \(71\), \(107\), \(161\), \(242\), \(121\). Its first odd-even-even block starts at \(445\) and joins \(167\). The parent extracted from that block is \(222\). One inverse odd step is not legal at \(222\), the odd-chain ancestor is \(222\) itself after zero divisions by \(3\), and the first odd positive iterate of \(222\) appears only after one division by \(2\). That parent is strictly larger than \(27\). No claim is made that an iterate equals \(1\).
+\end{abstract}
+
+\begin{definition}
+\label{def:shortcut}
+For \(n\in\N\), define \(T(n)=n/2\) when \(2\mid n\), and \(T(n)=(3n+1)/2\) when \(2\nmid n\). If \(n\) is odd, then \(3n+1\) is even, so the second value is an integer. Write \(T^{0}(n)=n\) and \(T^{k+1}(n)=T(T^{k}(n))\).
+\end{definition}
+
+\begin{definition}
+\label{def:raw}
+Let \(F:\Z\to\Z\) be the raw step \(F(n)=n/2\) when \(2\mid n\), and \(F(n)=3n+1\) otherwise. Let \(I(y)=(2y-1)/3\) when \(y\equiv 2\pmod{3}\); otherwise no inverse odd step is defined. If \(z+1=3^{b}u\) with \(3\nmid u\), the odd-chain ancestor of \(z\) is \(A(z)=2^{b}u-1\).
+\end{definition}
+
+\begin{lemma}
+\label{lem:clock}
+For every \(n\in\N\), the integer \(T(n)\) equals \(F(n)\) when \(2\mid n\), and equals \(F(F(n))\) when \(2\nmid n\).
+\end{lemma}
+
+\begin{proof}
+Suppose \(2\mid n\). Then \(T(n)=n/2\), and the raw step uses the same division, so \(T(n)=F(n)\).
+
+Suppose \(2\nmid n\). Then \(n=2q+1\) for \(q=n/2\), hence
+\[
+3n+1=3(2q+1)+1=6q+4=2(3q+2).
+\]
+Thus \(2\mid 3n+1\). The first raw step is the affine branch \(F(n)=3n+1\), and the second is
+\[
+F(F(n))=(3n+1)/2=T(n).
+\]
+\end{proof}
+
+\begin{lemma}
+\label{lem:join}
+Let \(m\in\N\) satisfy \(2\nmid m\). Set \(z=4m+1\) and \(p=2m\). Then
+\begin{align*}
+T(z)&=2(3m+1),&
+T^{2}(z)&=3m+1,&
+T^{3}(z)&=(3m+1)/2,\\
+T(p)&=m,&
+T(m)&=(3m+1)/2.
+\end{align*}
+In particular \(T^{3}(z)=T^{2}(p)\). The common value is an integer because \(m\) odd forces \(3m+1\) even.
+\end{lemma}
+
+\begin{proof}
+The identity \(z=1+2(2m)\) shows that \(z\) is odd. Therefore
+\[
+3z+1=3(4m+1)+1=12m+4=2\cdot(2(3m+1)),
+\]
+and \(T(z)=(3z+1)/2=2(3m+1)\). The right-hand side is even, so
+\[
+T^{2}(z)=3m+1.
+\]
+Since \(m=2q+1\), one has \(3m+1=2(3q+2)\), so \(3m+1\) is even and
+\[
+T^{3}(z)=(3m+1)/2.
+\]
+The parent \(p=2m\) is even, hence \(T(p)=m\). The same odd branch gives \(T(m)=(3m+1)/2\). The two composite values agree.
+\end{proof}
+
+\begin{theorem}
+\label{thm:parent-rise}
+Let \(T\) be the shortcut of Definition~\ref{def:shortcut}. Then
+\begin{align*}
+T^{0}(27)&=27,&
+T^{1}(27)&=41,&
+T^{2}(27)&=62,&
+T^{3}(27)&=31,\\
+T^{4}(27)&=47,&
+T^{5}(27)&=71,&
+T^{6}(27)&=107,&
+T^{7}(27)&=161,\\
+T^{8}(27)&=242,&
+T^{9}(27)&=121.
+\end{align*}
+The same orbit continues by
+\begin{align*}
+T^{10}(27)&=182,&
+T^{11}(27)&=91,&
+T^{12}(27)&=137,&
+T^{13}(27)&=206,\\
+T^{14}(27)&=103,&
+T^{15}(27)&=155,&
+T^{16}(27)&=233,&
+T^{17}(27)&=350,\\
+T^{18}(27)&=175,&
+T^{19}(27)&=263,&
+T^{20}(27)&=395,&
+T^{21}(27)&=593,\\
+T^{22}(27)&=890,&
+T^{23}(27)&=445,&
+T^{24}(27)&=668,&
+T^{25}(27)&=334,\\
+T^{26}(27)&=167.
+\end{align*}
+For every natural number \(t<24\), the states \(T^{t}(27)\) and \(T^{t+1}(27)\) are not both even. Both \(T^{24}(27)\) and \(T^{25}(27)\) are even, and \(T^{23}(27)\) is odd. Thus time \(23\) is the least time at which an odd state is followed by two even states.
+
+Furthermore \((445-1)/2=222\), \(T(445)=668\), \(T(668)=334\), \(T(334)=167\), \(T(222)=111\), and \(T(111)=167\). With \(m=111\), Lemma~\ref{lem:join} gives \(4m+1=445\), \(2m=222\), and \(T^{3}(445)=T^{2}(222)=167\). The factorization \(222=2^{1}\cdot 111\) has odd cofactor, so the first odd positive iterate of \(222\) occurs after exactly one division by \(2\).
+
+The inverse odd step is not defined at \(222\), because \(222\equiv 0\pmod{3}\). Also \(222+1=223\) and \(3\nmid 223\), so \(b=v_{3}(222+1)=0\) and
+\[
+A(222)=2^{0}\cdot 223-1=222.
+\]
+The odd-chain ancestor is therefore \(222\) itself, after zero divisions by \(3\). One inverse odd step is legal at the join: \(167\equiv 2\pmod{3}\) and
+\[
+I(167)=(2\cdot 167-1)/3=111.
+\]
+Finally \(222>27\).
+\end{theorem}
+
+\begin{proof}
+The odd branch at \(27\) is \((3\cdot 27+1)/2=41\). The next odd branch is \((3\cdot 41+1)/2=62\). Halving gives \(31\). The following odd branches are
+\begin{align*}
+(3\cdot 31+1)/2&=47,&
+(3\cdot 47+1)/2&=71,&
+(3\cdot 71+1)/2&=107,\\
+(3\cdot 107+1)/2&=161,&
+(3\cdot 161+1)/2&=242.
+\end{align*}
+Halving \(242\) gives \(121\). This is the stated prefix.
+
+Continuing from \(121\) by the same branches yields \(182\), \(91\), \(137\), \(206\), \(103\), \(155\), \(233\), \(350\), \(175\), \(263\), \(395\), \(593\), \(890\), \(445\). The next three branches are
+\[
+(3\cdot 445+1)/2=668,\qquad 668/2=334,\qquad 334/2=167.
+\]
+Thus \(T^{23}(27)=445\), \(T^{24}(27)=668\), \(T^{25}(27)=334\), and \(T^{26}(27)=167\).
+
+The even terms before time \(24\) are \(62,242,182,206,350,890\). Each is preceded by an odd term and followed by an odd term, so no \(t<24\) has both \(T^{t}(27)\) and \(T^{t+1}(27)\) even. The states \(668\) and \(334\) are even, while \(445\) is odd. Time \(23\) is therefore the least odd-even-even time.
+
+The quotient \((445-1)/2=222\) is one division by \(2\). Since \(111\) is odd, Lemma~\ref{lem:join} applies to \(m=111\): \(z=445\), \(p=222\), \(T(z)=668\), \(T^{2}(z)=334\), and
+\[
+T^{3}(445)=(3\cdot 111+1)/2=167=T(111)=T^{2}(222).
+\]
+The displayed factorization is \(222=2\cdot 111\), so exactly one halving reaches an odd positive integer.
+
+Division by \(3\) gives \(222=3\cdot 74\), hence \(222\not\equiv 2\pmod{3}\) and \(I\) is undefined at \(222\). The next integer is \(223=3\cdot 74+1\), so \(3\nmid 223\) and the \(3\)-adic valuation is zero. The odd-chain formula therefore performs zero divisions by \(3\) and returns \(2^{0}\cdot 223-1=222\).
+
+At the join, \(167=3\cdot 55+2\), so \(167\equiv 2\pmod{3}\). Then
+\[
+2\cdot 167-1=333=3\cdot 111,
+\]
+and \(I(167)=111\). The comparison \(222>27\) is immediate.
+\end{proof}
+
+\begin{remark}
+\label{rem:not-one}
+Theorem~\ref{thm:parent-rise} does not assert that \(T^{k}(27)=1\) for any \(k\), and it does not assert that every positive integer reaches \(1\).
+\end{remark}
+
+\end{document}

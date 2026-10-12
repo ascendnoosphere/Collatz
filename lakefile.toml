@@ -78,6 +78,7 @@ defaultTargets = [
   "ThreeAffineClosure",
   "RecursiveClose",
   "NoCrossing",
+  "ParentRise",
 ]
 
 [[require]]
@@ -420,3 +421,7 @@ srcDir = "QCD.RecursiveClose.001/lean"
 [[lean_lib]]
 name = "NoCrossing"
 srcDir = "QCD.NoCrossing.001/lean"
+
+[[lean_lib]]
+name = "ParentRise"
+srcDir = "QCD.ParentRise.001/lean"
