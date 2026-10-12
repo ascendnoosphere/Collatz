@@ -1,0 +1,235 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{An ancestral inverse-odd join}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For integers \(a\ge 1\), \(b\ge 1\) and an odd integer \(u\), set
+\(z=2^{a}3^{b}u-1\) and assume \(z\equiv 2^{a}-1\pmod{2^{a+2}}\).
+The inverse odd step \(I(y)=(2y-1)/3\), repeated \(b\) times, is an exact
+division by \(3\) at the first step and ends at \(2^{a+b}u-1\). One exact
+division by \(2\) of the successor of that value produces
+\(2^{a+b-1}u-1\). The congruence forces \(u\equiv(-1)^{b}\pmod{4}\).
+Oddness of \(u\) blocks one further factor of \(2\). The congruence is a
+hypothesis: the statement is not claimed for an arbitrary odd integer, and
+it does not assert that the classical Collatz map reaches \(1\).
+\end{abstract}
+
+\section{The join}
+
+Throughout, \(a\) and \(b\) are integers with \(a\ge 1\) and \(b\ge 1\), and
+\(u\) is an odd integer. Set
+\[
+z=2^{a}3^{b}u-1,
+\]
+and assume the congruence
+\begin{equation}
+\label{eq:ancestral-congruence}
+z\equiv 2^{a}-1\pmod{2^{a+2}}.
+\end{equation}
+All quotients below are exact integer divisions. The symbol \(I^{k}\) denotes
+iteration of \(I\), with \(I^{0}\) the identity.
+
+\begin{definition}
+\label{def:ancestral-steps}
+The inverse odd step and the successor half-shift are the integer operations
+\[
+I(y)=\frac{2y-1}{3},
+\qquad
+H(y)=\frac{y+1}{2}-1,
+\]
+defined when the displayed divisions are exact.
+\end{definition}
+
+\begin{lemma}
+\label{lem:ancestral-closed}
+Let \(z=2^{a}3^{b}u-1\). For every integer \(k\) with \(0\le k\le b\),
+\[
+I^{k}(z)=2^{a+k}3^{b-k}u-1,
+\]
+and each of the \(k\) divisions by \(3\) is exact.
+\end{lemma}
+
+\begin{proof}
+The case \(k=0\) is the definition of \(z\). Suppose the formula holds for some
+\(k\) with \(k+1\le b\), and write \(y=I^{k}(z)=2^{a+k}3^{b-k}u-1\).
+Since \(k+1\le b\), the exponent \(b-k\) is at least \(1\), and
+\[
+b-k=\bigl(b-(k+1)\bigr)+1,
+\qquad
+a+(k+1)=(a+k)+1.
+\]
+Therefore
+\begin{align*}
+2y-1
+&=2\bigl(2^{a+k}3^{b-k}u-1\bigr)-1 \\
+&=2^{a+k+1}3^{b-k}u-2-1 \\
+&=2^{a+k+1}3^{b-k}u-3 \\
+&=3\bigl(2^{a+(k+1)}3^{b-(k+1)}u-1\bigr).
+\end{align*}
+The factor \(3\) divides \(2y-1\), and
+\[
+I(y)=2^{a+(k+1)}3^{b-(k+1)}u-1.
+\]
+Induction gives the formula at \(k=b\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:ancestral-first}
+If \(b\ge 1\) and \(z=2^{a}3^{b}u-1\), then \(3\) divides \(2z-1\).
+\end{lemma}
+
+\begin{proof}
+Since \(b\ge 1\), one has \(b=(b-1)+1\). Substitute
+\(z=2^{a}3^{b}u-1\):
+\[
+2z-1=2\bigl(2^{a}3^{b-1}\cdot 3\cdot u-1\bigr)-1
+=2^{a+1}3^{b-1}\cdot 3\cdot u-3
+=3\bigl(2^{a+1}3^{b-1}u-1\bigr).
+\]
+The factor \(3\) divides \(2z-1\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:ancestral-half}
+If \(n\ge 1\), then
+\[
+H\bigl(2^{n}u-1\bigr)=2^{n-1}u-1,
+\]
+and the division by \(2\) is exact.
+\end{lemma}
+
+\begin{proof}
+The successor of \(2^{n}u-1\) is \(2^{n}u\). Since \(n\ge 1\),
+\[
+2^{n}u=2\cdot\bigl(2^{n-1}u\bigr),
+\]
+so the quotient by \(2\) is \(2^{n-1}u\). Subtracting \(1\) is the definition
+of \(H\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:ancestral-odd-part}
+If \(z=2^{a}3^{b}u-1\) and~\eqref{eq:ancestral-congruence} holds, then
+\[
+3^{b}u\equiv 1\pmod{4}.
+\]
+\end{lemma}
+
+\begin{proof}
+The difference of the two sides of~\eqref{eq:ancestral-congruence} is
+\[
+\bigl(2^{a}-1\bigr)-z=2^{a}\bigl(1-3^{b}u\bigr).
+\]
+The hypothesis says that \(2^{a+2}\) divides this difference. Since
+\(2^{a+2}=2^{a}\cdot 4\) and \(2^{a}\neq 0\), it follows that \(4\) divides
+\(1-3^{b}u\). That is the stated congruence.
+\end{proof}
+
+\begin{lemma}
+\label{lem:ancestral-residue}
+If \(3^{b}u\equiv 1\pmod{4}\), then \(u\equiv(-1)^{b}\pmod{4}\).
+\end{lemma}
+
+\begin{proof}
+From \(3\equiv -1\pmod{4}\) one has \(3^{b}\equiv(-1)^{b}\pmod{4}\), and
+therefore
+\[
+(-1)^{b}u\equiv 3^{b}u\equiv 1\pmod{4}.
+\]
+The square of the sign is \(1\):
+\[
+\bigl((-1)^{b}\bigr)^{2}=(-1)^{2b}=\bigl((-1)^{2}\bigr)^{b}=1.
+\]
+Multiplying the congruence by \((-1)^{b}\) yields
+\[
+u=\bigl((-1)^{b}\bigr)^{2}u\equiv(-1)^{b}\pmod{4}.
+\]
+\end{proof}
+
+\begin{lemma}
+\label{lem:ancestral-exact}
+If \(a\ge 1\) and \(u\) is odd, then \(2^{a+b}\) does not divide
+\(2^{a+b-1}u\).
+\end{lemma}
+
+\begin{proof}
+Since \(a\ge 1\), one has \(a+b\ge 1\) and
+\(2^{a+b}=2\cdot 2^{a+b-1}\). If \(2^{a+b}\) divided \(2^{a+b-1}u\),
+cancellation of the nonzero factor \(2^{a+b-1}\) would give \(2\mid u\).
+An odd integer is not divisible by \(2\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:ancestral-join}
+Let \(a\ge 1\), \(b\ge 1\), and let \(u\) be an odd integer. Set
+\(z=2^{a}3^{b}u-1\), and assume
+\(z\equiv 2^{a}-1\pmod{2^{a+2}}\). Then \(3\) divides \(2z-1\),
+\[
+I^{b}(z)=2^{a+b}u-1,
+\]
+\[
+H\bigl(I^{b}(z)\bigr)=2^{a+b-1}u-1,
+\]
+\(u\equiv(-1)^{b}\pmod{4}\), and \(2^{a+b}\) does not divide
+\(2^{a+b-1}u\).
+\end{theorem}
+
+\begin{proof}
+Lemma~\ref{lem:ancestral-first} is the divisibility by \(3\).
+Lemma~\ref{lem:ancestral-closed} at \(k=b\) gives
+\[
+I^{b}(z)=2^{a+b}3^{0}u-1=2^{a+b}u-1.
+\]
+Since \(a\ge 1\), the exponent \(a+b\) is at least \(1\).
+Lemma~\ref{lem:ancestral-half} therefore gives
+\[
+H\bigl(I^{b}(z)\bigr)=H\bigl(2^{a+b}u-1\bigr)=2^{a+b-1}u-1.
+\]
+Lemmas~\ref{lem:ancestral-odd-part} and~\ref{lem:ancestral-residue} give the
+residue of \(u\). Lemma~\ref{lem:ancestral-exact} is the last clause.
+\end{proof}
+
+\begin{remark}
+\label{rem:ancestral-scope}
+The congruence~\eqref{eq:ancestral-congruence} is part of the hypothesis of
+Theorem~\ref{thm:ancestral-join}. It is not asserted for every odd integer.
+For \(a=1\), \(b=1\), and \(u=1\), one has \(z=5\) and
+\(5\not\equiv 1\pmod{8}\), while \(u\not\equiv(-1)^{b}\pmod{4}\). That odd
+integer lies outside the theorem. The argument does not show that the
+classical Collatz map sends every positive integer to \(1\).
+\end{remark}
+
+\end{document}

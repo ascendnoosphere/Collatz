@@ -1,0 +1,302 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Bounds for one inverse-odd root}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Let \(z\) be an integer with \(z+1\neq 0\), and let \(b=v_3(z+1)\). Exactly \(b\) steps of \(n\mapsto(2n-1)/3\) are integral, and the resulting root is the integer \(2^b(z+1)/3^b-1\). Three does not divide the translate of this root, so the inverse odd step stops there. The odd branch \((3n+1)/2\) returns from the root to \(z\). The root itself may be divisible by three, and the argument does not assert that a classical Collatz trajectory reaches \(1\).
+\end{abstract}
+
+\section{The inverse odd step}
+
+Throughout, \(v_3\) denotes the \(3\)-adic valuation of a nonzero integer, extended by the convention \(v_3(0)=0\).
+
+\begin{definition}
+\label{def:odd-root}
+Let \(z\in\Z\). Set \(b(z)=v_3(z+1)\) and
+\[
+m(z)=\frac{z+1}{3^{b(z)}},
+\qquad
+R(z)=2^{b(z)}m(z)-1,
+\]
+where the quotient is exact in the sense of Lemma~\ref{lem:cofactor}. Define
+\[
+I(n)=\frac{2n-1}{3},
+\qquad
+F(n)=\frac{3n+1}{2}.
+\]
+Write \(I^k\) and \(F^k\) for the \(k\)-fold iterates, with \(I^0\) and \(F^0\) the identity.
+\end{definition}
+
+\begin{lemma}
+\label{lem:distinct-numerators}
+For every \(n\in\Z\),
+\[
+(2n+1)-(2n-1)=2.
+\]
+Thus \(n\mapsto(2n+1)/3\) is not the step \(I\).
+\end{lemma}
+
+\begin{proof}
+Expanding the left side gives \(2n+1-2n+1=2\). The two numerators are distinct, so the two affine steps are distinct.
+\end{proof}
+
+\begin{lemma}
+\label{lem:three-not-two}
+For every natural number \(k\), \(3\) does not divide \(2^k\).
+\end{lemma}
+
+\begin{proof}
+The integer \(3\) is prime. If \(3\) divided \(2^k\), then \(3\) would divide \(2\). But \(2=0\cdot 3+2\), so the remainder of \(2\) on division by \(3\) is \(2\), not \(0\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:cofactor}
+For every \(z\in\Z\), \(3^{b(z)}\) divides \(z+1\) and
+\[
+z+1=3^{b(z)}m(z).
+\]
+If \(z+1\neq 0\), then \(3\) does not divide \(m(z)\).
+\end{lemma}
+
+\begin{proof}
+By the definition of \(v_3\), the power \(3^{b(z)}\) divides \(z+1\). The integer \(m(z)\) is the corresponding quotient, which is the first identity.
+
+Suppose \(z+1\neq 0\) and \(3\) divides \(m(z)\). Then \(m(z)=3t\) for some \(t\in\Z\), and
+\begin{align*}
+z+1
+&=3^{b(z)}(3t)
+=3^{b(z)+1}t.
+\end{align*}
+Thus \(3^{b(z)+1}\) divides \(z+1\). Since \(z+1\neq 0\) and \(3\) is prime, the valuation characterization gives \(b(z)+1\leq b(z)\), which is impossible.
+\end{proof}
+
+\begin{lemma}
+\label{lem:root-translate}
+For every \(z\in\Z\),
+\[
+R(z)+1=2^{b(z)}m(z).
+\]
+If \(z+1\neq 0\), then \(3\) does not divide \(R(z)+1\).
+\end{lemma}
+
+\begin{proof}
+The first identity is the definition of \(R(z)\). Suppose \(3\) divides \(R(z)+1\). Then \(3\) divides the product \(2^{b(z)}m(z)\). Since \(3\) is prime, \(3\) divides \(2^{b(z)}\) or \(3\) divides \(m(z)\). Lemma~\ref{lem:three-not-two} excludes the first alternative, and Lemma~\ref{lem:cofactor} excludes the second whenever \(z+1\neq 0\).
+\end{proof}
+
+\section{The inverse chain}
+
+\begin{lemma}
+\label{lem:inverse-step}
+Let \(n,t\in\Z\) satisfy \(n+1=3t\). Then
+\[
+3I(n)=2n-1
+\qquad\text{and}\qquad
+I(n)=2t-1.
+\]
+\end{lemma}
+
+\begin{proof}
+The numerator identity
+\[
+2n-1=2(n+1)-3=2(3t)-3=3(2t-1)
+\]
+shows that \(3\) divides \(2n-1\) and that the quotient is \(2t-1\). That quotient is \(I(n)\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:inverse-root}
+Let \(z\in\Z\) satisfy \(z+1\neq 0\), and write \(b=b(z)\) and \(m=m(z)\). For every natural number \(k\leq b\),
+\[
+I^k(z)=2^k\bigl(3^{b-k}m\bigr)-1.
+\]
+For every natural number \(k<b\),
+\[
+3I^{k+1}(z)=2I^k(z)-1.
+\]
+In particular \(I^b(z)=R(z)\). Moreover \(3\) divides none of \(m\), \(R(z)+1\), and \(2R(z)-1\).
+\end{theorem}
+
+\begin{proof}
+The non-divisibility of \(m\) and of \(R(z)+1\) is Lemma~\ref{lem:cofactor} and Lemma~\ref{lem:root-translate}. The closed form is proved by induction on \(k\).
+
+If \(k=0\), then \(I^0(z)=z\) and \(b-0=b\), so the claimed value is \(3^bm-1\). Lemma~\ref{lem:cofactor} gives \(z+1=3^bm\), hence \(z=3^bm-1\).
+
+Suppose the formula holds for some \(k\) with \(k+1\leq b\), and write \(s=b-(k+1)\). Then \(b-k=s+1\), so the inductive formula reads
+\[
+I^k(z)+1=2^k\bigl(3^{s+1}m\bigr)=3\bigl(2^k(3^sm)\bigr).
+\]
+The second equality is the factorization \(3^{s+1}m=3(3^sm)\), moved past the factor \(2^k\). Lemma~\ref{lem:inverse-step} therefore yields
+\[
+I^{k+1}(z)=I\bigl(I^k(z)\bigr)=2\bigl(2^k(3^sm)\bigr)-1=2^{k+1}(3^sm)-1,
+\]
+which is the formula at \(k+1\). The same application of Lemma~\ref{lem:inverse-step} is the exactness identity \(3I^{k+1}(z)=2I^k(z)-1\).
+
+At \(k=b\) the closed form is \(2^bm-1=R(z)\).
+
+It remains to show that \(3\) does not divide \(2R(z)-1\). If it did, then \(3\) would divide
+\[
+(2R(z)-1)+3=2\bigl(R(z)+1\bigr)=2^{b+1}m,
+\]
+where the last step is Lemma~\ref{lem:root-translate}. Since \(3\) is prime and does not divide \(2\), it would divide \(2^bm\), hence would divide \(2^b\) or \(m\). Both alternatives are impossible by Lemma~\ref{lem:three-not-two} and Lemma~\ref{lem:cofactor}.
+\end{proof}
+
+\section{Return along the odd branch}
+
+\begin{lemma}
+\label{lem:forward-step}
+Let \(n,t\in\Z\) satisfy \(n=2t-1\). Then
+\[
+2F(n)=3n+1
+\qquad\text{and}\qquad
+F(n)=3t-1.
+\]
+\end{lemma}
+
+\begin{proof}
+Substitute the hypothesis:
+\[
+3n+1=3(2t-1)+1=6t-3+1=6t-2=2(3t-1).
+\]
+Thus \(2\) divides \(3n+1\), and the quotient is \(3t-1\). That quotient is \(F(n)\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:forward-return}
+Let \(z\in\Z\) satisfy \(z+1\neq 0\), and write \(b=b(z)\), \(m=m(z)\), and \(R=R(z)\). For every natural number \(k\leq b\),
+\[
+F^k(R)=2^{b-k}\bigl(3^km\bigr)-1.
+\]
+In particular \(F^b(R)=z\). For every natural number \(k<b\),
+\[
+2F^{k+1}(R)=3F^k(R)+1,
+\]
+and \(2\) does not divide \(F^k(R)\).
+\end{theorem}
+
+\begin{proof}
+The closed form is proved by induction on \(k\). For \(k=0\), the right side is \(2^bm-1=R\).
+
+Suppose the formula holds for some \(k\) with \(k+1\leq b\), and write \(s=b-(k+1)\). Then \(b-k=s+1\), so
+\[
+F^k(R)=2^{s+1}(3^km)-1=2\bigl(2^s(3^km)\bigr)-1.
+\]
+Lemma~\ref{lem:forward-step} gives
+\[
+F^{k+1}(R)=3\bigl(2^s(3^km)\bigr)-1=2^s(3^{k+1}m)-1.
+\]
+The second equality moves one factor of \(3\) into the power \(3^k\). The same application is the exactness identity \(2F^{k+1}(R)=3F^k(R)+1\).
+
+At \(k=b\) the closed form is \(3^bm-1\). Lemma~\ref{lem:cofactor} gives \(3^bm=z+1\), so this state is \(z\).
+
+Finally let \(k<b\), and write \(s=b-(k+1)\) and \(c=3^km\). The closed form and the splitting \(b-k=s+1\) give
+\[
+F^k(R)=2^{s+1}c-1.
+\]
+The integer \(2^{s+1}c\) is even. If \(F^k(R)\) were even as well, then their difference
+\[
+2^{s+1}c-(2^{s+1}c-1)=1
+\]
+would be even. The remainder of \(1\) on division by \(2\) is \(1\), not \(0\).
+\end{proof}
+
+\section{Comparison and examples}
+
+\begin{lemma}
+\label{lem:two-three-powers}
+For every natural number \(k\), \(1\leq 2^k\leq 3^k\).
+\end{lemma}
+
+\begin{proof}
+The inequality \(1\leq 2^k\) holds for \(k=0\), and if it holds for \(k\) then
+\[
+1\leq 2\leq 2\cdot 2^k=2^{k+1}.
+\]
+The comparison \(2^k\leq 3^k\) holds for \(k=0\). If it holds for \(k\), then multiplying by the positive integers \(2\) and \(3\) gives
+\[
+2^{k+1}=2\cdot 2^k\leq 3\cdot 2^k\leq 3\cdot 3^k=3^{k+1}.
+\]
+\end{proof}
+
+\begin{theorem}
+\label{thm:bounds}
+If \(z\in\Z\) and \(0\leq z\), then \(0\leq R(z)\leq z\).
+\end{theorem}
+
+\begin{proof}
+Write \(b=b(z)\) and \(m=m(z)\). Then \(z+1\geq 1\), so \(z+1\neq 0\). Lemma~\ref{lem:cofactor} gives \(z+1=3^bm\). Here \(3^b>0\). The cofactor \(m\) cannot be \(0\), because \(z+1\neq 0\). If \(m<0\), then \(-m>0\), so \(3^b(-m)\geq 0\), and therefore
+\[
+3^bm=-(3^b(-m))\leq 0.
+\]
+But \(z+1>0\), a contradiction. Thus \(m\geq 1\).
+
+Lemma~\ref{lem:two-three-powers} gives \(1\leq 2^b\), and multiplying by the positive integer \(m\) yields \(1\leq 2^bm\). Hence \(R(z)=2^bm-1\geq 0\). The same lemma gives \(2^b\leq 3^b\). Multiplying by \(m>0\) and subtracting \(1\) produces
+\[
+R(z)=2^bm-1\leq 3^bm-1=z.
+\]
+\end{proof}
+
+\begin{theorem}
+\label{thm:eight}
+\(R(8)=3\), so \(3\) divides \(R(8)\).
+\end{theorem}
+
+\begin{proof}
+Since \(8+1=9=3^2\) and \(3\) does not divide \(1\), one has \(b(8)=2\) and \(m(8)=1\). Therefore
+\[
+R(8)=2^2\cdot 1-1=3,
+\]
+and \(3\) divides \(3\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:neg-four}
+\(R(-4)=-3\), and \(-4<R(-4)\).
+\end{theorem}
+
+\begin{proof}
+Since \(-4+1=-3\) and \(v_3(-3)=v_3(3)=1\), one has \(b(-4)=1\) and \(m(-4)=-1\). Therefore
+\[
+R(-4)=2^1\cdot(-1)-1=-3.
+\]
+The integer \(-4\) is strictly smaller than \(-3\).
+\end{proof}
+
+\begin{remark}
+\label{rem:not-claimed}
+Theorem~\ref{thm:inverse-root} makes \(R(z)\) an integer and stops the inverse odd step because \(3\) does not divide \(2R(z)-1\). It does not assert that \(3\) is coprime to \(R(z)\). Theorem~\ref{thm:eight} is a counterexample to that stronger statement. Theorem~\ref{thm:bounds} uses nonnegativity of the seed; Theorem~\ref{thm:neg-four} shows that the upper comparison can fail without it. No statement in this note asserts that iteration of the classical Collatz map reaches \(1\).
+\end{remark}
+
+\end{document}

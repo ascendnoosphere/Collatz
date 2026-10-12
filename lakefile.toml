@@ -37,6 +37,10 @@ defaultTargets = [
   "ResidueAccess",
   "SignedTraps",
   "SignedCore",
+  "AncestralJoin",
+  "OddRoot",
+  "ThreeStuck",
+  "EqualHalves",
 ]
 
 [[require]]
@@ -215,3 +219,19 @@ srcDir = "QCD.SignedTraps.001/lean"
 [[lean_lib]]
 name = "SignedCore"
 srcDir = "QCD.SignedCore.001/lean"
+
+[[lean_lib]]
+name = "AncestralJoin"
+srcDir = "QCD.AncestralJoin.001/lean"
+
+[[lean_lib]]
+name = "OddRoot"
+srcDir = "QCD.OddRoot.001/lean"
+
+[[lean_lib]]
+name = "ThreeStuck"
+srcDir = "QCD.ThreeStuck.001/lean"
+
+[[lean_lib]]
+name = "EqualHalves"
+srcDir = "QCD.EqualHalves.001/lean"

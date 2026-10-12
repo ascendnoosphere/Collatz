@@ -1,0 +1,254 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Equal halves of a binary word}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section*{Equal halves}
+
+A parity word is a finite sequence of letters in \(\{0,1\}\). The letter \(1\) is one odd step and the letter \(0\) is one even step. Indices are chronological, starting at zero. Equal odd-step counts are a hypothesis of the criterion below, not its conclusion. Vanishing of the difference factor does not by itself give closure, and nothing below asserts that the classical Collatz map sends a positive integer to \(1\).
+
+\begin{definition}
+\label{def:numerator}
+The odd-step count \(o(W)\) is the number of letters equal to \(1\) in \(W\). The suffix numerator \(A_j(W)\) is defined by \(A_j(\varepsilon)=0\) on the empty word, by
+\[
+A_j(0W')=A_{j+1}(W'),
+\]
+and by
+\[
+A_j(1W')=q^{o(W')}\,2^j+A_{j+1}(W').
+\]
+The numerator of \(W\) is \(A(W)=A_0(W)\). Equivalently,
+\[
+A(W)=\sum_{i:W_i=1}q^{o(W_{>i})}\,2^i,
+\]
+where \(W_{>i}\) is the strict suffix after index \(i\).
+\end{definition}
+
+\begin{lemma}
+\label{lem:shift}
+For every parity word \(W\) and all natural numbers \(j,k\),
+\[
+A_{j+k}(W)=2^k A_j(W).
+\]
+\end{lemma}
+
+\begin{proof}
+Induct on \(W\). Both sides vanish on the empty word. If \(W=0W'\), the inductive hypothesis at index \(j+1\) gives
+\[
+A_{(j+k)+1}(W')=2^k A_{j+1}(W'),
+\]
+and \((j+k)+1=(j+1)+k\). If \(W=1W'\), the same shift of the suffix, together with \(2^{j+k}=2^j2^k\), gives
+\begin{align*}
+A_{j+k}(W)
+&=q^{o(W')}\,2^{j+k}+A_{(j+k)+1}(W')\\
+&=2^k\bigl(q^{o(W')}\,2^j+A_{j+1}(W')\bigr)
+=2^k A_j(W).
+\end{align*}
+\end{proof}
+
+\begin{lemma}
+\label{lem:concat}
+For parity words \(U\) and \(V\),
+\[
+A(UV)=q^{o(V)}A(U)+2^{|U|}A(V).
+\]
+More generally, at every starting index \(j\),
+\[
+A_j(UV)=q^{o(V)}A_j(U)+2^{j+|U|}A(V).
+\]
+\end{lemma}
+
+\begin{proof}
+The second identity is proved by induction on \(U\). If \(U\) is empty, then \(A_j(V)=2^j A_0(V)\) by Lemma~\ref{lem:shift}, while the displayed right-hand side is \(2^j A(V)\). If \(U=0U'\), both sides reduce to the inductive statement at index \(j+1\), because an initial even letter changes neither numerator by a positive summand and \(|U|=|U'|+1\). If \(U=1U'\), write \(c=o(U')\) and \(s=o(V)\). Then \(o(U'V)=c+s\), and the inductive statement at index \(j+1\) gives
+\begin{align*}
+A_j(UV)
+&=q^{c+s}\,2^j+q^s A_{j+1}(U')+2^{(j+1)+|U'|}A(V)\\
+&=q^s\bigl(q^c\,2^j+A_{j+1}(U')\bigr)+2^{j+|U|}A(V),
+\end{align*}
+which is the required right-hand side. The first identity is the case \(j=0\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:total}
+If \(|U|=|V|=h\) and \(o(U)=o(V)=r\), then \(|UV|=2h\) and \(o(UV)=2r\).
+\end{lemma}
+
+\begin{proof}
+Length and odd-step count are additive under concatenation.
+\end{proof}
+
+\begin{lemma}
+\label{lem:bridges}
+Let \(A_U\), \(A_V\), \(h\), and \(r\) be natural numbers, and set
+\[
+A_{UV}=q^r A_U+2^h A_V,\qquad M=2^h+q^r.
+\]
+Then
+\[
+A_{UV}-q^r(A_U-A_V)=M A_V
+\]
+in \(\Z\). If moreover \(q^r\le 2^h\), and \(Q=2^h-q^r\), then
+\[
+A_{UV}=q^r(A_U+A_V)+Q A_V.
+\]
+\end{lemma}
+
+\begin{proof}
+The natural-number identity \(A_{UV}+q^r A_V=q^r A_U+M A_V\) is
+\[
+q^r A_U+2^h A_V+q^r A_V=q^r A_U+(2^h+q^r)A_V.
+\]
+Casting to \(\Z\) and rearranging \(q^r(A_U-A_V)=q^r A_U-q^r A_V\) gives the difference bridge. For the sum bridge, the hypothesis \(q^r\le 2^h\) is exactly \(2^h=Q+q^r\), so
+\begin{align*}
+A_{UV}
+&=q^r A_U+(Q+q^r)A_V \\
+&=q^r A_U+q^r A_V+Q A_V \\
+&=q^r(A_U+A_V)+Q A_V.
+\end{align*}
+\end{proof}
+
+\begin{lemma}
+\label{lem:det}
+For all natural numbers \(q\), \(h\), and \(r\),
+\[
+(2^h-q^r)(2^h+q^r)=2^{2h}-q^{2r}.
+\]
+\end{lemma}
+
+\begin{proof}
+The difference of squares \((2^h)^2-(q^r)^2\) equals \((2^h+q^r)(2^h-q^r)\). The powers are \((2^h)^2=2^{2h}\) and \((q^r)^2=q^{2r}\). Commutation of the product gives the stated order.
+\end{proof}
+
+\begin{lemma}
+\label{lem:coprime}
+Let \(q\) be odd, in the sense \(q\equiv 1\pmod{2}\), and assume \(Q=2^h-q^r>0\). Set \(M=2^h+q^r\). Then \(q^r\) is coprime to \(M\), \(q^r\) is coprime to \(Q\), and \(M\) is coprime to \(Q\).
+\end{lemma}
+
+\begin{proof}
+Oddness gives \(q=2(q/2)+1\), so \(\gcd(q,2)=\gcd(1,2)=1\). Coprimeness to \(2\) is preserved by raising either argument to a positive power, and the case of exponent zero is coprimeness of \(1\) to the other argument. Hence \(\gcd(q^r,2^h)=1\). Adding \(q^r\) does not change the gcd, and \(Q+q^r=2^h\), so
+\[
+\gcd(q^r,M)=\gcd(q^r,2^h)=1,\qquad \gcd(q^r,Q)=\gcd(q^r,2^h)=1.
+\]
+The inequality \(Q>0\) forces \(h\ge 1\): otherwise \(q^r<1\), contradicting \(q\ge 1\). Thus \(2^h\) is even. Since \(q^r\) is odd, \(Q=2^h-q^r\) is odd, and therefore \(\gcd(Q,2)=1\). Combined with \(\gcd(Q,q^r)=1\),
+\[
+\gcd(Q,2q^r)=\gcd(Q,2)\gcd(Q,q^r)=1.
+\]
+Finally \(M=Q+2q^r\), so \(\gcd(M,Q)=\gcd(2q^r,Q)=1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:equal-halves}
+Let \(q\) satisfy \(q\equiv 1\pmod{2}\). Let \(U\) and \(V\) be parity words with \(|U|=|V|=h\) and \(o(U)=o(V)=r\), and assume \(Q=2^h-q^r>0\). Set \(M=2^h+q^r\). Then
+\[
+2^{|UV|}-q^{o(UV)}\mid A(UV)
+\]
+if and only if
+\[
+M\mid A(U)-A(V)\quad\text{in }\Z
+\qquad\text{and}\qquad
+Q\mid A(U)+A(V).
+\]
+\end{theorem}
+
+\begin{proof}
+Lemma~\ref{lem:concat} supplies the source identity before either divisibility is considered:
+\[
+A(UV)=q^r A(U)+2^h A(V).
+\]
+Lemma~\ref{lem:bridges}, applied to these values, therefore gives both factorizations
+\begin{equation}
+\label{eq:factors}
+A(UV)-q^r\bigl(A(U)-A(V)\bigr)=M A(V)
+\end{equation}
+and
+\begin{equation}
+\label{eq:sumfactor}
+A(UV)=q^r\bigl(A(U)+A(V)\bigr)+Q A(V).
+\end{equation}
+The inequality \(Q>0\) is \(q^r\le 2^h\), which is the hypothesis of the sum bridge. Lemma~\ref{lem:total} identifies the closure denominator of the concatenation,
+\[
+2^{|UV|}-q^{o(UV)}=2^{2h}-q^{2r},
+\]
+and Lemma~\ref{lem:det} factors it as \(QM\). Lemma~\ref{lem:coprime} gives the three coprimenesses used below. Since \(M\) and \(Q\) are coprime, \(MQ\) divides \(A(UV)\) if and only if \(M\) and \(Q\) both divide \(A(UV)\). It remains to match those two divisibilities with the two factors.
+
+From \eqref{eq:factors}, \(M\) divides \(A(UV)-q^r(A(U)-A(V))\). An integer divisor of a difference divides one term if and only if it divides the other, so
+\[
+M\mid A(UV)\iff M\mid q^r\bigl(A(U)-A(V)\bigr)
+\]
+in \(\Z\). Coprimeness of \(M\) and \(q^r\) cancels the power of \(q\). If \(M\) divides \(q^r z\), absolute values give a natural divisibility \(M\mid q^r|z|\). A divisor coprime to the first factor of a product divides the second factor, so \(M\) divides \(z\). Thus
+\[
+M\mid A(UV)\iff M\mid A(U)-A(V)
+\]
+in \(\Z\).
+
+From \eqref{eq:sumfactor}, \(Q\) divides \(QA(V)\), so \(Q\) divides \(A(UV)\) if and only if \(Q\) divides \(q^r(A(U)+A(V))\). Coprimeness of \(Q\) and \(q^r\) cancels that power, and
+\[
+Q\mid A(UV)\iff Q\mid A(U)+A(V).
+\]
+Combining the two equivalences with the coprime factorization of the closure denominator yields the theorem.
+\end{proof}
+
+\begin{theorem}
+\label{thm:separate}
+Let \(U=000011\) and \(V=101000\), and take \(q=3\). Then \(|U|=|V|=6\), \(o(U)=o(V)=2\), \(A(U)=80\), and \(A(V)=7\). The difference modulus \(2^6+3^2=73\) divides \(A(U)-A(V)\) in \(\Z\), while the sum modulus \(2^6-3^2=55\) does not divide \(A(U)+A(V)\).
+\end{theorem}
+
+\begin{proof}
+Each word has length \(6\) and exactly two odd letters. The numerator recursion gives
+\[
+A(U)=3^{1}\,2^{4}+3^{0}\,2^{5}=48+32=80
+\]
+and
+\[
+A(V)=3^{1}\,2^{0}+3^{0}\,2^{2}=3+4=7.
+\]
+Hence \(A(U)-A(V)=73\) and \(A(U)+A(V)=87\). The integer \(73\) divides \(73\). The integer \(55\) does not divide \(87\), since \(87=55+32\) and \(0<32<55\).
+\end{proof}
+
+\begin{corollary}
+\label{cor:not-closed}
+For the words of Theorem~\ref{thm:separate} and \(q=3\), the closure denominator \(2^{|UV|}-3^{o(UV)}\) does not divide \(A(UV)\).
+\end{corollary}
+
+\begin{proof}
+Here \(h=6\), \(r=2\), and \(Q=64-9=55>0\), while \(3\) is odd. Theorem~\ref{thm:equal-halves} says that divisibility by the closure denominator would force \(Q\) to divide \(A(U)+A(V)\). Theorem~\ref{thm:separate} says that it does not.
+\end{proof}
+
+\begin{remark}
+Theorem~\ref{thm:separate} shows that divisibility by \(M\) of the difference does not imply divisibility by \(Q\) of the sum. Corollary~\ref{cor:not-closed} is the same word read through Theorem~\ref{thm:equal-halves}: failure of the sum factor is failure of closure. The opposite implication, from the sum factor to the difference factor, is not decided here.
+\end{remark}
+
+\end{document}

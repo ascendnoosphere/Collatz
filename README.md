@@ -441,6 +441,38 @@ is eventually periodic there with a positive period. The argument does not
 identify \(H\) with a first-division return. The certificate checks 165608
 comparisons on the documented grid.
 
+### Ancestral inverse-odd join
+
+[QCD.AncestralJoin.001](QCD.AncestralJoin.001/README.md) starts from
+\(z=2^{a}3^{b}u-1\) with \(a\ge 1\), \(b\ge 1\), and \(u\) odd, under the
+congruence \(z\equiv 2^{a}-1\pmod{2^{a+2}}\). Then \(3\) divides \(2z-1\),
+the \(b\)-fold inverse-odd image is \(2^{a+b}u-1\), and one exact halving
+gives \(2^{a+b-1}u-1\). The same hypotheses force
+\(u\equiv(-1)^{b}\pmod 4\), so \(2^{a+b}\) does not divide that half.
+
+### Inverse-odd root and valuation
+
+[QCD.OddRoot.001](QCD.OddRoot.001/README.md) bounds one inverse-odd root.
+For a nonnegative seed the root lies between \(0\) and the seed. The root of
+\(8\) is \(3\), and the root of \(-4\) is \(-3\), which is strictly larger
+than the seed.
+
+[QCD.ThreeStuck.001](QCD.ThreeStuck.001/README.md) records the exact drop.
+If \(3\) divides \(z+1\) and \(I(z)=(2z-1)/3\), then
+\(v_{3}(I(z)+1)=v_{3}(z+1)-1\). After \(k\) legal steps,
+\(I^{k}(z)+1=2^{k}(z+1)/3^{k}\), so a factor of \(3\) remains exactly when
+\(k\) is strictly smaller than the valuation.
+
+### Equal halves
+
+[QCD.EqualHalves.001](QCD.EqualHalves.001/README.md) splits a binary word
+into two blocks of lengths \(h\) and \(r\) when the odd-letter count of the
+second block is \(r\) and \(q\) is odd. The sum and difference of the two
+block numerators factor through \(2^{h}+q^{r}\) and \(2^{h}-q^{r}\), and
+those two moduli are coprime. The factors can separate: for \(q=3\), \(h=6\),
+and \(r=2\) the sum modulus divides the numerator difference, while the
+difference modulus does not divide the numerator sum.
+
 ## Other map conventions
 
 A residue-wise affine map has the form

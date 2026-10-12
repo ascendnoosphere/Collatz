@@ -1,0 +1,189 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{The inverse-odd valuation drop}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+If \(3\) divides \(z+1\), the inverse odd step \(I(z)=(2z-1)/3\) is an exact integer and \(v_3(I(z)+1)=v_3(z+1)-1\). For \(k\le v_3(z+1)\), the \(k\)-fold iterate satisfies \(I^k(z)+1=2^k(z+1)/3^k\), so a factor of \(3\) remains precisely when \(k\) is strictly smaller than the valuation. Exactly that many steps remove every factor of \(3\) from the successor. The argument does not claim that the classical Collatz map reaches \(1\).
+\end{abstract}
+
+\section{Inverse odd step}
+
+Throughout, \(\N\) contains \(0\). For a positive integer \(n\), write \(n=3^{v_3(n)}u\) where \(u\) is a positive integer not divisible by \(3\). Set \(v_3(0)=0\). Thus, for \(n>0\), one has \(3\mid n\) if and only if \(1\le v_3(n)\).
+
+\begin{definition}
+The inverse odd step is the natural-number quotient
+\[
+I(z)=\frac{2z-1}{3},\qquad z\in\N.
+\]
+\end{definition}
+
+The quotient is exact precisely when \(3\) divides the numerator. The next lemma identifies that condition with divisibility of the successor and records the successor of the image.
+
+\begin{lemma}
+\label{lem:exact}
+If \(3\mid z+1\), then \(3\mid 2z-1\) and
+\[
+3I(z)=2z-1,\qquad I(z)+1=\frac{2(z+1)}{3}.
+\]
+In particular the displayed quotient is an integer.
+\end{lemma}
+
+\begin{proof}
+Divisibility gives \(z+1=3t\) for some positive integer \(t\), since \(z+1\ge 3\). Hence \(z=3t-1\) with no truncation. Then
+\begin{align*}
+2z-1
+&=2(3t-1)-1
+=6t-3
+=3(2t-1).
+\end{align*}
+The natural-number quotient is therefore the integer \(I(z)=2t-1\), and multiplying by \(3\) recovers the numerator. Adding \(1\) gives
+\[
+I(z)+1=2t=\frac{2(z+1)}{3}.
+\]
+\end{proof}
+
+\begin{lemma}
+\label{lem:plus}
+If \(3\mid z+1\), then \(3\) does not divide \(2z+1\).
+\end{lemma}
+
+\begin{proof}
+Write \(z+1=3t\). Then \(z=3t-1\) and
+\[
+2z+1=2(3t-1)+1=6t-1.
+\]
+Modulo \(3\), this residue is \(2\), not \(0\).
+\end{proof}
+
+Thus \((2z+1)/3\) is not an integer when \(3\mid z+1\). The inverse odd step is the minus sign.
+
+\begin{lemma}
+\label{lem:two}
+For every natural number \(k\), \(3\) does not divide \(2^k\). If \(3\) does not divide a natural number \(u\), then \(3\) does not divide \(2^ku\).
+\end{lemma}
+
+\begin{proof}
+The integers \(3\) and \(2\) are coprime, so \(3\) and \(2^k\) are coprime. A prime dividing a product and coprime to one factor divides the other factor. Applied to \(3\mid 2^k\cdot 1\), this forbids \(3\mid 2^k\). Applied to \(3\mid 2^ku\), it forces \(3\mid u\).
+\end{proof}
+
+\section{The factor budget}
+
+\begin{theorem}
+\label{thm:budget}
+Let \(z\in\N\) and set \(b=v_3(z+1)\). For every natural number \(k\le b\),
+\[
+I^k(z)+1=\frac{2^k(z+1)}{3^k}
+\]
+and
+\[
+v_3(I^k(z)+1)=b-k.
+\]
+Consequently \(3\mid I^k(z)+1\) if and only if \(k<b\).
+\end{theorem}
+
+\begin{proof}
+Write \(z+1=3^bu\) with \(u>0\) and \(3\nmid u\). The proof shows the stronger form
+\begin{equation}
+\label{eq:form}
+I^k(z)+1=2^ku\,3^{b-k}
+\end{equation}
+for every \(k\le b\). The displayed quotient formula follows at once, because
+\[
+2^k(z+1)=2^ku\,3^b=3^k\cdot(2^ku\,3^{b-k})
+\]
+and \(3^k>0\).
+
+The case \(k=0\) is the factorization of \(z+1\). Suppose \eqref{eq:form} holds for some \(k\) with \(k+1\le b\). Then \(b-k\ge 1\), so \(3\) divides \(I^k(z)+1\). Lemma~\ref{lem:exact} gives
+\begin{align*}
+I^{k+1}(z)+1
+&=\frac{2\bigl(I^k(z)+1\bigr)}{3}
+=\frac{2\cdot 2^ku\,3^{b-k}}{3}
+=2^{k+1}u\,3^{b-(k+1)}.
+\end{align*}
+This is \eqref{eq:form} at \(k+1\).
+
+For the valuation, Lemma~\ref{lem:two} says that \(3\) does not divide \(2^ku\). The factorization \eqref{eq:form} is therefore the defining factorization of the successor of the iterate, and the exponent is \(b-k\).
+
+Finally \(I^k(z)+1>0\). It is divisible by \(3\) if and only if its valuation is at least \(1\), which is the inequality \(b-k\ge 1\), that is \(k<b\).
+\end{proof}
+
+\begin{corollary}
+\label{cor:budget}
+Fewer than \(b\) inverse odd steps leave a factor of \(3\) in the image plus one. Exactly \(b\) inverse odd steps remove every factor of \(3\) from the image plus one.
+\end{corollary}
+
+\begin{proof}
+If \(k<b\), Theorem~\ref{thm:budget} gives \(3\mid I^k(z)+1\). If \(k=b\), the same theorem gives valuation \(0\), so \(3\) does not divide \(I^b(z)+1\).
+\end{proof}
+
+\begin{corollary}
+\label{cor:exact}
+For every \(j<b\), the next step is exact:
+\[
+3\,I\bigl(I^j(z)\bigr)=2I^j(z)-1.
+\]
+\end{corollary}
+
+\begin{proof}
+Corollary~\ref{cor:budget} gives \(3\mid I^j(z)+1\). Lemma~\ref{lem:exact} is then the stated identity.
+\end{proof}
+
+\section{Two seeds}
+
+\begin{corollary}
+\label{cor:two}
+\(I(2)=1\) and \(v_3(2+1)=1\). One inverse odd step removes the only factor of \(3\), and \(3\) does not divide \(2\).
+\end{corollary}
+
+\begin{proof}
+The numerator is \(2\cdot 2-1=3\), so \(I(2)=1\). Also \(2+1=3^1\), hence the valuation is \(1\). Corollary~\ref{cor:budget} says that the first image plus one is not divisible by \(3\). That successor is \(1+1=2\).
+\end{proof}
+
+\begin{corollary}
+\label{cor:eight}
+\(v_3(8+1)=2\), \(I(8)=5\), and \(I(5)=3\). Thus \(3\) divides \(5+1\), while \(3\) does not divide \(3+1\).
+\end{corollary}
+
+\begin{proof}
+Here \(8+1=9=3^2\). The first numerator is \(2\cdot 8-1=15\), so \(I(8)=5\). The next numerator is \(2\cdot 5-1=9\), so \(I(5)=3\). Since the valuation is \(2\), Corollary~\ref{cor:budget} leaves a factor after one step and removes every factor after two steps. Explicitly, \(5+1=6\) and \(3+1=4\).
+\end{proof}
+
+\begin{remark}
+The identities above concern only finite sequences of inverse odd steps. They do not assert that iteration of the classical Collatz map reaches \(1\). They do not describe the even inverse branch \(z\mapsto 2z\). Lemma~\ref{lem:plus} excludes the plus-sign expression \((2z+1)/3\) whenever \(3\) divides \(z+1\).
+\end{remark}
+
+\end{document}
