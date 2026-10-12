@@ -1,0 +1,393 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Accessible residues of a divisor slice}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For integers \(q\ge2\), \(c\ge1\) and \(D\ge2\) the divisor slice of the raw
+map sends \(n\) to \(n/D\) when \(D\mid n\) and to \(qn+c\) otherwise. Its
+residue dynamics is the affine map \(F(r)=qr+c\bmod D\) on
+\(\mathbb{Z}/D\mathbb{Z}\), and the residues that occur on a genuine orbit are
+exactly the orbit of \(0\) under \(F\). This document classifies that orbit.
+The affine offset after \(j\) steps is the repunit sum
+\(G_j(q)=1+q+\dots+q^{j-1}\); the orbit returns to \(0\) at time \(j\)
+precisely when the access modulus
+\(M=D(q-1)/\gcd(c,D(q-1))\) divides \(q^{j}-1\); the return time is the least
+such positive exponent, it is at most \(D\), and the first \(m\) values of the
+orbit are distinct. Modulo a prime \(p\) with \(p\nmid c\) the classification
+is complete: the return time is the multiplicative order of \(q\) modulo
+\(p\), and it equals the full period \(p\) exactly when
+\(q\equiv1\pmod p\).
+\end{abstract}
+
+\section{The residue walk}
+
+Let \(q\ge2\), \(c\ge1\) and \(D\ge2\). The \emph{residue map} of the divisor
+slice is
+\[
+F(r)=qr+c\bmod D,\qquad r\in\mathbb{Z}/D\mathbb{Z},
+\]
+where the representative in \(\{0,1,\dots,D-1\}\) is used. Write
+\[
+r_j=F^j(0),\qquad G_j(q)=1+q+\dots+q^{j-1}\quad (j\ge1),\qquad G_0(q)=0 .
+\]
+The empty sum \(G_0\) is \(0\), so \(G_{j+1}=1+qG_j\) for every \(j\ge0\).
+
+Every residue of the form \(cG_j(q)\bmod D\) is reached by an actual orbit,
+because the raw map applies \(j\) affine steps \(n\mapsto qn+c\) before the
+first division, and the residue after those steps is exactly that value.
+Conversely a residue that occurs on the orbit of a seed is reached by such a
+block, since the residue evolves by \(F\) while no division occurs.
+
+\begin{lemma}[Walk]\label{Lem:Walk}
+\(r_0=0\), \(r_{j+1}=F(r_j)\) for all \(j\ge0\), and \(r_{j+k}=F^k(r_j)\) for
+all \(j,k\ge0\).
+\end{lemma}
+
+\begin{proof}
+The first two claims are the definition of the orbit and of the iterate. For
+the third, induction on \(k\): at \(k=0\) both sides are \(r_j\), and
+\[
+r_{j+(k+1)}=r_{(j+k)+1}=F(r_{j+k})=F\bigl(F^k(r_j)\bigr)=F^{k+1}(r_j)
+\]
+by the second claim and the induction hypothesis.
+\end{proof}
+
+\begin{lemma}[Closed form]\label{Lem:Offset}
+\(r_j\equiv c\,G_j(q)\pmod D\) for every \(j\ge0\).
+\end{lemma}
+
+\begin{proof}
+Induction on \(j\). At \(j=0\) both sides are \(0\). Assume the claim at
+\(j\). Then, reducing modulo \(D\),
+\[
+r_{j+1}\equiv q\,r_j+c\equiv q\,c\,G_j(q)+c=c\bigl(qG_j(q)+1\bigr)
+=c\,G_{j+1}(q)\pmod D,
+\]
+where the last step is the recursion \(G_{j+1}=1+qG_j\).
+\end{proof}
+
+\begin{corollary}[Return condition]\label{Cor:ReturnCondition}
+\(r_j=0\) if and only if \(D\mid c\,G_j(q)\).
+\end{corollary}
+
+\begin{proof}
+By Lemma~\ref{Lem:Offset}, \(r_j\) is the residue of \(cG_j(q)\) modulo \(D\),
+and a natural number is divisible by \(D\) exactly when its residue is \(0\).
+\end{proof}
+
+\section{The access modulus}
+
+\begin{definition}[Access modulus]\label{Def:Modulus}
+\(M=M(q,c,D)=\dfrac{D(q-1)}{\gcd\bigl(c,\,D(q-1)\bigr)}\).
+\end{definition}
+
+Since \(q\ge2\) and \(D\ge2\) we have \(D(q-1)>0\), so the denominator is
+positive and \(M\) is a positive divisor of \(D(q-1)\).
+
+\begin{lemma}[Gcd reduction]\label{Lem:GcdReduction}
+For every \(X\ge0\), \(D(q-1)\mid cX\) if and only if \(M\mid X\).
+\end{lemma}
+
+\begin{proof}
+Put \(g=\gcd\bigl(c,D(q-1)\bigr)\) and write \(c=gc_1\) and \(D(q-1)=gd_1\)
+with \(\gcd(c_1,d_1)=1\); then \(M=d_1\). Now
+\[
+D(q-1)\mid cX\iff gd_1\mid gc_1X\iff d_1\mid c_1X\iff d_1\mid X,
+\]
+the middle equivalence by cancellation of the positive factor \(g\), and the
+last by Euclid's lemma applied to the coprime pair \(c_1,d_1\).
+\end{proof}
+
+\begin{theorem}[Return criterion]\label{Thm:Criterion}
+\(r_j=0\) if and only if \(M\mid q^{j}-1\), for every \(j\ge0\).
+\end{theorem}
+
+\begin{proof}
+By Corollary~\ref{Cor:ReturnCondition}, \(r_j=0\iff D\mid cG_j(q)\). Since
+\(q-1>0\),
+\[
+D\mid cG_j(q)\iff D(q-1)\mid cG_j(q)(q-1),
+\]
+multiplying and cancelling the positive factor \(q-1\). The repunit identity
+\((q-1)G_j(q)=q^{j}-1\) turns the right-hand side into
+\(D(q-1)\mid c\,(q^{j}-1)\), which by Lemma~\ref{Lem:GcdReduction} with
+\(X=q^{j}-1\) is equivalent to \(M\mid q^{j}-1\).
+\end{proof}
+
+\begin{lemma}[Modulus]\label{Lem:ModulusDivisor}
+\(M\mid D(q-1)\); and if \(\gcd(q,D)=1\), then \(\gcd(M,q)=1\).
+\end{lemma}
+
+\begin{proof}
+The first claim restates that \(M\) is the quotient of \(D(q-1)\) by its
+positive divisor \(g\). For the second, \(M\) divides the product
+\(D(q-1)\); both factors are coprime to \(q\), since \(\gcd(q,D)=1\) by
+hypothesis and \(\gcd(q,q-1)=1\) because any common divisor of \(q\) and
+\(q-1\) divides their difference \(1\). A divisor of a product of two numbers
+coprime to \(q\) is coprime to \(q\), so \(\gcd(M,q)=1\).
+\end{proof}
+
+\begin{lemma}[Injectivity]\label{Lem:Injectivity}
+If \(\gcd(q,D)=1\), then \(F(r)=F(r')\) if and only if
+\(r\equiv r'\pmod D\).
+\end{lemma}
+
+\begin{proof}
+\(F(r)=F(r')\) means \(qr+c\equiv qr'+c\pmod D\), that is
+\(q(r-r')\equiv0\pmod D\), that is \(D\mid q(r-r')\). Since \(\gcd(q,D)=1\),
+Euclid's lemma gives \(D\mid r-r'\), which is \(r\equiv r'\pmod D\). Each
+step is an equivalence.
+\end{proof}
+
+\section{Periodicity of the orbit}
+
+Assume from now on that \(m\) is the least positive integer with
+\[
+M\mid q^{m}-1 .
+\]
+Such an \(m\) exists exactly when the orbit of \(0\) is periodic, which the
+theorem below establishes from its existence; the statements of this section
+are therefore conditional on \(m\), and their conclusions identify \(m\) as
+the period.
+
+\begin{theorem}[Period]\label{Thm:Period}
+Let \(m\ge1\) be least with \(M\mid q^m-1\). Then \(r_m=0\), and
+\[
+r_{j+m}=r_j,\qquad r_{j+mt}=r_j
+\]
+for all \(j,t\ge0\). Moreover \(r_j=0\) if and only if \(m\mid j\).
+\end{theorem}
+
+\begin{proof}
+By Theorem~\ref{Thm:Criterion}, \(M\mid q^{m}-1\) gives \(r_m=0\). Using
+Lemma~\ref{Lem:Walk} twice, for \(j\ge0\),
+\[
+r_{j+m}=F^{m}(r_j)=F^{j}(r_m)=F^{j}(0)=r_j,
+\]
+where the middle equality commutes the two iterates of the same map \(F\).
+Induction on \(t\) gives \(r_{j+mt}=r_j\): the case \(t=0\) is trivial, and
+\(r_{j+m(t+1)}=r_{(j+mt)+m}=r_{j+mt}=r_j\).
+
+For the return times, let \(r_j=0\). Write \(j=m\lfloor j/m\rfloor+j\bmod m\).
+Theorem~\ref{Thm:Criterion} gives \(M\mid q^{j}-1\), and also
+\(M\mid q^{m}-1\), hence \(M\mid q^{m\lfloor j/m\rfloor}-1\) by raising the
+latter congruence to the power \(\lfloor j/m\rfloor\). Writing
+\(j=m\lfloor j/m\rfloor+(j\bmod m)\) and multiplying the two congruences
+gives \(q^{j}\equiv q^{j\bmod m}\pmod M\), so \(M\mid q^{j\bmod m}-1\) and
+therefore \(r_{j\bmod m}=0\) by Theorem~\ref{Thm:Criterion}. If
+\(j\bmod m\) were nonzero, it would be a positive exponent smaller than
+\(m\) with \(M\mid q^{j\bmod m}-1\), contradicting minimality. Hence
+\(j\bmod m=0\) and \(m\mid j\). Conversely \(m\mid j\) gives \(j=mt\), and
+\(r_j=r_{0+mt}=r_0=0\) by the multiple case with \(j=0\).
+\end{proof}
+
+\begin{lemma}[Distinctness]\label{Lem:Distinct}
+If \(i,j<m\) and \(r_i=r_j\), then \(i=j\).
+\end{lemma}
+
+\begin{proof}
+Suppose \(i<j<m\) and \(r_i=r_j\). Then
+\[
+r_m=F^{m-j}(r_j)=F^{m-j}(r_i)=r_{i+(m-j)},
+\]
+and \(0<i+(m-j)<m\) because \(m-j>0\). Since \(r_m=0\), Theorem
+\ref{Thm:Criterion} gives \(M\mid q^{i+(m-j)}-1\), contradicting the
+minimality of \(m\). Hence no such pair exists, and the statement follows
+from trichotomy on \(i\) and \(j\).
+\end{proof}
+
+\begin{theorem}[Counting bound]\label{Thm:Counting}
+\(m\le D\).
+\end{theorem}
+
+\begin{proof}
+By Lemma~\ref{Lem:Distinct} the map \(i\mapsto r_i\) is injective on
+\(\{0,1,\dots,m-1\}\), and its values all lie in the image of
+\(\mathbb{Z}/D\mathbb{Z}\), a set with \(D\) elements. An injection between
+finite sets therefore forces \(m\le D\).
+\end{proof}
+
+\begin{theorem}[Representatives]\label{Thm:Representatives}
+For every \(j\ge0\) there is exactly one \(i<m\) with \(r_j=r_i\).
+\end{theorem}
+
+\begin{proof}
+Existence: \(i=j\bmod m\) satisfies \(i<m\), and \(r_j=r_{i+m\lfloor
+j/m\rfloor}=r_i\) by the multiple case of Theorem~\ref{Thm:Period}.
+Uniqueness: if \(i,i'<m\) and \(r_i=r_j=r_{i'}\), then \(r_i=r_{i'}\) and
+Lemma~\ref{Lem:Distinct} gives \(i=i'\).
+\end{proof}
+
+The accessible residues are thus exactly the cycle
+\(r_0,r_1,\dots,r_{m-1}\) containing \(0\), a set of \(m\) distinct residues
+modulo \(D\); this matches the description of the residue dynamics of the
+divisor slice, in which only residues of that cycle can follow the affine
+branch.
+
+\section{The prime case}
+
+Let \(p\) be a prime and assume \(p\nmid c\). Then \(\gcd(p,c)=1\), and the
+criterion \(p\mid cG_j(q)\iff p\mid G_j(q)\) holds for every \(j\).
+
+\begin{lemma}[Repunit modulo a prime]\label{Lem:RepunitPrime}
+If \(q\equiv1\pmod p\), then \(G_j(q)\equiv j\pmod p\) for every \(j\ge0\).
+\end{lemma}
+
+\begin{proof}
+Induction on \(j\). At \(j=0\) both sides are \(0\). Assume
+\(G_j(q)\equiv j\). Multiplying by the congruence \(q\equiv1\pmod p\) gives
+\(qG_j(q)\equiv j\), so
+\[
+G_{j+1}(q)=1+qG_j(q)\equiv 1+j\pmod p .
+\]
+\end{proof}
+
+\begin{theorem}[Multiplier not one]\label{Thm:PrimeNotOne}
+Let \(p\) be prime, \(p\nmid c\) and \(q\not\equiv1\pmod p\). Then
+\[
+r_j=0\iff p\mid q^{j}-1
+\]
+for every \(j\ge0\).
+\end{theorem}
+
+\begin{proof}
+By Corollary~\ref{Cor:ReturnCondition} and \(\gcd(p,c)=1\),
+\(r_j=0\iff p\mid G_j(q)\). The repunit identity gives
+\((q-1)G_j(q)=q^{j}-1\), so \(p\mid G_j(q)\) implies \(p\mid q^{j}-1\).
+Conversely, if \(p\mid q^{j}-1=(q-1)G_j(q)\), then \(p\mid q-1\) or
+\(p\mid G_j(q)\) by primality; the first alternative is excluded by the
+hypothesis, so \(p\mid G_j(q)\).
+\end{proof}
+
+\begin{theorem}[Multiplier one]\label{Thm:PrimeOne}
+Let \(p\) be prime, \(p\nmid c\) and \(q\equiv1\pmod p\). Then
+\(r_j=0\) if and only if \(p\mid j\), for every \(j\ge0\).
+\end{theorem}
+
+\begin{proof}
+As in the previous proof, \(r_j=0\iff p\mid G_j(q)\). By
+Lemma~\ref{Lem:RepunitPrime}, \(G_j(q)\equiv j\pmod p\), so \(p\mid G_j(q)\)
+is equivalent to \(p\mid j\).
+\end{proof}
+
+\begin{theorem}[Full access]\label{Thm:FullAccess}
+Let \(p\) be prime, \(p\nmid c\) and \(q\equiv1\pmod p\). Then the least
+positive exponent \(m\) with \(M\mid q^{m}-1\) equals \(p\), and the residues
+\(r_0,r_1,\dots,r_{p-1}\) are all residues modulo \(p\).
+\end{theorem}
+
+\begin{proof}
+By Theorem~\ref{Thm:PrimeOne} with \(j=p\), \(r_p=0\), so
+Theorem~\ref{Thm:Criterion} gives \(M\mid q^{p}-1\); hence \(m\le p\) by
+minimality. If \(0<s<p\), then \(M\mid q^{s}-1\) would give \(r_s=0\),
+hence \(p\mid s\) by Theorem~\ref{Thm:PrimeOne}, which is impossible for
+\(0<s<p\); so no positive exponent below \(p\) satisfies the divisibility
+and \(m=p\). Finally \(p=m\), so Lemma~\ref{Lem:Distinct} makes
+\(r_0,\dots,r_{p-1}\) pairwise distinct residues modulo \(p\). There are
+\(p\) of them and only \(p\) residues, so they exhaust the residue classes.
+\end{proof}
+
+\begin{theorem}[Necessity]\label{Thm:PrimeNecessity}
+Let \(p\) be prime, \(p\nmid c\), \(\gcd(p,q)=1\) and
+\(q\not\equiv1\pmod p\). Then \(m<p\).
+\end{theorem}
+
+\begin{proof}
+We first record Fermat's little theorem in the form
+\(q^{p-1}\equiv1\pmod p\). Multiplication by \(q\) permutes the nonzero
+residues modulo \(p\), because \(\gcd(q,p)=1\) and the inverse of
+multiplication by \(q\) is multiplication by the inverse of \(q\). Hence
+\[
+\prod_{x=1}^{p-1}x\equiv\prod_{x=1}^{p-1}qx=q^{p-1}\prod_{x=1}^{p-1}x
+\pmod p .
+\]
+The product \(\prod_{x=1}^{p-1}x\) is coprime to \(p\), since no factor is
+divisible by the prime \(p\); cancelling it gives \(q^{p-1}\equiv1\pmod p\),
+that is \(p\mid q^{p-1}-1\).
+
+By Theorem~\ref{Thm:PrimeNotOne} with \(j=p-1\), \(r_{p-1}=0\), and
+Theorem~\ref{Thm:Criterion} gives \(M\mid q^{p-1}-1\). Since
+\(1\le p-1<p\) is a positive exponent with the divisibility, minimality
+gives \(m\le p-1<p\).
+\end{proof}
+
+\section{Controls and scope}
+
+\begin{remark}[Controls]\label{Rem:Controls}
+\begin{itemize}[leftmargin=2em]
+\item \((q,c,D)=(2,1,3)\): \(M=3\), \(m=2\), the accessible residues are
+\(0\) and \(1\), and residue \(2\) is fixed by \(F\), so it is never
+visited. This is the smallest instance with an inaccessible residue.
+\item \((q,c,D)=(2,1,7)\): \(M=7\), \(m=3\), accessible residues \(0,1,3\);
+the residues \(2,4,5,6\) are inaccessible.
+\item \((q,c,D)=(2,1,15)\): \(m=4\), although \(\gcd(q,D)=\gcd(c,D)=1\).
+Coprimality of the multiplier and of the offset with the divisor therefore
+does not force full access.
+\item \((q,c,D)=(3,1,2)\): \(q\equiv1\pmod 2\), so \(m=p=2\) and both
+residues are visited; this is the smallest full-access instance.
+\item \(q=D-1\): then \(F(r)\equiv c-r\pmod D\), so \(F^2\) is the identity
+and every offset \(c\) with \(D\nmid c\) has return time \(2\). At \(D=3\)
+and \(c=7\) this is the two-cycle \(0\leftrightarrow1\) modulo \(3\).
+\end{itemize}
+\end{remark}
+
+\begin{remark}[Scope]\label{Rem:Scope}
+The criterion of Theorem~\ref{Thm:Criterion} needs no coprimality
+assumption: it holds for every \(q\ge2\), \(c\ge1\), \(D\ge2\). The
+injectivity, counting and exhaustion statements use \(\gcd(q,D)=1\) at the
+point where the residue map must be invertible; Theorem
+\ref{Thm:PrimeNecessity} uses \(\gcd(p,q)=1\) to apply Fermat's little
+theorem. The statements here classify accessible residues only. Lifting a
+residue to a seed, deciding when a seed reaches the target, and the
+density-zero capture result for the offset slice \(c=1\) are separate
+obligations and are not claimed.
+\end{remark}
+
+\section{Formal correspondence}
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Statement & Lean \\
+\midrule
+Lemma~\ref{Lem:Walk} & \texttt{AccessStep}, \texttt{AccessOrbit}, \\
+ & \texttt{AccessOrbit\_zero}, \texttt{AccessOrbit\_succ}, \texttt{AccessOrbit\_add} \\
+Lemma~\ref{Lem:Offset} & \texttt{AccessOrbit\_eq\_offset\_mul\_repunit} \\
+Corollary~\ref{Cor:ReturnCondition} & \texttt{AccessOrbit\_eq\_zero\_iff} \\
+Lemma~\ref{Lem:GcdReduction} & \texttt{AccessModulus\_dvd\_iff\_mul} \\
+Theorem~\ref{Thm:Criterion} & \texttt{AccessOrbit\_eq\_zero\_iff\_modulus} \\
+Lemma~\ref{Lem:ModulusDivisor} & \texttt{AccessModulus\_dvd\_mul\_pred}, \texttt{AccessModulus\_coprime\_q} \\
+Lemma~\ref{Lem:Injectivity} & \texttt{AccessStep\_eq\_iff} \\
+Theorem~\ref{Thm:Period} & \texttt{AccessOrbit\_eq\_zero\_of\_least}, \texttt{AccessOrbit\_period}, \\
+ & \texttt{AccessOrbit\_period\_mul}, \texttt{AccessOrbit\_eq\_zero\_iff\_dvd}, \texttt{AccessIterate\_comm} \\
+Lemma~\ref{Lem:Distinct} & \texttt{AccessOrbit\_distinct} \\
+Theorem~\ref{Thm:Counting} & \texttt{AccessOrbit\_card\_le} \\
+Theorem~\ref{Thm:Representatives} & \texttt{AccessOrbit\_representative} \\
+Lemma~\ref{Lem:RepunitPrime} & \texttt{AccessRepunitSum\_modeq\_index} \\
+Theorem~\ref{Thm:PrimeNotOne} & \texttt{AccessPrime\_orbit\_iff} \\
+Theorem~\ref{Thm:PrimeOne} & \texttt{AccessPrime\_orbit\_iff\_index} \\
+Theorem~\ref{Thm:FullAccess} & \texttt{AccessPrime\_full\_access}, \texttt{AccessPrime\_orbit\_surjective} \\
+Theorem~\ref{Thm:PrimeNecessity} & \texttt{AccessPrime\_not\_full\_access} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\end{document}

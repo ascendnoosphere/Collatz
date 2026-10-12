@@ -34,6 +34,7 @@ defaultTargets = [
   "RelationsCore",
   "RelationsCycles",
   "RepunitDivisor",
+  "ResidueAccess",
 ]
 
 [[require]]
@@ -200,3 +201,7 @@ srcDir = "QCD.Relations.Cycles.001/lean"
 [[lean_lib]]
 name = "RepunitDivisor"
 srcDir = "QCD.Repunit.001/lean"
+
+[[lean_lib]]
+name = "ResidueAccess"
+srcDir = "QCD.ResidueAccess.001/lean"

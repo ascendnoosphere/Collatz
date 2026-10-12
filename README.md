@@ -393,6 +393,26 @@ with period \(k\), and its first \(k\) residues are pairwise distinct. The
 classical instance \(q=3\), \(k=2\) gives the divisor \(4\) and the cycle
 \(1\mapsto4\mapsto1\). The bounded certificate checks 98140 cases.
 
+### Accessible residues of a divisor slice
+
+[QCD.ResidueAccess.001](QCD.ResidueAccess.001/README.md) classifies the residue
+orbit of zero under the affine map \(F(r)=qr+c\bmod D\) attached to the
+divisor slice of the raw map \(T(n)=n/D\) for \(D\mid n\) and \(T(n)=qn+c\)
+otherwise. With the repunit sums \(G_j(q)=1+q+\cdots+q^{j-1}\), the orbit
+value satisfies \(F^j(0)\equiv c\,G_j(q)\pmod D\), so the orbit returns to
+\(0\) exactly when \(D\mid c\,G_j(q)\). Dividing out the common factor
+\(\gcd(c,D(q-1))\) turns that condition into a divisibility by the access
+modulus \(M=D(q-1)/\gcd(c,D(q-1))\): the orbit returns at time \(j\) exactly
+when \(M\mid q^{j}-1\). Consequently the return time \(m\) is the least
+positive exponent with \(M\mid q^{m}-1\), the orbit is periodic with period
+\(m\), it revisits \(0\) exactly at the multiples of \(m\), its first \(m\)
+values are pairwise distinct, and \(m\le D\); every accessible residue is
+reached at a unique index below \(m\). Modulo a prime \(p\) with \(p\nmid c\)
+the classification closes: the return time is the multiplicative order of
+\(q\) modulo \(p\) when \(q\not\equiv1\pmod p\), and it equals the full
+period \(p\) when \(q\equiv1\pmod p\), in which case the orbit exhausts the
+residues. The bounded certificate checks 367300 cases.
+
 ## Other map conventions
 
 A residue-wise affine map has the form
