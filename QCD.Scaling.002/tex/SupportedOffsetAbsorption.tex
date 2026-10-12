@@ -1,0 +1,404 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+A multiplier-supported divisor of the offset gives an absorbing integer
+sublattice. A lexicographic descent bounds the affine instructions before
+entry, and a single entry witness determines the entire normalized raw tail.
+Every periodic state already belongs to the sublattice; every cycle phase
+and primitive raw period recover by scaling. Repeated gcd removal constructs
+the maximal supported factor without prime factorization and leaves an
+offset coprime to the unchanged multiplier. The resulting search cutoff is
+an exact ceiling, not a rounded-down approximation. These results concern
+normalization and recovery, not convergence of the remaining core map.
+\end{abstract}
+
+\section{The supplied factor and its invariant lattice}
+
+Let \(Q,C,D\in\Z\) with \(|D|\ge2\), and define the raw map
+\[
+F(n)=\begin{cases}
+n/D,&D\mid n,\\
+Qn+C,&D\nmid n.
+\end{cases}
+\]
+Division has precedence, including at zero, and retains the sign of \(D\).
+The absorption identity appears as formula (19) in \cite{QcdAbsorption}.
+The gcd construction and search-cutoff conversion occur in the offset
+normalization section of \cite{QcdOffsetSolver}. Coprime scaling at the same
+raw clock is developed in \cite{AscendScaling}.
+
+\begin{definition}
+A supplied factor is an integer \(S\) satisfying
+\[
+S\mid C,\qquad \gcd(|S|,|D|)=1.
+\]
+Its relative map is \(G=F_{Q,C/S,D}\). A power witness is an integer
+\(k\in\N\) with \(S\mid Q^k\). The affine count of a finite raw orbit
+segment is the number of its instructions using the complementary guard
+\(D\nmid n\).
+\end{definition}
+
+The coprimality condition forces \(S\ne0\): otherwise its gcd with \(D\)
+is \(|D|\ge2\). The supplied-factor conditions do not require
+\(\gcd(|C|,|D|)=1\), and a power witness for \(S\) does not assert one for
+\(C\).
+
+\begin{lemma}[Exact guard and clock preservation]
+\label{lem:scale}
+For all \(m\in\Z\), \(r\in\N\),
+\[
+F(Sm)=S G(m),\qquad F^r(Sm)=S G^r(m).
+\]
+Consequently \(S\Z\) is invariant, and scaling is a raw-clock conjugacy
+between the core state space and this sublattice.
+\end{lemma}
+\begin{proof}
+Coprimality gives \(D\mid Sm\) if and only if \(D\mid m\), so both maps
+use the same guard. If that guard holds, exact division gives
+\((Sm)/D=S(m/D)\), including for signed divisors. Otherwise,
+\(QSm+C=S(Qm+C/S)\), since \(S\mid C\).
+This proves the one-step equality. Induction on \(r\), starting with the
+identity at \(r=0\), proves the iterate equality. Multiplication by nonzero
+\(S\) is a bijection from \(\Z\) to \(S\Z\), which gives the stated
+conjugacy. This is not a conjugacy on the whole original state space.
+\end{proof}
+
+\section{Entry with a bounded affine count}
+
+\begin{theorem}[Prepared entry]
+\label{thm:entry}
+Suppose \(S\mid Q^k n\), where \(k\in\N\) and \(n\in\Z\).
+There is a raw time \(t\) with \(S\mid F^t(n)\), and at most \(k\)
+affine instructions occur before that time.
+\end{theorem}
+\begin{proof}
+Use the lexicographic order on \((k,|n|)\in\N^2\), with the exponent
+first. If \(S\mid n\), choose \(t=0\). If \(k=0\), prepared divisibility
+already says \(S\mid n\), so this also settles the exponent-zero case.
+Assume instead that \(k>0\) and \(S\nmid n\).
+
+If \(D\mid n\), then \(n\ne0\), since every integer divides zero.
+Write \(n=Dn'\). The hypothesis says \(S\mid Q^k Dn'\);
+coprimality cancels \(D\) and yields \(S\mid Q^k n'\).
+Moreover \(|n'|=|n|/|D|<|n|\), because \(|D|\ge2\).
+Thus the exponent stays fixed while the second rank coordinate decreases.
+The current instruction is division and contributes no affine count.
+
+If \(D\nmid n\), the next state is \(n'=Qn+C\). Both
+\(Q^k n\) and \(Q^{k-1}C\) are divisible by \(S\), hence
+\[
+S\mid Q^{k-1}n'=Q^k n+Q^{k-1}C.
+\]
+The exponent decreases, irrespective of the possibly increased magnitude.
+This instruction contributes one affine event; induction provides at most
+\(k-1\) more. Each case has one strictly smaller child, preserves the
+prepared divisibility condition, and reconstructs the original time by
+prepending its one raw instruction. The well-founded induction therefore
+terminates and proves the bound.
+\end{proof}
+
+\begin{theorem}[Common raw tail]
+\label{thm:tail}
+Assume \(S\mid Q^k\). Every signed seed \(n\) has a common entry time
+\(t\) and an integer \(m\) such that
+\[
+F^t(n)=Sm,\qquad F^{t+r}(n)=S G^r(m)\quad(r\in\N).
+\]
+The prefix contains at most \(k\) affine instructions.
+\end{theorem}
+\begin{proof}
+The power witness implies \(S\mid Q^k n\). Theorem~\ref{thm:entry}
+gives \(t\) and an exact factorization \(F^t(n)=Sm\), with the required
+count. For every \(r\), the iteration identity and Lemma~\ref{lem:scale}
+give
+\[
+F^{t+r}(n)=F^r(F^t(n))=F^r(Sm)=S G^r(m).
+\]
+The same \(t,m\) work for all future raw times. They can depend on the
+seed; no uniform all-seed entry time is asserted. The affine count is not
+a raw-time bound.
+\end{proof}
+
+\begin{lemma}[A power from prime support]
+\label{lem:support}
+If every prime divisor of \(|S|\) divides \(|Q|\), then
+\(S\mid Q^{|S|}\). This witness is sufficient and nonoptimal.
+\end{lemma}
+\begin{proof}
+It suffices to prove that positive natural numbers \(a,q\) with supported
+primes satisfy \(a\mid q^a\); the same proof allows \(q=0\).
+For \(a=1\), divisibility is immediate. For \(a>1\), choose a prime
+\(p\mid a\) and put \(b=a/p\). Such a prime exists by taking the least
+divisor greater than one: if that divisor were composite, a smaller
+nontrivial divisor would also divide \(a\).
+We have \(a=pb\), \(b\ge1\), and \(b<a\). Every prime divisor of \(b\)
+also divides \(a\), so induction gives \(b\mid q^b\). Since \(p\mid q\),
+multiplication gives \(a\mid q^{b+1}\). The inequalities
+\(p\ge2\) and \(b\ge1\) yield \(b+1\le pb=a\), and divisibility
+persists upon increasing the exponent. Thus \(a\mid q^a\).
+Apply this to \(a=|S|\), \(q=|Q|\), then use absolute-value divisibility
+to recover the signed integer statement. The exponent-zero unit case also
+avoids any exception involving \(Q=0\).
+\end{proof}
+
+\section{Arbitrary targets and positive domains}
+
+\begin{theorem}[Universal target recovery]
+\label{thm:targets}
+Let \(S\mid Q^k\), and let \(P\) be any predicate on \(\Z\). Then
+\[
+\bigl(\forall m\in\Z\ \exists r\in\N:\ P(SG^r(m))\bigr)
+\quad\Longleftrightarrow\quad
+\bigl(\forall n\in\Z\ \exists t\in\N:\ P(F^t(n))\bigr).
+\]
+There is no invariance condition on \(P\).
+If \(S>0\), \(Q\ge0\), \(C>0\), and \(D>0\), the same equivalence
+holds with both seed quantifiers restricted to positive integers.
+\end{theorem}
+\begin{proof}
+For the forward implication, choose the common tail \(t,m\) for the given
+original seed. A core witness \(r\) recovers the target at original time
+\(t+r\). For the reverse implication, apply original capture to the
+original seed \(Sm\); Lemma~\ref{lem:scale} supplies the identical raw
+clock in the core. No target value is changed or transported through an
+uncontrolled intermediate state.
+
+Under the positive hypotheses, every original raw iterate of a positive
+seed is positive: exact positive division has a positive integer quotient,
+and \(Qn+C>0\) at an affine instruction. At entry, \(Sm>0\) and \(S>0\)
+imply \(m>0\). Conversely \(m>0\) gives a positive original seed \(Sm\).
+The preceding two implications therefore apply with the positive quantifiers.
+Also \(C/S>0\): exact divisibility reconstructs \(C=S(C/S)\), and a
+nonpositive quotient would contradict \(C>0\). Thus the normalized
+parameters stay in the positive class.
+\end{proof}
+
+The theorem is an all-seed equivalence for the pulled-back core target.
+It is not a pointwise equivalence between the same original and normalized
+seed, and it does not prove capture for a core map whose capture problem
+remains unresolved.
+
+\section{Every phase and the primitive raw period}
+
+\begin{theorem}[Complete cycle recovery]
+\label{thm:cycles}
+Suppose \(S\mid Q^k\). Every periodic original state belongs to \(S\Z\).
+For every \(m\in\Z\) and every \(r\in\N\),
+\[
+F^r(Sm)=Sm\quad\Longleftrightarrow\quad G^r(m)=m.
+\]
+Every original cycle is therefore the scaled cycle of one core state, and
+all of its raw phases and its primitive raw period agree under scaling.
+Every core cycle lifts in the reverse direction.
+\end{theorem}
+\begin{proof}
+Let \(F^h(n)=n\) with \(h>0\), and choose the common entry \(t,m\) from
+Theorem~\ref{thm:tail}. The multiple \(H=h(t+1)\) satisfies \(H\ge t\),
+and repetition of the return gives \(F^H(n)=n\). The common-tail identity
+at \(H-t\) then gives
+\[
+n=F^H(n)=S G^{H-t}(m).
+\]
+Thus the periodic state itself, not just one later phase, belongs to the
+lattice. Write it as \(Sn_0\). Lemma~\ref{lem:scale} now reconstructs every
+phase from the one state \(n_0\), beginning at raw time zero.
+For each \(r\), injectivity of multiplication by \(S\ne0\) makes
+\(S G^r(n_0)=Sn_0\) equivalent to \(G^r(n_0)=n_0\).
+The sets of positive return times are identical, so their least elements
+are identical. This proves primitive-period preservation against every
+shorter positive raw return. The same iterate equality lifts a core cycle
+and all its phases. Zero, which has raw period one, is included.
+\end{proof}
+
+\begin{lemma}[Exact starting cutoff]
+\label{lem:ceiling}
+For natural numbers \(S,H,n\) with \(S>0\),
+\[
+H\le Sn\quad\Longleftrightarrow\quad
+\left\lfloor\frac{H+S-1}{S}\right\rfloor\le n.
+\]
+\end{lemma}
+\begin{proof}
+Put \(a=H+S-1\). Integer division gives
+\(\lfloor a/S\rfloor\le n\) if and only if \(a<S(n+1)\).
+Since \(H+S\ge1\), this strict inequality is exactly \(H\le Sn\).
+The argument includes \(H=0\). Applied to a positive cycle and a positive
+scale, its minimum scales by \(S\), so the original starting cutoff becomes
+the displayed core cutoff. No cycle enumeration or exhaustion is inferred
+from this conversion alone.
+\end{proof}
+
+\section{Gcd-only construction and its exact recovery}
+
+\begin{theorem}[Constructed maximal supported factor]
+\label{thm:peel}
+For \(C\ne0\), repeatedly remove \(g=\gcd(h,|Q|)\) from
+\(h\), starting with \(h=|C|\), and multiply the removed factors into
+\(\Sigma\), starting with \(\Sigma=1\). Stop at \(g=1\). The result obeys
+\[
+\Sigma,h>0,\qquad \Sigma h=|C|,\qquad \gcd(h,|Q|)=1,
+\]
+and has a power witness \(\Sigma\mid Q^k\) for some \(k\le|C|\).
+Both \(\Sigma\) and \(h\) are at most \(|C|\).
+For every positive divisor \(a\mid|C|\), its primes all divide \(|Q|\)
+if and only if \(a\mid\Sigma\).
+If \(\gcd(|C|,|D|)=1\), the computed \(\Sigma\) supplies the hypotheses
+of Theorems~\ref{thm:tail}, \ref{thm:targets}, and \ref{thm:cycles}.
+The relative offset has magnitude \(h\), hence is coprime in magnitude to
+\(Q\). If \(C>0\) and \(\Sigma>1\), it is strictly smaller than \(C\).
+\end{theorem}
+\begin{proof}
+A nonterminal gcd divides positive \(h\), so it is positive and, being
+unequal to one, is at least two. Thus \(h/g<h\), proving termination in
+the positive natural class. At a terminal node, the certificate is
+\((1,h)\), with exponent zero. At a nonterminal node, let the child's
+certificate be \((\Sigma',h')\) with exponent \(k'\le h/g\).
+The new pair \((g\Sigma',h')\) reconstructs \(h\). Because \(g\mid|Q|\)
+and \(\Sigma'\mid |Q|^{k'}\), it has exponent \(k'+1\).
+The inequalities \(g\ge2\) and \(h/g<h\) imply
+\(k'+1\le h/g+1\le h\). The terminal core is coprime to \(|Q|\).
+Induction proves the product, positivity and exponent bounds. Positivity
+of both factors in the product bounds each by the original \(|C|\).
+
+A prime dividing \(\Sigma\) divides \(|Q|\), since it divides a power
+of \(|Q|\); this follows by induction on the power using primality.
+Conversely, let \(a\mid|C|=\Sigma h\) have supported primes.
+Lemma~\ref{lem:support} gives \(a\mid|Q|^a\), while
+\(\gcd(h,|Q|)=1\) implies \(\gcd(h,|Q|^a)=1\).
+Thus \(\gcd(a,h)=1\), and cancellation from \(a\mid\Sigma h\) gives
+\(a\mid\Sigma\). This proves maximality in the divisibility order.
+
+The factor \(\Sigma\) divides \(|C|\), hence divides \(C\).
+If \(C\) is coprime to \(D\), so is this divisor. The constructed power
+witness therefore applies to the same original map, not to a separately
+chosen scale. Exact division gives
+\(\Sigma(C/\Sigma)=C\); taking absolute values and cancelling positive
+\(\Sigma\) against \(\Sigma h=|C|\) gives \(|C/\Sigma|=h\).
+This proves core coprimality and compatibility with the relative parameters.
+For a positive original offset and \(\Sigma>1\), positive exact division
+strictly decreases the offset. If \(\Sigma=1\), the core was already
+coprime to the multiplier, and there is no strict decrease.
+The case \(Q=0\) obeys the same certificates: for \(|C|>1\) the first
+gcd removes the whole offset, leaving core one and exponent one.
+The constructor is also defined at zero offset by \((1,0)\), but the
+positive certificate and this theorem exclude that fallback.
+\end{proof}
+
+\section{Examples and exact arithmetic}
+
+For \((Q,C,D)=(11,55,2)\), gcd removal gives \(\Sigma=11\), core offset
+\(5\), and exponent one. The seed \(1\) enters as
+\(1\mapsto66=11\cdot6\). Requiring the whole offset to divide a power
+would fail: every power of \(11\) is congruent to one modulo \(5\), while
+\(5\mid55\). For \((3,6,2)\), the supplied factor \(3\) gives core offset
+\(2\) although the full offset is not coprime to the divisor. The generic
+supplied-factor theorem applies; the stronger full-offset criterion is only
+sufficient for automatic admissibility.
+
+For \((181,181^{20},2)\), extraction gives core \((181,1,2)\).
+The exact arithmetic
+\[
+181\cdot27+1=611\cdot2^3,\qquad
+181\cdot611+1=27\cdot2^{12}
+\]
+and
+\[
+181\cdot35+1=99\cdot2^6,\qquad
+181\cdot99+1=35\cdot2^9
+\]
+produces the two odd-state pairs in \cite{QcdOffsetSolver}.
+Their respective raw words are
+\[
+O D^3 O D^{12},\qquad O D^6 O D^9.
+\]
+Here \(O\) means affine and \(D\) labels a division instruction. Each word
+has raw length \(17\). Exact divisibility and odd endpoints verify every guard.
+Within a division chain the states are distinct, and the two chains have
+different odd parts; consequently all seventeen raw cycle states are
+distinct. Both periods are primitive, and the minima are respectively
+\(27\) and \(35\). Scaling by the odd factor \(181^{20}\) preserves
+every raw edge and multiplies these minima by that factor.
+
+The exact Go replay uses signed arbitrary-precision integers. It checks the
+constructed power certificate, a common entry, the affine budget, and
+sixteen normalized tail edges, recomputing both complementary guards.
+The fixed box has \(-7\le Q\le7\), \(1\le|C|\le32\),
+\(2\le|D|\le8\), full-offset coprimality, and \(-64\le n\le64\).
+For divisor magnitudes \(2,3,4,5,6,7,8\), the counts of coprime positive
+offsets through \(32\) are \(16,22,16,26,11,28,16\), summing to \(135\).
+The box therefore has exactly
+\[
+15\cdot4\cdot135\cdot129=1{,}044{,}900
+\]
+seed/parameter certificates, not distinct orbits. Additional controls cover
+supplied factors, signed divisions, zero multipliers, both scaled raw cycles,
+large signed seeds, ceiling boundaries and invalid inputs.
+
+The replay accepts nonzero offsets and positive supplied factors;
+the signed-factor and zero-offset entry theorems have wider domains.
+It restricts coefficients and supplied raw or core seeds to 512 bits,
+\(|Q|\le181\), \(2\le|D|\le32\), and entry prefixes to 4096 raw steps.
+These limits do not restrict the formal statements. A resource refusal is
+not nonabsorption, divergence or search exhaustion. The replay is not a
+complete core-cycle search. Zero allocations are measured only in four
+warmed configurations with seed \(27\).
+
+\section{Formal statements and commands}
+
+The module correspondence is as follows.
+\begin{itemize}
+\item \path{lean/SupportedOffsetAbsorption.lean} contains the supplied-factor
+entry rank, common tail, target equivalences, return-time reflection,
+primitive-cycle recovery and exact cutoff.
+\item \path{lean/SupportedOffsetFactor.lean} proves gcd extraction.
+Its certificates retain products, support, power bounds and maximality.
+\item \path{lean/SupportedOffsetExtracted.lean} uses the actual constructed
+factor in the raw recovery and proves the core's multiplier coprimality.
+\item The proper-factor obstruction and raw-period controls are in
+\path{lean/SupportedOffsetControls.lean}. They exclude every shorter return
+of both core cycles and lift their periods to the large offset.
+\end{itemize}
+The core parameter class, zero-offset exception, signed guards and positive
+capture hypotheses are retained at the corresponding use sites.
+From the repository root, use \texttt{make lean}, the \texttt{go} profile
+with \path{QCD.Scaling.002/go/SupportedOffsetAbsorption.go}, or the
+\texttt{tex} profile with this document as \texttt{TEXFILE}.
+
+\bibliographystyle{amsalpha}
+\bibliography{SupportedOffsetAbsorption}
+
+\end{document}

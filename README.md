@@ -50,6 +50,27 @@ events. From that entry onward it is exactly \(c\) times an orbit of
 \(F_{q,1,d}\). This gives an all-seed capture equivalence for arbitrary targets,
 with a positive-domain version when \(q\ge0\), \(c>0\), and \(d>0\).
 
+### Supported offset absorption
+
+[QCD.Scaling.002](QCD.Scaling.002/README.md) allows a proper offset factor:
+\[
+S\mid C,\qquad \gcd(|S|,|D|)=1,\qquad S\mid Q^k.
+\]
+Every signed seed has one entry and one normalized state whose entire future
+raw tail is exactly scaled from \(F_{Q,C/S,D}\), after at most \(k\)
+affine events. Arbitrary-target universal capture, every cycle phase, and
+primitive raw periods recover with their stated domains and clocks.
+
+For \(C\ne0\), repeated gcd removal computes the maximal multiplier-supported divisor
+\(\Sigma\) of \(|C|\), with core offset coprime in magnitude to \(Q\).
+If \(C\) is coprime to \(D\), the computed factor is admissible for the same
+raw map. For positive offsets, \(\Sigma>1\) strictly reduces the offset;
+\(\Sigma=1\) means it was already coprime to the multiplier.
+The exact positive search cutoff is
+\(H\le\Sigma n\) if and only if
+\(\lfloor(H+\Sigma-1)/\Sigma\rfloor\le n\).
+This normalization does not solve the remaining core capture problem.
+
 ### Common-power time compression
 
 [QCD.TimeCompression.001](QCD.TimeCompression.001/README.md) proves the exact

@@ -4,6 +4,10 @@ defaultTargets = [
   "HomomorphismTheorems",
   "GeneralizedCollatz",
   "GeneralizedScaling",
+  "SupportedOffsetAbsorption",
+  "SupportedOffsetFactor",
+  "SupportedOffsetExtracted",
+  "SupportedOffsetControls",
   "TimeCompression",
   "CompressionOutcomes",
   "CompressionPeriods",
@@ -72,6 +76,22 @@ srcDir = "Foundations.Main.StartHere/lean"
 [[lean_lib]]
 name = "GeneralizedScaling"
 srcDir = "QCD.Scaling.001/lean"
+
+[[lean_lib]]
+name = "SupportedOffsetAbsorption"
+srcDir = "QCD.Scaling.002/lean"
+
+[[lean_lib]]
+name = "SupportedOffsetFactor"
+srcDir = "QCD.Scaling.002/lean"
+
+[[lean_lib]]
+name = "SupportedOffsetExtracted"
+srcDir = "QCD.Scaling.002/lean"
+
+[[lean_lib]]
+name = "SupportedOffsetControls"
+srcDir = "QCD.Scaling.002/lean"
 
 [[lean_lib]]
 name = "TimeCompression"
