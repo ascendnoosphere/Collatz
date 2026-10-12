@@ -99,10 +99,10 @@ func TestResidueStepInRange(t *testing.T) {
 	}
 }
 
-// TestOrbitBranches checks the documented walks: the divisor one fixes every
-// state, the zero multiplier reaches the constant offset, the negative unit
-// multiplier runs the reflection pair, and an expanding multiplier escapes the
-// rounding of the affine branch.
+// TestOrbitBranches checks the documented walks: a dividing seed is not the
+// classical map, a zero multiplier with nonzero offset is trapped at that
+// offset, a zero offset reaches zero, the negative unit multiplier runs the
+// reflection pair, and an expanding multiplier escapes.
 func TestOrbitBranches(t *testing.T) {
 	w := NewWorkspace()
 	orbit := fillOrbit(w.Orbit, 2, 1, 3, 9)
@@ -112,9 +112,18 @@ func TestOrbitBranches(t *testing.T) {
 			t.Fatalf("orbit at %d: got %d, want %d", i, orbit[i], value)
 		}
 	}
+	orbit = fillOrbit(w.Orbit, 0, 1, 3, 2)
+	if orbit[0] != 2 || !divisionFree(orbit, 3) {
+		t.Fatalf("zero-multiplier seed 2 is not the trapped walk of 2")
+	}
+	for j := 1; j < len(orbit); j++ {
+		if orbit[j] != 1 {
+			t.Fatalf("trapped zero-multiplier walk at %d: got %d", j, orbit[j])
+		}
+	}
 	orbit = fillOrbit(w.Orbit, 0, 0, 3, 7)
-	if orbit[0] != 7 {
-		t.Fatalf("first state of the zero-multiplier walk: got %d", orbit[0])
+	if orbit[0] != 7 || divisionFree(orbit, 3) {
+		t.Fatalf("zero-offset walk of 7 was treated as trapped")
 	}
 	for j := 1; j < len(orbit); j++ {
 		if orbit[j] != 0 {
@@ -170,12 +179,17 @@ func TestSweepTotals(t *testing.T) {
 	if total != 125708 {
 		t.Fatalf("printed total: got %d, want 125708", total)
 	}
-	repeat := Totals{}
-	sweepTrapSum(&repeat)
-	sweepResidues(&repeat)
-	sweepControls(NewWorkspace(), &repeat)
-	if repeat.Failures != 0 {
-		t.Fatalf("second pass reported %d failures", repeat.Failures)
+	repeatSum := Totals{}
+	sweepTrapSum(&repeatSum)
+	repeatWalks := runMultiplierSweep(sweepItineraryQ)
+	repeatClass := runMultiplierSweep(classificationQ)
+	repeatResidues := Totals{}
+	sweepResidues(&repeatResidues)
+	repeatControls := Totals{}
+	sweepControls(NewWorkspace(), &repeatControls)
+	if repeatSum.Failures+repeatWalks.Failures+repeatClass.Failures+
+		repeatResidues.Failures+repeatControls.Failures != 0 {
+		t.Fatalf("second pass reported a failure")
 	}
 }
 

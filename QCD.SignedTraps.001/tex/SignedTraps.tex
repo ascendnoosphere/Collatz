@@ -176,7 +176,9 @@ and \(c\) is itself trapped with \(T(c)=c\).
 For \(j\ge1\), Lemma~\ref{Lem:Itinerary} with \(q=0\) and
 Lemma~\ref{Lem:Degenerate} give \(T^{j}(n)=0\cdot n+c\cdot1=c\). At \(j=1\)
 this says \(T(n)=c\), so \(d\nmid c\) because \(n\) is trapped; hence
-Lemma~\ref{Lem:Affine} applies to \(c\) and \(T(c)=0\cdot c+c=c\).
+Lemma~\ref{Lem:Affine} applies to \(c\) and \(T(c)=0\cdot c+c=c\). The
+orbit of \(c\) is therefore constant at a state \(d\) does not divide, so
+\(c\) is trapped.
 \end{proof}
 
 \begin{lemma}[Unit multiplier]\label{Lem:OneTranslation}
@@ -324,24 +326,30 @@ every time, not merely over a horizon.
 \begin{remark}\label{Rem:NotClassical}
 With \(q=2\) and \(c=1\) the affine branch is \(2n+1\), not the classical
 \(3n+1\). The orbit of \(9\) with divisor \(3\) is \(9,3,1,3,1,\dots\), and
-\(T(9)=3\ne2\cdot9+1\): the trapping premise produced a division at the first
-state.
+\(T(9)=3\ne2\cdot9+1\). The division branch fires at the first state, so
+\(9\) is not trapped.
 \end{remark}
 
 \begin{remark}\label{Rem:Degenerate}
-Degenerate cases fall inside the classification: at \(q=0\) and \(c=0\) the
-trapped seed \(7\) with divisor \(3\) reaches the fixed point \(0\) after one
-step; at \(q=1\), \(c=0\) every trapped state is fixed; at \(q=-1\), \(c=0\) and
-even \(n\) the two-cycle degenerates to a fixed point; at \(d=1\) every state is
-divisible and no seed is trapped.
+Degenerate cases fall inside the classification. At \(q=0\) and \(c=1\) the
+seed \(2\) with divisor \(3\) is trapped and reaches the fixed point \(1\) after
+one step; at \(c=0\) every orbit reaches \(0\) and then divides, so that offset
+admits no trapped seed. At \(q=1\) and \(c=0\) every trapped state is fixed. At
+\(q=-1\) and \(c=0\) the reflection pair degenerates to a fixed point only at
+\(n=0\), and that value is divisible by every divisor, so it is not a trapped
+instance. At \(d=1\) every state is divisible and no seed is trapped.
 \end{remark}
 
 \begin{remark}\label{Rem:Scope}
 Nothing is claimed for a seed that divides at some time
-(Remark~\ref{Rem:NoDivisor}); the first-division return map with its
-residue-dependent exponent, the density statements, the core theorem with its
-boundary bound and every convergence statement for a classical target belong to
-companion families.
+(Remark~\ref{Rem:NoDivisor}). The illustrations in
+Remarks~\ref{Rem:ResidueMeaning}, \ref{Rem:NotClassical} and
+\ref{Rem:Degenerate} are not extra theorems. The first-division return map
+with its residue-dependent exponent, the density statements, the signed core
+certificate with its boundary bound, the forced prime-power classification of
+the independent base, the criticality ledger and every convergence statement
+for a classical target belong to companion families. The correspondence is
+Table~\ref{Table:SignedTrapsLean}.
 \end{remark}
 
 \begin{table}[htbp]
@@ -351,6 +359,7 @@ companion families.
 Statement & Formal name \\
 \midrule
 Definition~\ref{Def:Map} & \texttt{RawStep} \\
+Definition~\ref{Def:Sum} & \texttt{TrapSum} \\
 Definition~\ref{Def:Trapped} & \texttt{NeverDivides} \\
 Lemma~\ref{Lem:Affine} & \texttt{RawStepAffine} \\
 Lemma~\ref{Lem:Preserved} & \texttt{NeverDividesShift} \\

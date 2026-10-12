@@ -36,13 +36,13 @@ whose hypotheses ask for a division-free orbit.
 | .6 | Trapping is preserved: if no iterate divides, the successor of a state does not divide either. | `NeverDividesShift` |
 | .7 | **Affine itinerary.** On a trapped orbit the \(j\)-th state is \(q^{j}n+c\,T_j(q)\). | `NeverDividesIterateAffine` |
 | .8 | A zero multiplier reaches the constant offset: for \(j\ge1\) the \(j\)-th state is \(c\). | `TrapZeroConstant` |
-| .9 | With a zero multiplier the offset \(c\) is itself a trapped fixed point. | `TrapZeroFixed` |
+| .9 | With a zero multiplier the offset \(c\) is a fixed point, and therefore trapped. | `TrapZeroFixed` |
 | .10 | A unit multiplier translates: the \(j\)-th state is \(n+jc\). | `TrapOneTranslation` |
-| .11 | A unit multiplier with nonzero offset escapes: for every target \(R\) some state exceeds \(R\) in absolute value. | `TrapExistsNatAbove`, `TrapOneUnbounded` |
+| .11 | On a trapped orbit a unit multiplier with nonzero offset escapes: for every target \(R\) some state exceeds \(R\) in absolute value. | `TrapExistsNatAbove`, `TrapOneUnbounded` |
 | .12 | The negative unit multiplier returns after an even number of steps and reflects after an odd number: \(T^{2j}(n)=n\) and \(T^{2j+1}(n)=c-n\). | `TrapNegOneEven`, `TrapNegOneOdd` |
-| .13 | The reflection is a genuine two-cycle: \(T(n)=c-n\) and \(T(c-n)=n\). | `TrapNegOneTwoCycle` |
+| .13 | The reflection is a genuine two-cycle whenever \(n\ne c/2\): \(T(n)=c-n\) and \(T(c-n)=n\). | `TrapNegOneTwoCycle` |
 | .14 | **Fixed point.** A state the divisor does not divide is fixed exactly when \((q-1)n+c=0\). | `TrapFixedIff` |
-| .15 | **Expanding multiplier.** If \(|q|\ge2\) and \((q-1)n+c\ne0\), the orbit escapes: for every target \(R\) some state exceeds \(R\) in absolute value. | `TrapExpandingEscape` |
+| .15 | **Expanding multiplier.** On a trapped orbit, if \(|q|\ge2\) and \((q-1)n+c\ne0\), the orbit escapes: for every target \(R\) some state exceeds \(R\) in absolute value. | `TrapExpandingEscape` |
 | .16 | **Residue walk.** The affine branch modulo \(m=|d|\) is \(r\mapsto qr+c\), and along a trapped prefix the residue walk is the cast of the raw orbit. | `ResidueStepZ`, `CastIterateOfPrefix` |
 | .17 | Along a trapped orbit the cast identity holds at every time. | `NeverDividesCastIterate` |
 | .18 | **Dichotomy.** A raw orbit is trapped exactly when its residue walk avoids the zero class at every time. | `ResidueAvoidsZeroIffNeverDivides` |
@@ -66,8 +66,10 @@ prefix, and prove the dichotomy with the zero class.
 
 **Recovery.** Every statement is about the original signed raw map `RawStep`
 and its iterates at the raw clock. No state space is changed, no clock is
-compressed, and no state is removed: the only hypothesis is the trapping
-premise itself, which is exactly the hypothesis of the classification. The
+compressed, and no state is removed: the only global hypothesis is the trapping
+premise, and the individual classification theorems add only their case
+condition, namely \(c\ne0\) for the unit case and \(|q|\ge2\) together with
+\((q-1)n+c\ne0\) for the expanding case. The
 dichotomy is an equivalence, so it transfers in both directions: a trapped
 orbit yields an avoiding residue walk, and an avoiding residue walk yields a
 trapped orbit.
@@ -86,18 +88,20 @@ supplying the exact quotient in the divisible case.
 \(\mathbb{Z}\) are exactly \(\pm1\), which is why the degenerate cases are
 these two and why they are proved separately from the expanding case. All
 statements are one-sided: nothing is claimed about an orbit that divides at
-some time, and the certificate skips such walks instead of asserting the
-classification on them.
+some time, and the certificate skips a walk that divides inside the checked
+prefix instead of asserting the classification on it.
 
 ## Controls
 
 - The map is not the classical one. With \(q=2\) and \(c=1\) the affine branch
   is \(2n+1\), so the orbit of \(9\) with divisor \(3\) is
-  \(9,3,1,3,1,\dots\) and not \(9,3,1,4,\dots\); the certificate checks both
-  the orbit and the inequality \(T(9)\ne 2\cdot9+1\).
-- With \(q=0\) and \(c=0\) the trapping premise is satisfied at \(n=7\), \(d=3\)
-  and the walk becomes \(7,0,0,\dots\): the constant offset is reached after
-  one step, and the offset \(0\) is a fixed point.
+  \(9,3,1,3,1,\dots\) and not \(9,3,1,4,\dots\); the certificate checks the
+  orbit and the inequality \(T(9)\ne 2\cdot9+1\). The division branch fires
+  at the first state, so \(9\) is not trapped.
+- With \(q=0\), \(c=1\) and \(d=3\) the seed \(2\) is trapped and the walk
+  becomes \(2,1,1,\dots\): the constant offset \(1\) is reached after one step
+  and stays. With \(c=0\) every orbit reaches \(0\) and then divides, so no
+  trapped zero-multiplier instance exists with a zero offset.
 - With \(q=1\), \(c=0\) and \(d=5\) the state \(-4\) is fixed, and with \(q=1\)
   and \(c\ne0\) the orbit translates without bound, so no fixed point exists
   beyond \(c=0\).
@@ -106,9 +110,10 @@ classification on them.
   \(0\).
 - With \(q=2\), \(c=-4\) and \(d=3\) the state \(4\) lies on the affine
   fixed-point equation \((q-1)n+c=0\) and the trapped orbit is constant, while
-  \(n=25\) is trapped and escapes; the certificate checks both.
+  \(n=25\) is trapped and escapes; the certificate walks the fixed case and the
+  test walks the escaping one.
 - With \(d=1\) every state is divisible, so the trapping premise is empty and
-  the orbit is constant; the certificate checks that walk and records the
+  the orbit is constant; the certificate walks the seed \(9\) and records the
   skips, so the classification is never asserted on a walk that divides.
 
 ## Formal dependencies
@@ -146,9 +151,9 @@ bounds.
 | residues | 6237 | affine residue map against the cast of the step |
 | controls | 125 | documented boundary cases of the section above |
 
-The printed total is 125708 checks. The sweeps run with a shared orbit buffer,
-chunk the multiplier range over four workers, and the allocation test measures
-a warmed walk and observes zero allocations per run. `go/SignedTraps_test.go`
+The printed total is 125708 checks. Each worker reuses its own orbit buffer,
+the multiplier range is split over four workers, and the allocation test
+measures a warmed walk and observes zero allocations per run. `go/SignedTraps_test.go`
 recomputes the offset sums from the closed form with `math/big`, the steps with
 a big-integer reference, checks the residue range and the documented orbits,
 and pins every slice count and the total. The grid is a finite certificate of

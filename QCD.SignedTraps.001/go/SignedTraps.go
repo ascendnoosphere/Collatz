@@ -21,10 +21,10 @@ import (
 // [-signedOffsetMax, signedOffsetMax]; the walks use the divisors of
 // signedDivisorList and the seeds of signedSeedList over signedHorizon steps;
 // the residue sweep uses the moduli two up to signedResidueMax. With |q| <= 6
-// and j <= 24 the largest offset sum is below 6^24 < 2^63, and with |q| <= 6
-// and |n| + |c| <= 30 the orbit within the horizon stays below 6^24 * 30 <
-// 2^68, so the orbit sweep keeps the multiplier range of the sum sweep out and
-// uses |q| <= 4, where 4^24 * 30 < 2^59. Every value fits in an int64.
+// and j <= 24 the largest offset sum is below 6^24 < 2^63. An orbit with
+// |q| <= 6 and |n| + |c| <= 30 need not fit in an int64, since
+// 6^24 * 30 > 2^63, so the orbit sweep drops that multiplier range and uses
+// |q| <= 4, where 4^24 * 30 < 2^59. Every value on these grids fits in an int64.
 const (
 	signedTrapMaxQ    = 6
 	signedTrapMaxJ    = 24
@@ -83,7 +83,9 @@ func PowInt(q int64, j int) int64 {
 // SignedStep applies one raw step with the signed multiplier q, offset c and
 // divisor D. An exactly divisible state is divided, otherwise the affine
 // branch runs. Go truncates toward zero, which is the exact quotient when D
-// divides n, so both signs and negative divisors are covered.
+// divides n, so both signs and negative divisors are covered on every value
+// the sweeps use. The quotient of the most negative int64 by -1 is not
+// representable and is not evaluated.
 func SignedStep(q, c, D, n int64) int64 {
 	if n%D == 0 {
 		return n / D
@@ -265,9 +267,10 @@ func sweepResidues(t *Totals) {
 }
 
 // sweepControls checks the documented boundary cases: the divisor one makes
-// every state divisible, the degenerate traps are fixed points, a state on the
-// affine fixed-point equation is constant, and a walk that divides leaves the
-// affine formula, so the certificate must not claim the classification there.
+// every state divisible, a zero offset reaches zero and then divides, a state
+// on the affine fixed-point equation is constant, and a walk that divides
+// leaves the affine formula, so the certificate must not claim the
+// classification there. The zero-offset tail is a raw walk, not a trap.
 func sweepControls(w *Workspace, t *Totals) {
 	orbit := fillOrbit(w.Orbit, 2, 1, 1, 9)
 	for j := 0; j+1 < len(orbit); j++ {
