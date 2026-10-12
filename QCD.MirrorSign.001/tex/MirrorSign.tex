@@ -1,0 +1,209 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Sign of the mirror quotient}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Let \(n\) be a nonzero integer and let \(v\) be a nonnegative integer. Whenever \(2^{v}\) divides \(3n-1\), the integer \((3n-1)/2^{v}\) has the sign of \(n\). An integral schedule of such quotients stays negative from a negative seed and stays positive from a positive seed. The exponent \(1\) fixes \(1\), and the exponents \(1\) and \(2\) exchange \(5\) and \(7\). The argument does not treat the numerator \(3n+1\), does not send every positive integer to \(1\), and does not exclude other positive cycles.
+\end{abstract}
+
+\section{The quotient}
+
+Nonnegative integers include \(0\). For \(v\in\N\) write \(2^{v}\) for the usual power of two, with \(2^{0}=1\).
+
+\begin{definition}
+\label{def:mirror}
+Let \(n\in\Z\) and \(v\in\N\). The \emph{mirror denominator} is \(2^{v}\). When \(2^{v}\) divides \(3n-1\), the \emph{mirror quotient} is the integer
+\[
+q=\frac{3n-1}{2^{v}},
+\]
+so \(2^{v}q=3n-1\). A \emph{schedule} is a finite list \(v_{0},\ldots,v_{k-1}\) of nonnegative integers. Its states are \(x_{0}=n\) and, when \(x_{j}\) is an integer and \(2^{v_{j}}\) divides \(3x_{j}-1\),
+\[
+x_{j+1}=\frac{3x_{j}-1}{2^{v_{j}}}.
+\]
+The schedule is \emph{integral} when \(x_{0},\ldots,x_{k}\) are all integers. The empty schedule has the single state \(x_{0}=n\).
+\end{definition}
+
+\begin{lemma}
+\label{lem:numerator-positive}
+If \(n>0\), then \(2\le 3n-1\).
+\end{lemma}
+
+\begin{proof}
+Since \(n\) is a positive integer, \(n\ge 1\). Multiplication by the positive integer \(3\) preserves the inequality, so \(3n\ge 3\). Subtracting \(1\) preserves it, so \(3n-1\ge 2\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:numerator-negative}
+If \(n<0\), then \(3n-1\le -4\).
+\end{lemma}
+
+\begin{proof}
+Since \(n\) is a negative integer, \(n\le -1\). Multiplication by \(3\) preserves the inequality, so \(3n\le -3\). Subtracting \(1\) yields \(3n-1\le -4\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:denominator}
+For every nonnegative integer \(v\), the power \(2^{v}\) is positive.
+\end{lemma}
+
+\begin{proof}
+Proceed by induction on \(v\). If \(v=0\), then \(2^{0}=1\). If \(2^{v}\ge 1\), then \(2^{v+1}=2\cdot 2^{v}\ge 2\ge 1\). Thus \(2^{v}\ge 1\), so \(2^{v}>0\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:reconstruct}
+If \(2^{v}\) divides \(3n-1\) and \(q=(3n-1)/2^{v}\), then \(2^{v}q=3n-1\).
+\end{lemma}
+
+\begin{proof}
+Divisibility supplies an integer whose product with \(2^{v}\) equals \(3n-1\). That integer is the quotient \(q\).
+\end{proof}
+
+\section{One step}
+
+\begin{theorem}
+\label{thm:quotient-positive}
+Let \(n>0\) and let \(v\) be a nonnegative integer. If \(2^{v}\) divides \(3n-1\), then the mirror quotient \((3n-1)/2^{v}\) is a positive integer.
+\end{theorem}
+
+\begin{proof}
+Let \(d=2^{v}\) and \(q=(3n-1)/d\). Lemma~\ref{lem:reconstruct} gives \(dq=3n-1\). Lemma~\ref{lem:denominator} gives \(d>0\). Lemma~\ref{lem:numerator-positive} gives \(3n-1\ge 2>0\), so \(dq>0\). If \(q\le 0\), then \(dq\le 0\) because \(d>0\), contradicting \(dq>0\). Thus \(q>0\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:quotient-negative}
+Let \(n<0\) and let \(v\) be a nonnegative integer. If \(2^{v}\) divides \(3n-1\), then the mirror quotient \((3n-1)/2^{v}\) is a negative integer.
+\end{theorem}
+
+\begin{proof}
+Let \(d=2^{v}\) and \(q=(3n-1)/d\). Lemma~\ref{lem:reconstruct} gives \(dq=3n-1\). Lemma~\ref{lem:denominator} gives \(d>0\). Lemma~\ref{lem:numerator-negative} gives \(3n-1\le -4<0\), so \(dq<0\). If \(q\ge 0\), then \(dq\ge 0\) because \(d>0\), contradicting \(dq<0\). Thus \(q<0\).
+\end{proof}
+
+\section{Schedules}
+
+\begin{lemma}
+\label{lem:split}
+Let a schedule be the concatenation of a head list and a tail list. If the concatenated schedule is integral at a seed \(n\), then the head list is integral at \(n\), and the tail list is integral at the state reached by the head list.
+\end{lemma}
+
+\begin{proof}
+Induct on the length of the head list. If the head is empty, it has no division to check, and the concatenated hypothesis is the integrality of the tail at \(n\). The state reached by the empty head is \(n\).
+
+Suppose the head begins with an exponent \(v\), followed by a shorter head. Integrality of the concatenation gives that \(2^{v}\) divides \(3n-1\), and that the remaining concatenation is integral at the first quotient \(x=(3n-1)/2^{v}\). The inductive hypothesis splits that remaining concatenation: the shorter head is integral at \(x\), and the tail is integral at the state reached by the shorter head. Therefore the whole head is integral at \(n\), and the tail is integral at the state reached by the whole head.
+\end{proof}
+
+\begin{theorem}
+\label{thm:iterate-negative}
+Let \(n<0\). If a schedule is integral at \(n\), then its final state is negative.
+\end{theorem}
+
+\begin{proof}
+Induct on the number of exponents. The empty schedule has final state \(n\), which is negative. Otherwise the first exponent \(v\) divides \(3n-1\). Theorem~\ref{thm:quotient-negative} says that the first quotient is negative. The tail schedule is integral at that quotient, by the definition of an integral schedule. The inductive hypothesis, applied to that negative integer and the tail, says that the final state is negative.
+\end{proof}
+
+\begin{theorem}
+\label{thm:later-negative}
+Let \(n<0\). If a schedule is integral at \(n\), then every state of the schedule is negative. In particular every later state is negative.
+\end{theorem}
+
+\begin{proof}
+A state is the final state of the schedule formed by the exponents that precede it. That initial segment is a head list in the sense of Lemma~\ref{lem:split}, so it is integral at \(n\). Theorem~\ref{thm:iterate-negative} says that its final state is negative.
+\end{proof}
+
+\begin{theorem}
+\label{thm:iterate-positive}
+Let \(n>0\). If a schedule is integral at \(n\), then its final state is positive.
+\end{theorem}
+
+\begin{proof}
+Induct on the number of exponents. The empty schedule has final state \(n\), which is positive. Otherwise the first exponent divides \(3n-1\). Theorem~\ref{thm:quotient-positive} says that the first quotient is positive. The tail is integral at that quotient. The inductive hypothesis gives the sign of the final state.
+\end{proof}
+
+\begin{theorem}
+\label{thm:later-positive}
+Let \(n>0\). If a schedule is integral at \(n\), then every state of the schedule is positive.
+\end{theorem}
+
+\begin{proof}
+As in Theorem~\ref{thm:later-negative}, every state is the final state of an integral initial segment. Theorem~\ref{thm:iterate-positive} gives the sign.
+\end{proof}
+
+\section{Positive cycles and a non-integral step}
+
+\begin{theorem}
+\label{thm:fixed-point}
+The exponent \(1\) fixes \(1\): \((3\cdot 1-1)/2^{1}=1\).
+\end{theorem}
+
+\begin{proof}
+The numerator is \(3\cdot 1-1=2\), and \(2^{1}=2\). Thus \(2\cdot 1=2\), so the quotient is \(1\). The division is exact.
+\end{proof}
+
+\begin{theorem}
+\label{thm:cycle}
+The exponent \(1\) sends \(5\) to \(7\), and the exponent \(2\) sends \(7\) to \(5\):
+\begin{align*}
+\frac{3\cdot 5-1}{2^{1}}&=7,\\
+\frac{3\cdot 7-1}{2^{2}}&=5.
+\end{align*}
+Both steps are exact, and both states are positive.
+\end{theorem}
+
+\begin{proof}
+First, \(3\cdot 5-1=14\) and \(2^{1}=2\). Since \(2\cdot 7=14\), the quotient is \(7\). Next, \(3\cdot 7-1=20\) and \(2^{2}=4\). Since \(4\cdot 5=20\), the quotient is \(5\). Theorem~\ref{thm:quotient-positive} gives the signs, which are also immediate from the values.
+\end{proof}
+
+\begin{theorem}
+\label{thm:not-eight}
+The exponent \(3\) is not an exact step at the seed \(1\): \(2^{3}\) does not divide \(3\cdot 1-1\).
+\end{theorem}
+
+\begin{proof}
+Here \(2^{3}=8\) and \(3\cdot 1-1=2\). Suppose \(8\) divides \(2\). The integer \(2\) is positive, and a divisor of a positive integer cannot exceed that integer, so \(8\le 2\). This is false.
+\end{proof}
+
+\section{Scope}
+
+The seed \(0\) is outside Theorems~\ref{thm:quotient-positive} and~\ref{thm:quotient-negative}. The theorems require an exact division at every step they name. Dropping that hypothesis, the rational schedule with exponents \(3\) and \(0\), started at \(1\), has values
+\begin{align*}
+\frac{3\cdot 1-1}{2^{3}}&=\frac{1}{4},\\
+\frac{3\cdot\frac{1}{4}-1}{2^{0}}&=-\frac{1}{4}.
+\end{align*}
+The second value is negative. Theorem~\ref{thm:not-eight} excludes the first step from the integral schedules, so Theorems~\ref{thm:later-positive} and~\ref{thm:later-negative} do not apply to these rationals.
+
+Theorem~\ref{thm:cycle} exhibits one positive cycle, and Theorem~\ref{thm:fixed-point} exhibits another. Neither result lists all positive cycles. None of the statements concerns the numerator \(3n+1\), and none says that every positive integer reaches \(1\).
+
+\end{document}

@@ -74,6 +74,7 @@ defaultTargets = [
   "OneExcursion",
   "FamilySplit",
   "LatticeEntry",
+  "MirrorSign",
 ]
 
 [[require]]
@@ -400,3 +401,7 @@ srcDir = "QCD.FamilySplit.001/lean"
 [[lean_lib]]
 name = "LatticeEntry"
 srcDir = "QCD.LatticeEntry.001/lean"
+
+[[lean_lib]]
+name = "MirrorSign"
+srcDir = "QCD.MirrorSign.001/lean"
