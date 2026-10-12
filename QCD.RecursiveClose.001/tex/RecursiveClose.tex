@@ -1,0 +1,285 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Parent certified time}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Let \(T\) be the classical shortcut. If \(T^{t}(p)=1\) and \(T^{a}(n)=T^{b}(p)\), then \(T^{\tau}(n)=1\) for an explicit time \(\tau\) built from \(a\), \(b\), and \(t\). The argument uses only concatenation of iterates and the cycle \(1\leftrightarrow 2\). It does not produce a parent for an arbitrary positive integer, and \(\tau\) need not be the first time at \(1\).
+\end{abstract}
+
+\section{The shortcut}
+
+Throughout, \(\N=\{0,1,2,\ldots\}\).
+
+\begin{definition}
+The classical shortcut \(\Map{T}{\N}{\N}\) is
+\[
+  T(x)=
+  \begin{cases}
+    x/2,&x\text{ even},\\
+    (3x+1)/2,&x\text{ odd}.
+  \end{cases}
+\]
+Write \(T^{0}(x)=x\) and \(T^{k+1}(x)=T(T^{k}(x))\).
+\end{definition}
+
+Both branches are integral: an even input is divisible by \(2\), and an odd input makes \(3x+1\) even. The positive integers are the intended domain. The same formulas are integral at \(0\).
+
+\begin{lemma}[ShortcutZero]
+\(T(0)=0\).
+\end{lemma}
+
+\begin{proof}
+Zero is even, and \(0/2=0\).
+\end{proof}
+
+\begin{lemma}[OneModTwo]
+\(1\bmod 2=1\).
+\end{lemma}
+
+\begin{proof}
+The remainder of \(1\) on division by \(2\) is \(1\), since \(0\le 1<2\).
+\end{proof}
+
+\begin{lemma}[ShortcutOne]
+\(T(1)=2\).
+\end{lemma}
+
+\begin{proof}
+By OneModTwo, the input \(1\) is odd, so
+\[
+  T(1)=(3\cdot 1+1)/2=4/2=2.
+\]
+\end{proof}
+
+\begin{lemma}[ShortcutTwo]
+\(T(2)=1\).
+\end{lemma}
+
+\begin{proof}
+The input \(2\) is even and \(2/2=1\).
+\end{proof}
+
+\begin{lemma}[ShortcutPositive]
+If \(x\ge 1\), then \(T(x)\ge 1\).
+\end{lemma}
+
+\begin{proof}
+If \(x\) is even, then \(x\neq 1\), because \(1\) is odd. Combined with \(x\ge 1\), this forces \(x\ge 2\), so \(x/2\ge 1\). If \(x\) is odd, then \(x\ge 1\), hence \(3x+1\ge 4\ge 2\) and \((3x+1)/2\ge 1\).
+\end{proof}
+
+\begin{lemma}[IterateAtZero]
+For every \(n\in\N\), \(T^{n}(0)=0\).
+\end{lemma}
+
+\begin{proof}
+The case \(n=0\) is the identity. If \(T^{n}(0)=0\), then \(T^{n+1}(0)=T(0)=0\) by ShortcutZero.
+\end{proof}
+
+\begin{lemma}[ReachesOnePositive]
+If \(T^{n}(x)=1\), then \(x\ge 1\).
+\end{lemma}
+
+\begin{proof}
+If \(x=0\), IterateAtZero gives \(T^{n}(x)=0\), which is not \(1\).
+\end{proof}
+
+\begin{lemma}[IteratePositive]
+If \(x\ge 1\), then \(T^{n}(x)\ge 1\) for every \(n\in\N\).
+\end{lemma}
+
+\begin{proof}
+The case \(n=0\) is the hypothesis. If \(T^{n}(x)\ge 1\), ShortcutPositive gives \(T^{n+1}(x)\ge 1\).
+\end{proof}
+
+\section{The terminal cycle}
+
+\begin{lemma}[SuccModTwo]
+For every \(m\in\N\),
+\[
+  (m+1)\bmod 2=
+  \begin{cases}
+    1,&m\bmod 2=0,\\
+    0,&m\bmod 2=1.
+  \end{cases}
+\]
+\end{lemma}
+
+\begin{proof}
+The remainder \(m\bmod 2\) is \(0\) or \(1\). If \(m=2k\), then
+\[
+  (2k+1)\bmod 2=1.
+\]
+If \(m\bmod 2=1\), the division identity \(2\cdot(m/2)+1=m\) gives
+\[
+  m+1=2\cdot(m/2+1),
+\]
+so \((m+1)\bmod 2=0\).
+\end{proof}
+
+\begin{theorem}[TerminalPhase]
+For every \(m\in\N\),
+\[
+  T^{m}(1)=
+  \begin{cases}
+    1,&m\text{ even},\\
+    2,&m\text{ odd}.
+  \end{cases}
+\]
+In particular \(T(1)=2\) and \(T(2)=1\), so \(\{1,2\}\) is a cycle.
+\end{theorem}
+
+\begin{proof}
+For \(m=0\), \(T^{0}(1)=1\) and \(0\) is even. Assume the formula at \(m\). Then \(T^{m+1}(1)=T(T^{m}(1))\). If \(m\) is even, the inductive value is \(1\), so ShortcutOne gives \(2\), and SuccModTwo says that \(m+1\) is odd. If \(m\) is odd, the inductive value is \(2\), so ShortcutTwo gives \(1\), and \(m+1\) is even.
+\end{proof}
+
+\begin{lemma}[ShortcutIterateAdd]
+For all \(m,n\in\N\) and every state \(x\),
+\[
+  T^{m+n}(x)=T^{m}(T^{n}(x)).
+\]
+The right-hand count is applied first.
+\end{lemma}
+
+\begin{proof}
+If \(m=0\), both sides are \(T^{n}(x)\). If the identity holds for \(m\), then
+\begin{align*}
+  T^{(m+1)+n}(x)
+  &=T(T^{m+n}(x))\\
+  &=T(T^{m}(T^{n}(x)))\\
+  &=T^{m+1}(T^{n}(x)).
+\end{align*}
+\end{proof}
+
+\section{The parent time}
+
+\begin{definition}
+For \(a,b,t\in\N\), the parent certified time is
+\[
+  \tau(a,b,t)=
+  \begin{cases}
+    a+(t-b),&b\le t,\\
+    a+((b-t)\bmod 2),&b>t.
+  \end{cases}
+\]
+\end{definition}
+
+\begin{lemma}[ParentTimeBefore]
+Let \(b\le t\). If \(T^{t}(p)=1\) and \(T^{a}(n)=T^{b}(p)\), then
+\[
+  T^{a+(t-b)}(n)=1.
+\]
+\end{lemma}
+
+\begin{proof}
+Addition of natural numbers is commutative, and \(b\le t\) gives \((t-b)+b=t\). ShortcutIterateAdd therefore yields
+\begin{align*}
+  T^{a+(t-b)}(n)
+  &=T^{t-b}(T^{a}(n))\\
+  &=T^{t-b}(T^{b}(p))\\
+  &=T^{t}(p)\\
+  &=1.
+\end{align*}
+\end{proof}
+
+\begin{lemma}[ParentTimeAfter]
+Let \(t<b\). If \(T^{t}(p)=1\) and \(T^{a}(n)=T^{b}(p)\), then
+\[
+  T^{a+((b-t)\bmod 2)}(n)=1.
+\]
+\end{lemma}
+
+\begin{proof}
+Since \(t\le b\), one has \((b-t)+t=b\). ShortcutIterateAdd and the parent hypothesis give
+\[
+  T^{b}(p)=T^{b-t}(T^{t}(p))=T^{b-t}(1).
+\]
+The join becomes \(T^{a}(n)=T^{b-t}(1)\). TerminalPhase identifies the right-hand side. If \(b-t\) is even, it equals \(1\), and the added remainder is \(0\), so
+\[
+  T^{a}(n)=1.
+\]
+If \(b-t\) is odd, it equals \(2\) and the added remainder is \(1\), so
+\[
+  T^{a+1}(n)=T(T^{a}(n))=T(2)=1
+\]
+by ShortcutTwo.
+\end{proof}
+
+\begin{theorem}[ParentCertifiedTimeAtOne]
+If \(T^{t}(p)=1\) and \(T^{a}(n)=T^{b}(p)\), then
+\[
+  T^{\tau(a,b,t)}(n)=1.
+\]
+The natural numbers \(n\) and \(p\) occurring in such a join are positive whenever the stated iterates are defined by the hypotheses: ReachesOnePositive gives \(p\ge 1\), and IteratePositive gives \(T^{b}(p)\ge 1\).
+\end{theorem}
+
+\begin{proof}
+If \(b\le t\), then \(\tau(a,b,t)=a+(t-b)\) and ParentTimeBefore applies. If \(b>t\), then \(\tau(a,b,t)=a+((b-t)\bmod 2)\) and ParentTimeAfter applies.
+\end{proof}
+
+\begin{theorem}[ParentCertifiedTimeNotAlwaysLeast]
+\[
+  T^{\tau(2,0,0)}(1)=1,
+  \qquad
+  T^{0}(1)=1,
+  \qquad
+  \tau(2,0,0)=2.
+\]
+Thus a certified time at \(1\) need not be the least such time.
+\end{theorem}
+
+\begin{proof}
+Here \(b=t=0\), so \(\tau(2,0,0)=2+(0-0)=2\). TerminalPhase gives \(T^{2}(1)=1\) because \(2\) is even, while \(T^{0}(1)=1\).
+\end{proof}
+
+\begin{theorem}[ParentPhaseNeedsOneStep]
+\[
+  \tau(0,1,0)=1,
+  \qquad
+  T^{1}(1)=2,
+  \qquad
+  T^{\tau(0,1,0)}(2)=1.
+\]
+\end{theorem}
+
+\begin{proof}
+Since \(1>0\), the definition gives \(\tau(0,1,0)=0+((1-0)\bmod 2)=1\). ShortcutOne and ShortcutTwo are the two evaluations.
+\end{proof}
+
+\begin{remark}
+ParentCertifiedTimeAtOne consumes a parent that has already reached \(1\). It does not assert that every positive integer has such a parent, that a search will find the next parent, or that every finite chain of joins closes. The two numerical theorems separate the formula from minimality and show that the odd phase is sometimes necessary.
+\end{remark}
+
+\end{document}

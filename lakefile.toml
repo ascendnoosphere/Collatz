@@ -76,6 +76,7 @@ defaultTargets = [
   "LatticeEntry",
   "MirrorSign",
   "ThreeAffineClosure",
+  "RecursiveClose",
 ]
 
 [[require]]
@@ -410,3 +411,7 @@ srcDir = "QCD.MirrorSign.001/lean"
 [[lean_lib]]
 name = "ThreeAffineClosure"
 srcDir = "QCD.ThreeAffineClosure.001/lean"
+
+[[lean_lib]]
+name = "RecursiveClose"
+srcDir = "QCD.RecursiveClose.001/lean"
