@@ -1,0 +1,473 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section*{Explicit cycles and the power-of-\(d\) intersection}
+
+Throughout, fix natural numbers \(d\ge2\), \(q\ge1\) and \(c\ge0\) and define
+the raw map
+\[
+ T_{q,c,d}(n)=\begin{cases} n/d, & d\mid n,\\ qn+c, & d\nmid n,\end{cases}
+ \qquad n\in\N .
+\]
+Division has precedence, \(T^{k}\) denotes \(k\) instructions of \(T\), so
+\(T^{0}\) is the identity and \(T^{k+1}=T\circ T^{k}\). All states are natural
+numbers, and a state is \emph{positive} when it is nonzero. Every division
+below is exact where it is written.
+
+The document proves four families of cycles, one dichotomy at the divisor
+\(2\), and one intersection statement. The families are the geometric-offset
+slice \(c=3(8^{h}-1)/7\), \(q=2c+1\), \(d=2\); the full-residue-access slice
+\(c=(d-1)(d^{k-1}-1)\), \(q=(d-1)d^{k-1}+1\); the divisor-two slices with
+\(q=2c+1\); and the intersection slice \(q=d+1\), \(c=d-1\) for \(d\ge3\).
+
+\section{The raw map and its iterates}
+
+\begin{lemma}[Branch rules]\label{Lem:Branch}
+For every \(n\),
+\[
+ T_{q,c,d}(n)=n/d \quad\text{if } d\mid n,
+ \qquad
+ T_{q,c,d}(n)=qn+c \quad\text{if } d\nmid n .
+\]
+In particular \(T_{q,c,d}(0)=0\) for all \(d\), \(q\), \(c\).
+\end{lemma}
+
+\begin{proof}
+Both identities are the definition of \(T_{q,c,d}\), split by the decidable
+predicate \(d\mid n\). For the last claim, \(d\mid0\), so the division branch
+applies and \(0/d=0\).
+\end{proof}
+
+\begin{lemma}[Iterate decomposition]\label{Lem:IterateSplit}
+Let \(f\) be a self-map of a type, \(k\in\N\) and \(x\) a state. Then
+\[
+ f^{k+1}(x)=f\bigl(f^{k}(x)\bigr)=f^{k}\bigl(f(x)\bigr),
+ \qquad\text{and}\qquad
+ f^{m+n}(x)=f^{n}\bigl(f^{m}(x)\bigr) .
+\]
+\end{lemma}
+
+\begin{proof}
+The first identity is the recurrence \(f^{k+1}=f\circ f^{k}\), the second its
+mirror \(f^{k+1}=f^{k}\circ f\), which holds because powers of one map
+commute; both follow by induction on \(k\). The third is the addition rule for
+iterates, by induction on \(n\).
+\end{proof}
+
+\begin{lemma}[Divisions]\label{Lem:Divisions}
+Let \(d\ge2\). Then for all \(m\) and \(j\),
+\[
+ T_{q,c,d}^{\,j}\bigl(d^{j}m\bigr)=m ,
+ \qquad\text{and in particular}\qquad
+ T_{q,c,d}^{\,j}\bigl(d^{j}\bigr)=1 .
+\]
+\end{lemma}
+
+\begin{proof}
+Induction on \(j\). For \(j=0\) both sides are \(m\), respectively \(1\). For
+the step, \(d\) divides \(d^{j+1}m\), so the first instruction divides:
+\(T(d^{j+1}m)=d^{j+1}m/d=d^{j}m\), and the induction hypothesis applies to the
+remaining \(j\) instructions.
+\end{proof}
+
+\begin{lemma}[Bounded orbits repeat]\label{Lem:Pigeonhole}
+If \(\;T_{q,c,d}^{\,k}(n)\le M\) for every \(k\), then there are \(k\) and
+\(p>0\) with
+\[
+ T_{q,c,d}^{\,k+p}(n)=T_{q,c,d}^{\,k}(n) .
+\]
+\end{lemma}
+
+\begin{proof}
+The \(M+2\) states \(T^{0}(n),\dots,T^{M+1}(n)\) all lie in the \(M+1\) values
+\(\{0,\dots,M\}\), so two of them agree at distinct indices \(i<j\). Set
+\(k=i\) and \(p=j-i>0\). Then
+\(T^{k+p}(n)=T^{\,j-i}(T^{\,i}(n))=T^{\,j}(n)=T^{\,i}(n)=T^{k}(n)\)
+by the addition rule of Lemma~\ref{Lem:IterateSplit}.
+\end{proof}
+
+\section{The divisor-two slices}
+
+\begin{lemma}[Odd states take the affine branch]\label{Lem:TwoOdd}
+Let \(n\) be odd. Then \(T_{q,c,2}(n)=qn+c\), and with \(q=2c+1\),
+\[
+ T_{2c+1,c,2}(n)=(2c+1)n+c .
+\]
+If \(c\) is even then this value is odd again, and if in addition \(1\le c\)
+then it exceeds \(n\).
+\end{lemma}
+
+\begin{proof}
+An odd state is not divisible by \(2\), so the affine branch applies by
+Lemma~\ref{Lem:Branch}, which gives the first two assertions. For the parity,
+write \(c=2e\); then \((2c+1)n+c=2n(c+e)+n\), a sum of an even number and an
+odd number, hence odd. For the growth,
+\((2c+1)n+c=n+c(2n+1)\) with \(c(2n+1)>0\) because \(1\le c\) and \(0<n\).
+\end{proof}
+
+\begin{theorem}[Even offsets escape]\label{Thm:EvenEscape}
+Let \(c\) be even with \(1\le c\), and let \(n\ge1\). Then every positive seed
+of the slice \(T_{2c+1,c,2}\) reaches an odd state, and from there the orbit is
+odd at every later time and passes every bound: for every \(M\) there is \(k\)
+with \(M<T_{2c+1,c,2}^{\,k}(n)\).
+\end{theorem}
+
+\begin{proof}
+For the reach, use strong induction on \(n\). If \(n\) is odd, the time \(0\)
+already gives an odd state. If \(n\) is even, then \(2\mid n\), so
+\(T(n)=n/2\), which is positive because \(1\le n\), and \(n/2<n\); the
+induction hypothesis for \(n/2\) gives a time \(j\) with \(T^{\,j}(n/2)\) odd,
+hence \(T^{\,j+1}(n)\) is odd.
+
+For the escape, fix \(j\) with \(y=T^{\,j}(n)\) odd. By
+Lemma~\ref{Lem:TwoOdd} the parity of odd states is preserved, so
+\(T^{\,t}(y)\) is odd for every \(t\), and each step increases the state by at
+least one. Hence \(T^{\,t}(y)\ge y+t\) by induction on \(t\), and choosing
+\(t=M\) gives \(T^{\,j+M}(n)=T^{\,M}(y)\ge y+M>M\).
+\end{proof}
+
+\begin{lemma}[Odd offsets preserve the gcd]\label{Lem:OddGcd}
+Let \(c\) be odd. Then for every \(n\)
+\[
+ \gcd\bigl(T_{2c+1,c,2}(n),\,c\bigr)=\gcd(n,c),
+\]
+and the same identity holds with \(T^{\,k}(n)\) in place of \(T(n)\).
+\end{lemma}
+
+\begin{proof}
+If \(2\mid n\), then \(T(n)=n/2\) and \(n=2(n/2)\); since \(c\) is odd, the
+factor \(2\) is coprime to \(c\), so \(\gcd(n/2,c)=\gcd(2(n/2),c)=\gcd(n,c)\).
+If \(2\nmid n\), then \(T(n)=(2c+1)n+c=n+c(2n+1)\), and
+\(\gcd(n+c(2n+1),c)=\gcd(n,c)\) because adding a multiple of \(c\) does not
+change the gcd with \(c\). The iterate statement follows by induction on \(k\).
+
+\end{proof}
+
+\begin{theorem}[Odd offsets cycle inside their stratum]\label{Thm:StratumCycle}
+Let \(c\) be odd and suppose the orbit of \(n\) is bounded. Then there are
+\(y\) and \(p>0\) with
+\[
+ \gcd(y,c)=\gcd(n,c),\qquad T_{2c+1,c,2}^{\,p}(y)=y .
+\]
+\end{theorem}
+
+\begin{proof}
+By Lemma~\ref{Lem:Pigeonhole} there are \(k\) and \(p>0\) with
+\(T^{\,k+p}(n)=T^{\,k}(n)\). Set \(y=T^{\,k}(n)\). The iterate identity of
+Lemma~\ref{Lem:OddGcd} gives \(\gcd(y,c)=\gcd(n,c)\), and
+\(T^{\,p}(y)=T^{\,k+p}(n)=T^{\,k}(n)=y\), using the addition rule to move the
+first \(k\) instructions.
+\end{proof}
+
+\begin{corollary}[All strata carry cycles]\label{Cor:ManyCycles}
+Let \(c\) be odd and positive, and suppose that no positive seed of the slice
+\(T_{2c+1,c,2}\) diverges. Then for every divisor \(g\) of \(c\) there are
+\(y\) and \(p>0\) with
+\[
+ \gcd(y,c)=g,\qquad T_{2c+1,c,2}^{\,p}(y)=y .
+\]
+\end{corollary}
+
+\begin{proof}
+A divisor of \(c\) is bounded by \(c\), so every seed is bounded under the
+hypothesis, in particular the seed \(g\) itself, which is positive because
+\(g\mid c\) and \(c>0\). Theorem~\ref{Thm:StratumCycle} applied to \(n=g\)
+gives a periodic \(y\) with \(\gcd(y,c)=\gcd(g,c)=g\), the last identity
+because \(g\) divides \(c\).
+\end{proof}
+
+\begin{corollary}[The seed of the offset never reaches \(1\)]\label{Cor:NoSeedCapture}
+Let \(c\) be odd with \(c>1\). Then \(T_{2c+1,c,2}^{\,k}(c)\ne1\) for every
+\(k\ge0\).
+\end{corollary}
+
+\begin{proof}
+By Lemma~\ref{Lem:OddGcd} with \(n=c\),
+\[
+ \gcd\bigl(T_{2c+1,c,2}^{\,k}(c),\,c\bigr)=\gcd(c,c)=c .
+\]
+If \(T_{2c+1,c,2}^{\,k}(c)=1\) held for some \(k\), the left side would equal
+\(\gcd(1,c)=1\), hence \(c=1\), contrary to the hypothesis.
+\end{proof}
+
+\section{The geometric-offset slice}
+
+\begin{lemma}[The offset is integral]\label{Lem:GeoOffset}
+For every \(h\), \(\;7\mid 8^{h}-1\), and the number
+\(c_h=3(8^{h}-1)/7\) satisfies
+\[
+ 7c_h=3\bigl(8^{h}-1\bigr),\qquad
+ 3q_h+c_h=3\cdot2^{3h}\quad\text{for } q_h=2c_h+1 .
+\]
+\end{lemma}
+
+\begin{proof}
+Since \(8\equiv1\pmod7\) we have \(8^{h}\equiv1\pmod7\) for every \(h\), so
+\(7\mid8^{h}-1\); hence \(7\mid3(8^{h}-1)\) and \(c_h\) is an integer with
+\(7c_h=3(8^{h}-1)\). Then
+\(3q_h+c_h=3(2c_h+1)+c_h=7c_h+3=3(8^{h}-1)+3=3\cdot8^{h}\), and
+\(8^{h}=2^{3h}\).
+\end{proof}
+
+\begin{theorem}[The cycle of the geometric slice]\label{Thm:GeoLoop}
+On the slice \(d=2\), \(q=2c_h+1\), \(c=c_h\) of Lemma~\ref{Lem:GeoOffset},
+\[
+ T_{q_h,c_h,2}^{\,j+1}(3)=3\cdot2^{\,3h-j}\quad(0\le j\le3h),
+\]
+so \(T^{\,3h+1}(3)=3\), no positive time smaller than \(3h+1\) returns \(3\)
+to itself, and the orbit meets \(1\) at no time.
+\end{theorem}
+
+\begin{proof}
+The seed \(3\) is odd, so by Lemma~\ref{Lem:TwoOdd}
+\(T(3)=3q_h+c_h=3\cdot2^{3h}\), which is the formula for \(j=0\). For the
+step, let \(0\le j<3h\) and assume \(T^{\,j+1}(3)=3\cdot2^{\,3h-j}\). Since
+\(2^{\,3h-j}\) is even, that value is divisible by \(2\), so one more
+instruction divides it by \(2\):
+\[
+ T^{\,j+2}(3)=\frac{3\cdot2^{\,3h-j}}2=3\cdot2^{\,3h-j-1}
+ =3\cdot2^{\,3h-(j+1)},
+\]
+which is the formula at \(j+1\). This proves the formula by induction.
+
+At \(j=3h\) the formula gives \(3\cdot2^{0}=3\), so \(3\) returns. If
+\(0<i<3h+1\), write \(i=j+1\) with \(0\le j<3h\); the formula gives
+\(T^{\,i}(3)=3\cdot2^{\,e}\) with \(e=3h-j\ge1\), so
+\(T^{\,i}(3)\ge6\ne3\). Finally, every value \(3\cdot2^{\,e}\) with \(e\ge0\)
+is at least \(3\), so the orbit never meets \(1\): times larger than
+\(3h+1\) reduce to times in \(\{0,\dots,3h\}\) by removing full periods of
+length \(3h+1\), since \(T^{\,3h+1}(3)=3\).
+\end{proof}
+
+\section{The full-residue-access slice}
+
+\begin{lemma}[Slice identities]\label{Lem:FullIdentity}
+Let \(d\ge2\), \(k\ge2\) and set \(c=(d-1)(d^{k-1}-1)\),
+\(q=(d-1)d^{k-1}+1\). Then
+\[
+ q=d+c,\qquad q(d-1)+c=(d-1)d^{k},\qquad d\nmid d-1 .
+\]
+\end{lemma}
+
+\begin{proof}
+The first identity is
+\(q-c=(d-1)d^{k-1}+1-(d-1)d^{k-1}+(d-1)=d\). For the second, multiply out:
+\[
+ q(d-1)+c=\bigl((d-1)d^{k-1}+1\bigr)(d-1)+(d-1)\bigl(d^{k-1}-1\bigr)
+ =(d-1)\Bigl(d^{k-1}(d-1)+1+d^{k-1}-1\Bigr)=(d-1)d^{k-1}d,
+\]
+and \(d^{k-1}d=d^{k}\) because \(k=(k-1)+1\). For the third, \(d\mid d-1\)
+would give \(d\le d-1\) for \(d\ge2\), which is false.
+\end{proof}
+
+\begin{theorem}[The cycle of the full-residue-access slice]\label{Thm:FullLoop}
+Let \(d\ge2\), \(k\ge2\) and take \(c\), \(q\) as in
+Lemma~\ref{Lem:FullIdentity}. Then
+\[
+ T_{q,c,d}^{\,j+1}(d-1)=(d-1)d^{\,k-j}\quad(0\le j\le k),
+\]
+so \(T^{\,k+1}(d-1)=d-1\), no positive time smaller than \(k+1\) returns
+\(d-1\) to itself, and for \(d\ge3\) the orbit meets \(1\) at no time.
+\end{theorem}
+
+\begin{proof}
+By Lemma~\ref{Lem:FullIdentity} the state \(d-1\) is not divisible by \(d\), so
+the first instruction is affine:
+\(T(d-1)=q(d-1)+c=(d-1)d^{k}\). This is the formula for \(j=0\). For the step,
+let \(0\le j<k\) and assume \(T^{\,j+1}(d-1)=(d-1)d^{\,k-j}\). Since
+\(k-j\ge1\), that value is divisible by \(d\), so one more instruction divides
+it by \(d\), giving \((d-1)d^{\,k-j-1}=(d-1)d^{\,k-(j+1)}\). This proves the
+formula by induction.
+
+At \(j=k\) the formula gives \((d-1)d^{0}=d-1\), so \(d-1\) returns. If
+\(0<i<k+1\), write \(i=j+1\) with \(0\le j<k\); then
+\(T^{\,i}(d-1)=(d-1)d^{\,e}\) with \(e=k-j\ge1\), and since \(d\ge2\),
+\(d^{\,e}\ge2\) and \(d-1\ge1\), so \((d-1)d^{\,e}\ge2>d-1\): no earlier
+positive time returns. Finally, for \(d\ge3\) every value
+\((d-1)d^{\,e}\) with \(e\ge0\) is at least \(2\), so no time meets \(1\),
+again after removing full periods of length \(k+1\).
+\end{proof}
+
+\begin{corollary}[The classical cycle]\label{Cor:Classical}
+At \(d=k=2\) the slice is \(T_{3,1,2}(n)=n/2\) for even \(n\) and
+\(T_{3,1,2}(n)=3n+1\) for odd \(n\), and
+\[
+ T_{3,1,2}(1)=4,\qquad T_{3,1,2}^{\,3}(1)=1 .
+\]
+\end{corollary}
+
+\begin{proof}
+At \(d=k=2\) we have \(c=(2-1)(2^{1}-1)=1\) and \(q=(2-1)2^{1}+1=3\), so the
+slice is \(n/2\) on even states and \(3n+1\) on odd states by
+Lemma~\ref{Lem:Branch}. Then \(1\) is odd, \(3\cdot1+1=4\);
+\(4\) is even, \(4/2=2\); and \(2\) is even, \(2/2=1\).
+\end{proof}
+
+\begin{remark}[Full residue access does not single out the classical target]
+\label{Rem:NotClassicalOnly}
+The slice of Theorem~\ref{Thm:FullLoop} has \(q\equiv c\equiv1\pmod d\), so
+its affine residues range over every class modulo \(d\). Nevertheless the
+cycle it carries is \(d-1\mapsto(d-1)d^{k}\mapsto\dots\mapsto d(d-1)\mapsto d-1\),
+which at \(d=k=2\) is \(1\mapsto4\mapsto2\mapsto1\) by
+Corollary~\ref{Cor:Classical} but for \(d\ge3\) avoids \(1\) by
+Theorem~\ref{Thm:FullLoop}. Full residue access therefore does not force the
+classical target; the two slices have different targets.
+\end{remark}
+
+\section{The intersection slice}
+
+\begin{lemma}[Predecessor]\label{Lem:IntersectionPred}
+Let \(d\ge3\) and suppose \(T_{d+1,d-1,d}(x)=d^{m}\). Then \(x=d^{\,m+1}\).
+\end{lemma}
+
+\begin{proof}
+If \(d\mid x\), the division branch gives \(x/d=d^{m}\), that is
+\(x=d^{\,m+1}\).
+
+Suppose instead that \(d\nmid x\). The affine branch gives
+\((d+1)x+(d-1)=d^{m}\). Reduce this identity modulo \(d+1\): since
+\(d\equiv-1\pmod{d+1}\), the term \((d+1)x\) vanishes and the right side is
+\((-1)^{m}\), so
+\[
+ (-1)^{m}\equiv d-1\equiv-2\pmod{d+1} .
+\]
+If \(m\) is even this reads \(1\equiv-2\), that is \(3\equiv0\pmod{d+1}\),
+so \(d+1\mid3\) and hence \(d+1\le3\), which contradicts \(d\ge3\). If
+\(m\) is odd it reads \(-1\equiv-2\), that is \(1\equiv0\pmod{d+1}\), so
+\(d+1\mid1\) and hence \(d+1\le1\), which contradicts \(d\ge3\) as well.
+Both parities are impossible, so the affine case does not occur and the first
+case applies.
+\end{proof}
+
+\begin{theorem}[Iterates of the intersection slice]\label{Thm:IntersectionIterate}
+Let \(d\ge3\) and \(x\ge1\). If \(T_{d+1,d-1,d}^{\,k}(x)=d^{\,t}\), then
+\[
+ x=d^{\,k+t} .
+\]
+\end{theorem}
+
+\begin{proof}
+Induction on \(k\). For \(k=0\) the hypothesis is \(x=d^{\,t}\), which is the
+claim. For the step, let \(y=T^{\,k}(x)\); then
+\(T(y)=T^{\,k+1}(x)=d^{\,t}\), so Lemma~\ref{Lem:IntersectionPred} gives
+\(y=d^{\,t+1}\). The induction hypothesis applied to \(y\) yields
+\(x=d^{\,k+(t+1)}=d^{\,k+1+t}\).
+\end{proof}
+
+\begin{theorem}[The seeds that reach \(1\)]\label{Thm:IntersectionReach}
+Let \(d\ge3\) and \(x\ge1\). Then some iterate of \(x\) equals \(1\) if and
+only if \(x\) is a power of \(d\); for each \(k\),
+\[
+ T_{d+1,d-1,d}^{\,k}(x)=1 \iff x=d^{\,k} .
+\]
+\end{theorem}
+
+\begin{proof}
+If \(T^{\,k}(x)=1=d^{0}\), then Theorem~\ref{Thm:IntersectionIterate} with
+\(t=0\) gives \(x=d^{\,k}\). Conversely, if \(x=d^{\,j}\), then
+Lemma~\ref{Lem:Divisions} gives \(T^{\,j}(x)=1\), since \(d\ge2\).
+\end{proof}
+
+\begin{corollary}[No return of \(1\)]\label{Cor:NoReturn}
+Let \(d\ge3\). Then \(T_{d+1,d-1,d}^{\,k}(1)\ne1\) for every \(k>0\).
+\end{corollary}
+
+\begin{proof}
+If \(T^{\,k}(1)=1\) with \(k>0\), then
+Theorem~\ref{Thm:IntersectionReach} gives \(1=d^{\,k}\), that is
+\(d^{\,k}=d^{0}\); injectivity of the exponent for \(d\ge2\) forces \(k=0\),
+contradicting \(k>0\).
+\end{proof}
+
+\section{Controls and excluded cases}
+
+\begin{remark}[The divisor two is necessary]\label{Rem:TwoNecessary}
+At \(d=2\) the intersection slice is \(q=3\), \(c=1\), the classical map. The
+seed \(3\) reaches \(1\) through
+\[
+ 3\mapsto10\mapsto5\mapsto16\mapsto8\mapsto4\mapsto2\mapsto1,
+\]
+and \(3\) is not a power of \(2\), so Theorem~\ref{Thm:IntersectionReach} fails
+without \(d\ge3\). Likewise, at \(d=2\) the full-residue-access slice of
+Theorem~\ref{Thm:FullLoop} has the seed \(1\) on the classical cycle
+\(1\mapsto4\mapsto2\mapsto1\), so the hypothesis \(d\ge3\) in its last
+assertion is exactly what excludes a meeting with \(1\).
+\end{remark}
+
+\begin{remark}[Zero and the odd-offset hypothesis]\label{Rem:Zero}
+The state \(0\) is fixed by every raw map, by Lemma~\ref{Lem:Branch}, so
+positivity is required wherever an orbit is claimed to grow. At \(d=2\),
+\(q=1\), \(c=0\) the odd state \(1\) is fixed as well, since the affine branch
+is \(1\mapsto1\cdot1+0\); the hypothesis \(1\le c\) in
+Theorem~\ref{Thm:EvenEscape} excludes this degeneration. With odd \(c\) the
+parity alternation of Theorem~\ref{Thm:EvenEscape} fails, because the affine
+branch of an odd state is then even; the corresponding statement for odd
+offsets is the stratum theorem, Theorem~\ref{Thm:StratumCycle}.
+\end{remark}
+
+\begin{remark}[Boundary parameters]\label{Rem:Boundary}
+At \(h=0\) the geometric slice has vanishing offset and multiplier \(1\), and
+the theorem still holds: the cycle of \(3\) has length \(1\). At \(k=1\) the
+full-residue-access slice has vanishing offset as well, and the hypothesis
+\(2\le k\) of Theorem~\ref{Thm:FullLoop} is required by the induction, which
+divides \(k-j\) times.
+\end{remark}
+
+\section{Formal correspondence}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ll}
+\toprule
+Statement & Lean declaration \\
+\midrule
+Lemma~\ref{Lem:Branch} & \texttt{RawStepOfDvd}, \texttt{RawStepOfNotDvd}, \texttt{RawStepZero} \\
+Lemma~\ref{Lem:IterateSplit} & \texttt{RawStepIterateSucc}, \texttt{RawStepIterateSuccLast} \\
+Lemma~\ref{Lem:Divisions} & \texttt{RawStepDivMulIterate}, \texttt{RawStepPowIterate} \\
+Lemma~\ref{Lem:Pigeonhole} & \texttt{RawStepBoundedEventuallyPeriodic} \\
+Lemma~\ref{Lem:TwoOdd} & \texttt{RawStepTwoOfOdd}, \texttt{RawStepTwoEvenOffsetAffine}, \texttt{RawStepTwoEvenOffsetOddOfOdd}, \texttt{RawStepTwoEvenOffsetIncreaseOdd} \\
+Theorem~\ref{Thm:EvenEscape} & \texttt{RawStepTwoEvenOffsetReachesOdd}, \texttt{RawStepTwoEvenOffsetUnbounded} \\
+Lemma~\ref{Lem:OddGcd} & \texttt{RawStepTwoOddOffsetGcd}, \texttt{RawStepTwoOddOffsetGcdIterate} \\
+Theorem~\ref{Thm:StratumCycle} & \texttt{RawStepTwoOddOffsetStratumCycle} \\
+Corollary~\ref{Cor:ManyCycles} & \texttt{RawStepTwoOddOffsetManyCycles} \\
+Corollary~\ref{Cor:NoSeedCapture} & \texttt{RawStepTwoOddOffsetSeedNoCapture} \\
+Lemma~\ref{Lem:GeoOffset} & \texttt{SevenDvdEightPowSubOne}, \texttt{CycleC}, \texttt{CycleQ}, \texttt{CycleCMulSeven}, \texttt{CycleQIdentity} \\
+Theorem~\ref{Thm:GeoLoop} & \texttt{CycleAffineStep}, \texttt{CycleIterateFormula}, \texttt{CycleReturns}, \texttt{CyclePrimitive}, \texttt{CycleAvoidsOne} \\
+Lemma~\ref{Lem:FullIdentity} & \texttt{FullAccessQeq}, \texttt{FullAccessIdentity}, \texttt{FullAccessNotDvd}, \texttt{NatPowDvdSelfPow} \\
+Theorem~\ref{Thm:FullLoop} & \texttt{FullAccessIterateFormula}, \texttt{FullAccessReturns}, \texttt{FullAccessPrimitive}, \texttt{FullAccessAvoidsOne} \\
+Corollary~\ref{Cor:Classical} & \texttt{FullAccessClassicalInstance} \\
+Lemma~\ref{Lem:IntersectionPred} & \texttt{RawStepIntersectionPredecessor} \\
+Theorem~\ref{Thm:IntersectionIterate} & \texttt{RawStepIntersectionIteratePow} \\
+Theorem~\ref{Thm:IntersectionReach} & \texttt{RawStepIntersectionReachesOne}, \texttt{RawStepIntersectionReachesOneIff} \\
+Corollary~\ref{Cor:NoReturn} & \texttt{RawStepIntersectionNoReturnToOne} \\
+Remark~\ref{Rem:NotClassicalOnly} & \texttt{FullAccessClassicalInstance}, \texttt{FullAccessAvoidsOne} \\
+Remark~\ref{Rem:TwoNecessary} & \texttt{FullAccessClassicalInstance}, \texttt{RawStepIntersectionReachesOneIff} \\
+Remark~\ref{Rem:Zero} & \texttt{RawStepZero}, \texttt{RawStepTwoOddOffsetGcd} \\
+Remark~\ref{Rem:Boundary} & \texttt{CycleReturns}, \texttt{FullAccessIterateFormula} \\
+\bottomrule
+\end{tabular}
+\caption{Lean declarations carrying each statement.}
+\end{table}
+
+\end{document}

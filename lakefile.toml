@@ -32,6 +32,7 @@ defaultTargets = [
   "AdditiveOutcome",
   "OffsetObstruction",
   "RelationsCore",
+  "RelationsCycles",
 ]
 
 [[require]]
@@ -190,3 +191,7 @@ srcDir = "QCD.OffsetObstruction.001/lean"
 [[lean_lib]]
 name = "RelationsCore"
 srcDir = "QCD.Relations.Core.001/lean"
+
+[[lean_lib]]
+name = "RelationsCycles"
+srcDir = "QCD.Relations.Cycles.001/lean"

@@ -356,6 +356,26 @@ the positive periodic points of \(C^{k}\) are the two cycle states at even
 certificate checks 186207 cases. A natural-density statement for the
 divergent set is not proved and is recorded as open.
 
+### Explicit cycles and the power-of-\(d\) intersection
+
+[QCD.Relations.Cycles.001](QCD.Relations.Cycles.001/README.md) collects four
+explicit cycle families of the raw map and one intersection statement. At
+\(d=2\) with \(q=2c+1\) an odd state always takes the affine branch: for even
+\(c\ge1\) the odd states form an invariant set on which every step increases
+the state, so every positive seed passes every bound, while for odd \(c\) the
+gcd with \(c\) is a step invariant, so a bounded orbit is periodic inside its
+own stratum and the seed \(c\) itself never reaches \(1\). The geometric-offset slice \(c=3(8^{h}-1)/7\), \(q=2c+1\) has
+the orbit \(T^{\,j+1}(3)=3\cdot2^{3h-j}\) for \(j\le3h\), hence a primitive
+cycle of length \(3h+1\) avoiding \(1\). The full-residue-access slice
+\(c=(d-1)(d^{k-1}-1)\), \(q=(d-1)d^{k-1}+1\) has
+\(T^{\,j+1}(d-1)=(d-1)d^{k-j}\), hence a primitive cycle of length \(k+1\)
+avoiding \(1\) once \(d\ge3\); at \(d=k=2\) it is
+the classical cycle \(1\mapsto4\mapsto2\mapsto1\). On the intersection slice
+\(q=d+1\), \(c=d-1\) with \(d\ge3\), a positive state reaches \(1\) exactly
+when it is a power of \(d\), and no positive power of the clock returns \(1\)
+to itself; the case \(d=2\) fails, since \(3\) reaches \(1\) there. The bounded
+certificate checks 3229604 cases.
+
 ## Other map conventions
 
 A residue-wise affine map has the form
