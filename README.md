@@ -312,6 +312,24 @@ escape is equivalent to the absence of a positive raw cycle, decidable by
 the complete whole-orbit test above. The bounded arbitrary-precision outcome
 checker distinguishes resource refusal from certified periodicity or escape.
 
+### Gcd strata of the positive offset map
+
+[QCD.OffsetObstruction.001](QCD.OffsetObstruction.001/README.md) treats the
+positive offset map
+\[
+C(n)=\begin{cases}n/2,&2\mid n,\\3n+c,&2\nmid n,\end{cases}
+\]
+for a positive integer \(c\). Whenever \(m\mid c\) with \(\gcd(m,6)=1\),
+one step preserves \(\gcd(n,m)\). Every orbit therefore stays in the stratum
+of its seed, the three states \(c\), \(4c\), \(2c\) form a cycle for odd
+\(c\), and no seed coprime to \(m\) enters that cycle. Since the multiples of
+\(m\) below \(N\) number at most \(N/m+1\), a basin contained in the
+multiples of \(m>1\) has upper density at most \(1/m\) and omits the seed
+\(1\). For even \(c\) every
+odd state has an odd strictly larger successor, while the dyadic prefix of a
+positive seed is consumed exactly, so every positive orbit is unbounded.
+Instances \(c=3^a\) scale the offset-one dynamics by the same factor.
+
 ## Other map conventions
 
 A residue-wise affine map has the form

@@ -1,0 +1,398 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section*{Gcd strata of the positive offset map}
+
+Throughout, fix an offset $c\in\N$ and define the positive offset map
+\[
+ C(n)=\begin{cases}n/2,&2\mid n,\\ 3n+c,&2\nmid n.\end{cases}
+\]
+Division has precedence, and $C^{k}$ denotes $k$ original instructions, so
+$C^{0}$ is the identity and $C^{k+1}=C\circ C^{k}$. All statements are over
+$\N$; the state $0$ is even and fixed. For $m\in\N$ the \emph{stratum} of a
+state $n$ is the gcd $\gcd(n,m)$.
+
+The results below separate four obligations: the one-step gcd algebra under
+$m\mid c$ and $\gcd(m,6)=1$; the explicit odd short cycle of the offset map;
+the counting bound for one stratum; and the fate of positive seeds when the
+offset is even. Nothing below is a statement about the original Collatz map,
+and no statement pretends to classify periodic states other than the three
+listed in Theorem~\ref{Thm:OffsetCycle}.
+
+\section{The map and its strata}
+
+\begin{lemma}[Division preserves the gcd with a coprime modulus]\label{Lem:OffsetTwoMulGcd}
+If $\gcd(m,2)=1$, then for every $k\in\N$,
+\[
+ \gcd(2k,m)=\gcd(k,m).
+\]
+\end{lemma}
+
+\begin{proof}
+Write $d=\gcd(2k,m)$ and $e=\gcd(k,m)$. Since $d\mid m$ and $d\mid 2k$, and
+since $\gcd(m,2)=1$, the divisor $d$ of $m$ is coprime to $2$. Hence
+$d\mid k$: indeed $d\mid 2k$ and $d$ is coprime to $2$, so $d$ divides the
+other factor. Therefore $d\mid k$ and $d\mid m$, so $d\mid e$.
+
+Conversely $e\mid k$ and $e\mid m$, hence $e\mid 2k$ and $e\mid m$, so
+$e\mid d$. By antisymmetry of divisibility, $d=e$.
+\end{proof}
+
+\begin{theorem}[One step preserves the gcd with a divisor of the offset]\label{Thm:OffsetStepGcd}
+Let $m\mid c$ and $\gcd(m,6)=1$. For every $n\in\N$,
+\[
+ \gcd(C(n),m)=\gcd(n,m).
+\]
+\end{theorem}
+
+\begin{proof}
+Since $\gcd(m,6)=1$, the modulus $m$ is coprime to $2$ and to $3$, as both
+divide $6$.
+
+\emph{Even case.} If $2\mid n$, write $n=2k$. Then $C(n)=k$, because division
+has precedence and applies first, and
+$\gcd(C(n),m)=\gcd(k,m)=\gcd(2k,m)=\gcd(n,m)$ by Lemma~\ref{Lem:OffsetTwoMulGcd}.
+
+\emph{Odd case.} If $2\nmid n$, then $C(n)=3n+c$. Put $d=\gcd(3n+c,m)$ and
+$e=\gcd(n,m)$. We prove $d\mid e$ and $e\mid d$.
+
+For $d\mid e$: the divisor $d$ satisfies $d\mid m$ and $d\mid 3n+c$. From
+$d\mid m$ and $m\mid c$ we get $d\mid c$. Then $d\mid(3n+c)-c=3n$. Since
+$d\mid m$ and $\gcd(m,3)=1$, the divisor $d$ is coprime to $3$, so $d\mid n$.
+Together with $d\mid m$ this gives $d\mid e$.
+
+For $e\mid d$: from $e\mid n$ we get $e\mid 3n$, and from $e\mid m$ and
+$m\mid c$ we get $e\mid c$. Hence $e\mid 3n+c$, and with $e\mid m$ this gives
+$e\mid d$.
+
+Antisymmetry of divisibility yields $d=e$, that is,
+$\gcd(C(n),m)=\gcd(n,m)$.
+\end{proof}
+
+\begin{corollary}[Orbits stay in their stratum]\label{Cor:OffsetOrbitStratum}
+Let $m\mid c$ and $\gcd(m,6)=1$. For every $n\in\N$ and every $k\in\N$,
+\[
+ \gcd(C^{k}(n),m)=\gcd(n,m).
+\]
+\end{corollary}
+
+\begin{proof}
+Induction on $k$. For $k=0$ both sides are $\gcd(n,m)$. For the step, apply
+Theorem~\ref{Thm:OffsetStepGcd} to the state $C^{k}(n)$ and use the induction
+hypothesis:
+\[
+ \gcd(C^{k+1}(n),m)=\gcd(C(C^{k}(n)),m)=\gcd(C^{k}(n),m)=\gcd(n,m).
+\]
+\end{proof}
+
+\begin{theorem}[Iterating one step later]\label{Thm:OffsetIterateSuccFirst}
+For every $k\in\N$ and every $n\in\N$,
+\[
+ C^{k+1}(n)=C^{k}(C(n)).
+\]
+\end{theorem}
+
+\begin{proof}
+Write $k+1=1+k$ and apply the iterate addition identity
+$C^{a+b}=C^{b}\circ C^{a}$, which is proved by induction on $b$ from the
+definition $C^{k+1}=C\circ C^{k}$. With $a=1$ and $b=k$ this gives
+$C^{k+1}=C^{k}\circ C$, which is the claim.
+\end{proof}
+
+\section{The odd short cycle}
+
+\begin{theorem}[Odd offset cycle]\label{Thm:OffsetCycle}
+Let $2\nmid c$. Then
+\[
+ C(c)=4c,\qquad C(4c)=2c,\qquad C(2c)=c,
+\]
+and consequently $C^{3}(c)=c$.
+\end{theorem}
+
+\begin{proof}
+Since $c$ is odd, $3c+c=4c$ is even; hence $C(c)=4c$, because $c$ is odd and
+the affine branch applies. The number $4c$ is even, so $C(4c)=4c/2=2c$. The
+number $2c$ is even, so $C(2c)=2c/2=c$. Composing the three identities gives
+$C^{3}(c)=c$.
+\end{proof}
+
+\begin{remark}\label{Rem:OffsetCycleScope}
+The theorem exhibits one periodic orbit of length three. It does not assert
+that every periodic state lies on this orbit, nor that the orbit attracts any
+particular set of seeds. The counting result below bounds how many states can
+lie in one stratum containing the cycle; it is not an estimate of a basin
+beyond that stratum.
+\end{remark}
+
+\begin{theorem}[Coprime seeds never reach the cycle]\label{Thm:OffsetCoprimeSeedAvoidsCycle}
+Let $m\mid c$, $\gcd(m,6)=1$, $m>1$, and let $n$ satisfy $\gcd(n,m)=1$. Then
+for every $k\in\N$,
+\[
+ C^{k}(n)\ne c,\qquad C^{k}(n)\ne 4c,\qquad C^{k}(n)\ne 2c.
+\]
+\end{theorem}
+
+\begin{proof}
+By Corollary~\ref{Cor:OffsetOrbitStratum} and $\gcd(n,m)=1$ we have
+$\gcd(C^{k}(n),m)=1$ for every $k$. Suppose $C^{k}(n)$ equalled one of $c$,
+$4c$, $2c$. Since $m\mid c$, each of $c$, $4c$, and $2c$ is a multiple of
+$m$; hence $m\mid C^{k}(n)$. Then $m$ divides both $C^{k}(n)$ and $m$, so
+$m\mid\gcd(C^{k}(n),m)=1$. A divisor of $1$ is at most $1$, contradicting
+$m>1$. Therefore none of the three states is reached.
+\end{proof}
+
+\section{Counting one stratum}
+
+\begin{lemma}[Multiples in an initial segment]\label{Lem:OffsetMultipleCountLe}
+For all $m\ge1$ and all $N\in\N$,
+\[
+ \#\{0\le n<N:m\mid n\}\le \frac{N}{m}+1,
+\]
+where the quotient is integer division.
+\end{lemma}
+
+The formal counterpart is stated for all $m,N\in\N$ with the integer quotient
+of the formal system; at $m=0$ the estimate is immediate, since the set has at
+most one element.
+
+\begin{proof}
+Let $S=\{0\le n<N:m\mid n\}$ and consider the map $\varphi(n)=n/m$ on $S$. If
+$\varphi(a)=\varphi(b)$ for $a,b\in S$, then $a=m(a/m)=m(b/m)=b$ by exactness
+of division on multiples, so $\varphi$ is injective.
+
+For $n\in S$ we have $n\le N-1$, hence $n/m\le(N-1)/m\le N/m$, and therefore
+$\varphi(n)<N/m+1$. Thus $\varphi$ maps $S$ into the range $\{0,\dots,N/m\}$,
+whose cardinality is $N/m+1$. Injectivity gives $\#S\le N/m+1$.
+\end{proof}
+
+\begin{theorem}[Stratum density]\label{Thm:OffsetMultipleDensity}
+For all $m,N\in\N$,
+\[
+ m\cdot\#\{0\le n<N:m\mid n\}\le N+m.
+\]
+\end{theorem}
+
+\begin{proof}
+For $m=0$ the left side is $0$, so the claim is $0\le N$. For $m\ge1$,
+multiply the inequality of Lemma~\ref{Lem:OffsetMultipleCountLe} by $m$:
+\[
+ m\cdot\#S\le m\left(\frac{N}{m}+1\right)=m\left(\frac{N}{m}\right)+m\le N+m,
+\]
+where $m\lfloor N/m\rfloor\le N$ because $m\lfloor N/m\rfloor$ is the remainder
+subtracted from $N$.
+\end{proof}
+
+\begin{remark}\label{Rem:OffsetDensityMeaning}
+Dividing by $N$ shows that the multiples of $m$ have upper density at most
+$1/m$. A periodic basin contained in the multiples of $m$ therefore has upper
+density at most $1/m$; for $m>1$ such a basin omits every seed coprime to
+$m$. The bound is a counting statement about the multiples of $m$, proved
+independently of any dynamical estimate; no bound is claimed for the other
+strata.
+\end{remark}
+
+\section{Even offsets}
+
+\begin{theorem}[Odd states grow and stay odd]\label{Thm:OffsetEvenOffsetOddStep}
+Let $2\mid c$ and $2\nmid n$. Then $2\nmid C(n)$ and $n<C(n)$.
+\end{theorem}
+
+\begin{proof}
+Since $n$ is odd, the affine branch applies: $C(n)=3n+c$. If $2\mid C(n)$,
+then from $2\mid c$ and $2\mid 3n+c$ we get $2\mid 3n$, and since $3$ is odd,
+$2\mid n$, a contradiction. Hence $C(n)$ is odd. For the size, $n>0$ because
+$n$ is odd, and $C(n)=3n+c\ge 3n>n$ since $c\ge0$.
+\end{proof}
+
+\begin{corollary}[Oddness persists]\label{Cor:OffsetEvenOffsetOddPersist}
+Let $2\mid c$ and $2\nmid n$. For every $j\in\N$, the state $C^{j}(n)$ is odd.
+\end{corollary}
+
+\begin{proof}
+Induction on $j$. At $j=0$ the state is $n$, which is odd. For the step,
+Theorem~\ref{Thm:OffsetEvenOffsetOddStep} applied to the odd state
+$C^{j}(n)$ shows that $C^{j+1}(n)=C(C^{j}(n))$ is odd.
+\end{proof}
+
+\begin{theorem}[Linear growth of odd orbits]\label{Thm:OffsetEvenOffsetGrowthLower}
+Let $2\mid c$ and $2\nmid n$. For every $j\in\N$,
+\[
+ n+j\le C^{j}(n).
+\]
+\end{theorem}
+
+\begin{proof}
+Induction on $j$. At $j=0$ both sides are $n$. For the step, Corollary
+\ref{Cor:OffsetEvenOffsetOddPersist} makes $C^{j}(n)$ odd, so
+Theorem~\ref{Thm:OffsetEvenOffsetOddStep} gives
+$C^{j}(n)<C^{j+1}(n)$. The induction hypothesis $n+j\le C^{j}(n)$ then yields
+$n+j+1\le C^{j+1}(n)$, as required.
+\end{proof}
+
+\begin{lemma}[Exact dyadic prefix]\label{Lem:OffsetHalvePrefix}
+For all $c,u,v\in\N$,
+\[
+ C^{v}\left(2^{v}u\right)=u .
+\]
+\end{lemma}
+
+\begin{proof}
+Induction on $v$. At $v=0$ both sides are $u$. For the step, $2^{v+1}u$ is
+even, so $C(2^{v+1}u)=2^{v}u$; by the induction hypothesis,
+$C^{v}(2^{v}u)=u$. Composing,
+$C^{v+1}(2^{v+1}u)=C^{v}(C(2^{v+1}u))=C^{v}(2^{v}u)=u$.
+\end{proof}
+
+\begin{theorem}[Even offsets are unbounded from every positive seed]\label{Thm:OffsetEvenOffsetUnbounded}
+Let $2\mid c$ and $n>0$. For every bound $B\in\N$ there is $k\in\N$ with
+\[
+ B<C^{k}(n).
+\]
+\end{theorem}
+
+\begin{proof}
+Write $n=2^{v}u$ with $u$ odd, which is possible because $n>0$. By
+Lemma~\ref{Lem:OffsetHalvePrefix}, $C^{v}(n)=u$. Let $k=v+(B+1)$. The iterate
+addition identity gives
+\[
+ C^{k}(n)=C^{v+(B+1)}(n)=C^{B+1}\left(C^{v}(n)\right)=C^{B+1}(u).
+\]
+Since $u$ is odd, Theorem~\ref{Thm:OffsetEvenOffsetGrowthLower} with $j=B+1$
+gives $u+(B+1)\le C^{B+1}(u)$. Finally $B<u+B+1$, so $B<C^{k}(n)$.
+\end{proof}
+
+\section{Scaling by a power of three}
+
+\begin{theorem}[Offset scaling]\label{Thm:OffsetStepScaling}
+For all $a,n\in\N$, writing $C_{c}$ for the map with offset $c$,
+\[
+ C_{3^{a}}\left(3^{a}n\right)=3^{a}\,C_{1}(n).
+\]
+\end{theorem}
+
+\begin{proof}
+The number $3^{a}$ is odd, so $2\mid 3^{a}n$ if and only if $2\mid n$.
+
+If $2\mid n$, both $n$ and $3^{a}n$ are even, so the division branch applies on
+both sides, and exactness of division on the multiple $3^{a}n$ gives
+\[
+ C_{3^{a}}\left(3^{a}n\right)=\frac{3^{a}n}{2}=3^{a}\frac{n}{2}
+ =3^{a}C_{1}(n),
+\]
+because $n/2=C_{1}(n)$.
+
+If $2\nmid n$, then $2\nmid 3^{a}n$, so the affine branch applies on both
+sides:
+\[
+ C_{3^{a}}\left(3^{a}n\right)=3\cdot3^{a}n+3^{a}=3^{a}(3n+1)=3^{a}C_{1}(n),
+\]
+where $3n+1=C_{1}(n)$ because $n$ is odd.
+\end{proof}
+
+\begin{corollary}[Iterated scaling]\label{Cor:OffsetIterateScaling}
+For all $a,n,k\in\N$,
+\[
+ C_{3^{a}}^{k}\left(3^{a}n\right)=3^{a}\,C_{1}^{k}(n).
+\]
+\end{corollary}
+
+\begin{proof}
+Induction on $k$. At $k=0$ both sides are $3^{a}n$. For the step, apply
+Theorem~\ref{Thm:OffsetStepScaling} to the state $C_{1}^{k}(n)$ and the
+induction hypothesis:
+\[
+ C_{3^{a}}^{k+1}\left(3^{a}n\right)
+ =C_{3^{a}}\left(C_{3^{a}}^{k}\left(3^{a}n\right)\right)
+ =C_{3^{a}}\left(3^{a}C_{1}^{k}(n)\right)
+ =3^{a}C_{1}^{k+1}(n).
+\]
+\end{proof}
+
+\begin{remark}[Scope of the scaling identity]\label{Rem:OffsetScalingScope}
+The corollary identifies the orbits of the offsets $1$ and $3^{a}$ on scaled
+seeds; it does not identify the two maps, and it does not transport
+periodicity between unscaled and scaled seeds without the scaling relation on
+both sides. In particular it is not used to transfer the cycle of
+Theorem~\ref{Thm:OffsetCycle} between different offsets.
+\end{remark}
+
+\section{Controls and excluded cases}
+
+The hypotheses of Theorem~\ref{Thm:OffsetStepGcd} cannot be dropped.
+
+\begin{enumerate}[label=(\roman*)]
+ \item $c=1$, $m=5$: the modulus does not divide the offset, and
+ $\gcd(C(3),5)=\gcd(10,5)=5\ne1=\gcd(3,5)$.
+ \item $c=3$, $m=3$: the modulus divides the offset but
+ $\gcd(m,6)=3\ne1$, and $\gcd(C(1),3)=\gcd(6,3)=3\ne1=\gcd(1,3)$.
+ \item $c$ even, seed $1$: Theorem~\ref{Thm:OffsetEvenOffsetUnbounded}
+ applies, and the orbit is unbounded, while for odd $c$ the seed $c$ is
+ periodic by Theorem~\ref{Thm:OffsetCycle}.
+ \item $c=0$: the map is $n\mapsto n/2$ on even and $n\mapsto3n$ on odd
+ inputs, the homogeneous map $T_{3,2}$ of the multiplicatively independent
+ family. Every divisor of $0$ is admissible in
+ Theorem~\ref{Thm:OffsetStepGcd}, so the numbered results apply at $c=0$ with a
+ vacuous gcd identity.
+\end{enumerate}
+
+\section{Formal correspondence}
+
+Every statement above is formalized in \texttt{lean/OffsetObstruction.lean}.
+The correspondence is listed in Table~\ref{Table:OffsetObstructionLean}.
+
+\begin{table}[htbp]
+ \centering
+ \begin{tabular}{lll}
+ \toprule
+ Result & Statement & Lean declaration \\
+ \midrule
+ Lemma~\ref{Lem:OffsetTwoMulGcd} & gcd under doubling & \texttt{OffsetTwoMulGcd} \\
+ Theorem~\ref{Thm:OffsetStepGcd} & one step preserves the stratum & \texttt{OffsetStepGcd} \\
+ Corollary~\ref{Cor:OffsetOrbitStratum} & orbits stay in the stratum & \texttt{OffsetOrbitStratum} \\
+ Theorem~\ref{Thm:OffsetCycle} & odd three-step cycle & \texttt{OffsetCycleStepSelf}, \texttt{OffsetCycleStepFour}, \texttt{OffsetCycleStepTwo}, \texttt{OffsetCycle} \\
+ Theorem~\ref{Thm:OffsetCoprimeSeedAvoidsCycle} & coprime seeds avoid the cycle & \texttt{OffsetCoprimeSeedAvoidsCycle} \\
+ Lemma~\ref{Lem:OffsetMultipleCountLe} & counting multiples below $N$ & \texttt{OffsetMultipleCountLe} \\
+ Theorem~\ref{Thm:OffsetMultipleDensity} & density at most $1/m$ & \texttt{OffsetMultipleDensity} \\
+ Theorem~\ref{Thm:OffsetEvenOffsetOddStep} & odd states grow, stay odd & \texttt{OffsetEvenOffsetOddStep} \\
+ Corollary~\ref{Cor:OffsetEvenOffsetOddPersist} & oddness persists & \texttt{OffsetEvenOffsetOddPersist} \\
+ Theorem~\ref{Thm:OffsetEvenOffsetGrowthLower} & linear growth & \texttt{OffsetEvenOffsetGrowthLower} \\
+ Lemma~\ref{Lem:OffsetHalvePrefix} & exact dyadic prefix & \texttt{OffsetHalvePrefix} \\
+ Theorem~\ref{Thm:OffsetEvenOffsetUnbounded} & unbounded even offsets & \texttt{OffsetEvenOffsetUnbounded} \\
+ Theorem~\ref{Thm:OffsetStepScaling} & one-step scaling & \texttt{OffsetStepScaling} \\
+ Corollary~\ref{Cor:OffsetIterateScaling} & iterated scaling & \texttt{OffsetIterateScaling} \\
+ Theorem~\ref{Thm:OffsetIterateSuccFirst} & one step later & \texttt{OffsetIterateSuccFirst} \\
+ \bottomrule
+ \end{tabular}
+ \caption{Correspondence between the numbered statements and the Lean module.}
+ \label{Table:OffsetObstructionLean}
+\end{table}
+
+The finite verifier in \texttt{go/OffsetObstruction.go} checks the one-step
+gcd identity, orbit strata, the cycle, the avoidance statement, the counting
+bounds, the dyadic prefix, the growth statement, and the scaling identity on
+bounded machine-word ranges, with negative controls for the hypotheses. Those
+checks test the implementation; the universal statements are the theorems
+above.
+
+\end{document}
