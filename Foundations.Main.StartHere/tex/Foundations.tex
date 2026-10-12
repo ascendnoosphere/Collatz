@@ -135,8 +135,9 @@ The identity laws follow by substitution in all three fields.
 An exponent letter \(a\in\N\) presents \((qx+c)/d^a\), with \(d\ne0\).
 For a chronological exponent list \(w\), put \(B_{\varnothing}=0\) and
 \[
-B_{a::w}=q^{|w|}+d^aB_w.
+B_{a::w}=q^{|w|}+d^aB_w,
 \]
+where \(|w|\) is the length of the tail.
 Zero exponents are permitted in this algebraic definition; it is not an
 exact accelerated-itinerary definition.
 \end{definition}
@@ -147,7 +148,9 @@ The exponent word \(w\) has presentation
 \[
 P=q^{|w|},\qquad Q=d^{\sum_{a\in w}a},\qquad B_{\rm full}=cB_w.
 \]
-Appending lists is chronological affine composition.
+Appending lists is chronological affine composition. Its raw expansion---one
+affine letter followed by \(a\) division letters for each entry \(a\)---has
+the same presentation.
 \end{theorem}
 \begin{proof}
 The empty list gives \((1,0,1)\). Suppose the claim holds for \(w\).
@@ -156,7 +159,9 @@ Composing the head letter \((q,c,d^a)\) with the tail gives multiplier
 \(d^{\sum w}d^a=d^{a+\sum w}\), and full offset
 \(q^{|w|}c+cB_wd^a=c(q^{|w|}+d^aB_w)\).
 This is the defining recursion. Induction and affine associativity prove the
-append law. No positivity, primality or coprimality is needed.
+append law. No positivity, primality or coprimality is needed. Associativity
+also shows that the raw expansion presents the same data, so the closure
+equation below applies to that expansion.
 \end{proof}
 
 % The relaxation recovers values only when the original partial program is legal.

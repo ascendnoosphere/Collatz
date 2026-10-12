@@ -97,3 +97,17 @@ When \((Q,C)=(0,0)\), the two coefficient pairs are identical and the theorem
 is only an exact transport identity, not a strict reduction. Recovery is the
 sampled-trajectory identity above. The remaining obligation is the corresponding
 target problem for \(F_{Q,C,d}\); no capture conclusion is assumed.
+
+## Finite certificates and limits
+
+The Go program compares every bounded block with the independent reference
+model of \(F_{q,c,d}\). Its grid is
+\[
+q,c\in\{-2,-1,0,1,2\},\quad d\in\{-4,-3,-2,2,3,4\},\quad
+0\le a\le2,\quad -15\le n\le15,\quad 0\le k\le6,
+\]
+and the sweep produces 97,650 certificates, each checking the exact endpoint,
+the raw step count, the affine event count and the clock identity
+\(\text{raw}=k+a\cdot(\text{affine events})\). Arithmetic beyond fixed-width
+integers and the rejected-parameter boundaries have separate tests. The finite
+comparison illustrates the identities above and does not replace their proofs.

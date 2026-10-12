@@ -26,6 +26,7 @@
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{definition}[theorem]{Definition}
 \newtheorem{remark}[theorem]{Remark}
+\newtheorem{corollary}[theorem]{Corollary}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
 \title{Generalized Collatz Library}
@@ -229,6 +230,20 @@ Consequently \(|z|\ge|w|\) at every raw time and
 \(t^k|z|\ge t^k|w|=|x|\). If the initial product with \(s\) is positive,
 affine instructions retain that sign by addition of a same-sign offset,
 and division by positive \(D\) retains it as well.
+\end{proof}
+
+\begin{corollary}[Divisor-power form of the aligned bound]\label{AlignedDivisor}
+Under the hypotheses of Lemma~\ref{Aligned}, and assuming \(u>0\), every raw
+future state \(z=F^r(x)\) also satisfies
+\[
+D^u|z|\ge|x|.
+\]
+\end{corollary}
+\begin{proof}
+Since \(D=t^v\) and \(u>0\), the divisor power is \(D^u=t^{uv}\). The
+hypothesis \(k<v\) gives \(k\le uv\), hence \(t^k\le t^{uv}\). Multiplying
+the bound \(t^k|z|\ge|x|\) of Lemma~\ref{Aligned} by \(|z|\) yields
+\(t^{uv}|z|\ge|x|\).
 \end{proof}
 
 The hypothesis cannot be discarded. For \((Q,C,D)=(2,8,4)\), a raw sweep

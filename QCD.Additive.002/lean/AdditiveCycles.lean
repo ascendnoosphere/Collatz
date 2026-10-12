@@ -1115,12 +1115,13 @@ theorem AdditivePrimitiveOrder (D t h : ℕ) (m : ℕ → ℕ)
     exact noEarlier i iPositive iLess
       ((phaseCriterion i (by omega)).mpr ((powerCriterion i).mp equal))
 
-/-- Every primitive modular cycle fits within the finite residue catalogue. -/
-theorem AdditivePrimitiveLengthBound (D t h : ℕ) (m : ℕ → ℕ)
+/-- Every primitive modular cycle has length at most its effective modulus. -/
+theorem AdditivePrimitiveLengthBoundModulus (D t h : ℕ) (m : ℕ → ℕ)
     (tPositive : 0 < t) (coprime : Nat.Coprime D t) (hPositive : 0 < h)
     (representatives : ∀ i ≤ h, 0 < m i ∧ m i ≤ t)
     (modular : ∀ i < h, Nat.ModEq t (D * m (i + 1)) (m i))
-    (closed : m h = m 0) (noEarlier : ∀ i, 0 < i → i < h → m i ≠ m 0) : h ≤ t := by
+    (closed : m h = m 0) (noEarlier : ∀ i, 0 < i → i < h → m i ≠ m 0) :
+    h ≤ t / Nat.gcd (m 0) t := by
   classical
   let modulus := t / Nat.gcd (m 0) t
   have gcdPositive := Nat.gcd_pos_of_pos_right (m 0) tPositive
@@ -1138,7 +1139,18 @@ theorem AdditivePrimitiveLengthBound (D t h : ℕ) (m : ℕ → ℕ)
     have bound := le_trans (orderOf_le_card_univ (x := u)) unitCard
     simpa only [ZMod.card] using bound
   rw [exactOrder] at orderBound
-  exact le_trans orderBound (Nat.div_le_self t (Nat.gcd (m 0) t))
+  exact orderBound
+
+/-- Every primitive modular cycle fits within the finite residue catalogue. -/
+theorem AdditivePrimitiveLengthBound (D t h : ℕ) (m : ℕ → ℕ)
+    (tPositive : 0 < t) (coprime : Nat.Coprime D t) (hPositive : 0 < h)
+    (representatives : ∀ i ≤ h, 0 < m i ∧ m i ≤ t)
+    (modular : ∀ i < h, Nat.ModEq t (D * m (i + 1)) (m i))
+    (closed : m h = m 0) (noEarlier : ∀ i, 0 < i → i < h → m i ≠ m 0) : h ≤ t := by
+  exact le_trans
+    (AdditivePrimitiveLengthBoundModulus D t h m tPositive coprime hPositive
+      representatives modular closed noEarlier)
+    (Nat.div_le_self t (Nat.gcd (m 0) t))
 
 /-- Every primitive raw cycle has one modular witness carrying its clock, order, and bounds. -/
 theorem AdditiveRawPrimitiveClassification (c D s t k n p : ℕ) (DLower : 2 ≤ D)

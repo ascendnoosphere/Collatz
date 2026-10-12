@@ -41,15 +41,15 @@ theorem SemiconjugacyIterates {α β : Type*} (f : α → α) (g : β → β)
       rw [commutes, ih]
     }
 
-/-- Capture below a semiconjugacy recovers capture only when its target preimage is reflected. -/
+/-- Capture below a semiconjugacy is reflected at the same time when the target preimage is. -/
 theorem ReflectingCapture {α β : Type*} (f : α → α) (g : β → β)
     (h : α → β) (a : α → Prop) (b : β → Prop)
     (commutes : ∀ x, h (f x) = g (h x))
     (reflects : ∀ x, b (h x) → a x) (x : α)
     (captured : ∃ n, b (Iterate g n (h x))) :
-    ∃ n, a (Iterate f n x) := by
+    ∃ n, b (Iterate g n (h x)) ∧ a (Iterate f n x) := by
   obtain ⟨n, hn⟩ := captured
-  refine ⟨n, reflects _ ?_⟩
+  refine ⟨n, hn, reflects _ ?_⟩
   rw [SemiconjugacyIterates f g h commutes]
   exact hn
 

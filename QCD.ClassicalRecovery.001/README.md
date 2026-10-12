@@ -153,9 +153,6 @@ bash Scripts/CheckIgnoredPdfs.sh
 bash Scripts/CheckIgnoredTexTemps.sh
 ```
 
-The Go commands use the repository's `$(HOME)/.local/go/bin` toolchain;
-export that directory in `PATH` when invoking `go` directly.
-
 ## Dependencies
 
 The detailed proof uses the exact guarded scaling and offset-entry results

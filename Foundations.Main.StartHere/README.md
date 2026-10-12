@@ -27,15 +27,18 @@ For \(a_i(x)=(P_i x+B_i)/Q_i\), \(Q_i\ne0\), chronological composition is
 a_2\circ a_1=
 \left(P_2P_1,\ P_2B_1+B_2Q_1,\ Q_2Q_1\right).
 \]
-For exponent letters \((qx+c)/d^a\), define
+For exponent letters \((qx+c)/d^a\) with \(d\ne0\), define
 \[
-B_{\varnothing}=0,\qquad B_{a::w}=q^{|w|}+d^a B_w.
+B_{\varnothing}=0,\qquad B_{a::w}=q^{|w|}+d^a B_w,
 \]
+where \(|w|\) in the recursion is the length of the tail \(w\).
 The word data are
 \[
 P=q^{|w|},\qquad Q=d^{\sum w},\qquad B_{\mathrm{full}}=cB_w.
 \]
-A legal raw cycle satisfies \((Q-P)n=B_{\mathrm{full}}\).
+Expanding a word into one affine letter followed by \(a\) division letters for
+each entry \(a\) gives the same presentation. Hence a legally closed raw
+expansion satisfies \((Q-P)n=B_{\mathrm{full}}\).
 A rational fixed point alone does not establish guard legality.
 
 [Affine composition and closure](lean/AffineWords.lean)

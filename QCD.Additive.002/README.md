@@ -106,8 +106,9 @@ however large `D` is.
   both primitive reconstruction directions and exact grouped raw period;
 - `AdditiveResiduePermutationEdge` and `AdditivePositiveResidueUnique`:
   the unit permutation and its positive representative convention;
-- `AdditivePrimitiveOrder` and `AdditivePrimitiveLengthBound`:
-  the exact effective order and finite catalogue bound;
+- `AdditivePrimitiveOrder`, `AdditivePrimitiveLengthBoundModulus`, and
+  `AdditivePrimitiveLengthBound`: the exact effective order, the effective-modulus
+  bound \(h\le t/\gcd(m_0,t)\), and the finite catalogue bound;
 - `AdditiveRawPrimitiveClassification`: a single raw-to-modular witness
   carrying the original raw period, grouped clock, exact order, and length bound.
 

@@ -123,6 +123,31 @@ theorem WholeBaseHighOffsetAlignedMagnitude (p : Parameters) (t u v a k : ℕ)
   conv_lhs => rw [state, Int.natAbs_mul]
   exact Nat.mul_le_mul_left _ rawBound
 
+/-- Divisor-power form of the aligned magnitude bound, under positive multiplier order. -/
+theorem WholeBaseHighOffsetAlignedDivisorMagnitude (p : Parameters) (t u v a k : ℕ)
+    (s n : ℤ) (tLower : 2 ≤ t) (uPositive : 0 < u) (uBelow : u < v)
+    (kBelow : k < v) (highOffset : u + v ≤ a) (divisor : p.D = (t : ℤ) ^ v)
+    (multiplier : p.Q = (t : ℤ) ^ u) (offset : p.C = (t : ℤ) ^ a * s)
+    (atOrder : WholeBaseOrderAt t n k) (aligned : 0 ≤ s * n) :
+    ∀ r : ℕ, n.natAbs ≤ (p.D ^ u).natAbs * (Iterate (RawStep p) r n).natAbs := by
+  have powerIdentity : (p.D ^ u).natAbs = t ^ (v * u) := by
+    rw [divisor, ← pow_mul, Int.natAbs_pow, Int.natAbs_natCast]
+  have exponentLe : k ≤ v * u := by
+    have oneLe : 1 ≤ u := Nat.succ_le_of_lt uPositive
+    have step : v ≤ v * u := by
+      simpa using Nat.mul_le_mul_left v oneLe
+    omega
+  have baseLe : t ^ k ≤ t ^ (v * u) := Nat.pow_le_pow_right (by omega) exponentLe
+  intro r
+  have alignedBound := WholeBaseHighOffsetAlignedMagnitude p t u v a k s n tLower
+    uBelow kBelow highOffset divisor multiplier offset atOrder aligned r
+  have natBound : n.natAbs ≤ t ^ k * (Iterate (RawStep p) r n).natAbs := by
+    simpa [Int.natAbs_pow, Int.natAbs_natCast] using alignedBound
+  calc n.natAbs ≤ t ^ k * (Iterate (RawStep p) r n).natAbs := natBound
+    _ ≤ t ^ (v * u) * (Iterate (RawStep p) r n).natAbs :=
+        Nat.mul_le_mul_right _ baseLe
+    _ = (p.D ^ u).natAbs * (Iterate (RawStep p) r n).natAbs := by rw [powerIdentity]
+
 /-- A nonzero integer translation crosses into its own sign at an explicit finite index. -/
 theorem WholeBaseSignedRayCrossing (x beta : ℤ) (M K : ℕ) (betaNonzero : beta ≠ 0) :
     let j := x.natAbs + 1 + M * K

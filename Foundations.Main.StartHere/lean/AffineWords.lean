@@ -251,4 +251,63 @@ theorem GuardedNeutralClosure (p : Parameters) (word : List RawLetter) (n : ℤ)
   rw [neutral, zero_mul] at heq
   exact heq.symm
 
+/-- Appending raw words composes their affine presentations chronologically. -/
+theorem RawWordAffineAppend (p : Parameters) (u v : List RawLetter) :
+    RawWordAffine p (u ++ v) =
+      AffineThen (RawWordAffine p u) (RawWordAffine p v) := by
+  induction u with
+  | nil => {
+      show RawWordAffine p v = AffineThen EmptyAffine (RawWordAffine p v)
+      rw [EmptyAffineThen]
+    }
+  | cons letter u ih => {
+      simp only [List.cons_append, RawWordAffine, ih]
+      exact (AffineThenAssociative _ _ _).symm
+    }
+
+/-- A block of `k` division letters presents division by `d^k`. -/
+theorem DivisionBlockAffine (p : Parameters) (k : ℕ) :
+    RawWordAffine p (List.replicate k RawLetter.Divide) =
+      { P := 1, B := 0, Q := p.D ^ k, QNonzero := pow_ne_zero k p.DNonzero } := by
+  induction k with
+  | zero => {
+      show EmptyAffine =
+        { P := 1, B := 0, Q := p.D ^ 0, QNonzero := pow_ne_zero 0 p.DNonzero }
+      ext <;> simp [EmptyAffine, pow_zero]
+    }
+  | succ k ih => {
+      rw [List.replicate_succ, RawWordAffine, ih]
+      ext <;> simp [RawLetterAffine, AffineThen, pow_succ]
+    }
+
+/-- The raw expansion of an exponent word: one affine letter, then its divisions. -/
+def ExponentWordRaw (p : Parameters) : List ℕ → List RawLetter
+  | [] => []
+  | a :: word => RawLetter.Affine ::
+      (List.replicate a RawLetter.Divide ++ ExponentWordRaw p word)
+
+/-- A raw expansion presents the same affine data as its exponent word. -/
+theorem ExponentWordRawAffine (p : Parameters) (word : List ℕ) :
+    RawWordAffine p (ExponentWordRaw p word) =
+      ExponentWord p.Q p.C p.D p.DNonzero word := by
+  induction word with
+  | nil => {
+      rfl
+    }
+  | cons a word ih => {
+      simp only [ExponentWordRaw, ExponentWord]
+      rw [RawWordAffine, RawWordAffineAppend, DivisionBlockAffine, ih]
+      rw [← AffineThenAssociative]
+      congr 1
+      ext <;> simp [RawLetterAffine, AffineThen, ExponentLetter]
+    }
+
+/-- A legally closed raw expansion satisfies the exponent-word scalar equation. -/
+theorem ExponentWordClosure (p : Parameters) (word : List ℕ) (n : ℤ)
+    (legal : ExecuteWord p (ExponentWordRaw p word) n = some n) :
+    Determinant (ExponentWord p.Q p.C p.D p.DNonzero word) * n =
+      (ExponentWord p.Q p.C p.D p.DNonzero word).B := by
+  have closed := GuardedWordClosure p (ExponentWordRaw p word) n legal
+  rwa [ExponentWordRawAffine] at closed
+
 end GeneralizedCollatz
