@@ -1,0 +1,392 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section*{Return cores of the multiplier \(d-1\) map}
+
+Throughout, fix integers \(d\ge2\) and \(c\ge1\) and define the multiplier
+\(q=d-1\) map
+\[
+ C(n)=\begin{cases} n/d, & d\mid n,\\ (d-1)n+c, & d\nmid n.\end{cases}
+\]
+Division has precedence, \(C^{k}\) denotes \(k\) original instructions, so
+\(C^{0}\) is the identity and \(C^{k+1}=C\circ C^{k}\). A state \(n\) is
+\emph{accessible} if \(d\mid n\) or \(n\equiv c\pmod d\), and the state after
+the first division is the \emph{return} state
+\[
+ R(n)=\begin{cases} n/d, & d\mid n,\\ \bigl((d-1)n+c\bigr)/d, & d\nmid n.\end{cases}
+\]
+The map \(R\) is total, but only at accessible states does one or two
+instructions of \(C\) realize it, as Theorem~\ref{Thm:Realize} states. The
+\emph{core} is the interval \(\{1,\dots,c\}\). All states are natural numbers,
+and a state is \emph{positive} when it is nonzero.
+
+\section{The residues of one instruction}
+
+\begin{lemma}[Affine branch]\label{Lem:AffineBranch}
+For every \(n\),
+\[
+ C(n)=\begin{cases} n/d, & d\mid n,\\ (d-1)n+c, & d\nmid n,\end{cases}
+ \qquad
+ R(n)=\begin{cases} n/d, & d\mid n,\\ \bigl((d-1)n+c\bigr)/d, & d\nmid n.\end{cases}
+\]
+\end{lemma}
+
+\begin{proof}
+Both identities are the definition of \(C\) and \(R\), split by the
+decidable predicate \(d\mid n\).
+\end{proof}
+
+\begin{lemma}[Residues]\label{Lem:Residues}
+Let \(0<d\) and \(d\nmid n\). Then
+\[
+ d\mid (d-1)n+c \iff n\equiv c \pmod d ,
+ \qquad
+ (d-1)n+c\not\equiv c \pmod d .
+\]
+In particular \(n\equiv c\pmod d\) implies \(d\mid(d-1)n+c\).
+\end{lemma}
+
+\begin{proof}
+In \(\mathbb{Z}/d\), the affine step satisfies
+\((d-1)n+c\equiv -n+c\pmod d\), so \(d\mid(d-1)n+c\) holds exactly when
+\(-n+c\equiv0\), that is \(n\equiv c\pmod d\). For the second assertion,
+\((d-1)n+c\equiv c\) means \(-n\equiv0\), that is \(d\mid n\), which fails
+by hypothesis; the residue class \(c\) is therefore never attained by the
+affine step at a state that is not a multiple of \(d\).
+\end{proof}
+
+\begin{remark}\label{Rem:Inaccessible}
+Lemma~\ref{Lem:Residues} is the reason accessibility is not closed under
+\(C\): at an inaccessible state the affine step is again inaccessible, since
+it is congruent to \(c\) only at states that are already divisible by \(d\).
+\end{remark}
+
+\section{Contraction, the core, and traps}
+
+\begin{lemma}[Free step increases]\label{Lem:Free}
+If \(d\nmid n\) and \(c\ge1\), then \(n<(d-1)n+c\).
+\end{lemma}
+
+\begin{proof}
+\(d\ge2\) gives \((d-1)n\ge n\), and \(c\ge1>0\).
+\end{proof}
+
+\begin{lemma}[Division decreases]\label{Lem:DivDec}
+If \(d\mid n\) and \(0<n\), then \(n/d<n\).
+\end{lemma}
+
+\begin{proof}
+Write \(n=d\cdot(n/d)\) with \(n/d\ge1\) and apply \(d\ge2\).
+\end{proof}
+
+\begin{theorem}[Strict contraction above the core]\label{Thm:Contract}
+Let \(d\ge2\), \(c\ge1\) and \(c<n\). Then \(R(n)<n\), and if \(d\mid n\)
+then \(C(n)<n\).
+\end{theorem}
+
+\begin{proof}
+If \(d\mid n\), then \(R(n)=C(n)=n/d<n\) by
+Lemma~\ref{Lem:DivDec}. Otherwise \(d\nmid n\), so \(R(n)=((d-1)n+c)/d\).
+Since \(d\nmid n\) implies \(n\ge c+1\) or \(n<c\): in the first case
+\((d-1)n+c<dn\) because \(c<n\); in the second case \(n\le c-1<c<n\), a
+contradiction with \(c<n\). So \((d-1)n+c<dn\) always holds under \(c<n\),
+and dividing by \(d\) gives \(R(n)<n\).
+\end{proof}
+
+\begin{theorem}[Core invariance]\label{Thm:Core}
+Let \(d\ge2\), \(c\ge1\) and \(1\le n\le c\). Then \(1\le R(n)\le c\), and
+for every \(k\) the iterate \(R^{k}(n)\) satisfies
+\(1\le R^{k}(n)\le c\).
+\end{theorem}
+
+\begin{proof}
+If \(d\mid n\) then \(1\le n/d\le n\le c\). Otherwise
+\(R(n)=((d-1)n+c)/d\). For the upper bound, \(n\le c\) gives
+\(((d-1)n+c)/d\le((d-1)c+c)/d=c\). For the lower bound, \(n\ge1\) and
+\(c\ge1\) give \((d-1)n+c\ge d-1+1=d\), hence \(R(n)\ge1\). The iterate
+statement follows by induction on \(k\), since the bounds \(1\le\cdot\le c\)
+are preserved at every step.
+\end{proof}
+
+\begin{theorem}[Traps]\label{Thm:Trap}
+Let \(d\ge2\), \(c\ge1\), and let \(n\) be inaccessible. Then for every
+\(k\) the iterate \(C^{k}(n)\) is inaccessible, strictly increasing,
+\(C^{k}(n)<C^{k+1}(n)\), and \(n+k\le C^{k}(n)\); consequently for every
+bound there is \(j\) with \(C^{j}(n)>\text{bound}\).
+\end{theorem}
+
+\begin{proof}
+Lemma~\ref{Lem:Residues} shows that the successor of an inaccessible state is
+again inaccessible, so by induction on \(k\) every \(C^{k}(n)\) is
+inaccessible. The free branch therefore applies at every step, and
+Lemma~\ref{Lem:Free} gives \(C^{k}(n)<C^{k+1}(n)\) for all \(k\). For the
+linear bound, induct on \(k\): the case \(k=0\) is trivial, and the step uses
+\(C^{k+1}(n)-C^{k}(n)\ge1\). Given any bound \(b\), choose \(j=b\) if
+\(b>n\) and \(j=\max(b,n)+1\) otherwise; then \(C^{j}(n)\ge n+j>b\).
+\end{proof}
+
+\section{Realization and cycle expansion}
+
+\begin{theorem}[Realizing return steps]\label{Thm:Realize}
+Let \(d\ge2\), \(1\le x\), and let \(R^{k}(x)\) be accessible for every
+\(k<p\). Then there is \(j\) with \(p\le j\le 2p\) and
+\(C^{j}(x)=R^{p}(x)\). Moreover one instruction realizes the return step at a
+multiple of \(d\), and two instructions realize it at a positive state with
+\(d\nmid x\) and \(x\equiv c\pmod d\).
+\end{theorem}
+
+\begin{proof}
+At a multiple of \(d\), \(C(x)=x/d=R(x)\). At a state with \(d\nmid x\) and
+\(x\equiv c\pmod d\), Lemma~\ref{Lem:Residues} gives \(d\mid(d-1)x+c\), so
+\(C^{2}(x)=C((d-1)x+c)=((d-1)x+c)/d=R(x)\). Induction on \(p\) over the
+accessible return prefix therefore realizes each return step by one or two
+instructions, and the accumulated count \(j\) satisfies \(p\le j\le2p\).
+\end{proof}
+
+\begin{corollary}[Cycle expansion]\label{Cor:Expand}
+Let \(d\ge2\), \(1\le x\), \(p>0\), let \(R^{k}(x)\) be accessible for every
+\(k<p\), and let \(R^{p}(x)=x\). Then there is \(j\) with \(0<j\le2p\) and
+\(C^{j}(x)=x\).
+\end{corollary}
+
+\begin{proof}
+Apply Theorem~\ref{Thm:Realize} and substitute \(R^{p}(x)=x\).
+\end{proof}
+
+\section{Reachability, periodicity, and the dichotomy}
+
+\begin{theorem}[Reaching the core]\label{Thm:Reach}
+Let \(d\ge2\), \(c\ge1\) and \(1\le n\). Then \(R^{k}(n)\le c\) for some
+\(k\le n\); by Theorem~\ref{Thm:Core} that value lies in
+\(\{1,\dots,c\}\).
+\end{theorem}
+
+\begin{proof}
+If \(n\le c\) take \(k=0\). Otherwise \(c<n\), and
+Theorem~\ref{Thm:Contract} gives \(R(n)<n\), so by strong induction on \(n\)
+the state \(R(n)\) reaches the core within \(n-1\) return steps; since every
+intermediate value is at most its predecessor, the total is at most \(n\).
+\end{proof}
+
+\begin{theorem}[Periodicity]\label{Thm:Periodic}
+Let \(d\ge2\), \(c\ge1\) and \(1\le n\). Then there are \(k\) and \(p>0\)
+with
+\[
+ R^{k+s+p}(n)=R^{k+s}(n)\quad\text{for every }s,
+\]
+and \(R^{k}(n)\in\{1,\dots,c\}\).
+\end{theorem}
+
+\begin{proof}
+By Theorem~\ref{Thm:Reach} some \(R^{k}(n)\le c\) with
+\(R^{k}(n)\ge1\). The map \(R\) sends the finite set \(\{1,\dots,c\}\) into
+itself by Theorem~\ref{Thm:Core}, so the \(c+1\) states
+\(R^{k}(n),\dots,R^{k+c}(n)\) lie in a set of \(c\) elements and two of them
+coincide. If \(R^{k+i}(n)=R^{k+j}(n)\) with \(i<j\), then \(p=j-i>0\) and
+\(R^{k+s+p}(n)=R^{k+s}(n)\) for every \(s\), by applying the same number of
+return steps to the two sides.
+\end{proof}
+
+\begin{theorem}[Trap-or-core dichotomy]\label{Thm:Dichotomy}
+Let \(d\ge2\), \(c\ge1\) and \(1\le n\). Then either some iterate
+\(C^{k}(n)\) is inaccessible, and then \(C^{k+t}(n)\) is inaccessible and
+passes every bound as \(t\to\infty\), or every iterate \(C^{k}(n)\) is
+accessible.
+\end{theorem}
+
+\begin{proof}
+Both alternatives are decided by the first iterate that is inaccessible, if
+one exists; Theorem~\ref{Thm:Trap} then supplies growth and unboundedness.
+\end{proof}
+
+\section{The corner case \(c=d+1\)}
+
+\begin{lemma}[Corner residues]\label{Lem:CornerResidue}
+If \(d\ge2\), then \((d+1)\bmod d=1\).
+\end{lemma}
+
+\begin{proof}
+\(d+1=1\cdot d+1\) with \(1<d\).
+\end{proof}
+
+\begin{theorem}[Corner core states]\label{Thm:CornerCore}
+Let \(d\ge3\) and \(1\le x\le d+1\). If \(x\) is accessible, then
+\(x\in\{1,d,d+1\}\). Consequently every \(2\le x<d\) is inaccessible.
+\end{theorem}
+
+\begin{proof}
+Accessibility means \(d\mid x\) or \(x\equiv d+1\equiv1\pmod d\). In the first
+case \(x\in\{d\}\) because multiples of \(d\) in \(\{1,\dots,d+1\}\) are \(d\)
+only. In the second case \(x\bmod d=1\) forces \(x=1\) or \(x=d+1\) in
+\(\{1,\dots,d+1\}\); the intermediate states \(2\le x<d\) satisfy
+\(x\not\equiv0\) and \(x\not\equiv1\pmod d\) because \(1<x<d\).
+\end{proof}
+
+\begin{theorem}[Corner values and traps]\label{Thm:CornerValues}
+Let \(d\ge2\). Then \(R(1)=2\), \(R(d)=1\), and \(R(d+1)=d+1\), and
+\(d+1\) is the only accessible fixed point of \(R\) in
+\(\{1,\dots,d+1\}\). Let \(d\ge3\). Then every \(x\) with \(2\le x<d\)
+is inaccessible.
+\end{theorem}
+
+\begin{proof}
+\(d\nmid1\) requires \(d\ge2\) and \(1\equiv1\equiv c\pmod d\), and
+\(((d-1)+d+1)/d=2d/d=2\). Further \(d\mid d\) and \(R(d)=1\). Finally
+\(d\nmid d+1\), so
+\(R(d+1)=((d-1)(d+1)+d+1)/d=d(d+1)/d=d+1\). The trap range is
+Theorem~\ref{Thm:CornerCore}. For uniqueness, an accessible \(x\le d+1\) is
+\(1\), \(d\) or \(d+1\) by Theorem~\ref{Thm:CornerCore} when \(d\ge3\), and
+at \(d=2\) the accessible states \(1,2,3\) satisfy \(R(1)=2\), \(R(2)=1\) and
+\(R(3)=3\). In both cases the first two are not fixed points since \(R(1)=2>1\)
+and \(R(d)=1<d\), while \(R(d+1)=d+1\).
+\end{proof}
+
+\begin{theorem}[The corner cycle]\label{Thm:CornerCycle}
+Let \(d\ge3\). Then \(C(d+1)=d(d+1)\) and \(C(d(d+1))=d+1\). Consequently
+\[
+ C^{2m}(d+1)=d+1,\quad C^{2m+1}(d+1)=d(d+1),\quad
+ C^{2m}(d(d+1))=d(d+1),\quad C^{2m+1}(d(d+1))=d+1
+\]
+for every \(m\), and every iterate of either cycle state is one of the two
+states.
+\end{theorem}
+
+\begin{proof}
+\(d\nmid d+1\) gives \(C(d+1)=(d-1)(d+1)+d+1=d(d+1)\), and
+\(d\mid d(d+1)\) gives \(C(d(d+1))=d+1\). The iterate formulas follow by
+induction on \(m\), and the last claim is immediate from them.
+\end{proof}
+
+\begin{theorem}[Corner classification]\label{Thm:CornerClass}
+Let \(d\ge3\) and \(1\le x\). Then either some iterate \(C^{k}(x)\) is
+inaccessible, and then \(C^{k+t}(x)\) passes every bound as
+\(t\to\infty\), or \(C^{k}(x)\in\{d+1,d(d+1)\}\) for some \(k\). In the
+second case the orbit reaches the cycle.
+\end{theorem}
+
+\begin{proof}
+If some iterate is inaccessible, Theorem~\ref{Thm:Trap} gives the divergence.
+Assume then that every iterate is accessible. As long as the states exceed
+\(d\) they are not in the trap range of Theorem~\ref{Thm:CornerValues}, are
+positive, and Theorem~\ref{Thm:Contract} applies to every return step: once
+the state is larger than \(c=d+1\), one return step strictly decreases it.
+Theorem~\ref{Thm:Reach} therefore supplies \(k\) with
+\(R^{k}(x)\le d+1\), and \(R^{k}(x)\) is accessible, hence
+\(R^{k}(x)\in\{1,d,d+1\}\) by Theorem~\ref{Thm:CornerCore}. Since every
+iterate is accessible, the trap alternatives \(1\) and \(d\) are excluded:
+\(R(1)=2\) and \(R(d)=1\) lead to the inaccessible state \(2\) (for \(d\ge3\)),
+contradicting accessibility of all iterates. Hence \(R^{k}(x)=d+1\), and
+Theorem~\ref{Thm:Realize} realizes the return iterates by instructions of
+\(C\), giving \(C^{j}(x)=d+1\) for some \(j\), which is on the cycle
+\(d+1,d(d+1)\) by Theorem~\ref{Thm:CornerCycle}.
+\end{proof}
+
+\begin{theorem}[Corner periodic points]\label{Thm:CornerPeriodic}
+Let \(d\ge3\), \(1\le x\), and \(k>0\). Then
+\[
+ C^{k}(x)=x \iff \bigl(x=d+1\ \text{or}\ x=d(d+1)\bigr)\ \text{and}\ 2\mid k .
+\]
+\end{theorem}
+
+\begin{proof}
+If \(x\in\{d+1,d(d+1)\}\) and \(2\mid k\), Theorem~\ref{Thm:CornerCycle}
+gives \(C^{k}(x)=x\). Conversely let \(C^{k}(x)=x\). If some iterate of \(x\)
+is inaccessible, then Theorem~\ref{Thm:Trap} makes the orbit unbounded after
+that iterate, contradicting periodicity: if \(C^{j}(x)\) is inaccessible with
+\(j<k\), then \(C^{k}(x)=C^{k-j}(C^{j}(x))\ge C^{j}(x)+(k-j)>C^{j}(x)\), and
+repeating the argument over multiples \(tk\) of the period contradicts
+boundedness. Hence every iterate is accessible, and
+Theorem~\ref{Thm:CornerClass} yields \(j\) with \(C^{j}(x)\in\{d+1,d(d+1)\}\).
+Iterating the period identity gives \(C^{k t}(x)=x\) for every \(t\); choosing
+\(t\) with \(kt\ge j\) and applying Theorem~\ref{Thm:CornerCycle} to the
+cycle state \(C^{j}(x)\) over the remaining \(kt-j\) instructions gives
+\(C^{kt-j}(C^{j}(x))\in\{d+1,d(d+1)\}\), so \(x\in\{d+1,d(d+1)\}\). Finally
+\(C^{k}(x)=x\) with \(x\) on a cycle of length two forces \(2\mid k\) by
+Theorem~\ref{Thm:CornerCycle}.
+\end{proof}
+
+\begin{remark}[Periodic-point count]\label{Rem:CornerCount}
+The number of positive fixed points of \(C^{k}\) is \(2\) for even \(k\) and
+\(0\) for odd \(k\), so a single raw cycle of length two carries the
+periodic-point zeta function \(1/(1-z^{2})\) on the positive states. The state
+\(0\) is fixed as well, so a count over all nonnegative fixed points would
+differ at odd \(k\).
+\end{remark}
+
+\section{Controls and excluded cases}
+
+\begin{itemize}[leftmargin=2em]
+\item The state \(0\) is fixed by every \(C\) and lies in the domain, so it is
+periodic without reaching the corner cycle; positivity is a genuine
+hypothesis of Theorems~\ref{Thm:CornerClass} and \ref{Thm:CornerPeriodic}.
+\item Theorem~\ref{Thm:Reach} needs \(c\ge1\): at \(d=2\), \(c=0\) the state
+\(1\) is inaccessible and \(C(1)=1\cdot1+0=1\) does not increase, so no
+descent bound can hold.
+\item Theorem~\ref{Thm:CornerValues} needs no \(d\ge3\) for its values and its
+uniqueness, which hold at \(d\ge2\), and its trap range is empty at \(d=2\).
+The classification needs \(d\ge3\): at \(d=2\), \(c=3\) the state \(2\) is
+accessible (\(2\equiv0\pmod2\)) and the map carries the further cycle
+\(1\mapsto4\mapsto2\mapsto1\) beside \(3\mapsto6\mapsto3\), so
+Theorem~\ref{Thm:CornerClass} would be false with two raw cycles.
+\item The divergent set is stated to have natural density one, and that
+statement is not proved here. The certificate counts, below \(300000\), the
+seeds whose corner orbit reaches the cycle: \(1977\), \(63\), \(57\), \(22\),
+\(31\), \(16\), \(15\) and \(10\) for \(d=3,4,5,6,7,9,12,20\). Finite counting
+is not a density statement, and the density claim remains open.
+\end{itemize}
+
+\section{Formal correspondence}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ll}
+\toprule
+Statement & Lean declaration \\
+\midrule
+Lemma~\ref{Lem:AffineBranch} & \texttt{CoreMapOfDvd}, \texttt{CoreMapOfNotDvd}, \texttt{CoreReturnOfDvd}, \texttt{CoreReturnOfNotDvd} \\
+Lemma~\ref{Lem:Residues} & \texttt{CoreMapDivisibleIff}, \texttt{CoreMapResidueIff}, \texttt{CoreDomainDivisible}, \texttt{CoreMapCast} \\
+Lemma~\ref{Lem:Free} & \texttt{CoreMapFreeIncrease} \\
+Lemma~\ref{Lem:DivDec} & \texttt{CoreMapDivisibleDecrease} \\
+Theorem~\ref{Thm:Contract} & \texttt{CoreReturnDecrease} \\
+Theorem~\ref{Thm:Core} & \texttt{CoreReturnCore}, \texttt{CoreReturnIterateCore} \\
+Theorem~\ref{Thm:Trap} & \texttt{CoreMapNotDomain}, \texttt{CoreTrapNotDomain}, \texttt{CoreTrapStrictMono}, \texttt{CoreTrapGrowth}, \texttt{CoreTrapUnbounded} \\
+Theorem~\ref{Thm:Realize} & \texttt{CoreReturnRealizeDvd}, \texttt{CoreReturnRealizeMod}, \texttt{CoreReturnRawRealization} \\
+Corollary~\ref{Cor:Expand} & \texttt{CoreReturnCycleRaw} \\
+Theorem~\ref{Thm:Reach} & \texttt{CoreReturnReachesCore}, \texttt{CoreReturnReachesCoreBounded} \\
+Theorem~\ref{Thm:Periodic} & \texttt{CoreReturnEventuallyPeriodic} \\
+Theorem~\ref{Thm:Dichotomy} & \texttt{CoreMapDichotomy} \\
+Lemma~\ref{Lem:CornerResidue} & \texttt{CoreCornerModSelf} \\
+Theorem~\ref{Thm:CornerCore} & \texttt{CoreCornerCoreStates}, \texttt{CoreCornerCoreStatesIff} \\
+Theorem~\ref{Thm:CornerValues} & \texttt{CoreReturnCornerOne}, \texttt{CoreReturnCornerD}, \texttt{CoreReturnCornerSelf}, \texttt{CoreMapCornerTrap}, \texttt{CoreReturnCornerFixedUnique} \\
+Theorem~\ref{Thm:CornerCycle} & \texttt{CoreMapCornerCycleSteps}, \texttt{CoreCornerCycleIterateEven}, \texttt{CoreCornerCycleInvariant} \\
+Theorem~\ref{Thm:CornerClass} & \texttt{CoreCornerClassification}, \texttt{CoreCornerDomainForeverHitsCycle}, \texttt{CoreCornerIterateRealized} \\
+Theorem~\ref{Thm:CornerPeriodic} & \texttt{CoreCornerPeriodicPointCycle}, \texttt{CoreCornerPeriodicIff} \\
+Remark~\ref{Rem:Inaccessible} & \texttt{CoreMapNotDomain} \\
+Remark~\ref{Rem:CornerCount} & \texttt{CoreCornerPeriodicIff} \\
+\bottomrule
+\end{tabular}
+\caption{Lean declarations carrying each statement.}
+\end{table}
+
+\end{document}

@@ -330,6 +330,32 @@ odd state has an odd strictly larger successor, while the dyadic prefix of a
 positive seed is consumed exactly, so every positive orbit is unbounded.
 Instances \(c=3^a\) scale the offset-one dynamics by the same factor.
 
+### Return cores of the multiplier \(d-1\) map
+
+[QCD.Relations.Core.001](QCD.Relations.Core.001/README.md) treats the
+multiplier \(q=d-1\) map
+\[
+C(n)=\begin{cases}n/d,&d\mid n,\\ (d-1)n+c,&d\nmid n,\end{cases}
+\qquad d\ge2,\ c\ge1,
+\]
+with the return map \(R\) given by the same formula with the affine branch
+divided by \(d\). Only the residues \(0\) and \(c\) are accessible, and \(R\)
+contracts strictly above the core \(\{1,\dots,c\}\), which it maps into
+itself. Every positive orbit therefore either leaves the accessible set, after
+which the original orbit grows strictly and passes every bound, or enters the
+core within at most its own number of return steps and is eventually periodic
+there. Each return step is realized by one or two instructions, so a return
+cycle of length \(p\) expands to a raw cycle of length at most \(2p\). For the
+corner \(c=d+1\) with \(d\ge3\) the accessible core states are exactly
+\(1,d,d+1\), with return values \(2,1,d+1\), and the only positive raw cycle is
+\[
+d+1\longmapsto d(d+1)\longmapsto d+1;
+\]
+the positive periodic points of \(C^{k}\) are the two cycle states at even
+\(k\), so the periodic-point zeta function is \(1/(1-z^{2})\). The bounded
+certificate checks 186207 cases. A natural-density statement for the
+divergent set is not proved and is recorded as open.
+
 ## Other map conventions
 
 A residue-wise affine map has the form
