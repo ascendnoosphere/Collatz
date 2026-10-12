@@ -1,0 +1,220 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Let \(A\), \(B\) and \(m\) be natural numbers with \(A<m\), and write
+\(N=\lfloor B/(m-A)\rfloor\). If a map \(H\colon\Z\to\Z\) satisfies
+\(m\,|H(n)|\le A\,|n|+B\) at every integer, then \(|n|\ge N+1\) forces
+\(|H(n)|<|n|\), while \(|n|\le N\) forces \(|H(n)|\le N\). Every orbit
+therefore enters the finite invariant interval of radius \(N\) and is
+eventually periodic there. The argument does not construct a first-division
+return, and it does not decide a classical convergence statement.
+\end{abstract}
+
+\section{The radius}
+
+Throughout, \(A,B,m\in\N\) and \(A<m\). In particular \(m\ge1\) and the
+positive gap \(m-A\) is a legal divisor. Absolute values of integers are
+identified with their values in \(\N\).
+
+\begin{definition}\label{Def:Radius}
+The core radius is
+\[
+N=\left\lfloor\frac{B}{m-A}\right\rfloor .
+\]
+\end{definition}
+
+\begin{lemma}\label{Lem:Room}
+\(B<(m-A)(N+1)\).
+\end{lemma}
+
+\begin{proof}
+Write \(d=m-A\), so \(d\ge1\) and \(B=dN+(B\bmod d)\) with
+\(0\le B\bmod d<d\). A natural number strictly below \(d\) is at most
+\(d-1\), and \(d-1<d\), hence
+\[
+B\le dN+(d-1)<dN+d=d(N+1),
+\]
+which is the claim.
+\end{proof}
+
+\begin{lemma}\label{Lem:Descent}
+If \(n\ge N+1\), then \(A n+B<m n\).
+\end{lemma}
+
+\begin{proof}
+Lemma~\ref{Lem:Room} and \(N+1\le n\) give
+\(B<d(N+1)\le d n\). Therefore
+\[
+A n+B<A n+d n=A n+(m n-A n)=m n,
+\]
+where the rearrangement \(d n=m n-A n\) uses \(A\le m\).
+\end{proof}
+
+\begin{lemma}\label{Lem:Invariant}
+If \(n\le N\), then \(A n+B<m(N+1)\).
+\end{lemma}
+
+\begin{proof}
+The inequality \(n\le N\) gives \(A n\le A N\), so
+\(A n+B\le A N+B\). Lemma~\ref{Lem:Room} then yields
+\[
+A N+B<A N+d(N+1).
+\]
+Expanding the second term,
+\begin{align*}
+A N+d(N+1)
+&=A N+d N+d
+=(A+d)N+d
+=m N+d.
+\end{align*}
+Since \(d=m-A\le m\),
+\[
+m N+d\le m N+m=m(N+1).
+\]
+The inequality before this last comparison is strict, so
+\(A n+B<m(N+1)\).
+\end{proof}
+
+\section{Maps obeying the bound}
+
+\begin{definition}\label{Def:Bound}
+A map \(H\colon\Z\to\Z\) obeys the core bound when
+\[
+m\,|H(k)|\le A\,|k|+B
+\]
+for every \(k\in\Z\).
+\end{definition}
+
+No identification of \(H\) with a division of an affine block is used below.
+The only input is Definition~\ref{Def:Bound}.
+
+\begin{theorem}\label{Thm:Map}
+Suppose \(H\) obeys the core bound. If \(|n|\ge N+1\), then
+\(|H(n)|<|n|\). If \(|n|\le N\), then \(|H(n)|\le N\).
+\end{theorem}
+
+\begin{proof}
+In the first case Lemma~\ref{Lem:Descent} supplies
+\(A\,|n|+B<m\,|n|\). Combined with the bound,
+\(m\,|H(n)|<m\,|n|\). Cancelling the positive factor \(m\) gives
+\(|H(n)|<|n|\). In the second case Lemma~\ref{Lem:Invariant} supplies
+\(A\,|n|+B<m(N+1)\), so \(m\,|H(n)|<m(N+1)\) and therefore
+\(|H(n)|<N+1\). Since both sides are natural numbers,
+\(|H(n)|\le N\).
+\end{proof}
+
+\begin{theorem}\label{Thm:Entry}
+If \(H\) obeys the core bound, then for every \(n\in\Z\) some iterate
+\(H^{j}(n)\) satisfies \(|H^{j}(n)|\le N\).
+\end{theorem}
+
+\begin{proof}
+Proceed by induction on \(|n|\). If \(|n|\le N\), the zero-th iterate is
+already inside the radius. If \(|n|\ge N+1\), Theorem~\ref{Thm:Map} gives
+\(|H(n)|<|n|\). The inductive hypothesis applied to \(H(n)\) produces an
+entry time \(j\), and \(j+1\) is an entry time for \(n\).
+\end{proof}
+
+\begin{lemma}\label{Lem:Stays}
+If \(H\) obeys the core bound and \(|n|\le N\), then
+\(|H^{j}(n)|\le N\) for every \(j\).
+\end{lemma}
+
+\begin{proof}
+The case \(j=0\) is the hypothesis. If the \(j\)-th iterate lies in the
+radius, Theorem~\ref{Thm:Map} places its successor in the radius as well.
+\end{proof}
+
+\begin{theorem}\label{Thm:Periodic}
+If \(H\) obeys the core bound, then every orbit is eventually periodic:
+there exist \(t\ge0\) and \(p\ge1\) such that
+\[
+H^{t+k}(n)=H^{t+k+p}(n)
+\]
+for every \(k\ge0\).
+\end{theorem}
+
+\begin{proof}
+Theorem~\ref{Thm:Entry} gives a time \(t\) at which the state
+\(x=H^{t}(n)\) satisfies \(|x|\le N\). Lemma~\ref{Lem:Stays} keeps every
+later state in the same interval, which contains \(2N+1\) integers. Among
+the \(2N+2\) states \(x,H(x),\dots,H^{2N+1}(x)\), two therefore agree, say
+\(H^{i}(x)=H^{j}(x)\) with \(i<j\). The gap \(p=j-i\) is positive. Shifting
+the equality by an arbitrary \(k\) gives
+\(H^{i+k}(x)=H^{j+k}(x)\), because both sides are the \(k\)-th iterate of
+the same state. Reassembling the clocks,
+\[
+H^{t+i+k}(n)=H^{i+k}(x)=H^{j+k}(x)=H^{t+j+k}(n),
+\]
+and \(t+j+k=t+i+k+p\).
+\end{proof}
+
+\begin{remark}\label{Rem:Scope}
+The floor quotient \(n\mapsto\lfloor(A\,|n|+B)/m\rfloor\), decorated with a
+sign, obeys Definition~\ref{Def:Bound}, so Theorems~\ref{Thm:Map},
+\ref{Thm:Entry} and \ref{Thm:Periodic} apply to it. That quotient is not
+claimed to be a first-division return of a raw map. The hitting time of a
+zero residue, the residue-dependent length of an affine block, the choice of
+\(A\) and \(B\) as maxima over residues, traps, and every classical
+convergence statement remain outside this argument.
+\end{remark}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ll}
+\toprule
+Statement & Formal name \\
+\midrule
+Definition~\ref{Def:Radius} & \texttt{CoreRadius} \\
+Lemma~\ref{Lem:Room} & \texttt{CoreBoundRoom} \\
+Lemma~\ref{Lem:Descent} & \texttt{CoreDescentNat} \\
+Lemma~\ref{Lem:Invariant} & \texttt{CoreInvariantNat} \\
+Definition~\ref{Def:Bound} & hypothesis of the map theorems \\
+Theorem~\ref{Thm:Map} & \texttt{CoreMapDescent}, \texttt{CoreMapInvariant} \\
+Theorem~\ref{Thm:Entry} & \texttt{CoreEntry} \\
+Lemma~\ref{Lem:Stays} & \texttt{CoreStays} \\
+Theorem~\ref{Thm:Periodic} & \texttt{CoreEventuallyPeriodic} \\
+Remark~\ref{Rem:Scope} & non-formal scope summary \\
+\bottomrule
+\end{tabular}
+\caption{Formal correspondence of the statements.}
+\label{Table:SignedCoreLean}
+\end{table}
+
+\end{document}

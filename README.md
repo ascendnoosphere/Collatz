@@ -429,6 +429,18 @@ Separately, the affine branch modulo \(|d|\) is the walk
 \(r\mapsto qr+c\), and a seed is trapped exactly when that walk avoids the zero
 class at every time. The certificate checks 125708 signed cases.
 
+### Signed core bound
+
+[QCD.SignedCore.001](QCD.SignedCore.001/README.md) proves the integer
+estimate that makes a finite invariant core possible. For natural numbers
+\(A\), \(B\), and \(m\) with \(A<m\), and radius
+\(N=\lfloor B/(m-A)\rfloor\), a map \(H\) obeying
+\(m\,|H(n)|\le A\,|n|+B\) at every integer contracts every state outside the
+radius and preserves the radius. Every orbit enters that finite interval and
+is eventually periodic there with a positive period. The argument does not
+identify \(H\) with a first-division return. The certificate checks 165608
+comparisons on the documented grid.
+
 ## Other map conventions
 
 A residue-wise affine map has the form
