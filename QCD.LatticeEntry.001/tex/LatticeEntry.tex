@@ -1,0 +1,186 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Entry into the residue lattice before division}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+If \(D\) does not divide \(c\), \(\gcd(c,D)=1\), and \(c\) divides \(q^k\), then every integer seed reaches the residue lattice \(c\Z\) in \(k\) steps of the affine map \(n\mapsto qn+c\). Those steps use no division. Entry into \(c\Z\) is not capture of the state \(1\), and it is not the assertion that the classical raw map reaches \(1\).
+\end{abstract}
+
+\section{Affine steps before division}
+
+\begin{definition}
+\label{def:affine}
+For \(q,c\in\Z\), the affine map is \(\Map{A_{q,c}}{\Z}{\Z}\),
+\[
+A_{q,c}(n)=qn+c.
+\]
+Its iterates are \(A_{q,c}^{0}(n)=n\) and \(A_{q,c}^{j+1}(n)=A_{q,c}(A_{q,c}^{j}(n))\). Define weights by \(G_0(q)=0\) and \(G_{j+1}(q)=qG_j(q)+1\).
+\end{definition}
+
+The value \(A_{q,c}^{k}(n)\) is computed by \(k\) applications of \(n\mapsto qn+c\). Division by an integer \(D\) is not one of those applications.
+
+\begin{lemma}
+\label{lem:closed}
+For all \(q,c,n\in\Z\) and every \(k\in\N\),
+\[
+A_{q,c}^{k}(n)=q^k n+cG_k(q).
+\]
+\end{lemma}
+
+\begin{proof}
+For \(k=0\), both sides equal \(n\), since \(q^0=1\) and \(G_0(q)=0\). If the identity holds at \(k\), then
+\begin{align*}
+A_{q,c}^{k+1}(n)
+&=qA_{q,c}^{k}(n)+c\\
+&=q(q^k n+cG_k(q))+c\\
+&=q^{k+1}n+c(qG_k(q)+1)\\
+&=q^{k+1}n+cG_{k+1}(q).
+\end{align*}
+Induction gives the identity at every \(k\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:power}
+If \(c\mid q^k\), then \(c\mid A_{q,c}^{k}(n)\) for every \(n\in\Z\).
+\end{lemma}
+
+\begin{proof}
+By Lemma~\ref{lem:closed}, \(A_{q,c}^{k}(n)=q^k n+cG_k(q)\). The hypothesis gives \(c\mid q^k n\). The second summand is \(c\) times an integer. A sum of multiples of \(c\) is a multiple of \(c\).
+\end{proof}
+
+\section{The offset lattice}
+
+\begin{definition}
+\label{def:hypotheses}
+Integers \(q,c,D\) and a natural number \(k\) satisfy the lattice-entry hypotheses when
+\[
+D\nmid c,\qquad \gcd(c,D)=1,\qquad c\mid q^k.
+\]
+Here \(\gcd(c,D)\) denotes the least positive element of the ideal \(c\Z+D\Z\), or \(0\) if that ideal is \(\{0\}\).
+\end{definition}
+
+\begin{lemma}
+\label{lem:transverse}
+If \(\gcd(c,D)=1\), then for every \(m\in\Z\),
+\[
+D\mid cm\quad\Longleftrightarrow\quad D\mid m.
+\]
+\end{lemma}
+
+\begin{proof}
+If \(D\mid m\), then \(D\mid cm\). Conversely, let \(I=c\Z+D\Z\). The hypothesis \(\gcd(c,D)=1\) says that the least positive element \(g\) of \(I\) is \(1\). For any \(z\in I\), some integer \(t\) satisfies \(z-tg\ge 0\): if \(z\ge 0\), take \(t=0\); if \(z<0\), take \(t=z\), and \(g\ge 1\) gives \(z-zg=z(1-g)\ge 0\). By well-ordering of the nonnegative integers, choose \(t\) so that \(r=z-tg\) is the least such value. If \(r\ge g\), then \(z-(t+1)g=r-g\) is a smaller nonnegative value, which is impossible. Thus \(0\le r<g\). Minimality of \(g\) in \(I\) forces \(r=0\), since \(r=z-tg\in I\). Hence \(g\) divides every element of \(I\), and \(I\subseteq g\Z\). Also \(g\in I\), so \(g\Z\subseteq I\) and \(I=g\Z\). In particular \(g\in c\Z+D\Z\), and there are integers \(x,y\) with \(g=cx+Dy\). Since \(g=1\),
+\[
+cx+Dy=1.
+\]
+Multiply by \(m\):
+\[
+m=(cx)m+(Dy)m.
+\]
+The second summand is divisible by \(D\). The hypothesis \(D\mid cm\) makes the first summand divisible by \(D\). Therefore \(D\mid m\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:offset-affine}
+Let \(|D|\ge 2\) and suppose \(D\nmid c\). On the raw map that sends a divisible input to its quotient by \(D\) and every other input to \(qn+c\), the input \(c\) takes the affine branch:
+\[
+qc+c.
+\]
+\end{lemma}
+
+\begin{proof}
+The branch is affine precisely when \(D\) does not divide the input. That is the hypothesis at the input \(c\), and the affine value is \(qc+c\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:entry}
+Assume the lattice-entry hypotheses. For every \(n\in\Z\),
+\[
+c\mid A_{q,c}^{k}(n).
+\]
+Thus every integer seed reaches the residue lattice \(c\Z\) at the \(k\)th step of \(n\mapsto qn+c\), hence within \(k\) affine steps, and that computation uses no division.
+\end{theorem}
+
+\begin{proof}
+Lemma~\ref{lem:power} applies because \(c\mid q^k\), so \(c\) divides \(A_{q,c}^{k}(n)\). The state is the \(k\)-fold iterate of \(A_{q,c}\). Division by \(D\) is not used. The hypotheses \(D\nmid c\) and \(\gcd(c,D)=1\) are not used in this expansion. The first is the hypothesis of Lemma~\ref{lem:offset-affine}, and the second is the hypothesis of Lemma~\ref{lem:transverse}.
+\end{proof}
+
+\section{Entry is not capture}
+
+For integers \(q,c,D\) with \(|D|\ge 2\), the raw map is
+\[
+F_{q,c,D}(n)=
+\begin{cases}
+n/D,&D\mid n,\\
+qn+c,&D\nmid n.
+\end{cases}
+\]
+Capture of a seed at the state \(1\) would mean that some raw iterate equals \(1\).
+
+\begin{theorem}
+\label{thm:not-capture}
+There exist integers \(q,c,D\) with \(|D|\ge 2\), a natural number \(k\), and a seed \(n\in\Z\), satisfying the lattice-entry hypotheses, such that \(c\mid A_{q,c}^{k}(n)\) and, for every \(m\in\N\),
+\[
+F_{q,c,D}^{m}(n)\ne 1.
+\]
+Thus lattice entry is not capture of the state \(1\).
+\end{theorem}
+
+\begin{proof}
+Take \(q=2\), \(c=2\), \(D=3\), \(k=1\), and \(n=2\). Then \(|D|=3\ge 2\). Three does not divide two, \(\gcd(2,3)=1\), and \(2\mid 2^1\). Lemma~\ref{lem:power} gives \(2\mid A_{2,2}(2)\). Explicitly, \(A_{2,2}(2)=6\).
+
+Since \(3\nmid 2\), the raw step at \(2\) is affine, so \(F(2)=2\cdot 2+2=6\). Since \(3\mid 6\), the next raw step divides, so \(F(6)=6/3=2\). Induction on \(j\) gives \(F^{2j}(2)=2\). The case \(j=0\) is the seed. If the identity holds at \(j\), then
+\[
+F^{2(j+1)}(2)=F\bigl(F\bigl(F^{2j}(2)\bigr)\bigr)=F(F(2))=F(6)=2.
+\]
+One further raw step gives \(F^{2j+1}(2)=F\bigl(F^{2j}(2)\bigr)=F(2)=6\). Every natural number \(m\) has the form \(2j\) or \(2j+1\): the division identity \(m=(m/2)\cdot 2+(m\bmod 2)\) has remainder \(0\) or \(1\). Thus every raw iterate equals \(2\) or \(6\), and neither equals \(1\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:classical}
+For every \(k\in\N\), the integers \(q=3\), \(c=1\), and \(D=2\) satisfy the lattice-entry hypotheses. Hence \(1\) divides \(A_{3,1}^{k}(n)\) for every \(n\in\Z\).
+\end{lemma}
+
+\begin{proof}
+Two does not divide one, and \(\gcd(1,2)=1\). The integer \(1\) divides \(3^k\). Theorem~\ref{thm:entry} gives the divisibility.
+\end{proof}
+
+\begin{remark}
+\label{rem:classical}
+Lemma~\ref{lem:classical} is divisibility by \(1\). It does not assert that any raw iterate of \(F_{3,1,2}\) equals \(1\). In particular, it does not assert that the classical raw map reaches \(1\). Theorem~\ref{thm:not-capture} separates lattice membership from that hitting statement for a different parameter triple. No orbit on \(c\Z\) is classified here, and the identity \(F_{q,c,D}(cn)=cF_{q,1,D}(n)\) is not claimed.
+\end{remark}
+
+\end{document}

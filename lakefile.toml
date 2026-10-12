@@ -73,6 +73,7 @@ defaultTargets = [
   "TwoAffineEven",
   "OneExcursion",
   "FamilySplit",
+  "LatticeEntry",
 ]
 
 [[require]]
@@ -395,3 +396,7 @@ srcDir = "QCD.OneExcursion.001/lean"
 [[lean_lib]]
 name = "FamilySplit"
 srcDir = "QCD.FamilySplit.001/lean"
+
+[[lean_lib]]
+name = "LatticeEntry"
+srcDir = "QCD.LatticeEntry.001/lean"
