@@ -65,6 +65,7 @@ defaultTargets = [
   "RepunitCell",
   "PhaseRigid",
   "UniformContraction",
+  "CyclicGap",
 ]
 
 [[require]]
@@ -355,3 +356,7 @@ srcDir = "QCD.PhaseRigid.001/lean"
 [[lean_lib]]
 name = "UniformContraction"
 srcDir = "QCD.UniformContraction.001/lean"
+
+[[lean_lib]]
+name = "CyclicGap"
+srcDir = "QCD.CyclicGap.001/lean"

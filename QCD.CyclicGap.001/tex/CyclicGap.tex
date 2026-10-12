@@ -1,0 +1,192 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Cyclic two-run gap}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For a positive-exponent word on the letters \(1\) and \(2\), positive odd closure requires a positive determinant dividing the accelerated numerator. On a word \(1^p2^q\), that divisibility forces the determinant to divide \(3^p-2^p\), and hence to satisfy \(\Delta\cdot 3^q<3^{p+q}\). Second-block lengths \(1\) and \(2\) contradict the bound. A pure power of the letter \(2\) realizes the fixed point \(1\) and is not removed. The same gap passes to \(1^p2^q1^s\) by rotation. No exclusion is claimed for a longer second block, for four cyclic blocks, or for every positive integer reaching \(1\).
+\end{abstract}
+
+\section{Numerator and determinant}
+
+Let \(a_0,\ldots,a_{r-1}\) be positive integers, and write \(s_i=\sum_{j<i}a_j\) and \(K=\sum_{i<r}a_i\). The accelerated numerator and determinant are
+\[
+B=\sum_{i=0}^{r-1}3^{r-1-i}2^{s_i},\qquad
+\Delta=2^K-3^r.
+\]
+Equivalently, \(B\) at shift \(t\) on the empty word is \(0\), and a first exponent \(a\) followed by a word of numerator \(B'\) at shift \(t+a\) contributes \(3^{r-1}2^t+B'\). The unshifted numerator is the case \(t=0\). Positive odd closure requires \(\Delta>0\) and \(\Delta\mid B\).
+
+\begin{lemma}
+\label{lem:append}
+The numerator of a concatenation is \(3^{r_2}B_1+B_2'\), where \(r_2\) is the length of the second word, \(B_1\) is the numerator of the first word at the incoming shift, and \(B_2'\) is the numerator of the second word at that shift plus the exponent sum of the first word.
+\end{lemma}
+
+\begin{proof}
+The empty first word contributes only the second numerator. If the first word begins with \(a\), both sides gain the head term \(3^{r-1}2^t\) and the same shifted tail. The powers of \(3\) multiply because the remaining length adds.
+\end{proof}
+
+\begin{lemma}
+\label{lem:blocks}
+At shift \(t\), the numerator of \(1^p\) is \(2^t(3^p-2^p)\), and the numerator of \(2^q\) is \(2^t(4^q-3^q)\).
+\end{lemma}
+
+\begin{proof}
+Both statements are immediate for length \(0\). Extending \(1^p\) by one letter replaces \(2^t(3^p-2^p)\) by \(3^p2^t+2^{t+1}(3^p-2^p)\), which is \(2^t(3^{p+1}-2^{p+1})\). Extending \(2^q\) replaces \(2^t(4^q-3^q)\) by \(3^q2^t+2^{t+2}(4^q-3^q)\), which is \(2^t(4^{q+1}-3^{q+1})\).
+\end{proof}
+
+\section{The two-run identity}
+
+\begin{theorem}
+\label{thm:closed}
+For all natural numbers \(p\) and \(q\), the numerator \(B\) of \(1^p2^q\) satisfies
+\[
+B+2^{p+1}3^q=3^{p+q}+2^{p+2q}
+\]
+and
+\[
+B-(2^{p+2q}-3^{p+q})=2\cdot 3^q(3^p-2^p).
+\]
+\end{theorem}
+
+\begin{proof}
+Lemma~\ref{lem:append} splits the word into \(1^p\) and \(2^q\). Lemma~\ref{lem:blocks} gives
+\[
+B=3^q(3^p-2^p)+2^p(4^q-3^q).
+\]
+Since \(4^q=2^{2q}\),
+\begin{align*}
+B
+&=3^{p+q}-2^p3^q+2^{p+2q}-2^p3^q\\
+&=3^{p+q}+2^{p+2q}-2^{p+1}3^q.
+\end{align*}
+Adding the correction term cancels it. Subtracting \(\Delta=2^{p+2q}-3^{p+q}\) leaves
+\[
+2\cdot 3^{p+q}-2^{p+1}3^q=2\cdot 3^q(3^p-2^p).
+\]
+\end{proof}
+
+\begin{lemma}
+\label{lem:coprime}
+If \(K,r\ge 1\), then \(|2^K-3^r|\) is coprime to \(6\).
+\end{lemma}
+
+\begin{proof}
+The integer \(2^K\) is even and \(3^r\) is odd, so their difference is odd. A power of two is never divisible by \(3\): modulo \(3\), the powers of two alternate between \(1\) and \(2\). If \(N=|2^K-3^r|\) were divisible by \(3\), then \(3\) would divide \(2^K\). Thus \(N\) is divisible by neither \(2\) nor \(3\), so it is coprime to \(6\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:negative}
+If \(1\le q\le p\), then \(2^{p+2q}<3^{p+q}\).
+\end{lemma}
+
+\begin{proof}
+Set \(t=p-q\). The inequality is \(2^t8^q<3^t9^q\). Here \(8^q<9^q\) because \(q\ge 1\), while \(2^t\le 3^t\). Multiplying the strict comparison by the positive power \(3^t\) keeps it strict.
+\end{proof}
+
+\begin{theorem}
+\label{thm:gap}
+Let \(p,q\ge 1\), and let \(B\) and \(\Delta=2^{p+2q}-3^{p+q}\) be the numerator and determinant of \(1^p2^q\). If \(\Delta>0\) and \(\Delta\mid B\), then
+\[
+\Delta\mid(3^p-2^p)
+\qquad\text{and}\qquad
+\Delta\cdot 3^q<3^{p+q}.
+\]
+In particular \(0<\Delta\le 3^p-2^p\).
+\end{theorem}
+
+\begin{proof}
+Theorem~\ref{thm:closed} gives \(B-\Delta=2\cdot 3^q(3^p-2^p)\). Divisibility by \(\Delta\) passes to this difference. Lemma~\ref{lem:coprime} says that \(\Delta\), which equals its absolute value because it is positive, is coprime to \(2\cdot 3^q\). Therefore \(\Delta\) divides \(3^p-2^p\). For \(p\ge 1\) one has \(2^p<3^p\), so the positive divisor is at most \(3^p-2^p\). That quantity is strictly smaller than \(3^p\), and \(3^q>0\), so
+\[
+\Delta\cdot 3^q\le(3^p-2^p)3^q<3^p3^q=3^{p+q}.
+\]
+\end{proof}
+
+\begin{theorem}
+\label{thm:small}
+If \(p\ge 1\) and \(q\in\{1,2\}\), then \(1^p2^q\) does not satisfy both \(\Delta>0\) and \(\Delta\mid B\).
+\end{theorem}
+
+\begin{proof}
+If \(q=1\), then \(q\le p\), so Lemma~\ref{lem:negative} makes \(\Delta\) negative. If \(q=2\) and \(p\ge 2\), the same lemma applies. If \(p=1\) and \(q=2\), then
+\[
+B=3^3+2^5-2^2\cdot 3^2=23,\qquad \Delta=32-27=5,
+\]
+while \(3-2=1\). Theorem~\ref{thm:gap} would require \(5\mid 1\).
+\end{proof}
+
+\section{Constant words}
+
+\begin{theorem}
+\label{thm:constants}
+For \(p\ge 1\), the word \(1^p\) has negative determinant. For \(q\ge 1\), the word \(2^q\) has numerator \(4^q-3^q\), equal to its positive determinant, and \(4\cdot 1=3\cdot 1+1\).
+\end{theorem}
+
+\begin{proof}
+The comparison \(2<3\) gives \(2^p<3^p\). For the letter \(2\), Lemma~\ref{lem:blocks} at shift \(0\) gives the numerator \(4^q-3^q\). The exponent sum is \(2q\) and the length is \(q\), so the determinant is \(2^{2q}-3^q=4^q-3^q\). The inequality \(3<4\) makes this positive for \(q\ge 1\). The one-step relation \(4\cdot 1=3\cdot 1+1\) is immediate, so the positive integer \(1\) is fixed by the letter \(2\).
+\end{proof}
+
+The equality of numerator and determinant is why a pure power of the letter \(2\) cannot be omitted from an exclusion statement.
+
+\section{Rotation}
+
+\begin{lemma}
+\label{lem:rotate}
+If a nonempty word begins with the exponent \(a\), and \(B_0\), \(B_1\) are the numerators of the word and of the word with that letter moved to the end, then
+\[
+2^a B_1=3B_0+\Delta.
+\]
+Rotation preserves the length, the exponent sum, and the determinant. If the exponent sum is positive, then \(\Delta\mid B_0\) if and only if \(\Delta\mid B_1\).
+\end{lemma}
+
+\begin{proof}
+The concatenation formula writes the rotated numerator as \(3B'+2^{K-a}\), where \(B'\) is the numerator of the tail. Shifting multiplies the tail numerator by \(2^a\), and the original numerator is \(3^{r-1}+2^a B'\). Clearing the common terms leaves \(2^a B_1-3B_0=\Delta\). The length and exponent sum are unchanged because the same letters are retained, so \(\Delta\) is unchanged. For the divisibility, Lemma~\ref{lem:coprime} supplies a determinant coprime to \(6\), hence coprime to \(2^a\) and to \(3\). From the identity, \(\Delta\mid B_0\) implies \(\Delta\mid 2^a B_1\), and the power of two cancels. Conversely, \(\Delta\mid B_1\) implies \(\Delta\mid 3B_0\), and the factor \(3\) cancels.
+\end{proof}
+
+Repeating the step preserves divisibility after every finite number of rotations.
+
+\begin{theorem}
+\label{thm:three}
+Let \(p,q,s\ge 1\). Rotating \(1^p2^q1^s\) by \(p+q\) letters yields \(1^{p+s}2^q\). The two words have the same determinant, and one divides its numerator if and only if the other does. Consequently the gap of Theorem~\ref{thm:gap} applies to the merged exponents \(p+s\) and \(q\). If \(q\in\{1,2\}\), the three-run word has no positive divisibility.
+\end{theorem}
+
+\begin{proof}
+Moving the opening block \(1^p\) to the end produces \(2^q1^s1^p\). Moving the block \(2^q\) to the end then produces \(1^s1^p2^q=1^{p+s}2^q\). Each rotation preserves the determinant and the divisibility by Lemma~\ref{lem:rotate}. The merged word is a two-run word, so Theorems~\ref{thm:gap} and~\ref{thm:small} apply to it.
+\end{proof}
+
+\begin{remark}
+The argument does not exclude \(1^p2^q\) for every \(q\ge 3\). It does not exclude a word \(1^p2^q1^r2^s\) with four positive exponents. It does not assert that every positive integer reaches \(1\). The comparison \(2\rho\le\mu\le 4\rho\) is not the gap proved here.
+\end{remark}
+
+\end{document}
