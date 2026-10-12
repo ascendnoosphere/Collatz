@@ -18,11 +18,13 @@ are proved here:
 * the residue walk from zero is that same partial-sum walk reduced modulo `D`,
   so it is periodic with period `k` and its first `k` residues are distinct.
 
-The remaining statements (the logarithmic entry bound of the contracting core,
-the density-one eventual affine escape of the complement of the returned set,
-the statement that every return-map cycle lies in `[0, c]`, the general
-modulus `M`, the Hull--Dobell condition and the general offset) are not
-formalized here.
+The remaining statements (the strict decrease of accessible states under the
+return map, the eventual-trap statement for non-captured orbits, the
+density-one eventual affine escape of the complement of the returned set, the
+logarithmic entry bound of the contracting core, the statement that every
+return-map cycle lies in `[0, c]`, the general modulus, the Hull--Dobell
+condition, the criticality ledger, the classical isolation and the general
+offset) are not formalized here.
 -/
 
 import GeneralizedCollatz

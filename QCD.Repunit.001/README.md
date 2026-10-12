@@ -76,15 +76,17 @@ number of affine events between two divisions, which is \(k-1\) on the cycle
 and bounded by one order computation.
 
 **Preservation conditions.** \(k\ge1\) in .2 and .5; \(q\ge1\) in .3 and
-.4; \(q\ge2\) in .5, .6, .9 and .11; \(k\ge1\) in .9; \(k\ge2\) in .10. The
-claims hold at the raw clock, with no compression, and they are statements
-about every positive seed of the slice only where stated. The strict decrease
-of accessible states under the return map, the eventual-trap statement for
-noncaptured orbits, the density of the captured set, the logarithmic entry
-bound of the contracting core, the statement that every return-map cycle lies
-in \([0,c]\), the general modulus theory, the Hull–Dobell condition, the
-criticality ledger and the classical isolation are not formalized here and
-remain open obligations of companion families.
+.4; \(q\ge2\) in .5, .6, .9 and .11, and in the orbit clause of .10, whose
+return identity \(R(1)=1\) holds for \(q\ge1\); \(k\ge1\) in .9; \(k\ge2\) in
+.10. The claims hold at the raw clock, with no compression, and they are
+statements about every positive seed of the slice only where stated. The
+strict decrease of accessible states under the return map, the eventual-trap
+statement for non-captured orbits, the density-one eventual affine escape of
+the complement of the returned set, the logarithmic entry bound of the
+contracting core, the statement that every return-map cycle lies in
+\([0,c]\), the general modulus, the Hull–Dobell condition, the criticality
+ledger, the classical isolation and the general offset are not formalized here
+and remain open obligations of companion families.
 
 ## Controls
 
@@ -109,7 +111,13 @@ for the congruences and `Mathlib.Order.Monotone.Basic` for strict monotonicity.
 ## Go certificate contract
 
 `go/RepunitDivisor.go` checks the slice over the grid \(q=2,\dots,20\) and
-\(k=1,\dots,20\), with trap states \(n\le200\), in seven slices:
+\(k=1,\dots,20\), with trap states \(n\le200\), in seven slices. The divisor
+slice runs over \(k=1,\dots,20\); the order, cycle, residue, trap and return
+slices over \(k=2,\dots,20\); the controls consist of the order witnesses at
+\(q=1\) for \(k=2,\dots,20\), the divisor-one identity on \(2\le q\le20\) and
+\(0\le n\le10\), and the twenty-four-step non-repunit walk at \(q=2\) with
+divisor five. The six parallel slices are chunked over the multiplier and the
+controls run in a single pass.
 
 | Slice | Checks | Content |
 | --- | --- | --- |

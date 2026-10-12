@@ -247,22 +247,25 @@ func TestSweepTotals(t *testing.T) {
 }
 
 // TestWarmedAllocation requires the workspace walk to allocate nothing once its
-// buffers have grown to the width of the walk; the walk divides a wide power of
-// two, so every measured step works on multi-word states.
+// buffers have grown to the width of the walk. Every measured step works on
+// multi-word states, and the two steps exercise the two branches of the step: a
+// state that is not divisible follows the affine branch, and a multiple of the
+// divisor follows the division branch.
 func TestWarmedAllocation(t *testing.T) {
 	w := NewWorkspace()
-	D := big.NewInt(2)
-	seed := new(big.Int).Lsh(big.NewInt(1), 300)
+	divisor := new(big.Int).Lsh(big.NewInt(1), 100)
+	divisor.Add(divisor, big.NewInt(1))
+	odd := new(big.Int).Lsh(big.NewInt(1), 300)
+	odd.Add(odd, big.NewInt(1))
+	multiple := new(big.Int).Mul(divisor, odd)
 	walk := func() {
-		w.Cur.Set(seed)
-		for i := 0; i < 32; i++ {
-			w.StepBig(3, D, w.Cur, w.Next)
-			w.Cur, w.Next = w.Next, w.Cur
-		}
+		w.StepBig(3, divisor, odd, w.Cur)
+		w.StepBig(3, divisor, multiple, w.Next)
 	}
 	walk()
-	if w.Cur.BitLen() <= 64 {
-		t.Fatalf("warmed walk stayed inside a word, width %d", w.Cur.BitLen())
+	if w.Cur.BitLen() <= 64 || w.Next.BitLen() <= 64 {
+		t.Fatalf("warmed walk stayed inside a word, widths %d and %d",
+			w.Cur.BitLen(), w.Next.BitLen())
 	}
 	allocs := testing.AllocsPerRun(50, walk)
 	if allocs != 0 {

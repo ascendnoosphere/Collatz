@@ -182,10 +182,13 @@ After \(k-1\) affine events from the seed \(1\) the state of the slice is
 \end{theorem}
 
 \begin{proof}
-By Theorem~\ref{Thm:Cycle} with \(j=k-1\) the state after \(k-1\)
-instructions is \(S_k\), which is the divisor itself, so the following
-instruction is a division and returns \(S_k/S_k=1\). The closed form is the
-same computation: \(q^{\,k-1}+S_{k-1}=S_k\) by
+For \(q\ge2\), Theorem~\ref{Thm:Cycle} with \(j=k-1\) shows that the
+state after \(k-1\) instructions is \(S_k\). For \(q=1\) the divisor is
+\(S_k=k\) and each of the states \(1,2,\dots,k\) is smaller than the divisor,
+so the orbit takes the affine step \(n\mapsto n+1\) and the state after
+\(k-1\) affine events is again \(S_k=k\). Either way \(S_k\) is divisible by
+the divisor, so the following instruction is a division and returns
+\(S_k/S_k=1\). The closed form is the same computation: \(q^{\,k-1}+S_{k-1}=S_k\) by
 Lemma~\ref{Lem:RepunitBasic}, hence
 \[
 R(1)=\frac{q^{\,k-1}\cdot1+S_{k-1}}{S_k}=\frac{S_k}{S_k}=1.
