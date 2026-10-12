@@ -35,6 +35,7 @@ defaultTargets = [
   "RelationsCycles",
   "RepunitDivisor",
   "ResidueAccess",
+  "SignedTraps",
 ]
 
 [[require]]
@@ -205,3 +206,7 @@ srcDir = "QCD.Repunit.001/lean"
 [[lean_lib]]
 name = "ResidueAccess"
 srcDir = "QCD.ResidueAccess.001/lean"
+
+[[lean_lib]]
+name = "SignedTraps"
+srcDir = "QCD.SignedTraps.001/lean"

@@ -1,0 +1,382 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+The raw map sends \(n\) to \(n/d\) when \(d\mid n\) and to \(qn+c\)
+otherwise, with signed integers \(q,c,n\) and a nonzero signed divisor \(d\).
+On an orbit no state of which is divisible by \(d\) the divisor never acts, and
+the orbit follows the single affine recursion \(n\mapsto qn+c\). This document
+classifies that orbit by the multiplier alone: a zero multiplier reaches the
+constant offset, a unit multiplier translates or stays fixed, the negative
+unit multiplier runs the reflection pair, an expanding multiplier is fixed
+exactly on the affine fixed-point equation and otherwise escapes every bound.
+It also identifies divisibility with a walk on \(\Z/m\Z\) for \(m=|d|\) and
+proves that the orbit is trapped exactly when that walk avoids the zero class.
+\end{abstract}
+
+\section{The raw map and trapped orbits}
+
+\begin{definition}\label{Def:Map}
+A parameter record consists of integers \(q\), \(c\) and a nonzero integer
+\(d\). Its raw step is the map
+\[
+T(n)=\begin{cases} n/d, & d\mid n,\\ qn+c, & d\nmid n,\end{cases}
+\qquad n\in\Z .
+\]
+The orbit of a seed \(n\) is the sequence \(T^{j}(n)\), \(j\ge0\).
+\end{definition}
+
+\begin{definition}\label{Def:Trapped}
+A seed \(n\) is \emph{trapped} for the record when \(d\nmid T^{j}(n)\) for
+every \(j\ge0\).
+\end{definition}
+
+On a trapped orbit the branch \(n\mapsto n/d\) never runs, so all of the
+following statements are about the affine recursion alone. The divison branch
+is not forgotten: Section~\ref{Sec:Residue} decides when it fires.
+
+\begin{lemma}\label{Lem:Affine}
+If \(d\nmid n\), then \(T(n)=qn+c\).
+\end{lemma}
+
+\begin{proof}
+The divisibility test in Definition~\ref{Def:Map} fails, so the second branch
+of the definition applies.
+\end{proof}
+
+\begin{lemma}\label{Lem:Preserved}
+If \(n\) is trapped, then \(T(n)\) is trapped.
+\end{lemma}
+
+\begin{proof}
+Let \(j\ge0\). The iterates of \(T(n)\) are the iterates of \(n\) shifted by
+one: \(T^{j}(T(n))=T^{j+1}(n)\). Since \(n\) is trapped, \(d\) does not divide
+that state.
+\end{proof}
+
+\section{The offset sum}
+
+\begin{definition}\label{Def:Sum}
+The offset sum of \(j\) affine steps with multiplier \(q\ne1\) is
+\[
+T_{j}(q)=q^{0}+q^{1}+\dots+q^{j-1},\qquad T_{0}(q)=0 .
+\]
+At \(q=1\) the same recursion gives \(T_{j}(1)=j\).
+\end{definition}
+
+\begin{lemma}[Shifted geometric series]\label{Lem:Series}
+For every \(q\in\Z\) and \(j\ge0\),
+\[
+(q-1)\,T_{j}(q)=q^{j}-1 .
+\]
+\end{lemma}
+
+\begin{proof}
+Induction on \(j\). At \(j=0\) both sides are zero. The induction step adds
+\(q^{j}\) to the sum and \(q^{j}(q-1)=q^{j+1}-q^{j}\) to the product.
+\end{proof}
+
+\begin{lemma}[Recursion]\label{Lem:Recursion}
+For every \(q\in\Z\) and \(j\ge0\), \(T_{j+1}(q)=q\,T_{j}(q)+1\).
+\end{lemma}
+
+\begin{proof}
+By Definition~\ref{Def:Sum}, \(T_{j+1}(q)=T_{j}(q)+q^{j}\), and
+Lemma~\ref{Lem:Series} with \((q-1)T_{j}(q)=q^{j}-1\) gives
+\(qT_{j}(q)+1=T_{j}(q)+q^{j}\).
+\end{proof}
+
+\begin{lemma}[Two-step extension]\label{Lem:Extension}
+For every \(q\in\Z\) and \(j\ge0\),
+\[
+T_{j+2}(q)=T_{j}(q)+q^{j}+q^{j+1}.
+\]
+\end{lemma}
+
+\begin{proof}
+Apply the recursion twice: \(T_{j+2}(q)=qT_{j+1}(q)+1=q^{2}T_{j}(q)+q+1\), and
+the recursion once more gives the stated form.
+\end{proof}
+
+\begin{lemma}[Degenerate multipliers]\label{Lem:Degenerate}
+For every \(j\ge0\),
+\[
+T_{j+1}(0)=1,\qquad T_{j}(1)=j,\qquad T_{2j}(-1)=0,\qquad
+T_{2j+1}(-1)=1 .
+\]
+\end{lemma}
+
+\begin{proof}
+At \(q=0\) the sum has its first term \(q^{0}=1\) and every later term zero. At
+\(q=1\) the sum is a sum of \(j\) ones. At \(q=-1\) the terms alternate between
+one and negative one, so an even number of them cancels and an odd number
+leaves one.
+\end{proof}
+
+\section{The affine itinerary}
+
+\begin{lemma}\label{Lem:Itinerary}
+If \(n\) is trapped, then for every \(j\ge0\)
+\[
+T^{j}(n)=q^{j}n+c\,T_{j}(q).
+\]
+\end{lemma}
+
+\begin{proof}
+Induction on \(j\). At \(j=0\) the formula reads \(n=q^{0}n+cT_{0}(q)=n\). For
+the step, the state \(T^{j}(n)\) is not divisible by \(d\) by
+Lemma~\ref{Lem:Preserved}, so Lemma~\ref{Lem:Affine} applies and
+\(T^{j+1}(n)=q\,T^{j}(n)+c\). Substituting the induction hypothesis and using
+Lemma~\ref{Lem:Recursion} gives \(q^{j+1}n+cT_{j+1}(q)\).
+\end{proof}
+
+\section{Classification by the multiplier}
+
+\begin{lemma}[Zero multiplier]\label{Lem:ZeroConstant}
+Let \(q=0\) and let \(n\) be trapped. Then \(T^{j}(n)=c\) for every \(j\ge1\),
+and \(c\) is itself trapped with \(T(c)=c\).
+\end{lemma}
+
+\begin{proof}
+For \(j\ge1\), Lemma~\ref{Lem:Itinerary} with \(q=0\) and
+Lemma~\ref{Lem:Degenerate} give \(T^{j}(n)=0\cdot n+c\cdot1=c\). At \(j=1\)
+this says \(T(n)=c\), so \(d\nmid c\) because \(n\) is trapped; hence
+Lemma~\ref{Lem:Affine} applies to \(c\) and \(T(c)=0\cdot c+c=c\).
+\end{proof}
+
+\begin{lemma}[Unit multiplier]\label{Lem:OneTranslation}
+Let \(q=1\) and let \(n\) be trapped. Then \(T^{j}(n)=n+jc\) for every
+\(j\ge0\), and the offset sum is the index.
+\end{lemma}
+
+\begin{proof}
+Insert \(q=1\) and \(T_{j}(1)=j\) into Lemma~\ref{Lem:Itinerary}.
+\end{proof}
+
+\begin{lemma}\label{Lem:Archimedean}
+For every real, hence every integer, bound there is a natural number above it.
+\end{lemma}
+
+\begin{proof}
+The natural numbers are unbounded in \(\Z\), and \(\Z\) is unbounded in
+\(\R\).
+\end{proof}
+
+\begin{theorem}[Unit multiplier with offset]\label{Thm:OneUnbounded}
+Let \(q=1\), let \(c\ne0\) and let \(n\) be trapped. Then for every \(R\in\Z\)
+there is \(j\ge0\) with \(R<|T^{j}(n)|\).
+\end{theorem}
+
+\begin{proof}
+By Lemma~\ref{Lem:OneTranslation}, \(T^{j}(n)=n+jc\), so
+\(|T^{j}(n)|\ge j|c|-|n|\) and \(|c|\ge1\). Choosing \(j\) above
+\(|n|+R\) by Lemma~\ref{Lem:Archimedean} gives
+\(|T^{j}(n)|\ge j-|n|>R\).
+\end{proof}
+
+\begin{theorem}[Negative unit multiplier]\label{Thm:NegOne}
+Let \(q=-1\) and let \(n\) be trapped. Then \(T^{2j}(n)=n\) and
+\(T^{2j+1}(n)=c-n\) for every \(j\ge0\). Moreover \(T(n)=c-n\) and
+\(T(c-n)=n\), so the pair \(\{n,c-n\}\) is a genuine two-cycle whenever
+\(n\ne c/2\).
+\end{theorem}
+
+\begin{proof}
+Insert \(q=-1\), the parity identities of Lemma~\ref{Lem:Degenerate} and
+\((-1)^{2j}=1\), \((-1)^{2j+1}=-1\) into Lemma~\ref{Lem:Itinerary}. The two
+displayed values are the first two states of the orbit, and applying
+Lemma~\ref{Lem:Affine} at \(n\) and at \(c-n\) (the latter is not divisible by
+\(d\) because it is \(T(n)\) and \(n\) is trapped) gives the two-step return.
+The two states differ exactly when \(2n\ne c\).
+\end{proof}
+
+\begin{lemma}[Fixed point]\label{Lem:Fixed}
+If \(d\nmid n\), then \(T(n)=n\) if and only if \((q-1)n+c=0\).
+\end{lemma}
+
+\begin{proof}
+By Lemma~\ref{Lem:Affine}, \(T(n)=qn+c\), and \(qn+c=n\) is equivalent to
+\((q-1)n+c=0\).
+\end{proof}
+
+\begin{theorem}[Expanding multiplier]\label{Thm:Expanding}
+Let \(|q|\ge2\), let \(n\) be trapped and let \((q-1)n+c\ne0\). Then for every
+\(R\in\Z\) there is \(j\ge0\) with \(R<|T^{j}(n)|\).
+\end{theorem}
+
+\begin{proof}
+Write \(A=(q-1)n+c\ne0\) and \(B=-c\). Lemma~\ref{Lem:Itinerary} and
+Lemma~\ref{Lem:Series} give the identity
+\[
+(q-1)\,T^{j}(n)=q^{j}A+B
+\]
+for every \(j\), because \((q-1)cT_{j}(q)=c(q^{j}-1)\). Hence
+\[
+|q-1|\,\bigl|T^{j}(n)\bigr|=\bigl|q^{j}A+B\bigr|\ge|q|^{j}|A|-|B|,
+\]
+and \(|q|^{j}\ge j+1\) because \(|q|\ge2\) and \(2^{j}\ge j+1\). Since
+\(|A|\ge1\) and \(|A|,|B|\) are fixed integers, choosing \(j\) above
+\(|B|+|q-1|(R+1)\) by Lemma~\ref{Lem:Archimedean} makes the right side exceed
+\(|q-1|R\), which gives \(|T^{j}(n)|>R\).
+\end{proof}
+
+\begin{remark}\label{Rem:NoDivisor}
+Theorem~\ref{Thm:Expanding} needs the trapping premise only through
+Lemma~\ref{Lem:Itinerary}: on an orbit that divides, the branch \(n\mapsto n/d\)
+replaces the affine step and the formula fails from that time on.
+\end{remark}
+
+\section{The residue walk}\label{Sec:Residue}
+
+\begin{definition}\label{Def:Residue}
+Let \(m=|d|\). The residue walk of the record is the map
+\[
+\rho(r)=qr+c \bmod m,\qquad r\in\Z/m\Z ,
+\]
+with residues represented in \(\{0,1,\dots,m-1\}\).
+\end{definition}
+
+\begin{lemma}[Prefix cast]\label{Lem:PrefixCast}
+If no state \(T^{i}(n)\) with \(i<j\) is divisible by \(d\), then
+\[
+T^{j}(n)\equiv \rho^{j}(n)\pmod m .
+\]
+\end{lemma}
+
+\begin{proof}
+Induction on \(j\). At \(j=0\) both sides are \(n\bmod m\). For the step, the
+state \(T^{j}(n)\) is not divisible by \(d\), so Lemma~\ref{Lem:Affine} gives
+\(T^{j+1}(n)=qT^{j}(n)+c\), and reducing modulo \(m\) and using the induction
+hypothesis gives \(\rho^{j+1}(n)\).
+\end{proof}
+
+\begin{corollary}\label{Cor:Cast}
+If \(n\) is trapped, then \(T^{j}(n)\equiv\rho^{j}(n)\pmod m\) for every
+\(j\ge0\).
+\end{corollary}
+
+\begin{proof}
+A trapped seed satisfies the hypothesis of Lemma~\ref{Lem:PrefixCast} at every
+\(j\).
+\end{proof}
+
+\begin{theorem}[Dichotomy]\label{Thm:Dichotomy}
+A seed \(n\) is trapped if and only if \(\rho^{j}(n)\ne0\) for every \(j\ge0\).
+\end{theorem}
+
+\begin{proof}
+If \(n\) is trapped and \(\rho^{j}(n)=0\), then Corollary~\ref{Cor:Cast} gives
+\(T^{j}(n)\equiv0\pmod m\), so \(m\) divides \(T^{j}(n)\), hence \(d\) divides
+it and \(n\) is not trapped.
+
+Conversely, suppose the residue walk avoids zero and let \(j\) be the least
+index with \(d\mid T^{j}(n)\). Every earlier state is not divisible by \(d\), so
+Lemma~\ref{Lem:PrefixCast} applies at \(j\) and gives
+\(T^{j}(n)\equiv\rho^{j}(n)\pmod m\). The left side is zero modulo \(m\), so
+\(\rho^{j}(n)=0\), contradicting avoidance. The index is well defined by the
+well-ordering of the naturals.
+\end{proof}
+
+\begin{remark}\label{Rem:ResidueMeaning}
+The dichotomy converts the infinite divisibility predicate into avoidance of
+the origin by the deterministic walk \(\rho\) on a finite set of size \(m\).
+It is an equivalence, so both directions transfer, and it quantifies over
+every time, not merely over a horizon.
+\end{remark}
+
+\section{Controls and scope}
+
+\begin{remark}\label{Rem:NotClassical}
+With \(q=2\) and \(c=1\) the affine branch is \(2n+1\), not the classical
+\(3n+1\). The orbit of \(9\) with divisor \(3\) is \(9,3,1,3,1,\dots\), and
+\(T(9)=3\ne2\cdot9+1\): the trapping premise produced a division at the first
+state.
+\end{remark}
+
+\begin{remark}\label{Rem:Degenerate}
+Degenerate cases fall inside the classification: at \(q=0\) and \(c=0\) the
+trapped seed \(7\) with divisor \(3\) reaches the fixed point \(0\) after one
+step; at \(q=1\), \(c=0\) every trapped state is fixed; at \(q=-1\), \(c=0\) and
+even \(n\) the two-cycle degenerates to a fixed point; at \(d=1\) every state is
+divisible and no seed is trapped.
+\end{remark}
+
+\begin{remark}\label{Rem:Scope}
+Nothing is claimed for a seed that divides at some time
+(Remark~\ref{Rem:NoDivisor}); the first-division return map with its
+residue-dependent exponent, the density statements, the core theorem with its
+boundary bound and every convergence statement for a classical target belong to
+companion families.
+\end{remark}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ll}
+\toprule
+Statement & Formal name \\
+\midrule
+Definition~\ref{Def:Map} & \texttt{RawStep} \\
+Definition~\ref{Def:Trapped} & \texttt{NeverDivides} \\
+Lemma~\ref{Lem:Affine} & \texttt{RawStepAffine} \\
+Lemma~\ref{Lem:Preserved} & \texttt{NeverDividesShift} \\
+Lemma~\ref{Lem:Itinerary} & \texttt{NeverDividesIterateAffine} \\
+Lemma~\ref{Lem:Series} & \texttt{TrapSumMulSubOne} \\
+Lemma~\ref{Lem:Recursion} & \texttt{TrapSumRec} \\
+Lemma~\ref{Lem:Extension} & \texttt{TrapSumAddTwo} \\
+Lemma~\ref{Lem:Degenerate} & \texttt{TrapSumZero}, \texttt{TrapSumOne}, \\
+ & \texttt{TrapSumNegOneEven}, \texttt{TrapSumNegOneOdd} \\
+Lemma~\ref{Lem:ZeroConstant} & \texttt{TrapZeroConstant}, \texttt{TrapZeroFixed} \\
+Lemma~\ref{Lem:OneTranslation} & \texttt{TrapOneTranslation} \\
+Lemma~\ref{Lem:Archimedean} & \texttt{TrapExistsNatAbove} \\
+Theorem~\ref{Thm:OneUnbounded} & \texttt{TrapOneUnbounded} \\
+Theorem~\ref{Thm:NegOne} & \texttt{TrapNegOneEven}, \texttt{TrapNegOneOdd}, \\
+ & \texttt{TrapNegOneTwoCycle} \\
+Lemma~\ref{Lem:Fixed} & \texttt{TrapFixedIff} \\
+Theorem~\ref{Thm:Expanding} & \texttt{TrapExpandingEscape} \\
+Definition~\ref{Def:Residue} & \texttt{ResidueStepZ} \\
+Lemma~\ref{Lem:PrefixCast} & \texttt{CastIterateOfPrefix} \\
+Corollary~\ref{Cor:Cast} & \texttt{NeverDividesCastIterate} \\
+Theorem~\ref{Thm:Dichotomy} & \texttt{ResidueAvoidsZeroIffNeverDivides} \\
+Remarks~\ref{Rem:NoDivisor}--\ref{Rem:Scope} & non-formal scope summary \\
+\bottomrule
+\end{tabular}
+\caption{Formal correspondence of the statements.}
+\label{Table:SignedTrapsLean}
+\end{table}
+
+\end{document}

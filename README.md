@@ -413,6 +413,22 @@ the classification closes: the return time is the multiplicative order of
 period \(p\) when \(q\equiv1\pmod p\), in which case the orbit exhausts the
 residues. The bounded certificate checks 367300 cases.
 
+### Signed trap itineraries
+
+[QCD.SignedTraps.001](QCD.SignedTraps.001/README.md) decides the signed raw
+map on an orbit that never divides. If no iterate of the seed is divisible by
+\(d\), the divisor never acts and the orbit follows the single affine
+recursion \(n\mapsto qn+c\), so with the offset sum
+\(T_j(q)=1+q+\cdots+q^{j-1}\) the \(j\)-th state is
+\(q^{j}n+c\,T_j(q)\). The multiplier alone then decides the orbit: at \(q=0\)
+the walk reaches the constant offset and the offset is a fixed point, at
+\(q=1\) it translates by \(c\) and escapes every bound when \(c\ne0\), at
+\(q=-1\) it runs the reflection pair \(n\mapsto c-n\), and for \(|q|\ge2\) the
+state is fixed exactly when \((q-1)n+c=0\) and otherwise escapes every bound.
+Separately, the affine branch modulo \(|d|\) is the walk
+\(r\mapsto qr+c\), and a seed is trapped exactly when that walk avoids the zero
+class at every time. The certificate checks 125708 signed cases.
+
 ## Other map conventions
 
 A residue-wise affine map has the form
