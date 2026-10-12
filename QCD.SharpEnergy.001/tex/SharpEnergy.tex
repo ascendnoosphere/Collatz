@@ -1,0 +1,341 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Carry energy above one half}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For integers \(b,r\geq 1\), the parity word \(0^{b}1^{r}0^{b-1}101^{r-1}\) has halves of length \(h=b+r\), each containing \(r\) odd letters and differing by one adjacent swap. Its carry energy is the unique rational solution of \(1-\lambda E=E\) with \(\lambda=3^{r}/2^{h}\), hence \(E=2^{h}/(2^{h}+3^{r})\). This value lies strictly above \(1/2\) exactly when \(3^{r}<2^{h}\), and it is never equal to \(1/2\). For fixed \(b\) it tends to \(0\). It tends to \(1/2\) from above along a sequence of exponents exactly when the ratio tends to \(1\) from below.
+\end{abstract}
+
+\section{The block word}
+
+Throughout, \(\N\) denotes the nonnegative integers. Letters are \(0\) or \(1\), and a letter is odd precisely when it equals \(1\). Indices of a finite word start at \(0\).
+
+\begin{definition}
+\label{def:word}
+Let \(b,r\in\N\). Set \(h=b+r\). The first half is the word \(U=0^{b}1^{r}\). The second half is the word \(V=0^{b-1}101^{r-1}\). The block word is the concatenation \(W=UV\).
+\end{definition}
+
+\begin{lemma}
+\label{lem:shape}
+Let \(b,r\in\N\) satisfy \(b\geq 1\) and \(r\geq 1\), and set \(h=b+r\). Then \(U\) and \(V\) both have length \(h\), so \(W\) has length \(2h\). Each of \(U\) and \(V\) contains exactly \(r\) odd letters, so \(W\) contains exactly \(2r\) odd letters. If \(0\leq i<h\) and either \(i<b-1\) or \(i>b\), then \(U\) and \(V\) have the same letter at index \(i\). Furthermore
+\[
+U_{b-1}=0,\qquad V_{b-1}=1,\qquad U_{b}=1,\qquad V_{b}=0,
+\]
+and \((b-1)+1=b\).
+\end{lemma}
+
+\begin{proof}
+The word \(U\) is a block of \(b\) zeros followed by a block of \(r\) ones, so its length is \(b+r=h\) and its odd count is \(r\).
+
+Since \(b\geq 1\) and \(r\geq 1\), the four blocks of \(V\) have lengths \(b-1\), \(1\), \(1\), and \(r-1\). Their sum is
+\[
+(b-1)+1+1+(r-1)=b+r=h.
+\]
+The odd letters of \(V\) are the single \(1\) in the second block and the \(r-1\) ones in the last block, hence exactly \(r\) odd letters. Concatenation adds lengths and odd counts, so \(W\) has length \(2h\) and odd count \(2r\).
+
+The initial block of \(U\) occupies indices \(0,\ldots,b-1\), and its ones occupy \(b,\ldots,b+r-1\). The initial block of \(V\) occupies \(0,\ldots,b-2\). Index \(b-1\) of \(V\) is the following \(1\), index \(b\) is the following \(0\), and indices \(b+1,\ldots,b+r-1\) are the final block of ones.
+
+If \(i<b-1\), both letters are taken from an initial block of zeros. If \(i>b\), then \(b+1\leq i\leq b+r-1\), so both letters are taken from a terminal block of ones.
+
+Index \(b-1\) is still inside the initial zeros of \(U\), while it is the first \(1\) of \(V\). Index \(b\) is the first \(1\) of \(U\), while it is the inserted \(0\) of \(V\). Adding \(1\) to \(b-1\) gives \(b\).
+\end{proof}
+
+\section{The carry energy}
+
+\begin{definition}
+\label{def:energy}
+For \(b,r\in\N\), set \(h=b+r\) and
+\[
+\lambda(b,r)=\frac{3^{r}}{2^{h}}\in\Q.
+\]
+A rational \(E\) is a carry energy of \((b,r)\) when
+\[
+1-\lambda(b,r)\,E=E.
+\]
+Write
+\[
+E(b,r)=\frac{1}{1+\lambda(b,r)}.
+\]
+A sequence \((a_{n})_{n\in\N}\) in \(\Q\) tends to \(L\in\Q\) when, for every rational \(\varepsilon>0\), there exists \(N\in\N\) such that
+\[
+n\geq N\quad\text{implies}\quad L-\varepsilon<a_{n}<L+\varepsilon.
+\]
+\end{definition}
+
+\begin{lemma}
+\label{lem:closed}
+For every \(b,r\in\N\), the number \(\lambda(b,r)\) is positive, \(E(b,r)\) is positive, and
+\[
+E(b,r)=\frac{2^{h}}{2^{h}+3^{r}},\qquad h=b+r.
+\]
+The rational \(E(b,r)\) is the unique carry energy of \((b,r)\).
+\end{lemma}
+
+\begin{proof}
+Both \(3^{r}\) and \(2^{h}\) are positive, so \(\lambda(b,r)>0\). Hence \(1+\lambda(b,r)>0\) and \(E(b,r)>0\). Clearing the positive denominator \(2^{h}\) gives
+\[
+1+\lambda(b,r)=\frac{2^{h}+3^{r}}{2^{h}},
+\]
+and taking reciprocals yields the closed form.
+
+Set \(\lambda=\lambda(b,r)\) and \(E=E(b,r)\). Then
+\[
+\lambda E=\frac{\lambda}{1+\lambda},
+\]
+so
+\begin{align*}
+1-\lambda E
+&=1-\frac{\lambda}{1+\lambda}
+=\frac{1+\lambda}{1+\lambda}-\frac{\lambda}{1+\lambda}
+=\frac{1}{1+\lambda}
+=E.
+\end{align*}
+Thus \(E\) is a carry energy.
+
+If \(1-\lambda F=F\), then \(1=F+\lambda F=F(1+\lambda)\). Since \(1+\lambda\neq 0\),
+\[
+F=\frac{1}{1+\lambda}=E.
+\]
+\end{proof}
+
+\begin{lemma}
+\label{lem:half}
+For every \(b,r\in\N\), with \(h=b+r\) and \(\lambda=\lambda(b,r)\),
+\[
+E(b,r)-\frac{1}{2}=\frac{1-\lambda}{2(1+\lambda)}.
+\]
+Consequently
+\[
+\frac{1}{2}<E(b,r)\iff 3^{r}<2^{h}
+\qquad\text{and}\qquad
+E(b,r)=\frac{1}{2}\iff 2^{h}=3^{r}.
+\]
+If \(b\geq 1\), then \(E(b,r)\neq 1/2\).
+\end{lemma}
+
+\begin{proof}
+The denominator identity \(1+\lambda=(2^{h}+3^{r})/2^{h}\) was recorded in Lemma~\ref{lem:closed}. Therefore
+\begin{align*}
+E(b,r)-\frac{1}{2}
+&=\frac{2^{h}}{2^{h}+3^{r}}-\frac{1}{2}
+=\frac{2\cdot 2^{h}-(2^{h}+3^{r})}{2(2^{h}+3^{r})}
+=\frac{2^{h}-3^{r}}{2(2^{h}+3^{r})}.
+\end{align*}
+Dividing the numerator and the denominator by the positive integer \(2^{h}\) gives
+\[
+\frac{2^{h}-3^{r}}{2(2^{h}+3^{r})}
+=\frac{1-\lambda}{2(1+\lambda)}.
+\]
+The denominator \(2(1+\lambda)\) is positive. The displayed difference is therefore positive exactly when \(1-\lambda>0\), that is, when \(\lambda<1\). Since \(2^{h}>0\), this is equivalent to \(3^{r}<2^{h}\). The difference vanishes exactly when \(\lambda=1\), that is, when \(2^{h}=3^{r}\).
+
+Now assume \(b\geq 1\). Then \(h=b+r\geq 1\), so \(2^{h}=2\cdot 2^{h-1}\) is divisible by \(2\). Every power of \(3\) is odd: \(3^{0}=1\), and if \(3^{r}\) is odd then so is \(3^{r+1}=3\cdot 3^{r}\). An even positive integer cannot equal an odd positive integer, so \(2^{h}\neq 3^{r}\). Hence \(E(b,r)\neq 1/2\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:growth}
+For every \(n\in\N\),
+\[
+2^{n}(n+2)\leq 2\cdot 3^{n}.
+\]
+For every \(b,r\in\N\),
+\[
+2^{b+r}(r+2)\leq 2^{b+1}3^{r},
+\]
+and therefore
+\[
+E(b,r)<\frac{2^{b+1}}{r+2}.
+\]
+\end{lemma}
+
+\begin{proof}
+The bound \(2^{n}(n+2)\leq 2\cdot 3^{n}\) is proved by induction on \(n\). For \(n=0\) both sides equal \(2\). Assume the bound at \(n\). The inequality \(2(n+3)\leq 3(n+2)\) rearranges to \(0\leq n\), so it holds. Thus
+\begin{align*}
+2^{n+1}(n+3)
+&=2^{n}\cdot\bigl(2(n+3)\bigr)
+\leq 2^{n}\cdot\bigl(3(n+2)\bigr)
+=3\cdot\bigl(2^{n}(n+2)\bigr)
+\leq 3\cdot\bigl(2\cdot 3^{n}\bigr)
+=2\cdot 3^{n+1}.
+\end{align*}
+This is the bound at \(n+1\).
+
+For the scaled form, the inductive bound at exponent \(r\) gives
+\[
+2^{b+r}(r+2)
+=2^{b}\cdot\bigl(2^{r}(r+2)\bigr)
+\leq 2^{b}\cdot\bigl(2\cdot 3^{r}\bigr)
+=2^{b+1}3^{r}.
+\]
+Set \(h=b+r\). Since \(3^{r}>0\),
+\[
+E(b,r)=\frac{2^{h}}{2^{h}+3^{r}}<\frac{2^{h}}{3^{r}}.
+\]
+The scaled inequality, divided by the positive number \(3^{r}(r+2)\), is
+\[
+\frac{2^{h}}{3^{r}}\leq\frac{2^{b+1}}{r+2}.
+\]
+Combining the two comparisons gives \(E(b,r)<2^{b+1}/(r+2)\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:fixed}
+Fix \(b\in\N\) with \(b\geq 1\). As \(r\) runs through \(\N\), the sequence \(E(b,r)\) tends to \(0\). It does not tend to \(1/2\).
+\end{lemma}
+
+\begin{proof}
+Let \(\varepsilon\in\Q\) satisfy \(\varepsilon>0\). The rational \(2^{b+1}/\varepsilon\) is positive, so some \(N\in\N\) satisfies \(N>2^{b+1}/\varepsilon\). In particular \(N\geq 1\). Let \(n\geq N\). Lemma~\ref{lem:growth} gives
+\[
+0<E(b,n)<\frac{2^{b+1}}{n+2}<\frac{2^{b+1}}{n}.
+\]
+From \(n\geq N>2^{b+1}/\varepsilon\) and \(n>0\) one gets \(2^{b+1}/n<\varepsilon\). Therefore
+\[
+0-\varepsilon<E(b,n)<\varepsilon,
+\]
+which is the two-sided inequality for the limit \(0\).
+
+Suppose, toward a contradiction, that \(E(b,r)\) also tends to \(1/2\). Apply both limit statements to \(\varepsilon=1/4\). For all sufficiently large \(n\),
+\[
+E(b,n)<\frac{1}{4}
+\qquad\text{and}\qquad
+E(b,n)>\frac{1}{2}-\frac{1}{4}=\frac{1}{4}.
+\]
+No rational satisfies both inequalities.
+\end{proof}
+
+\begin{lemma}
+\label{lem:sequence}
+Let \(b_{n}\) and \(r_{n}\) be sequences in \(\N\). Set
+\[
+\lambda_{n}=\lambda(b_{n},r_{n})
+\qquad\text{and}\qquad
+E_{n}=E(b_{n},r_{n}).
+\]
+The following are equivalent.
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item \(\lambda_{n}<1\) for every \(n\), and \(\lambda_{n}\) tends to \(1\).
+\item \(E_{n}>1/2\) for every \(n\), and \(E_{n}\) tends to \(1/2\).
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+Write \(h_{n}=b_{n}+r_{n}\). By Lemma~\ref{lem:half},
+\[
+E_{n}-\frac{1}{2}=\frac{1-\lambda_{n}}{2(1+\lambda_{n})},
+\]
+and \(E_{n}>1/2\) if and only if \(\lambda_{n}<1\). The two pointwise conditions are therefore equivalent, and it remains to match the limits under either one of them.
+
+First assume \(\lambda_{n}<1\) for every \(n\) and \(\lambda_{n}\to 1\). The comparison just cited gives \(E_{n}>1/2\). Let \(\varepsilon\in\Q\) satisfy \(\varepsilon>0\), and set
+\[
+\eta=\frac{\varepsilon}{1+\varepsilon}.
+\]
+Then \(\eta>0\). Since \(\lambda_{n}\to 1\), there exists \(N\) such that \(n\geq N\) implies \(1-\eta<\lambda_{n}<1+\eta\). Combined with \(\lambda_{n}<1\), this yields
+\[
+0<1-\lambda_{n}<\eta.
+\]
+Also \(\lambda_{n}>0\), so \(2(1+\lambda_{n})>2\). Hence
+\[
+0<E_{n}-\frac{1}{2}
+=\frac{1-\lambda_{n}}{2(1+\lambda_{n})}
+<\frac{\eta}{2(1+\lambda_{n})}
+<\frac{\eta}{2}.
+\]
+The choice of \(\eta\) gives \(\eta<\varepsilon\), because \(\varepsilon<\varepsilon(1+\varepsilon)\) follows from \(1<1+\varepsilon\). Thus \(\eta/2<\varepsilon\), and
+\[
+\frac{1}{2}-\varepsilon<E_{n}<\frac{1}{2}+\varepsilon.
+\]
+So \(E_{n}\to 1/2\).
+
+Conversely, assume \(E_{n}>1/2\) for every \(n\) and \(E_{n}\to 1/2\). Then \(\lambda_{n}<1\) for every \(n\). Let \(\varepsilon\in\Q\) satisfy \(\varepsilon>0\). For all large \(n\),
+\[
+\frac{1}{2}<E_{n}<\frac{1}{2}+\frac{\varepsilon}{4},
+\]
+so \(0<E_{n}-1/2<\varepsilon/4\). The difference formula rearranges to
+\[
+1-\lambda_{n}=2(1+\lambda_{n})\Bigl(E_{n}-\frac{1}{2}\Bigr).
+\]
+The standing bound \(\lambda_{n}<1\) gives \(2(1+\lambda_{n})<4\). The positive gap \(E_{n}-1/2\) therefore satisfies
+\[
+1-\lambda_{n}
+<4\Bigl(E_{n}-\frac{1}{2}\Bigr)
+<4\cdot\frac{\varepsilon}{4}
+=\varepsilon.
+\]
+Together with \(\lambda_{n}<1\) and \(\varepsilon>0\),
+\[
+1-\varepsilon<\lambda_{n}<1+\varepsilon.
+\]
+So \(\lambda_{n}\to 1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:sharp}
+Let \(b,r\in\N\) satisfy \(b\geq 1\) and \(r\geq 1\), and set \(h=b+r\). For the halves \(U,V\) and the word \(W\) of Definition~\ref{def:word}, Lemma~\ref{lem:shape} holds: both halves have length \(h\) and odd count \(r\), the word has length \(2h\) and odd count \(2r\), the halves agree off the adjacent indices \(b-1\) and \(b\), and they swap \(0,1\) at those two indices. The unique rational solution of \(1-\lambda(b,r)E=E\) is
+\[
+E(b,r)=\frac{2^{h}}{2^{h}+3^{r}}.
+\]
+Moreover
+\[
+\frac{1}{2}<E(b,r)\iff 3^{r}<2^{h},
+\]
+and \(E(b,r)\neq 1/2\).
+
+For each fixed integer \(b\geq 1\), the sequence \(E(b,r)\) indexed by \(r\in\N\) tends to \(0\) and does not tend to \(1/2\).
+
+For sequences \(b_{n}\) and \(r_{n}\) in \(\N\), one has \(\lambda(b_{n},r_{n})<1\) for every \(n\) and \(\lambda(b_{n},r_{n})\to 1\) if and only if \(E(b_{n},r_{n})>1/2\) for every \(n\) and \(E(b_{n},r_{n})\to 1/2\).
+\end{theorem}
+
+\begin{proof}
+The shape of the word is Lemma~\ref{lem:shape}. Uniqueness and the closed form are Lemma~\ref{lem:closed}. The comparison with \(1/2\), including the exclusion of equality for \(b\geq 1\), is Lemma~\ref{lem:half}. The fixed-base limits are Lemma~\ref{lem:fixed}. The sequence criterion is Lemma~\ref{lem:sequence}.
+\end{proof}
+
+\begin{corollary}
+\label{cor:example}
+For \(b=2\) and \(r=3\), one has \(h=5\) and \(E(2,3)=32/59\). The word is \(0011101011\).
+\end{corollary}
+
+\begin{proof}
+Here \(2^{h}=2^{5}=32\) and \(3^{r}=27\), so Lemma~\ref{lem:closed} gives
+\[
+E(2,3)=\frac{32}{32+27}=\frac{32}{59}.
+\]
+The word is \(0^{2}1^{3}0^{1}101^{2}=0011101011\).
+\end{proof}
+
+\section{What is not claimed}
+
+For fixed \(b\), Theorem~\ref{thm:sharp} sends the energy to \(0\), not to \(1/2\). A sequence of ratios may approach \(1\) from below, but only when the height is allowed to vary with the exponent \(r\). The argument does not construct a positive integer whose parity word is \(W\), nor a nearest such integer, and it does not identify the carry energy with a phase defect. Nothing in the comparison of \(E(b,r)\) with \(1/2\) asserts that iteration of the classical Collatz map reaches \(1\).
+
+\end{document}

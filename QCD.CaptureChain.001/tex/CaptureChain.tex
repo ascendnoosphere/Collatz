@@ -1,0 +1,125 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Strictly decreasing legal chains reach \(1\)}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+A legal join is a positive-length exact orbit segment of the raw map \(n\mapsto qn+c\), with division by \(D\) on the divisible branch. A finite chain of such joins from \(n\) to \(1\), with each parent strictly smaller in absolute value, puts \(1\) on the raw orbit of \(n\). The argument is induction along the chain. It does not assert that every integer, or every positive integer, admits such a chain, and it does not assert that the classical raw map sends every positive integer to \(1\).
+\end{abstract}
+
+\section{Raw map and legal joins}
+
+Throughout, \(\N\) contains \(0\). Let \(q,c,D\in\Z\) with \(|D|\ge 2\). Then \(D\neq 0\). The raw map \(\Map{C}{\Z}{\Z}\) is the total self-map
+\begin{equation}
+\label{eq:raw}
+C(n)=
+\begin{cases}
+n/D & \text{if }D\mid n,\\
+qn+c & \text{if }D\nmid n.
+\end{cases}
+\end{equation}
+On the first branch, \(n/D\) denotes the unique integer whose product with \(D\) equals \(n\). Iteration is defined by \(C^{0}(n)=n\) and \(C^{k+1}(n)=C(C^{k}(n))\).
+
+\begin{definition}
+\label{def:join}
+A \emph{legal join} from an integer \(n\) to a parent \(m\) is a positive integer \(k\) such that \(C^{k}(n)=m\).
+\end{definition}
+
+Thus a legal join is an exact finite forward orbit segment. It is not a formal affine expression, and the intermediate states need not decrease in absolute value. The parent is the terminal state of the segment.
+
+\begin{definition}
+\label{def:chain}
+Let \(t\in\N\) and let \(m_0,\ldots,m_t\in\Z\). The sequence is a \emph{decreasing capture chain} when \(m_t=1\) and, for every \(i<t\), there is a legal join from \(m_i\) to \(m_{i+1}\) and \(|m_{i+1}|<|m_i|\).
+\end{definition}
+
+The case \(t=0\) is the one-state sequence \(m_0\), and the join and descent requirements are vacuous. The terminal condition still requires \(m_0=1\).
+
+\begin{lemma}
+\label{lem:concat}
+If \(k,N\in\N\), \(C^{k}(n)=m\), and \(C^{N}(m)=1\), then \(C^{k+N}(n)=1\).
+\end{lemma}
+
+\begin{proof}
+The iteration law splits the clock at \(k\): \(C^{k+N}(n)=C^{N}(C^{k}(n))\). Substituting the two hypotheses gives \(C^{N}(m)=1\).
+\end{proof}
+
+\section{Capture along the chain}
+
+\begin{theorem}
+\label{thm:capture}
+Let \(m_0,\ldots,m_t\) be a decreasing capture chain for the raw map \eqref{eq:raw}. Then there exists \(N\in\N\) such that \(C^{N}(m_0)=1\). The number of states satisfies \(t+1\le |m_0|\). If \(t=0\), then \(m_0=1\) and \(N=0\) is such a time. If \(t\ge 1\), then \(N\) may be chosen so that \(N\ge 1\), and the first parent satisfies \(|m_1|<|m_0|\).
+\end{theorem}
+
+\begin{proof}
+Proceed by induction on \(t\).
+
+Suppose \(t=0\). The sequence is the single integer \(m_0\), and Definition~\ref{def:chain} gives \(m_0=1\). Then \(C^{0}(m_0)=m_0=1\), so \(N=0\) is a witness. Also \(|1|=1\), hence the number of states is \(1\le |m_0|\). The alternative \(t\ge 1\) does not apply.
+
+Suppose \(t\ge 1\), and assume the theorem holds for every decreasing capture chain with fewer joins. Definition~\ref{def:chain} supplies an integer \(k\ge 1\) with \(C^{k}(m_0)=m_1\) and \(|m_1|<|m_0|\). The tail \(m_1,\ldots,m_t\) is a decreasing capture chain: it ends at \(1\), and each of its consecutive pairs is already a legal join of strictly smaller absolute value. The tail has \(t\) states and \(t-1\) joins. The inductive hypothesis therefore yields some \(N_1\in\N\) with \(C^{N_1}(m_1)=1\), and also \(t\le |m_1|\).
+
+Set \(N=k+N_1\). Lemma~\ref{lem:concat} gives \(C^{N}(m_0)=1\). Since \(k\ge 1\) and \(N_1\ge 0\), one has \(N\ge 1\). The inequality \(|m_1|<|m_0|\) is the first descent already recorded. It remains to count states. From \(t\le |m_1|\) and \(|m_1|<|m_0|\) it follows that \(t+1\le |m_1|+1\le |m_0|\), because a strict inequality of natural numbers raises the smaller one by at least one. Thus \(t+1\le |m_0|\).
+
+The zero-join alternative does not apply in this step: a chain with \(t\ge 1\) has at least two states. The inductive step uses the join given from \(m_0\) to \(m_1\) and the time given for the tail. It does not choose an orbit segment by searching forward from \(m_0\).
+\end{proof}
+
+\begin{corollary}
+\label{cor:one}
+For \(q=3\), \(c=1\), and \(D=2\), the one-state sequence \(1\) is a decreasing capture chain, and \(C^{0}(1)=1\).
+\end{corollary}
+
+\begin{proof}
+There is no index \(i<0\). The terminal state is \(1\). Theorem~\ref{thm:capture} gives the time \(N=0\).
+\end{proof}
+
+\begin{corollary}
+\label{cor:two}
+For \(q=3\), \(c=1\), and \(D=2\), the sequence \(2,1\) is a decreasing capture chain. Hence some positive integer \(N\) satisfies \(C^{N}(2)=1\). The recorded join has length \(1\), so the time constructed in the proof of Theorem~\ref{thm:capture} is \(1\).
+\end{corollary}
+
+\begin{proof}
+Since \(2\mid 2\) and \(2/2=1\), the raw rule \eqref{eq:raw} gives \(C(2)=1\). Also \(|1|=1<2=|2|\). Definition~\ref{def:chain} is therefore satisfied with \(t=1\). Theorem~\ref{thm:capture} yields some \(N\ge 1\) with \(C^{N}(2)=1\).
+
+The tail is the chain \(1\). Corollary~\ref{cor:one} certifies it at time \(0\). The first join has length \(1\). Lemma~\ref{lem:concat} adds these lengths, so the constructed time is \(1+0=1\). Explicitly, \(C^{1}(2)=1\).
+\end{proof}
+
+\begin{remark}
+\label{rem:not}
+Theorem~\ref{thm:capture} does not produce a decreasing capture chain. It only reads one that is already given. Existence for an arbitrary integer, or for every positive integer, is not claimed. A single legal join from \(n\) to a parent \(m\) with \(|m|<|n|\) does not certify that the raw orbit of \(n\) reaches \(1\), unless the chain continues until the terminal state is the integer \(1\). Ending at \(-1\), or at \(0\), is not the terminal hypothesis: the absolute value of \(-1\) is \(1\), but the state \(-1\) is not the state \(1\).
+
+Corollaries~\ref{cor:one} and~\ref{cor:two} are two chains for the parameters \((q,c,D)=(3,1,2)\). They do not assert that the classical raw map sends every positive integer to \(1\).
+\end{remark}
+
+\end{document}

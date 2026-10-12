@@ -1,0 +1,259 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{The logarithm of \(256/243\)}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Let \(\log\) denote the natural logarithm. Then \(\log(256/243)=8\log 2-5\log 3\). If eight positive real factors have block product \(P\) satisfying \(-\log P\ge\log(256/243)\), then \(P\le 243/256\), and in particular \(P<1\). The same bound follows when each factor is at most one eighth of this gap below \(1\) on the logarithmic scale. The constant is achieved by a positive block. The comparison does not assert that the classical Collatz map reaches \(1\).
+\end{abstract}
+
+\section{The gap identity}
+
+Throughout, \(\log\) is the natural logarithm. Thus \(\log(xy)=\log x+\log y\) and \(\log(x/y)=\log x-\log y\) for nonzero real \(x\) and \(y\), and \(\log(x^n)=n\log x\) for every natural number \(n\). On the positive reals, \(\log\) is strictly increasing, \(\log(x^{-1})=-\log x\), and \(\exp(\log x)=x\).
+
+\begin{theorem}
+\label{thm:identity}
+\[
+\log\frac{256}{243}=8\log 2-5\log 3.
+\]
+\end{theorem}
+
+\begin{proof}
+The powers are \(2^8=256\) and \(3^5=243\). Indeed \(2^2=4\), \(2^3=8\), \(2^4=16\), \(2^5=32\), \(2^6=64\), \(2^7=128\), and \(2^8=256\); likewise \(3^2=9\), \(3^3=27\), \(3^4=81\), and \(3^5=243\). Neither integer is zero, so
+\begin{align*}
+\log\frac{256}{243}
+&=\log 256-\log 243
+=\log(2^8)-\log(3^5)
+=8\log 2-5\log 3.
+\end{align*}
+\end{proof}
+
+\begin{lemma}
+\label{lem:reciprocal}
+\[
+\log\frac{243}{256}=-\log\frac{256}{243}.
+\]
+Consequently
+\[
+-\log\frac{243}{256}=\log\frac{256}{243}.
+\]
+\end{lemma}
+
+\begin{proof}
+Both \(243\) and \(256\) are nonzero, so
+\begin{align*}
+\log\frac{243}{256}
+&=\log 243-\log 256
+=-(\log 256-\log 243)
+=-\log\frac{256}{243}.
+\end{align*}
+Negating both sides and using \(-(-a)=a\) gives the second identity.
+\end{proof}
+
+\begin{lemma}
+\label{lem:positive}
+\[
+0<\log\frac{256}{243}.
+\]
+\end{lemma}
+
+\begin{proof}
+The difference \(256-243=13\) is positive, so \(243<256\). Since \(243>0\), dividing preserves the inequality and yields \(1<256/243\). The logarithm of a real number strictly larger than \(1\) is strictly positive.
+\end{proof}
+
+\begin{lemma}
+\label{lem:step}
+\[
+\log 2-\frac58\log 3=\frac18\log\frac{256}{243},
+\]
+and therefore
+\[
+-\frac18\log\frac{256}{243}=\frac58\log 3-\log 2.
+\]
+\end{lemma}
+
+\begin{proof}
+The integer \(8\) is nonzero. By Theorem~\ref{thm:identity} it is enough to show
+\[
+\Bigl(\log 2-\frac58\log 3\Bigr)\cdot 8=8\log 2-5\log 3,
+\]
+because dividing that equality by \(8\) is the claimed identity. Expand the left side:
+\begin{align*}
+\Bigl(\log 2-\frac58\log 3\Bigr)\cdot 8
+&=\log 2\cdot 8-\Bigl(\frac58\log 3\Bigr)\cdot 8\\
+&=8\log 2-\frac58\cdot(\log 3\cdot 8)
+=8\log 2-\frac58\cdot(8\log 3)\\
+&=8\log 2-\Bigl(\frac58\cdot 8\Bigr)\log 3
+=8\log 2-5\log 3.
+\end{align*}
+The last step is \((5/8)\cdot 8=5\). This is the first identity. Negate it and use \(-(a/8)=(-a)/8\) together with \(-(a-b)=b-a\):
+\[
+-\frac18\log\frac{256}{243}
+=-\Bigl(\log 2-\frac58\log 3\Bigr)
+=\frac58\log 3-\log 2.
+\]
+\end{proof}
+
+\section{One block of eight factors}
+
+\begin{definition}
+\label{def:block}
+Let \(r_0,\ldots,r_7\) be real numbers. Their \emph{block product} is
+\[
+P(r)=\prod_{i=0}^{7} r_i.
+\]
+The block is \emph{positive} when \(r_i>0\) for every \(i\). The block lies below \(1\) by at least the logarithmic gap when it is positive and
+\[
+-\log P(r)\ge\log\frac{256}{243}.
+\]
+The quantity on the left is the amount by which \(\log P(r)\) lies below \(\log 1=0\).
+\end{definition}
+
+\begin{lemma}
+\label{lem:product-pos}
+If \(r_0,\ldots,r_7\) are positive, then \(P(r)>0\).
+\end{lemma}
+
+\begin{proof}
+A product of positive reals is positive. The empty-product convention is not used: the block has eight factors.
+\end{proof}
+
+\begin{theorem}
+\label{thm:contraction}
+Let \(r_0,\ldots,r_7\) be positive and write \(P=P(r)\). If
+\[
+\log\frac{256}{243}\le -\log P,
+\]
+then \(P\le 243/256\) and \(P<1\).
+\end{theorem}
+
+\begin{proof}
+Lemma~\ref{lem:product-pos} gives \(P>0\). Also \(243/256>0\). The hypothesis rearranges, by negating both sides, to \(\log P\le -\log(256/243)\). Lemma~\ref{lem:reciprocal} rewrites the right side:
+\[
+\log P\le -\log\frac{256}{243}=\log\frac{243}{256}.
+\]
+The logarithm is strictly increasing on the positive reals, so \(P\le 243/256\).
+
+Separately, \(243<256\) and \(256>0\), so \(243/256<1\). Combining the two comparisons yields \(P<1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:strict}
+Let \(r_0,\ldots,r_7\) be positive and write \(P=P(r)\). If
+\[
+\log\frac{256}{243}< -\log P,
+\]
+then \(P<243/256\).
+\end{theorem}
+
+\begin{proof}
+As in Theorem~\ref{thm:contraction}, \(P>0\) and \(243/256>0\). Negating the strict hypothesis and applying Lemma~\ref{lem:reciprocal} gives
+\[
+\log P< -\log\frac{256}{243}=\log\frac{243}{256}.
+\]
+Strict increase of \(\log\) on the positive reals yields \(P<243/256\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:eight}
+Let \(r_0,\ldots,r_7\) be positive and write \(P=P(r)\). Suppose
+\[
+\log r_i\le -\frac18\log\frac{256}{243}
+\]
+for every \(i\in\{0,\ldots,7\}\). Then
+\[
+\log\frac{256}{243}\le -\log P,
+\]
+and therefore \(P\le 243/256\) and \(P<1\). Each factor satisfies \(r_i<1\).
+\end{theorem}
+
+\begin{proof}
+By the second identity of Lemma~\ref{lem:step}, the hypothesis is
+\[
+\log r_i\le \frac58\log 3-\log 2
+\]
+for every \(i\). Each \(r_i\) is positive, hence nonzero, so the logarithm of the product is the sum of the logarithms:
+\[
+\log P=\sum_{i=0}^{7}\log r_i.
+\]
+Compare termwise with the constant \(-\frac18\log(256/243)\). A sum of eight real upper bounds is an upper bound for the sum, so
+\[
+\log P\le \sum_{i=0}^{7}\Bigl(-\frac18\log\frac{256}{243}\Bigr).
+\]
+The sum on the right has eight equal summands. Its value is
+\[
+8\cdot\Bigl(-\frac18\log\frac{256}{243}\Bigr)=-\log\frac{256}{243},
+\]
+where the cancellation uses \(8\neq 0\). Thus \(\log P\le -\log(256/243)\). Negating both sides gives
+\[
+\log\frac{256}{243}\le -\log P.
+\]
+Theorem~\ref{thm:contraction} yields \(P\le 243/256\) and \(P<1\).
+
+It remains to check each factor. Lemma~\ref{lem:positive} gives \(\log(256/243)>0\), and \(8>0\), so
+\[
+-\frac18\log\frac{256}{243}<0.
+\]
+The hypothesis is therefore a number strictly less than \(0\), and \(\log r_i<0\). For a positive real, the logarithm is negative if and only if the real is strictly less than \(1\). Hence \(r_i<1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:sharp}
+There exist positive reals \(r_0,\ldots,r_7\) such that
+\[
+P(r)=\frac{243}{256}
+\qquad\text{and}\qquad
+-\log P(r)=\log\frac{256}{243}.
+\]
+Thus no constant strictly smaller than \(243/256\) can replace \(243/256\) in Theorem~\ref{thm:contraction}.
+\end{theorem}
+
+\begin{proof}
+Set \(r_0=243/256\) and \(r_i=1\) for \(1\le i\le 7\). Then \(r_0>0\) and every other factor equals \(1>0\). In the product, the seven factors equal to \(1\) contribute nothing, so
+\[
+P(r)=r_0=\frac{243}{256}.
+\]
+Lemma~\ref{lem:reciprocal} gives \(-\log(243/256)=\log(256/243)\), which is the deficit identity.
+
+Suppose a constant \(c<243/256\) satisfied \(P\le c\) whenever the logarithmic hypothesis of Theorem~\ref{thm:contraction} holds. The block just constructed satisfies that hypothesis and has product \(243/256\), so \(243/256\le c\), a contradiction.
+\end{proof}
+
+\begin{remark}
+\label{rem:scope}
+The deficit \(-\log P\) is logarithmic. The comparison does not assert \(1-P\ge\log(256/243)\). Theorem~\ref{thm:eight} is a sufficient condition on eight positive reals: it does not prove that any branch of the classical Collatz map, or any block of eight such branches, obeys the deficit bound. In particular, nothing here implies that iteration of the classical Collatz map reaches \(1\).
+\end{remark}
+
+\end{document}

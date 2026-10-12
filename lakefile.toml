@@ -57,6 +57,10 @@ defaultTargets = [
   "SignedReturnClosedForm",
   "SignedReturnUniform",
   "SignedReturnExamples",
+  "Braid",
+  "CaptureChain",
+  "LogGap",
+  "SharpEnergy",
 ]
 
 [[require]]
@@ -315,3 +319,19 @@ srcDir = "QCD.SignedReturn.015/lean"
 [[lean_lib]]
 name = "SignedReturnExamples"
 srcDir = "QCD.SignedReturn.016/lean"
+
+[[lean_lib]]
+name = "Braid"
+srcDir = "QCD.Braid.001/lean"
+
+[[lean_lib]]
+name = "CaptureChain"
+srcDir = "QCD.CaptureChain.001/lean"
+
+[[lean_lib]]
+name = "LogGap"
+srcDir = "QCD.LogGap.001/lean"
+
+[[lean_lib]]
+name = "SharpEnergy"
+srcDir = "QCD.SharpEnergy.001/lean"

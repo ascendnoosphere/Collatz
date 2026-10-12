@@ -1,0 +1,405 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Saturated braid modulo \(D^2\)}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+If \(q=D+1\) and \(D\) does not divide \(n\), the two-step state \((D+1)\bigl((1-D)n\bigr)\) is congruent to \(n\) modulo \(D^2\). On the saturated family \(q^{a+b}u\equiv c\pmod{D^2}\), the source word of \(a\) divided affine steps and two exact divisions meets the parent word of \(a+b-1\) divided affine steps, one exact division, and one divided affine step. For a coprime slope, an unsaturated pair of positive affine length forces \(q^a\) to divide \(c(D-1)(q-D-1)\). The divisibility does not produce a pair, and the undivided second iterate is not the two-step state.
+\end{abstract}
+
+\section{Two-step state}
+
+Throughout, \(D,n,c,u,q\in\Z\) and \(a,b,k\in\N\).
+
+\begin{definition}
+The \emph{two-step state} of \(n\) at divisor \(D\) is
+\[
+(D+1)\bigl((1-D)n\bigr).
+\]
+\end{definition}
+
+\begin{lemma}
+\label{lem:inverse-product}
+\((D+1)(1-D)=1-D^2\).
+\end{lemma}
+
+\begin{proof}
+Expand the left side: \((D+1)(1-D)=D-D^2+1-D=1-D^2\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:two-step}
+If \(D\) does not divide \(n\), then \(D\) does not divide \((1-D)n\), and
+\[
+(D+1)\bigl((1-D)n\bigr)\equiv n\pmod{D^2}.
+\]
+\end{theorem}
+
+\begin{proof}
+Suppose \(D\) divides \((1-D)n\). Then \(D\) divides the difference
+\[
+(1-D)n-n=(-D)n,
+\]
+so \(D\) divides \(n=(1-D)n-\bigl((1-D)n-n\bigr)\), a contradiction. Thus \(D\) does not divide \((1-D)n\).
+
+For the congruence, Lemma~\ref{lem:inverse-product} gives
+\begin{align*}
+n-(D+1)\bigl((1-D)n\bigr)
+&=n-\bigl((D+1)(1-D)\bigr)n
+=n-(1-D^2)n
+=D^2 n.
+\end{align*}
+Hence \(D^2\) divides the difference of the two-step state and \(n\).
+\end{proof}
+
+The factor \(1-D\) is the modular inverse of \(D+1\) modulo \(D^2\). The hypothesis that \(D\) misses \(n\) is used only for the intermediate non-divisibility; the product identity itself holds for every integer.
+
+\section{Saturated closed forms}
+
+\begin{definition}
+\label{def:saturated-states}
+Let \(q=D+1\). The \emph{source state} at index \(k\) is
+\[
+D^{a-k}q^{b+k}u-c,
+\]
+and the \emph{parent state} at index \(k\) is
+\[
+D^{a+b-1-k}q^{k}u-c.
+\]
+The \emph{source seed} is the source state at \(k=0\).
+\end{definition}
+
+\begin{lemma}
+\label{lem:source-step}
+Assume \(k<a\) and \(D\) does not divide \(c\). Then \(D\) does not divide the source state at \(k\), and
+\[
+q\cdot(\text{source state at \(k\)})+c
+=D\cdot(\text{source state at \(k+1\)}).
+\]
+\end{lemma}
+
+\begin{proof}
+The exponent identity \(a-k=\bigl(a-(k+1)\bigr)+1\) gives
+\[
+D^{a-k}q^{b+k}u
+=D\cdot D^{a-(k+1)}q^{b+k}u.
+\]
+If \(D\) divided the source state at \(k\), subtracting that multiple of \(D\) from the displayed multiple of \(D\) would show that \(D\) divides \(c\). The second identity uses the same exponent relation together with \(b+(k+1)=(b+k)+1\): since \(q=D+1\),
+\[
+q\bigl(D^{a-k}q^{b+k}u-c\bigr)+c
+=D\bigl(D^{a-(k+1)}q^{b+k+1}u-c\bigr).
+\]
+\end{proof}
+
+\begin{lemma}
+\label{lem:source-terminal}
+The source state at index \(a\) equals \(q^{a+b}u-c\).
+\end{lemma}
+
+\begin{proof}
+The power \(D^{a-a}\) is \(1\), and \(b+a=a+b\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:congruence-divides}
+If \(q^{a+b}u\equiv c\pmod{D^2}\), then \(D^2\) divides \(q^{a+b}u-c\).
+\end{lemma}
+
+\begin{proof}
+The congruence says that \(D^2\) divides \(c-q^{a+b}u\). Negating the witness divides \(q^{a+b}u-c\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:double-quotient}
+If \(D\neq 0\) and \(D^2\) divides \(m\), then \((m/D)/D=m/D^2\).
+\end{lemma}
+
+\begin{proof}
+Write \(m=D^2 j\). Then \(m/D=Dj\) because \(D\neq 0\), so \((m/D)/D=j\). The same witness gives \(m/D^2=j\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:saturated-source}
+Assume \(2\le |D|\), \(a\ge 1\), \(D\) does not divide \(c\), \(q=D+1\), and \(q^{a+b}u\equiv c\pmod{D^2}\). Then \(D\) does not divide the source seed. For every \(k<a\), \(D\) does not divide the source state at \(k\), and the exact quotient
+\[
+\bigl(q\cdot(\text{source state at \(k\)})+c\bigr)/D
+\]
+equals the source state at \(k+1\). The source state at \(a\) equals \(q^{a+b}u-c\), \(D^2\) divides that value, and two exact divisions of it equal division by \(D^2\).
+\end{theorem}
+
+\begin{proof}
+The bound on \(|D|\) forces \(D\neq 0\). The case \(k=0\) of Lemma~\ref{lem:source-step} is the seed claim, using \(a\ge 1\). For \(k<a\), the same lemma supplies the product, and division by the nonzero integer \(D\) is the stated quotient. Lemma~\ref{lem:source-terminal} identifies the terminal state. Lemma~\ref{lem:congruence-divides} gives divisibility by \(D^2\), and Lemma~\ref{lem:double-quotient} equates the two divisions.
+\end{proof}
+
+\begin{lemma}
+\label{lem:parent-step}
+Assume \(k<a+b-1\) and \(D\) does not divide \(c\). Then \(D\) does not divide the parent state at \(k\), and
+\[
+q\cdot(\text{parent state at \(k\)})+c
+=D\cdot(\text{parent state at \(k+1\)}).
+\]
+\end{lemma}
+
+\begin{proof}
+The exponent identity \(a+b-1-k=\bigl(a+b-1-(k+1)\bigr)+1\) shows that the parent state at \(k\), plus \(c\), is a multiple of \(D\). Divisibility of that state by \(D\) would therefore force \(D\) to divide \(c\). Multiplying by \(q=D+1\) and restoring \(c\) advances the power of \(q\) by one and lowers the power of \(D\) by one.
+\end{proof}
+
+\begin{lemma}
+\label{lem:parent-gate}
+The parent state at index \(a+b-1\) equals \(q^{a+b-1}u-c\).
+\end{lemma}
+
+\begin{proof}
+The remaining power of \(D\) is \(D^0=1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:saturated-parent}
+Assume the hypotheses of Theorem~\ref{thm:saturated-source}. For every \(k<a+b-1\), \(D\) does not divide the parent state at \(k\), and
+\[
+\bigl(q\cdot(\text{parent state at \(k\)})+c\bigr)/D
+\]
+equals the parent state at \(k+1\). The parent state at \(a+b-1\) equals \(q^{a+b-1}u-c\). That gate is divisible by \(D\), the quotient by \(D\) is not divisible by \(D\), and
+\[
+\bigl(q\cdot(\text{gate}/D)+c\bigr)/D=(q^{a+b}u-c)/D^2.
+\]
+\end{theorem}
+
+\begin{proof}
+Again \(D\neq 0\), and \(a+b=(a+b-1)+1\) because \(a\ge 1\). Lemma~\ref{lem:parent-step} and exact division give the inductive steps. Lemma~\ref{lem:parent-gate} identifies the gate.
+
+Lemma~\ref{lem:inverse-product} rearranges to
+\[
+(1-D)q\equiv 1\pmod{D^2}.
+\]
+Multiply the selecting congruence by \(1-D\). The exponent split \(q^{a+b}=q\cdot q^{a+b-1}\) and the unit congruence cancel one factor of \(q\), leaving
+\[
+q^{a+b-1}u\equiv (1-D)c\pmod{D^2}.
+\]
+Subtract \(c\):
+\[
+q^{a+b-1}u-c\equiv -Dc\pmod{D^2}.
+\]
+The right side is visibly divisible by \(D\), so the gate equals \(D(-c-Dt)\) for the witness \(t\) of that congruence. This is the divisibility claim.
+
+The same witness gives \(\mathrm{gate}/D=-c-Dt\). If \(D\) divided this quotient, then \(c=-Dt-Ds\) for some \(s\), contradicting the hypothesis on \(c\).
+
+Finally, \(q=D+1\) gives the numerator identity
+\[
+q(q^{a+b-1}u-c)+cD=q^{a+b}u-c.
+\]
+Substitute the gate factorization. The left side is \(D\) times \(q(\mathrm{gate}/D)+c\). One exact division produces that quotient, and Lemma~\ref{lem:double-quotient} divides once more by \(D\).
+\end{proof}
+
+\begin{corollary}
+\label{cor:same-join}
+Under the hypotheses of Theorem~\ref{thm:saturated-source}, the source double quotient equals the parent final quotient:
+\[
+\bigl((q^{a+b}u-c)/D\bigr)/D
+=\bigl(q\cdot(\mathrm{gate}/D)+c\bigr)/D.
+\]
+\end{corollary}
+
+\begin{proof}
+Theorem~\ref{thm:saturated-source} equates the source double quotient with \((q^{a+b}u-c)/D^2\). Theorem~\ref{thm:saturated-parent} equates the parent final quotient with the same integer.
+\end{proof}
+
+\begin{corollary}
+\label{cor:seed-two-step}
+Under the hypotheses of Theorem~\ref{thm:saturated-source}, the two-step state of the source seed is congruent to that seed modulo \(D^2\).
+\end{corollary}
+
+\begin{proof}
+Theorem~\ref{thm:saturated-source} says that \(D\) does not divide the seed. Apply Theorem~\ref{thm:two-step}.
+\end{proof}
+
+\section{Unsaturated pairs}
+
+\begin{definition}
+The divided affine branch is \((qx+c)/D\), used only when \(D\) divides \(qx+c\). The exact division branch is \(x/D\), used only when \(D\) divides \(x\). A run of \(a\) divided affine steps is legal when each head is missed by \(D\) and the corresponding numerator is divisible by \(D\). The source word \(A^aEE\) is such a run followed by two legal exact divisions. The parent word \(A^{a-1}EA\) is a legal run of length \(a-1\), one legal exact division whose quotient is missed by \(D\), and one legal divided affine step. Write \(Y(x)=(q-D)x+c\).
+\end{definition}
+
+\begin{definition}
+\label{def:unsaturated-relation}
+The unsaturated relation of length \(a\) at the pair \((n,p)\) is
+\[
+q^a\bigl((q-D)n-(D-1)c\bigr)-Dq^a(q-D)p
+=c(D-1)(q-D-1)D^a.
+\]
+\end{definition}
+
+\begin{lemma}
+\label{lem:affine-y}
+If \(D\neq 0\) and \(D\) divides \(qx+c\), then
+\[
+D\cdot Y\bigl((qx+c)/D\bigr)=q\cdot Y(x).
+\]
+\end{lemma}
+
+\begin{proof}
+Let \(qx+c=Dt\), so the quotient is \(t\). Then
+\begin{align*}
+D\bigl((q-D)t+c\bigr)
+&=(q-D)(qx+c)+cD
+=q\bigl((q-D)x+c\bigr).
+\end{align*}
+\end{proof}
+
+\begin{lemma}
+\label{lem:exact-y}
+If \(D\neq 0\) and \(D\) divides \(x\), then
+\[
+D\cdot Y(x/D)=Y(x)+c(D-1).
+\]
+\end{lemma}
+
+\begin{proof}
+Let \(x=Dt\). Then
+\[
+D\bigl((q-D)t+c\bigr)=(q-D)x+cD=Y(x)+c(D-1).
+\]
+\end{proof}
+
+\begin{lemma}
+\label{lem:run-y}
+If \(D\neq 0\) and a run of \(a\) divided affine steps from \(x\) is legal, then
+\[
+D^a\cdot Y(\text{endpoint})=q^a\cdot Y(x).
+\]
+\end{lemma}
+
+\begin{proof}
+The case \(a=0\) is the identity \(Y(x)=Y(x)\). If the claim holds for runs of length \(k\), a legal head from \(x\) and Lemma~\ref{lem:affine-y} multiply the inductive identity by \(q\) and the outer factor of \(D\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:word-relation}
+Assume \(a\ge 1\), \(D\neq 0\), the source word at \(n\) is legal, the parent word at \(p\) is legal, and the two endpoints are equal. Then \((n,p)\) satisfies the unsaturated relation of length \(a\).
+\end{theorem}
+
+\begin{proof}
+Let \(r\) be the affine endpoint of the source run, let \(h\) be \(r/D\), and let \(f\) be \(h/D\). Let \(z_0\) be the affine endpoint of the parent run, let \(z_1=z_0/D\), and let \(z_2=(qz_1+c)/D\). Equality of the words' endpoints gives \(Y(f)=Y(z_2)\).
+
+Two applications of Lemma~\ref{lem:exact-y} give
+\[
+D^2 Y(f)=Y(r)+c(D-1)(D+1).
+\]
+Lemma~\ref{lem:run-y} replaces \(D^a Y(r)\) by \(q^a Y(n)\), so
+\[
+D^{a+2}Y(f)=q^a Y(n)+c(D-1)(D+1)D^a.
+\]
+On the parent side, Lemma~\ref{lem:run-y} at length \(a-1\), one exact division, and Lemma~\ref{lem:affine-y} give
+\[
+D^{a+2}Y(z_2)=Dq^a Y(p)+qc(D-1)D^a.
+\]
+The endpoints contribute the same value of \(Y\), so the right-hand sides agree. Expanding \(Y\) and cancelling the common summands
+\[
+q^a c+c(D-1)(D+1)D^a
+\quad\text{and}\quad
+Dq^a c
+\]
+leaves Definition~\ref{def:unsaturated-relation}. The successor decomposition \(a=(a-1)+1\) is the length of the parent affine run plus the final affine letter.
+\end{proof}
+
+\begin{theorem}
+\label{thm:divisibility}
+Assume \(a\ge 1\), \(q\) is coprime to \(D\), and \((n,p)\) satisfies the unsaturated relation of length \(a\). Then
+\[
+q^a\mid c(D-1)(q-D-1).
+\]
+\end{theorem}
+
+\begin{proof}
+Write \(a=(a-1)+1\). The relation says that \(q^a\) divides
+\[
+c(D-1)(q-D-1)D^a,
+\]
+because the other term \(q^a\bigl((q-D)n-(D-1)c-D(q-D)p\bigr)\) is visibly a multiple of \(q^a\). Coprimeness of \(q\) and \(D\) passes to the powers \(q^a\) and \(D^a\), so the factor \(D^a\) may be cancelled.
+\end{proof}
+
+\begin{theorem}
+\label{thm:missed-pair}
+The integers \(3\) and \(2\) are coprime, and \(3^1\) divides \(1\cdot(2-1)\cdot(3-2-1)\). The pair \((n,p)=(1,1)\) does not satisfy the unsaturated relation for \(q=3\), \(c=1\), \(D=2\), and \(a=1\).
+\end{theorem}
+
+\begin{proof}
+The Bézout identity \(1\cdot 3+(-1)\cdot 2=1\) is the coprimeness witness. The coefficient product is \(0\), and \(3\) divides \(0\). Substituting the pair into Definition~\ref{def:unsaturated-relation} produces \(-6\) on the left and \(0\) on the right.
+\end{proof}
+
+\begin{theorem}
+\label{thm:five}
+Let \(a\ge 1\). No integers \(n,p\) satisfy the unsaturated relation for \(q=5\), \(c=1\), and \(D=2\).
+\end{theorem}
+
+\begin{proof}
+The identity \(1\cdot 5+(-2)\cdot 2=1\) shows that \(5\) is coprime to \(2\). If a pair existed, Theorem~\ref{thm:divisibility} would force \(5^a\) to divide \(1\cdot(2-1)\cdot(5-2-1)=2\). Since \(a=(a-1)+1\), the integer \(5\) divides \(5^a\), hence \(5\) divides \(2\), which is false.
+\end{proof}
+
+\begin{theorem}
+\label{thm:undivided}
+The integer \(2\) does not divide \(1\). The undivided step \((2+1)\cdot 1+1\) equals \(4\), the exact quotient \(4/2\) equals \(2\), and \(2\not\equiv 1\pmod{2^2}\).
+\end{theorem}
+
+\begin{proof}
+A multiple of \(2\) is not equal to \(1\). The arithmetic \(3+1=4\) and \(4=2\cdot 2\) gives the quotient. If \(4\) divided \(1-2\), then \(4\) would divide \(1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:numerals}
+For divisor \(3\), slope \(4\), and offset \(1\),
+\begin{align*}
+4\cdot 7&\equiv 1\pmod{9},&
+3\cdot 7-1&=20,&
+3^0\cdot 7-1&=6,\\
+(4\cdot 7-1)/9&=3,&
+3&\nmid 20,
+\end{align*}
+and
+\begin{align*}
+4^2\cdot 4&\equiv 1\pmod{9},&
+3\cdot 4\cdot 4-1&=47,&
+3\cdot 4-1&=11,\\
+(4^2\cdot 4-1)/9&=7,&
+3&\nmid 47.
+\end{align*}
+\end{theorem}
+
+\begin{proof}
+The differences are \(1-28=-27=9\cdot(-3)\) and \(1-64=-63=9\cdot(-7)\). The seeds and gates expand as written. The terminal numerators are \(27=9\cdot 3\) and \(63=9\cdot 7\). Neither \(20\) nor \(47\) is a multiple of \(3\).
+\end{proof}
+
+The first block is the saturated pair with \(a=1\), \(b=0\), and \(u=7\). The second is the saturated pair with \(a=1\), \(b=1\), and \(u=4\). Theorem~\ref{thm:divisibility} is one direction only: Theorem~\ref{thm:missed-pair} is a divisibility with no pair, and Theorem~\ref{thm:five} is a coefficient that forbids every pair. No parent is asserted to be positive, and none of these statements says that the classical Collatz map reaches \(1\).
+
+\end{document}
