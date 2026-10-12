@@ -1,0 +1,214 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{The equal-halves modulus misses the numerator gap}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{No-crossing symmetric difference}
+
+Let \(h\) be a positive integer. The index window is the set of natural numbers strictly less than \(h\). For a finite set \(S\) of natural numbers and an index \(j\), write
+\[
+\nu(S,j)=\#\{k\in S:k>j\}
+\]
+and define the shortcut numerator
+\[
+A(S)=\sum_{j\in S}3^{\nu(S,j)}2^{j}.
+\]
+The equal-halves modulus of cardinality \(r\) is \(M=2^{h}+3^{r}\). The difference condition for two supports of that common cardinality is the divisibility \(M\mid\bigl(A(V)-A(U)\bigr)\).
+
+\begin{lemma}
+\label{lem:power-split}
+If \(\mathrm{lo}<\mathrm{hi}\), then
+\[
+2^{\mathrm{hi}}=2^{\mathrm{lo}}+2^{\mathrm{lo}}\bigl(2^{\mathrm{hi}-\mathrm{lo}}-1\bigr).
+\]
+\end{lemma}
+
+\begin{proof}
+Since \(\mathrm{lo}\le\mathrm{hi}\), one has \(\mathrm{hi}=\mathrm{lo}+(\mathrm{hi}-\mathrm{lo})\), and therefore
+\[
+2^{\mathrm{hi}}=2^{\mathrm{lo}}\,2^{\mathrm{hi}-\mathrm{lo}}.
+\]
+The exponent \(\mathrm{hi}-\mathrm{lo}\) is positive, so \(1\le 2^{\mathrm{hi}-\mathrm{lo}}\). Substituting \(2^{\mathrm{hi}-\mathrm{lo}}=\bigl(2^{\mathrm{hi}-\mathrm{lo}}-1\bigr)+1\) and distributing gives
+\[
+2^{\mathrm{hi}}=2^{\mathrm{lo}}\bigl(2^{\mathrm{hi}-\mathrm{lo}}-1\bigr)+2^{\mathrm{lo}},
+\]
+which is the claimed sum.
+\end{proof}
+
+\begin{lemma}
+\label{lem:endpoints}
+Let \(\mathrm{lo}<\mathrm{hi}\), and let \(C\) be a finite set of natural numbers such that every element \(x\in C\) satisfies \(x<\mathrm{lo}\) or \(\mathrm{hi}<x\). Then
+\[
+\nu\bigl(C\cup\{\mathrm{lo}\},\mathrm{lo}\bigr)=\nu\bigl(C\cup\{\mathrm{hi}\},\mathrm{hi}\bigr).
+\]
+Both sides equal \(\#\{k\in C:k>\mathrm{hi}\}\).
+\end{lemma}
+
+\begin{proof}
+The index \(\mathrm{lo}\) is not strictly above itself, so the elements of \(C\cup\{\mathrm{lo}\}\) strictly above \(\mathrm{lo}\) are exactly the elements of \(C\) strictly above \(\mathrm{lo}\). The same holds with \(\mathrm{hi}\) in place of \(\mathrm{lo}\). It remains to compare the two subsets of \(C\). If \(x\in C\) and \(x<\mathrm{lo}\), then \(x<\mathrm{hi}\) as well, so \(x\) lies in neither subset. If \(x\in C\) and \(\mathrm{hi}<x\), then \(\mathrm{lo}<x\), so \(x\) lies in both. The hypothesis allows no other element of \(C\). Thus the two subsets of \(C\) are equal, and both counts equal \(\#\{k\in C:k>\mathrm{hi}\}\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:common}
+Let \(\mathrm{lo}<\mathrm{hi}\), and let \(C\) be a finite set of natural numbers containing neither \(\mathrm{lo}\) nor \(\mathrm{hi}\) and containing no element strictly between them. For every \(x\in C\),
+\[
+\nu\bigl(C\cup\{\mathrm{lo}\},x\bigr)=\nu\bigl(C\cup\{\mathrm{hi}\},x\bigr).
+\]
+\end{lemma}
+
+\begin{proof}
+Fix \(x\in C\). Either \(x<\mathrm{lo}\) or \(\mathrm{hi}<x\).
+
+If \(x<\mathrm{lo}\), then also \(x<\mathrm{hi}\). The elements of \(C\cup\{\mathrm{lo}\}\) strictly above \(x\) are \(\mathrm{lo}\) together with the elements of \(C\) strictly above \(x\). The elements of \(C\cup\{\mathrm{hi}\}\) strictly above \(x\) are \(\mathrm{hi}\) together with the same subset of \(C\). Neither \(\mathrm{lo}\) nor \(\mathrm{hi}\) lies in \(C\), so each union has exactly one more element than that subset of \(C\). The two counts agree.
+
+If \(\mathrm{hi}<x\), then \(\mathrm{lo}<x\). Neither moved index is strictly above \(x\), so both counts equal the number of elements of \(C\) strictly above \(x\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:symdiff}
+Let \(\mathrm{lo}<\mathrm{hi}\), and let \(C\) be a finite set of natural numbers containing neither \(\mathrm{lo}\) nor \(\mathrm{hi}\). Set \(U=C\cup\{\mathrm{lo}\}\) and \(V=C\cup\{\mathrm{hi}\}\). Then \(U\) and \(V\) are distinct and
+\[
+U\triangle V=\{\mathrm{lo},\mathrm{hi}\}.
+\]
+In particular \(\#(U\triangle V)=2\) and \(\#U=\#V\).
+\end{lemma}
+
+\begin{proof}
+An index lies in the symmetric difference when it lies in exactly one of the two sets. Every element of \(C\) lies in both \(U\) and \(V\). The index \(\mathrm{lo}\) lies in \(U\). It does not lie in \(V\), because it is different from \(\mathrm{hi}\) and does not lie in \(C\). Likewise \(\mathrm{hi}\) lies in \(V\) and not in \(U\). No other index was added. Thus the symmetric difference is exactly \(\{\mathrm{lo},\mathrm{hi}\}\). These two indices are distinct, so the symmetric difference has size \(2\). In particular \(U\neq V\). Each set is obtained by adding one missing index to \(C\), so \(\#U=\#C+1=\#V\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:coprime23}
+If \(h>0\) and \(r>0\), then \(\gcd(2^{h}+3^{r},2)=1\) and \(\gcd(2^{h}+3^{r},3)=1\).
+\end{lemma}
+
+\begin{proof}
+The power \(2^{h}\) is even because \(h>0\). The integer \(3\) is odd, and a product of odd integers is odd, so \(3^{r}\) is odd. The sum of an even integer and an odd integer is odd, hence not divisible by \(2\). Therefore \(\gcd(2^{h}+3^{r},2)=1\).
+
+Since \(r>0\), the power \(3^{r}\) is divisible by \(3\). If \(3\) divided \(2^{h}+3^{r}\), it would divide the difference
+\[
+\bigl(2^{h}+3^{r}\bigr)-3^{r}=2^{h}.
+\]
+But \(\gcd(3,2)=1\), so \(\gcd(3,2^{h})=1\). An integer coprime to \(2^{h}\) divides \(2^{h}\) only if it equals \(1\). Since \(3\neq 1\), the integer \(3\) does not divide \(2^{h}\), nor therefore \(2^{h}+3^{r}\). Hence \(\gcd(2^{h}+3^{r},3)=1\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:coprime6}
+If \(h>0\) and \(r>0\), then \(\gcd(2^{h}+3^{r},6)=1\).
+\end{lemma}
+
+\begin{proof}
+Lemma~\ref{lem:coprime23} gives coprimality to \(2\) and to \(3\). Since \(6=2\cdot 3\), the modulus is coprime to \(6\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:difference}
+Let \(\mathrm{lo}<\mathrm{hi}\), and let \(C\) be a finite set of natural numbers containing neither \(\mathrm{lo}\) nor \(\mathrm{hi}\) and containing no element strictly between them. Set \(U=C\cup\{\mathrm{lo}\}\), \(V=C\cup\{\mathrm{hi}\}\),
+\[
+s=\#\{k\in C:k>\mathrm{hi}\},\qquad\theta=2^{\mathrm{hi}-\mathrm{lo}}-1.
+\]
+Then \(A(V)=A(U)+3^{s}2^{\mathrm{lo}}\theta\).
+\end{lemma}
+
+\begin{proof}
+By Lemma~\ref{lem:endpoints}, the exponent of the moved index is \(s\) in both numerators:
+\[
+\nu(U,\mathrm{lo})=\nu(V,\mathrm{hi})=s.
+\]
+By Lemma~\ref{lem:common}, \(\nu(U,x)=\nu(V,x)\) for every \(x\in C\). Splitting each numerator into the moved index and the common set therefore gives
+\begin{align*}
+A(U)&=3^{s}2^{\mathrm{lo}}+\sum_{x\in C}3^{\nu(U,x)}2^{x},\\
+A(V)&=3^{s}2^{\mathrm{hi}}+\sum_{x\in C}3^{\nu(V,x)}2^{x},
+\end{align*}
+and the two sums over \(C\) are equal. Lemma~\ref{lem:power-split} multiplies to
+\[
+3^{s}2^{\mathrm{hi}}=3^{s}2^{\mathrm{lo}}+3^{s}2^{\mathrm{lo}}\theta.
+\]
+Substitute this identity into \(A(V)\) and use equality of the sums over \(C\):
+\[
+A(V)=\bigl(3^{s}2^{\mathrm{lo}}+3^{s}2^{\mathrm{lo}}\theta\bigr)+\sum_{x\in C}3^{\nu(U,x)}2^{x}
+=A(U)+3^{s}2^{\mathrm{lo}}\theta.
+\]
+The rearrangement uses only commutativity and associativity of addition.
+\end{proof}
+
+\begin{theorem}
+\label{thm:nocrossing}
+Let \(\mathrm{lo}<\mathrm{hi}<h\), and let \(C\) be a finite set of natural numbers such that every element of \(C\) is strictly less than \(h\), neither \(\mathrm{lo}\) nor \(\mathrm{hi}\) lies in \(C\), and no element of \(C\) lies strictly between \(\mathrm{lo}\) and \(\mathrm{hi}\). Set \(U=C\cup\{\mathrm{lo}\}\) and \(V=C\cup\{\mathrm{hi}\}\). Write \(r=\#U\), \(M=2^{h}+3^{r}\),
+\[
+s=\#\{k\in C:k>\mathrm{hi}\},\qquad\theta=2^{\mathrm{hi}-\mathrm{lo}}-1.
+\]
+Then \(U\) and \(V\) are distinct subsets of the index window, \(\#U=\#V\), and \(U\triangle V=\{\mathrm{lo},\mathrm{hi}\}\), so the symmetric difference has size \(2\). Moreover
+\[
+A(V)=A(U)+3^{s}2^{\mathrm{lo}}\theta,
+\]
+\(\gcd(M,6)=1\), and \(0<\theta<2^{h}<M\). The two indices determine the third factor \(\theta\): if \(M\) divides \(3^{s}2^{\mathrm{lo}}\theta\), then \(M\) divides \(\theta\). Consequently \(M\) divides neither \(\theta\) nor \(A(V)-A(U)\).
+\end{theorem}
+
+\begin{proof}
+Lemma~\ref{lem:symdiff} gives distinctness, the symmetric difference, its size, and equality of the cardinalities. Every element of \(C\) is strictly less than \(h\) by hypothesis, \(\mathrm{hi}<h\), and \(\mathrm{lo}<\mathrm{hi}\), so both \(U\) and \(V\) are contained in the index window. Lemma~\ref{lem:difference} is the numerator identity. In particular \(A(V)-A(U)=3^{s}2^{\mathrm{lo}}\theta\).
+
+The cardinality \(r\) equals \(\#C+1\), so \(r>0\). Also \(\mathrm{lo}<\mathrm{hi}<h\), so \(h>0\). Lemma~\ref{lem:coprime23} gives \(\gcd(M,2)=\gcd(M,3)=1\), and Lemma~\ref{lem:coprime6} upgrades this to \(\gcd(M,6)=1\). The two prime coprimalities extend to powers, and therefore
+\[
+\gcd\bigl(M,3^{s}2^{\mathrm{lo}}\bigr)=1.
+\]
+If \(M\) divides the product \(3^{s}2^{\mathrm{lo}}\theta\), coprimality to the unit factor forces \(M\) to divide \(\theta\).
+
+The gap \(\delta=\mathrm{hi}-\mathrm{lo}\) is positive and at most \(\mathrm{hi}\), hence \(\delta<h\). Thus \(1<2^{\delta}<2^{h}\), which is \(0<\theta<2^{\delta}<2^{h}\). Since \(r>0\), one has \(3^{r}>0\), so \(2^{h}<2^{h}+3^{r}=M\). Combining these inequalities yields \(0<\theta<M\).
+
+A positive multiple of \(M\) is at least \(M\). The only multiple of \(M\) strictly less than \(M\) is \(0\). Therefore \(M\) does not divide \(\theta\). It cannot divide \(3^{s}2^{\mathrm{lo}}\theta\) either, because that divisibility would force \(M\mid\theta\). Since \(A(V)-A(U)\) equals this product, \(M\) does not divide \(A(V)-A(U)\).
+\end{proof}
+
+\begin{remark}
+\label{rem:example}
+The third factor is visible on a small window. Take \(h=6\), \(C=\{0,5\}\), \(\mathrm{lo}=2\), and \(\mathrm{hi}=4\). Then \(U=\{0,2,5\}\), \(V=\{0,4,5\}\), \(s=1\), and \(\theta=2^{2}-1=3\). The numerators are \(A(U)=53\) and \(A(V)=89\), and
+\[
+89-53=36=3^{1}\cdot 2^{2}\cdot 3.
+\]
+Here \(r=3\) and \(M=2^{6}+3^{3}=91\). One has \(\gcd(91,6)=1\) and \(0<3<64<91\), so \(91\) divides neither \(3\) nor \(36\).
+\end{remark}
+
+\begin{remark}
+\label{rem:not-claimed}
+The factorization uses the hypothesis that no element of \(C\) lies strictly between \(\mathrm{lo}\) and \(\mathrm{hi}\). If some support index lies in that open interval, the two moved indices no longer share one exponent, and the size obstruction of Theorem~\ref{thm:nocrossing} is not claimed.
+
+Symmetric difference larger than \(2\) is not excluded by the same bound. For \(h=6\), the supports \(\{4,5\}\) and \(\{0,2\}\) have symmetric difference of size \(4\). Their numerators are \(80\) and \(7\), and
+\[
+M=2^{6}+3^{2}=73
+\]
+divides \(80-7\). The argument also does not address divisibility by \(2^{h}-3^{r}\). Nothing in the theorem asserts that every difference condition is impossible, and nothing in it asserts that the classical Collatz map reaches \(1\).
+\end{remark}
+
+\end{document}

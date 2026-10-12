@@ -77,6 +77,7 @@ defaultTargets = [
   "MirrorSign",
   "ThreeAffineClosure",
   "RecursiveClose",
+  "NoCrossing",
 ]
 
 [[require]]
@@ -415,3 +416,7 @@ srcDir = "QCD.ThreeAffineClosure.001/lean"
 [[lean_lib]]
 name = "RecursiveClose"
 srcDir = "QCD.RecursiveClose.001/lean"
+
+[[lean_lib]]
+name = "NoCrossing"
+srcDir = "QCD.NoCrossing.001/lean"
