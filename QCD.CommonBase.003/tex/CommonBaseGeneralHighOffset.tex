@@ -1,0 +1,499 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+A positive common-base divisor and a sufficiently divisible offset force every
+nonzero signed raw orbit to escape in magnitude and eventually have the offset's
+sign. Both multiplier-exponent orderings and exponent equality are
+included. We prove an effective full-raw bound, reconstruct every physical
+phase sweep, and show that zero is the only periodic point. The base need not
+be prime, and residuals need not be units.
+\end{abstract}
+
+\section{Map and parameter range}
+
+Throughout, division has priority in the signed raw map
+\[
+F(n)=
+\begin{cases}
+n/D,&D\mid n,\\
+Qn+C,&D\nmid n,
+\end{cases}
+\qquad n\in\Z.
+\]
+The parameters satisfy
+\begin{equation}\label{Parameters}
+\begin{gathered}
+Q=t^u,\qquad D=t^v,\qquad C=t^a s,\\
+t\in\N,\quad t\ge2,\quad u,v\in\N,\quad u,v>0,\quad
+a\in\N,\quad a\ge u+v,\quad s\in\Z\setminus\{0\}.
+\end{gathered}
+\end{equation}
+Thus \(D\) is positive. There is no assumption that \(u<v\), that \(u,v\)
+are coprime, or that \(t\) is prime. Nor is a unit or indivisibility
+condition imposed on \(s\). A periodic point means a seed with
+\(F^h(n)=n\) for some integer \(h>0\). Zero is fixed by the division branch,
+even though the offset is nonzero.
+
+The canonical signed prime-source discussion
+\cite{QcdSigned} includes a high-offset phase rotation for
+\(d=\varepsilon p^v\), \(q=p^u r\). Its
+\(\varepsilon=1,r=1\) case intersects this family for both exponent
+orderings. The proof below also treats composite bases and nonunit
+residuals. Those stronger assertions follow from the whole-base argument,
+not from silently extending prime valuation identities. Negative divisors,
+nontrivial residual multipliers, and other offset regimes are not assertions
+of this article.
+
+\section{Whole-base order and legal initial divisions}
+
+\begin{definition}\label{Order}
+For \(n\ne0\), its whole-base order at \(t\) is the integer \(k\ge0\)
+such that \(n=t^k w\) and \(t\nmid w\).
+\end{definition}
+
+This is not prime valuation when \(t\) is composite. For instance, \(w=2\)
+is allowed at base \(t=4\): it is not divisible by four, but is not a unit
+modulo four.
+
+\begin{lemma}[Initial normalization]\label{Normalize}
+Every nonzero signed seed has a finite legal division prefix ending at a
+state \(x=t^k w\) with \(k<v\) and \(t\nmid w\). Its length \(r_0\) and
+endpoint satisfy \(r_0\le |n|\) and \(|x|\le |n|\).
+\end{lemma}
+\begin{proof}
+The powers \(t^j\) are unbounded: induction gives \(t^j\ge j+1\).
+Consequently the nonempty set of integers \(j\ge0\) with \(t^j\mid n\)
+is finite, since \(t^j\mid n\ne0\) implies \(t^j\le |n|\). Let its largest
+element be \(\ell\), and write \(n=t^\ell w\). Maximality gives \(t\nmid w\).
+The order is unique: if \(\ell<\ell'\) were two such orders, cancellation
+would make the first residual divisible by \(t\).
+
+Write \(\ell=r_0v+k\), \(0\le k<v\). There are exactly \(r_0\) legal initial
+divisions by \(D=t^v\), ending at \(x=t^k w\). Each division has priority and
+decreases the magnitude of a nonzero state. The endpoint is not divisible
+by \(D\): such divisibility would imply \(t^{v-k}\mid w\), hence \(t\mid w\).
+Also \(r_0\le\ell\le |n|\) and \(|x|\le |n|\).
+This is the normalization proved in the public whole-base library
+\cite{AscendCommonBase}.
+\end{proof}
+
+\section{The additive child}
+
+The following lemma is stated for an arbitrary positive divisor; no
+common-base presentation is required.
+
+\begin{lemma}[Signed additive tails]\label{Additive}
+Let \(d\ge2\), let \(c\ne0\) be an integer divisible by \(d\), and let
+\(H\) be the raw map with coefficients \((1,c,d)\). For every signed
+\(n\ne0\) there are a legal division prefix of length \(r_0\le |n|\) and
+an endpoint \(x\), with \(|x|\le |n|\) and \(d\nmid x\), such that
+\[
+H^{r_0+j}(n)=x+jc\qquad(j\ge0).
+\]
+For every \(M,r\in\N\),
+\[
+2|n|+M+1\le r
+\quad\Longrightarrow\quad
+|H^r(n)|>M\ \text{ and }\ cH^r(n)>0.
+\]
+No nonzero signed seed has a positive return time.
+\end{lemma}
+\begin{proof}
+Apply Lemma~\ref{Normalize} with base \(d\) and divisor exponent one.
+For every \(j\ge0\), divisibility of \(x+jc\) by \(d\), together with
+\(d\mid c\), would give \(d\mid x\). Thus every remaining step is the
+affine branch, and induction proves the displayed tail.
+
+If \(r\ge2|n|+M+1\), then \(j=r-r_0\ge |x|+M+1\). Integrality gives
+\(c\ge1\) or \(c\le-1\). In the first case
+\(x+jc\ge-|x|+j>M\); in the second case
+\(x+jc\le |x|-j<-M\). Both claims follow, including the offset sign.
+
+Suppose \(H^h(n)=n\) with \(h>0\). Iteration commutation transports this
+return to the same normalized endpoint:
+\(H^{r_0+h}(n)=H^{r_0}(n)=x\).
+The tail formula then gives \(x+hc=x\), contradicting \(h>0\) and \(c\ne0\).
+\end{proof}
+
+\section{Exponent compression as an actual reduction}
+
+Put
+\[
+m=\lfloor u/v\rfloor,\qquad b=u\bmod v,\qquad A=a-vm.
+\]
+Euclidean division and \eqref{Parameters} give
+\begin{equation}\label{Factor}
+0\le b<v,\qquad A\ge b+v,\qquad
+Q=D^m t^b,\qquad C=D^m t^A s.
+\end{equation}
+Let \(G\) be the raw map with coefficients
+\((t^b,t^A s,D)\), on the same signed integers.
+
+\begin{lemma}[Full-time recovery]\label{Compression}
+A division of \(G\) costs one raw step of \(F\), and an affine operation
+costs \(m+1\). There is a positive accumulated clock \(T_k\) such that
+\[
+G^k(n)=F^{T_k}(n),\qquad
+T_k=k+mR_k,\qquad k\le T_k\le(m+1)k,
+\]
+where \(R_k\) counts the affine operations among the first \(k\) steps of \(G\).
+Every raw time lies in one of these blocks. If a block starts at \(x\),
+each of its raw states has magnitude at least
+\(\min\{|x|,|G(x)|\}\).
+\end{lemma}
+\begin{proof}
+The guards of \(F\) and \(G\) are identical. On a division input their
+outputs agree. On an affine input, \(F(x)=D^mG(x)\), followed by \(m\)
+legal divisions. For \(1\le j\le m+1\), the intermediate state is
+\(D^{m+1-j}G(x)\); at \(j=0\) it is \(x\).
+Because \(D\ge2\), these intermediate magnitudes are at least
+\(|G(x)|\), proving the stated two-endpoint lower bound.
+
+Add these block lengths chronologically to obtain \(T_k\). Each is
+positive and at most \(m+1\), so the displayed bounds hold.
+For an arbitrary raw time \(r\), the increasing unbounded sequence \(T_k\)
+has an index with \(T_k\le r<T_{k+1}\); its block contains \(r\).
+This is the same-seed full-time recovery of the public compression theorem
+\cite{AscendCompressionII}, not a one-step conjugacy.
+\end{proof}
+
+The original obligation is full-raw escape, eventual sign, periodicity,
+and exact physical rays for the map in \eqref{Parameters}. Its replacement
+is the same-seed compressed map in \eqref{Factor}. If \(b>0\), that map
+satisfies the hypotheses of the previously proved unordered-gcd family
+with \(0<b<v\) \cite{AscendRebasing}. If \(b=0\), its multiplier is one
+and its nonzero offset is divisible by \(D\), so Lemma~\ref{Additive}
+closes the remaining child. The cases are exhaustive.
+
+This reduction decreases an actual resource when \(u\ge v\).
+Writing \(q'=t^b\) and \(c'=t^A s\), its coefficient height satisfies
+\[
+\max\{|Q|,|C|\}=D^m\max\{|q'|,|c'|\}.
+\]
+Here \(m>0\), \(D^m>1\), and \(\max\{|q'|,|c'|\}\ge1\), so the height
+strictly decreases. When \(u<v\), \(m=0\) and the map is already in the
+previously proved family; no strict decrease is claimed in that case.
+There is one compressed map and two solved remainder cases, not an
+uncontrolled recursive family.
+
+\section{Effective bounds at every raw time}
+
+For \(n\ne0\), \(M\in\N\), define
+\begin{equation}\label{Budget}
+B(M)=
+\begin{cases}
+2|n|+M+1,&b=0,\\
+|n|+(|n|+1+MD^{b/h})P_0,&b>0,
+\end{cases}
+\end{equation}
+where \(h=\gcd(b,v)\) and \(P_0=b/h+v/h\) in the positive-remainder case.
+
+\begin{lemma}[Compressed cutoff]\label{CompressedBudget}
+For every \(r\ge B(M)\),
+\[
+|G^r(n)|>M\qquad\text{and}\qquad sG^r(n)>0.
+\]
+\end{lemma}
+\begin{proof}
+For \(b=0\), apply Lemma~\ref{Additive} to \(c'=t^A s\); this coefficient
+has the same sign as \(s\). For \(b>0\), use the raw quantitative bound
+from the previous gcd-rebased family \cite{AscendRebasing}, with exponents
+\((b,v,A)\). Its magnitude cutoff is exactly the second line of
+\eqref{Budget}. Its sign cutoff is
+\(|n|+(|n|+1)P_0\), which is at most \(B(M)\). Thus the same seed, map,
+and raw clock satisfy both claims.
+\end{proof}
+
+\begin{theorem}[Full-raw escape and sign]\label{Escape}
+Under \eqref{Parameters}, for every signed \(n\ne0\), every \(M\in\N\),
+and every raw time \(r\),
+\[
+B(M)(m+1)\le r\quad\Longrightarrow\quad M<|F^r(n)|.
+\]
+Also \(r\ge B(0)(m+1)\) implies \(sF^r(n)>0\). In particular,
+\(|F^r(n)|\to\infty\) along the full raw sequence, and the offset sign
+holds at all sufficiently late raw times.
+\end{theorem}
+\begin{proof}
+Set \(K=B(M)\). Lemma~\ref{Compression} gives \(T_K\le(m+1)K\le r\).
+Choose the block containing \(r\); its compressed index \(k\) must satisfy
+\(k\ge K\), since \(T_{k+1}\le T_K\) would otherwise contradict
+\(r<T_{k+1}\). Lemma~\ref{CompressedBudget} makes both
+\(|G^k(n)|\) and \(|G^{k+1}(n)|\) exceed \(M\).
+The two-endpoint lower bound in Lemma~\ref{Compression} therefore proves
+the magnitude estimate at this arbitrary raw time. The explicit cutoff
+is finite for each \(M\), proving the full-sequence limit.
+
+For the sign, sample \(G^{B(0)}(n)\) at physical time \(T_{B(0)}\).
+It has the sign of \(s\). Every subsequent raw division preserves that
+sign because \(D>0\), and every affine operation preserves it because
+\(Q>0\) and \(C\) has the same sign as \(s\).
+Hence the sign persists at every later time, including every
+\(r\ge(m+1)B(0)\).
+\end{proof}
+
+\begin{theorem}[Periodic points]\label{Periodic}
+Under \eqref{Parameters}, a signed integer is periodic if and only if it is zero.
+\end{theorem}
+\begin{proof}
+Zero is fixed by division priority. If \(F^h(n)=n\) with \(h>0\) and \(n\ne0\),
+then iteration gives \(F^{jh}(n)=n\) for every \(j\ge0\).
+Choose \(j\) so that \(jh\) exceeds the finite cutoff in
+Theorem~\ref{Escape} with \(M=|n|\). It would give \(|n|>|n|\), a contradiction.
+\end{proof}
+
+\section{All forced divisions and their physical clocks}
+
+For a normalized state \(n=t^k w\), \(k<v\), \(t\nmid w\), define
+\[
+e_k=\lfloor(k+u)/v\rfloor,\qquad
+E(k,n)=\bigl((k+u)\bmod v,\ (Qn+C)/D^{e_k}\bigr).
+\]
+This event includes one affine operation and every immediately legal division.
+
+\begin{lemma}[Legal normalized event]\label{Event}
+The event \(E(k,n)\) has raw clock \(1+e_k\), and its endpoint is
+\[
+t^{(k+u)\bmod v}\bigl(w+t^{a-u-k}s\bigr).
+\]
+It has exact whole-base order \((k+u)\bmod v\).
+\end{lemma}
+\begin{proof}
+The input is not divisible by \(D\). Since \(a\ge u+v>u+k\),
+\[
+Qn+C=t^{k+u}\bigl(w+t^{a-u-k}s\bigr),
+\qquad a-u-k\ge1.
+\]
+The bracket is not divisible by \(t\): otherwise subtracting its
+\(t\)-multiple correction would make \(w\) divisible by \(t\).
+Thus the affine output has exact whole-base order \(k+u\), without
+requiring a prime or a unit residual. Euclidean division of \(k+u\)
+gives exactly \(e_k\) legal divisions by \(t^v\), ending at the displayed
+state of order below \(v\). No further division is legal.
+\end{proof}
+
+\begin{lemma}[Prefix identities]\label{Prefix}
+Starting at \((k,n)\), after \(i\) normalized events the phase, residual,
+and physical raw clock are respectively
+\[
+k_i=(k+iu)\bmod v,\qquad
+w_i=w+s\sum_{j=0}^{i-1}t^{a-u-k_j},\qquad
+T_i=i+\lfloor(k+iu)/v\rfloor.
+\]
+The endpoint is \(t^{k_i}w_i=F^{T_i}(n)\), at exact whole-base order \(k_i\).
+\end{lemma}
+\begin{proof}
+Lemma~\ref{Event} proves the phase and residual recurrence at every endpoint,
+including its admissibility for the next event. Induction gives the first
+two formulas and chronological composition gives the raw endpoint identity.
+For the clock, Euclidean division gives
+\[
+\left\lfloor\frac{k+iu}{v}\right\rfloor+
+\left\lfloor\frac{(k+iu)\bmod v+u}{v}\right\rfloor
+=\left\lfloor\frac{k+(i+1)u}{v}\right\rfloor .
+\]
+Adding one for each affine operation proves the formula by induction,
+with initial clock zero because \(k<v\).
+\end{proof}
+
+\begin{lemma}[Coprime sweep]\label{Sweep}
+If \(\gcd(u,v)=1\), every normalized phase \(k<v\) satisfies
+\[
+F^{u+v}(n)=n+\beta_k,\qquad
+\beta_k=s t^{a-u-v+1+k}\sum_{j=0}^{v-1}t^j.
+\]
+The endpoint has the same exact whole-base order \(k\). The sweep contains
+\(v\) affine edges and \(u\) division edges.
+\end{lemma}
+\begin{proof}
+The phases \((k+ju)\bmod v\), \(0\le j<v\), are a permutation of
+\(0,\ldots,v-1\). Indeed, equality of two phases gives
+\(v\mid(i-j)u\); coprimality gives \(v\mid i-j\), forcing \(i=j\) in that range.
+A finite injective self-map is bijective. Consequently the residual kernel is
+\[
+\sum_{j=0}^{v-1}t^{a-u-k_j}
+=\sum_{\ell=0}^{v-1}t^{a-u-\ell}
+=t^{a-u-v+1}\sum_{\ell=0}^{v-1}t^\ell.
+\]
+All exponents are nonnegative by \eqref{Parameters}. The final phase is \(k\).
+Multiplying this residual increment by \(t^k\) gives the displayed raw increment.
+Lemma~\ref{Prefix} gives clock \(v+\lfloor(k+vu)/v\rfloor=u+v\).
+Thus \(v\) affine operations and \(u\) divisions are counted, not discarded.
+\end{proof}
+
+\section{Gcd rebasing and same-seed raw rays}
+
+Put
+\begin{equation}\label{Rebase}
+\begin{gathered}
+g=\gcd(u,v),\quad T=t^g,\quad U=u/g,\quad V=v/g,\\
+A_0=\lfloor a/g\rfloor,\quad S=t^{a\bmod g}s.
+\end{gathered}
+\end{equation}
+Here \(g,U,V>0\), \(T\ge2\), \(\gcd(U,V)=1\), and \(A_0\ge U+V\).
+The last inequality follows because \(g(U+V)=u+v\le a\).
+Exponent division gives
+\[
+Q=T^U,\qquad D=T^V,\qquad C=T^{A_0}S.
+\]
+These are identities for the original coefficients, not a scaling of the state
+or a change in the raw guard.
+
+\begin{theorem}[Exact physical rays]\label{Ray}
+For every nonzero signed seed there exist a legal initial division prefix
+\(r_0\le |n|\), an endpoint \(x\) with \(|x|\le |n|\), and a rebased phase
+\(k<V\), such that, for every \(j\ge0\),
+\begin{equation}\label{RayFormula}
+F^{r_0+jP}(n)=x+j\beta_k,\qquad
+P=U+V,\qquad
+\beta_k=S T^{A_0-U-V+1+k}\sum_{\ell=0}^{V-1}T^\ell .
+\end{equation}
+The sampled state has exact whole-base \(T\) order \(k\) for every \(j\).
+Each sweep consists of \(V\) affine edges and \(U\) division edges.
+\end{theorem}
+\begin{proof}
+Apply Lemma~\ref{Normalize} with base \(T\) and divisor exponent \(V\).
+This provides the same-seed legal prefix and the stated bounds.
+Apply Lemma~\ref{Sweep} to the identical parameter presentation
+\((T,U,V,A_0,S)\). The endpoint returns to the same whole-base phase,
+so its next sweep is admissible. Induction and chronological iteration
+give \eqref{RayFormula} for every \(j\), with the original raw time
+\(r_0+j(U+V)\). No arbitrary compatible witness is required.
+\end{proof}
+
+The ray proof also permits \(s=0\), in which case the increment is zero;
+the escape and periodicity theorems do not assert their conclusions there.
+For \(s\ne0\), the increment in \eqref{RayFormula} is nonzero and has sign \(s\).
+Its sweep clock is \(P=(u+v)/g\), not a cycle period. The full-sequence
+conclusion in Theorem~\ref{Escape} was proved separately with intermediate
+state coverage, rather than inferred from this sampled ray.
+
+\section{Checks that distinguish the hypotheses}
+
+For \((Q,C,D)=(8,32,4)\), with \((t,u,v,a,s)=(2,3,2,5,1)\),
+\[
+1\longmapsto40\longmapsto10\longmapsto112\longmapsto28\longmapsto7.
+\]
+The two normalized events have clocks two and three. The complete raw
+sweep has two affine operations, three divisions, and increment six.
+A one-or-two-step event would miss one of the divisions.
+
+At exponent equality, \((Q,C,D)=(4,16,4)\) gives
+\[
+1\longmapsto20\longmapsto5\longmapsto36\longmapsto9,
+\]
+with clock two and increment four. Exponent compression gives the
+additive map with coefficients \((1,4,4)\).
+
+For \((Q,C,D)=(8,4096,4)\), the opposite-sign initial segment is
+\[
+-767\longmapsto-2040\longmapsto-510\longmapsto16\longmapsto4\longmapsto1.
+\]
+It refutes any local bound that places the initial magnitude below every
+later magnitude without first requiring sign alignment. The formal
+full-time proof uses late bounds at both compressed endpoints. The finite
+replay uses the local intermediate norm bound only on aligned sweep starts.
+
+The uniform offset threshold cannot be lowered by one:
+\((Q,C,D)=(2,4,4)\), with \(a=u+v-1\), has the primitive raw cycle
+\(1,6,16,4,1\), as already proved in the preceding library
+\cite{AscendCommonBase}. Its four states are distinct, so the displayed
+return has least positive period four.
+
+\section{Formal and exact computational realizations}
+
+The three formal modules in \texttt{QCD.CommonBase.003/lean/} are:
+\begin{itemize}
+\item \texttt{AdditiveDivisibleOffset.lean}: legal signed additive tails,
+  effective full-raw bounds, and nonzero-return exclusion.
+\item \texttt{CommonBaseGeneralHighOffset.lean}: outcomes and height decrease.
+\item \texttt{CommonBaseGeneralHighOffsetRay.lean}: clocks and rays.
+\end{itemize}
+There are twenty-seven supporting and conclusion theorems. This is a formal
+declaration count, not a count of source claims.
+
+The exact signed integer Go replay constructs both coefficient presentations
+independently and checks two complete raw sweeps, all guards, phases, affine
+and division counts, and increments. Its bounded main sample uses bases
+two through nine, \(1\le u,v\le8\), three exponents \(a=u+v,u+v+1,u+v+2\),
+sixteen nonzero signed offset residuals, 256 ordinary signed seeds, and
+forced whole-base phases. Preparation also accepts \(a\le256\); seeds are
+limited to 512 bits. These execution bounds do not restrict the theorem.
+
+The finite certificate count is independently determined as follows.
+For the sixty-four exponent pairs,
+\(\sum v/\gcd(u,v)=221\). Their phase-weight contributions grouped by gcd are
+\[
+184,\ 25,\ 4,\ 4,\ 1,\ 1,\ 1,\ 1.
+\]
+For a rebased whole base \(T\), exactly \(16-2\lfloor8/T\rfloor\) residuals
+in \([-8,8]\setminus\{0\}\) are not divisible by \(T\).
+Over original bases two through nine the sums
+\(\sum\lfloor8/t^g\rfloor\) are \(12,2,1\) for \(g=1,2,3\), and zero thereafter.
+Thus the forced-phase weight is
+\[
+8\cdot16\cdot221-2(184\cdot12+25\cdot2+4)=23764,
+\]
+and the complete certificate count is
+\[
+3\cdot16(8\cdot64\cdot256+23764)=7432128.
+\]
+Repeated states and repeated coefficient presentations remain separate
+certificates; this is not a count of distinct orbits.
+
+Nine tests include both exponent orderings, equality, composite nonunit
+residuals, large offsets, 402-bit signed initial division prefixes,
+resource refusals, multiple forced divisions, the alignment counterexample,
+and the finite count. Replay uses a separate workspace per base chunk,
+disjoint multiplication buffers and prepared 2048-bit storage.
+For the contracted replay, \(Q<2^{32}\), \(|C|<2^{1027}\), and
+\(|n|<2^{512}\). At most sixteen affine updates, with divisions decreasing
+magnitude, give
+\[
+|z|\le Q^{16}(|n|+|C|)<2^{1540}.
+\]
+Phase scaling is less than \(2^{32}\), so the corresponding magnitude check
+is below \(2^{1572}\), within that storage reservation. Zero warmed replay
+allocations are measured on seven prepared configurations only; coefficient
+setup and arbitrary-size performance are not included. Neither finite
+replay nor allocation measurements replace the universal proofs.
+
+\bibliographystyle{amsalpha}
+\bibliography{CommonBaseGeneralHighOffset}
+
+\end{document}

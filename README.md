@@ -118,6 +118,28 @@ The base and carried residual satisfy \(T\le Q\) and \(|S|\le|C|\).
 For \(g>1\), the phase count decreases from \(v\) to \(v/g\). The result
 retains positive divisors, \(0<u<v\), and the super-offset threshold.
 
+### High-offset escape for both exponent orderings
+
+[QCD.CommonBase.003](QCD.CommonBase.003/README.md) allows arbitrary positive
+exponents \(u,v\), including equality, for
+\[
+Q=t^u,\qquad D=t^v,\qquad C=t^a s,\qquad
+t\ge2,\quad a\ge u+v,\quad s\ne0.
+\]
+Division of \(u\) by \(v\) gives one coefficient-height reduction to either
+the preceding family or a proved signed additive tail. Positive clock
+coverage recovers every raw intermediate time. Thus every nonzero signed
+seed escapes in magnitude and eventually has the offset's sign; zero is
+the only periodic point.
+
+At whole-base phase \(k<v\), the exact event clock is
+\(1+\lfloor(k+u)/v\rfloor\), retaining all consecutive forced divisions.
+Gcd rebasing gives a physical sweep of \(v/g\) affine edges and \(u/g\)
+division edges, where \(g=\gcd(u,v)\), and an exact same-seed ray with
+clock \((u+v)/g\). Composite bases and nonunit residuals are allowed.
+Negative divisors, nontrivial multiplier residuals and other offset regimes
+remain separate families.
+
 ### Gcd division barrier and affine escape
 
 [QCD.AffineEscape.001](QCD.AffineEscape.001/README.md) classifies every positive
