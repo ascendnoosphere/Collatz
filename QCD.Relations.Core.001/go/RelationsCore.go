@@ -9,8 +9,9 @@ import (
 
 // rawGuard bounds every intermediate plain-map state so that no machine word can wrap during a
 // sweep: below the guard and with a multiplier of at most sixty-three, the affine branch stays
-// below 2^64, so the guard reports failure instead of comparing wrapped values. The sweeps of this
-// program use multipliers of at most twenty-three (d at most twenty-four); the test helper reaches
+// below 2^64, so the guard reports failure instead of comparing wrapped values. The guarded walks
+// of this program keep multipliers of at most twenty-three (d at most twenty-four) and the corner
+// sweep evaluates a single step at multiplier thirty-nine (d forty); the test helper reaches
 // multiplier fifty-nine (d sixty).
 const rawGuard = uint64(1) << 58
 
@@ -513,8 +514,8 @@ func sweepCornerClassificationChecks(checks, failures *uint64) {
 	}
 }
 
-// sweepPeriodicPointChecks verifies the periodic-point classification: at positive lengths only the
-// two cycle states are fixed by the k-th corner iterate, and only at even lengths.
+// sweepPeriodicPointChecks verifies the periodic-point classification: at positive lengths only
+// the two cycle states are fixed by the k-th corner iterate, and only at even lengths.
 func sweepPeriodicPointChecks(checks, failures *uint64) {
 	for d := uint64(3); d <= 12; d++ {
 		c := d + 1

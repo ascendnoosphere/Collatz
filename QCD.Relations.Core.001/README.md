@@ -41,7 +41,7 @@ dichotomy; and the complete classification of the corner case \(c=d+1\) with
 | --- | --- | --- |
 | .1 | At a non-multiple of \(d\), one affine instruction is divisible by \(d\) exactly at the residue-\(c\) states, and otherwise keeps a residue class that is neither \(0\) nor \(c\); at a residue-\(c\) state, \((d-1)n+c\) is divisible by \(d\). | `CoreMapDivisibleIff`, `CoreMapResidueIff`, `CoreDomainDivisible`, `CoreMapCast` |
 | .2 | Branch values: `CoreMap d c n = n / d` at a multiple of `d` and `= (d-1)*n+c` otherwise; the same split for `CoreReturn`. | `CoreMapOfDvd`, `CoreMapOfNotDvd`, `CoreReturnOfDvd`, `CoreReturnOfNotDvd` |
-| .3 | Strict contraction: for \(d\ge2\), \(c\ge1\) and \(c<n\), one return step strictly decreases the state (`CoreReturnDecrease`); a positive multiple of \(d\) decreases under one instruction (`CoreMapDivisibleDecrease`), and a positive non-multiple strictly increases under one instruction (`CoreMapFreeIncrease`). | `CoreReturnDecrease`, `CoreMapDivisibleDecrease`, `CoreMapFreeIncrease` |
+| .3 | Strict contraction: for \(d\ge2\) and \(c<n\), one return step strictly decreases the state (`CoreReturnDecrease`); a positive multiple of \(d\) decreases under one instruction (`CoreMapDivisibleDecrease`), and for \(c\ge1\) a positive non-multiple strictly increases under one instruction (`CoreMapFreeIncrease`). | `CoreReturnDecrease`, `CoreMapDivisibleDecrease`, `CoreMapFreeIncrease` |
 | .4 | Core invariance: for \(d\ge2\), \(c\ge1\) and \(1\le n\le c\), every return iterate again satisfies \(1\le \operatorname{CoreReturn}^{\;k}(n)\le c\). | `CoreReturnCore`, `CoreReturnIterateCore`, `CoreReturnPositive`, `CoreReturnIteratePositive` |
 | .5 | Traps: a state outside the domain stays outside the domain forever, grows strictly at every instruction, and exceeds every bound. | `CoreMapNotDomain`, `CoreTrapNotDomain`, `CoreTrapStrictMono`, `CoreTrapGrowth`, `CoreTrapUnbounded` |
 | .6 | Realization: one instruction realizes the return step at a multiple of \(d\), two instructions realize it at a residue-\(c\) state; along a domain-closed prefix of length \(p\) some \(j\) with \(p\le j\le 2p\) realizes the \(p\)-th return iterate. | `CoreReturnRealizeDvd`, `CoreReturnRealizeMod`, `CoreReturnRealizeModCompose`, `CoreReturnRawRealization` |
@@ -111,9 +111,11 @@ statement about the divergent set.
 - **Zero.** The state \(0\) is a fixed point of every `CoreMap` and lies in the
   domain, so it is periodic without reaching the corner cycle. Positivity is
   therefore a hypothesis of `.13` and `.14`, not a convenience.
-- **Offset zero.** `CoreReturnReachesCoreBounded` needs \(c\ge1\) because the
-  free step at \(c=0\), \(d=2\) is the identity: \(1\) is outside the domain and
-  `CoreMap 2 0 1 = 1` does not increase.
+- **Offset zero.** The Lean statement `CoreReturnReachesCoreBounded` carries
+  \(c\ge1\) because its proof uses `CoreReturnPositive`; the return map itself
+  still reaches the core at \(c=0\), since it strictly decreases on positive
+  states. The example \(d=2\), \(c=0\), `CoreMap 2 0 1 = 1` is a property of
+  the raw map: the single affine instruction is the identity there.
 - **Divisor two.** `CoreReturnCornerOne` and `CoreReturnCornerFixedUnique` need
   only \(d\ge2\): their hypotheses are the ones used by the proofs, and the
   trap range `CoreMapCornerTrap` is stated for \(d\ge3\). The classification
@@ -121,9 +123,9 @@ statement about the divergent set.
   map carries the second cycle \(1\mapsto4\mapsto2\mapsto1\) beside
   \(3\mapsto6\mapsto3\), so `.13` would be false with two raw cycles.
 - **Uniqueness scope.** `CoreReturnCornerFixedUnique` concerns fixed points of
-  the return map; the return orbit of \(1\) leaves the accessible set at the
-  trap \(2\), which is exactly why `.13` classifies seeds rather than core
-  states.
+  the return map; for \(d\ge3\) the return orbit of \(1\) leaves the accessible
+  set at the trap \(2\), which is exactly why `.13` classifies seeds rather than
+  core states.
 - **Density.** A natural-density statement for the divergent set is not proved
   here; the certificate records the opposite side of the count, namely that
   only a sparse set of seeds reaches the cycle. The function `CycleBasinCount`
@@ -135,8 +137,9 @@ statement about the divergent set.
 
 ## Formal dependencies
 
-- `Foundations.Main.StartHere` supplies the iterate convention `Iterate`,
-  `IterateAdd` and `IterateSuccFirst` used by every statement above.
+- `Foundations.Main.StartHere` supplies the iterate convention `Iterate` and
+  the addition rule `IterateAdd`; the successor form used below is restated
+  locally as `CoreIterateSucc`.
 - `QCD.Scaling.001` and `QCD.TimeCompression.002` treat general multipliers and
   periods; the present family covers only \(q=d-1\) and does not rederive
   them.
@@ -172,8 +175,9 @@ and exits nonzero on any failure. The total decomposes as
 The bounded sweeps are not the theorems: the Lean statements above are the
 proofs, and the program is a certificate of agreement on the stated ranges.
 Every walk keeps its multiplier at most fifty-nine and stops at the guard
-\(2^{58}\), so machine words cannot wrap unnoticed; the sweeps of the program
-itself stay at multiplier at most twenty-three. `TestSweepTotals` pins the
+\(2^{58}\), so machine words cannot wrap unnoticed; the guarded walks of the
+program stay at multiplier at most twenty-three, and the corner sweep evaluates
+a single step at multiplier thirty-nine. `TestSweepTotals` pins the
 printed total, `TestParallelSweepAgrees` compares the chunked sweep with a
 serial one, `TestWarmedOrbitAllocation` requires zero allocations after
 warm-up, and `TestCacheSemantics` checks the memo of scheduled pairs; the

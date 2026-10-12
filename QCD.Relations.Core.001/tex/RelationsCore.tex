@@ -231,8 +231,8 @@ If \(d\ge2\), then \((d+1)\bmod d=1\).
 \end{proof}
 
 \begin{theorem}[Corner core states]\label{Thm:CornerCore}
-Let \(d\ge3\) and \(1\le x\le d+1\). If \(x\) is accessible, then
-\(x\in\{1,d,d+1\}\). Consequently every \(2\le x<d\) is inaccessible.
+Let \(d\ge3\) and \(1\le x\le d+1\). The state \(x\) is accessible if and
+only if \(x\in\{1,d,d+1\}\). Consequently every \(2\le x<d\) is inaccessible.
 \end{theorem}
 
 \begin{proof}
@@ -240,7 +240,9 @@ Accessibility means \(d\mid x\) or \(x\equiv d+1\equiv1\pmod d\). In the first
 case \(x\in\{d\}\) because multiples of \(d\) in \(\{1,\dots,d+1\}\) are \(d\)
 only. In the second case \(x\bmod d=1\) forces \(x=1\) or \(x=d+1\) in
 \(\{1,\dots,d+1\}\); the intermediate states \(2\le x<d\) satisfy
-\(x\not\equiv0\) and \(x\not\equiv1\pmod d\) because \(1<x<d\).
+\(x\not\equiv0\) and \(x\not\equiv1\pmod d\) because \(1<x<d\). Conversely \(d\) is
+a multiple of \(d\), \(1\equiv d+1\pmod d\), and \(d+1\) equals \(d+1\) modulo
+\(d\), so each of \(1\), \(d\) and \(d+1\) is accessible.
 \end{proof}
 
 \begin{theorem}[Corner values and traps]\label{Thm:CornerValues}
@@ -340,20 +342,22 @@ differ at odd \(k\).
 \item The state \(0\) is fixed by every \(C\) and lies in the domain, so it is
 periodic without reaching the corner cycle; positivity is a genuine
 hypothesis of Theorems~\ref{Thm:CornerClass} and \ref{Thm:CornerPeriodic}.
-\item Theorem~\ref{Thm:Reach} needs \(c\ge1\): at \(d=2\), \(c=0\) the state
-\(1\) is inaccessible and \(C(1)=1\cdot1+0=1\) does not increase, so no
-descent bound can hold.
+\item Theorem~\ref{Thm:Reach} carries \(c\ge1\) in the formal statement because
+its proof uses positivity of the core; the return map itself still reaches the
+core at \(c=0\), since it strictly decreases on positive states. At \(d=2\),
+\(c=0\) the raw map satisfies \(C(1)=1\cdot1+0=1\), so that single affine
+instruction does not increase.
 \item Theorem~\ref{Thm:CornerValues} needs no \(d\ge3\) for its values and its
 uniqueness, which hold at \(d\ge2\), and its trap range is empty at \(d=2\).
 The classification needs \(d\ge3\): at \(d=2\), \(c=3\) the state \(2\) is
 accessible (\(2\equiv0\pmod2\)) and the map carries the further cycle
 \(1\mapsto4\mapsto2\mapsto1\) beside \(3\mapsto6\mapsto3\), so
 Theorem~\ref{Thm:CornerClass} would be false with two raw cycles.
-\item The divergent set is stated to have natural density one, and that
-statement is not proved here. The certificate counts, below \(300000\), the
-seeds whose corner orbit reaches the cycle: \(1977\), \(63\), \(57\), \(22\),
-\(31\), \(16\), \(15\) and \(10\) for \(d=3,4,5,6,7,9,12,20\). Finite counting
-is not a density statement, and the density claim remains open.
+\item The claim that the divergent set has natural density one is not proved
+here. The certificate counts, below \(300000\), the seeds whose corner orbit
+reaches the cycle: \(1977\), \(63\), \(57\), \(22\), \(31\), \(16\), \(15\) and
+\(10\) for \(d=3,4,5,6,7,9,12,20\). Finite counting is not a density
+statement, and the density claim remains open.
 \end{itemize}
 
 \section{Formal correspondence}
@@ -379,7 +383,7 @@ Theorem~\ref{Thm:Dichotomy} & \texttt{CoreMapDichotomy} \\
 Lemma~\ref{Lem:CornerResidue} & \texttt{CoreCornerModSelf} \\
 Theorem~\ref{Thm:CornerCore} & \texttt{CoreCornerCoreStates}, \texttt{CoreCornerCoreStatesIff} \\
 Theorem~\ref{Thm:CornerValues} & \texttt{CoreReturnCornerOne}, \texttt{CoreReturnCornerD}, \texttt{CoreReturnCornerSelf}, \texttt{CoreMapCornerTrap}, \texttt{CoreReturnCornerFixedUnique} \\
-Theorem~\ref{Thm:CornerCycle} & \texttt{CoreMapCornerCycleSteps}, \texttt{CoreCornerCycleIterateEven}, \texttt{CoreCornerCycleInvariant} \\
+Theorem~\ref{Thm:CornerCycle} & \texttt{CoreMapCornerCycleSteps}, \texttt{CoreMapCornerCycle}, \texttt{CoreMapCornerCycleBack}, \texttt{CoreCornerCycleIterateEven}, \texttt{CoreCornerCycleIterateOdd}, \texttt{CoreCornerCycleIterateBack}, \texttt{CoreCornerCycleIterateBackOdd}, \texttt{CoreCornerCycleInvariant} \\
 Theorem~\ref{Thm:CornerClass} & \texttt{CoreCornerClassification}, \texttt{CoreCornerDomainForeverHitsCycle}, \texttt{CoreCornerIterateRealized} \\
 Theorem~\ref{Thm:CornerPeriodic} & \texttt{CoreCornerPeriodicPointCycle}, \texttt{CoreCornerPeriodicIff} \\
 Remark~\ref{Rem:Inaccessible} & \texttt{CoreMapNotDomain} \\
