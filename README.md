@@ -407,7 +407,7 @@ when \(M\mid q^{j}-1\). Consequently the return time \(m\) is the least
 positive exponent with \(M\mid q^{m}-1\), the orbit is periodic with period
 \(m\), it revisits \(0\) exactly at the multiples of \(m\), its first \(m\)
 values are pairwise distinct, and \(m\le D\); every accessible residue is
-reached at a unique index below \(m\). Modulo a prime \(p\) with \(p\nmid c\)
+reached at a unique index below \(m\). Modulo a prime \(p\) with \(p\nmid c\) and \(\gcd(p,q)=1\)
 the classification closes: the return time is the multiplicative order of
 \(q\) modulo \(p\) when \(q\not\equiv1\pmod p\), and it equals the full
 period \(p\) when \(q\equiv1\pmod p\), in which case the orbit exhausts the

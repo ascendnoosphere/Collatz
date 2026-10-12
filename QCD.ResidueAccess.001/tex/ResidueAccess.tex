@@ -117,7 +117,8 @@ and a natural number is divisible by \(D\) exactly when its residue is \(0\).
 \end{definition}
 
 Since \(q\ge2\) and \(D\ge2\) we have \(D(q-1)>0\), so the denominator is
-positive and \(M\) is a positive divisor of \(D(q-1)\).
+positive and the modulus of Definition~\ref{Def:Modulus} is a positive
+divisor of \(D(q-1)\).
 
 \begin{lemma}[Gcd reduction]\label{Lem:GcdReduction}
 For every \(X\ge0\), \(D(q-1)\mid cX\) if and only if \(M\mid X\).
@@ -368,14 +369,19 @@ and \(c=7\) this is the two-cycle \(0\leftrightarrow1\) modulo \(3\).
 
 \begin{remark}[Scope]\label{Rem:Scope}
 The criterion of Theorem~\ref{Thm:Criterion} needs no coprimality
-assumption: it holds for every \(q\ge2\), \(c\ge1\), \(D\ge2\). The
-injectivity, counting and exhaustion statements use \(\gcd(q,D)=1\) at the
+assumption: it holds for every \(q\ge2\), \(D\ge1\) and every offset \(c\).
+The coprimality clause of Lemma~\ref{Lem:ModulusDivisor} and the injectivity
+of Lemma~\ref{Lem:Injectivity} use \(\gcd(q,D)=1\) at the
 point where the residue map must be invertible; Theorem
 \ref{Thm:PrimeNecessity} uses \(\gcd(p,q)=1\) to apply Fermat's little
 theorem. The statements here classify accessible residues only. Lifting a
 residue to a seed, deciding when a seed reaches the target, and the
 density-zero capture result for the offset slice \(c=1\) are separate
-obligations and are not claimed.
+obligations and are not claimed. The identification of the accessible residues
+with the first-division residues of the raw map, the density-one escape for
+positive leakage, the entry bound of the contracting return core, the
+Hull--Dobell criterion for general cycles, the general offset slice and the
+criticality ledger are likewise not formalized here.
 \end{remark}
 
 \section{Formal correspondence}
@@ -389,6 +395,7 @@ Lemma~\ref{Lem:Walk} & \texttt{AccessStep}, \texttt{AccessOrbit}, \\
  & \texttt{AccessOrbitZero}, \texttt{AccessOrbitSucc}, \texttt{AccessOrbitAdd} \\
 Lemma~\ref{Lem:Offset} & \texttt{AccessOrbitEqOffsetMulRepunit} \\
 Corollary~\ref{Cor:ReturnCondition} & \texttt{AccessOrbitEqZeroIff} \\
+Definition~\ref{Def:Modulus} & \texttt{AccessModulus} \\
 Lemma~\ref{Lem:GcdReduction} & \texttt{AccessModulusDvdIffMul} \\
 Theorem~\ref{Thm:Criterion} & \texttt{AccessOrbitEqZeroIffModulus} \\
 Lemma~\ref{Lem:ModulusDivisor} & \texttt{AccessModulusDvdMulPred}, \texttt{AccessModulusCoprimeQ} \\
@@ -403,8 +410,8 @@ Theorem~\ref{Thm:PrimeNotOne} & \texttt{AccessPrimeOrbitIff} \\
 Theorem~\ref{Thm:PrimeOne} & \texttt{AccessPrimeOrbitIffIndex} \\
 Theorem~\ref{Thm:FullAccess} & \texttt{AccessPrimeFullAccess}, \texttt{AccessPrimeOrbitSurjective} \\
 Theorem~\ref{Thm:PrimeNecessity} & \texttt{AccessPrimeNotFullAccess} \\
-Remark~\ref{Rem:Controls} & control slice of \texttt{go/ResidueAccess.go}; boundary statements above \\
-Remark~\ref{Rem:Scope} & scope remarks for the statements above \\
+Remark~\ref{Rem:Controls} & instantiates \texttt{AccessPrimeFullAccess}, \texttt{AccessOrbitEqZeroIffDvd} \\
+Remark~\ref{Rem:Scope} & non-formal scope summary of the statements above \\
 \bottomrule
 \end{tabular}
 \end{center}

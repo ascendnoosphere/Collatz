@@ -46,6 +46,7 @@ func referenceModulus(q, c, D uint64) uint64 {
 // TestOrbitFormulaMatchesReference checks the closed form against the walked
 // orbit on a rectangle around the sweep bounds.
 func TestOrbitFormulaMatchesReference(t *testing.T) {
+	work := NewWorkspace()
 	cases := 0
 	for q := uint64(2); q <= 12; q++ {
 		for c := uint64(1); c <= 6; c++ {
@@ -56,6 +57,12 @@ func TestOrbitFormulaMatchesReference(t *testing.T) {
 					sum.Mod(sum, new(big.Int).SetUint64(D))
 					if sum.Uint64() != referenceOrbit(q, c, D, j) {
 						t.Fatalf("formula q=%d c=%d D=%d j=%d: %v", q, c, D, j, sum)
+					}
+					if got := AccessOrbitU64(q, c, D, j); got != referenceOrbit(q, c, D, j) {
+						t.Fatalf("production orbit q=%d c=%d D=%d j=%d: %d", q, c, D, j, got)
+					}
+					if exact := RepunitSumBig(work, q, j); exact.Cmp(referenceRepunit(q, j)) != 0 {
+						t.Fatalf("production repunit q=%d j=%d: %v", q, j, exact)
 					}
 					cases++
 				}
@@ -74,6 +81,12 @@ func TestCriterionMatchesReference(t *testing.T) {
 		for c := uint64(1); c <= 6; c++ {
 			for D := uint64(2); D <= 12; D++ {
 				M := referenceModulus(q, c, D)
+				if got := AccessModulusU64(q, c, D); got != M {
+					t.Fatalf("production modulus q=%d c=%d D=%d: %d want %d", q, c, D, got, M)
+				}
+				if got := ModulusByPowers(q, c, D); got != M {
+					t.Fatalf("modulus route q=%d c=%d D=%d: %d want %d", q, c, D, got, M)
+				}
 				for j := uint64(1); j <= 12; j++ {
 					power := new(big.Int).Exp(new(big.Int).SetUint64(q),
 						new(big.Int).SetUint64(j), nil)
@@ -84,6 +97,10 @@ func TestCriterionMatchesReference(t *testing.T) {
 					if got != want {
 						t.Fatalf("criterion q=%d c=%d D=%d j=%d: orbit %v, modulus %v",
 							q, c, D, j, got, want)
+					}
+					if prod := AccessOrbitU64(q, c, D, j) == 0; prod != got {
+						t.Fatalf("production criterion q=%d c=%d D=%d j=%d: %v want %v",
+							q, c, D, j, prod, got)
 					}
 				}
 			}
@@ -112,6 +129,11 @@ func TestOrderIsMinimal(t *testing.T) {
 				}
 				if m == 0 {
 					t.Fatalf("no order found q=%d c=%d D=%d M=%d", q, c, D, M)
+				}
+				work := NewWorkspace()
+				if pm, found := LeastOrderBig(work, q, M, 1000); !found || pm != m {
+					t.Fatalf("production order q=%d c=%d D=%d: %d/%v want %d",
+						q, c, D, pm, found, m)
 				}
 				if m > D {
 					t.Fatalf("order exceeds D q=%d c=%d D=%d M=%d m=%d", q, c, D, M, m)
@@ -225,6 +247,10 @@ func TestExamplesAndSliceValues(t *testing.T) {
 			t.Fatalf("orbit q=%d c=%d D=%d j=%d: got %d want %d",
 				v.q, v.c, v.D, v.j, got, v.want)
 		}
+		if got := AccessOrbitU64(v.q, v.c, v.D, v.j); got != v.want {
+			t.Fatalf("production orbit q=%d c=%d D=%d j=%d: got %d want %d",
+				v.q, v.c, v.D, v.j, got, v.want)
+		}
 	}
 	for D := uint64(3); D <= 13; D++ {
 		for c := uint64(1); c < D; c++ {
@@ -234,6 +260,9 @@ func TestExamplesAndSliceValues(t *testing.T) {
 			}
 			if referenceOrbit(q, c, D, 2) != 0 {
 				t.Fatalf("no return at two q=%d c=%d D=%d", q, c, D)
+			}
+			if AccessOrbitU64(q, c, D, 2) != 0 || AccessOrbitU64(q, c, D, 1) == 0 {
+				t.Fatalf("production slice q=%d c=%d D=%d", q, c, D)
 			}
 		}
 	}
@@ -274,8 +303,10 @@ func TestSweepTotals(t *testing.T) {
 }
 
 // TestDocumentedRanges checks the bounds the documents quote and the
-// arithmetic headroom they rely on: every product q*D + c in the sweeps stays
-// far below two to the fifty-eighth.
+// arithmetic headroom they rely on: every product q*(D-1) + c in the sweeps
+// stays below two to the fifty-eighth, the rectangle maximum being 564 and the
+// prime maximum 492. The bound is a property of the printed ranges and is not
+// enforced at run time.
 func TestDocumentedRanges(t *testing.T) {
 	if accessMaxQ != 24 || accessMaxC != 12 || accessMaxD != 24 || accessMaxJ != 20 {
 		t.Fatal("rectangle bounds changed from the documented ones")
@@ -284,27 +315,43 @@ func TestDocumentedRanges(t *testing.T) {
 		t.Fatal("prime multiplier bound changed from the documented one")
 	}
 	const guard = uint64(1) << 58
-	if got := uint64(accessMaxQ*accessMaxD + accessMaxC); got >= guard {
+	if got := uint64(accessMaxQ*(accessMaxD-1) + accessMaxC); got != 564 {
+		t.Fatalf("rectangle product %d differs from the documented 564", got)
+	} else if got >= guard {
 		t.Fatalf("rectangle product %d reaches the guard", got)
 	}
-	if got := uint64(accessPrimeQ*13 + 13); got >= guard {
+	if got := uint64(accessPrimeQ*(13-1) + 12); got != 492 {
+		t.Fatalf("prime product %d differs from the documented 492", got)
+	} else if got >= guard {
 		t.Fatalf("prime product %d reaches the guard", got)
 	}
 }
 
-// TestWarmedOrbitAllocation checks that walking the orbit reuses its buffers:
-// after warm-up the step loop allocates nothing.
+// TestWarmedOrbitAllocation checks that repeated walks reuse their storage:
+// the residue step is a pure uint64 loop, and the order search reuses the
+// buffers of its workspace so that after warm-up it allocates nothing. The
+// order search uses modulus 2^40 + 1, where twice repeated forty times pairs
+// to minus one, so the order of two is eighty and the multiplication reaches
+// two machine words.
 func TestWarmedOrbitAllocation(t *testing.T) {
 	warm := referenceOrbit(23, 11, 24, 20)
-	if warm == 24 {
-		t.Fatal("reference orbit left the residue range")
+	if warm >= 24 {
+		t.Fatalf("reference orbit left the residue range: %d", warm)
+	}
+	if got := AccessOrbitU64(23, 11, 24, 20); got != warm {
+		t.Fatalf("orbit %d differs from the reference %d", got, warm)
+	}
+	const wide = (uint64(1) << 40) + 1
+	work := NewWorkspace()
+	if m, found := LeastOrderBig(work, 2, wide, 400); !found || m != 80 {
+		t.Fatalf("warm-up order: %d/%v want 80", m, found)
 	}
 	allocs := testing.AllocsPerRun(100, func() {
-		if got := AccessOrbitU64(23, 11, 24, 20); got != warm {
-			t.Fatalf("orbit changed: %d", got)
+		if m, found := LeastOrderBig(work, 2, wide, 400); !found || m != 80 {
+			t.Fatalf("order search: %d/%v want 80", m, found)
 		}
 	})
 	if allocs != 0 {
-		t.Fatalf("orbit walk allocated %v values per run", allocs)
+		t.Fatalf("order search allocated %v values per run", allocs)
 	}
 }

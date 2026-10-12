@@ -21,7 +21,9 @@ import (
 var bigOne = big.NewInt(1)
 
 // Sweep bounds. The residue arithmetic stays below 2^58: states are reduced
-// modulo D, and D is at most three hundred, so every product stays small.
+// modulo D with D at most accessMaxD, and the prime sweep keeps the prime at
+// most 13, so every product in a residue step stays small. Exact repunits are
+// computed with math/big and are not bounded by these constants.
 const (
 	accessMaxQ     = 24
 	accessMaxC     = 12
@@ -54,6 +56,7 @@ type Workspace struct {
 	Mod  big.Int
 	Acc  big.Int
 	Exp  big.Int
+	Next big.Int
 }
 
 // NewWorkspace returns a workspace with an empty accumulator and modulus.
@@ -70,16 +73,22 @@ func Gcd(a, b uint64) uint64 {
 }
 
 // AccessStepU64 applies one residue step r -> (q*r + c) mod D. The caller must
-// keep q*D + c below 2^58, which the sweep bounds guarantee.
+// keep q*(D-1) + c below 2^58, which the sweep bounds guarantee.
 func AccessStepU64(q, c, D, r uint64) uint64 {
 	return (q*r + c) % D
 }
 
 // AccessModulusU64 computes D*(q-1)/gcd(c, D*(q-1)), the modulus whose
 // multiplicative order of q is the return time of the residue orbit of zero.
+// When the divisor vanishes the result is zero, matching the Lean convention
+// that division by zero yields zero.
 func AccessModulusU64(q, c, D uint64) uint64 {
 	top := D * (q - 1)
-	return top / Gcd(c, top)
+	g := Gcd(c, top)
+	if g == 0 {
+		return 0
+	}
+	return top / g
 }
 
 // AccessOrbitU64 walks the residue orbit of zero for j steps.
@@ -99,21 +108,36 @@ func RepunitSumBig(w *Workspace, q uint64, j uint64) *big.Int {
 	w.Pow.SetInt64(1)
 	for i := uint64(0); i < j; i++ {
 		w.Acc.Add(&w.Acc, &w.Pow)
-		w.Pow.Mul(&w.Pow, &w.Base)
+		w.Next.Mul(&w.Pow, &w.Base)
+		w.Pow.Set(&w.Next)
 	}
 	return &w.Acc
 }
 
-// ModulusByPowers computes the access modulus by reducing q^j - 1 modulo
-// D*(q-1) step by step, an independent route to AccessModulusU64.
+// ModulusByPowers returns the least positive m with D*(q-1) dividing c*m. That
+// least multiple equals D*(q-1)/gcd(c, D*(q-1)), so this is a brute-force route
+// to the access modulus that uses no gcd; the order sweep uses it while the
+// criterion sweep uses the gcd form, and the two routes are compared in the
+// tests. It returns zero when D*(q-1) vanishes.
 func ModulusByPowers(q, c, D uint64) uint64 {
 	top := D * (q - 1)
-	return top / Gcd(c, top)
+	if top == 0 {
+		return 0
+	}
+	for m := uint64(1); m <= top; m++ {
+		if (c*m)%top == 0 {
+			return m
+		}
+	}
+	return 0
 }
 
 // LeastOrderBig returns the least m with 1 <= m <= cap such that q^m is one
 // modulo M, together with a flag reporting whether such an m exists. The
-// search multiplies step by step modulo M, so no value ever exceeds M^2.
+// search multiplies step by step modulo M with the unreduced multiplier q, so
+// no intermediate value ever exceeds M*q. The quotient is written into the
+// scratch buffer of the workspace, because a plain modular reduction would
+// allocate its quotient on every step.
 func LeastOrderBig(w *Workspace, q, M, cap uint64) (uint64, bool) {
 	if M == 1 {
 		return 1, true
@@ -126,8 +150,8 @@ func LeastOrderBig(w *Workspace, q, M, cap uint64) (uint64, bool) {
 		if w.Pow.Cmp(&w.Acc) == 0 {
 			return m, true
 		}
-		w.Pow.Mul(&w.Pow, &w.Base)
-		w.Pow.Mod(&w.Pow, &w.Mod)
+		w.Next.Mul(&w.Pow, &w.Base)
+		w.Exp.QuoRem(&w.Next, &w.Mod, &w.Pow)
 	}
 	return 0, false
 }
@@ -135,7 +159,7 @@ func LeastOrderBig(w *Workspace, q, M, cap uint64) (uint64, bool) {
 // dividesBig reports whether M divides n, which the criterion uses on q^j - 1.
 func dividesBig(w *Workspace, n *big.Int, M uint64) bool {
 	w.Mod.SetUint64(M)
-	w.Pow.Mod(n, &w.Mod)
+	w.Exp.QuoRem(n, &w.Mod, &w.Pow)
 	return w.Pow.Sign() == 0
 }
 
@@ -201,7 +225,11 @@ func sweepCriterion() Totals {
 }
 
 // sweepOrder checks that on coprime pairs the return time of the orbit is the
-// least exponent with q^m = 1 modulo the access modulus, and that m <= D.
+// least exponent with q^m = 1 modulo the access modulus, and that m <= D. The
+// cap is chosen above the proved bound m <= D <= accessMaxD, so the not-found
+// branch is unreachable on the swept grid and never discards an instance. The
+// early-return loop and the period loop both evaluate the orbit at exponents
+// below m; the overlapping assertions are repeated on purpose.
 func sweepOrder() Totals {
 	var t Totals
 	w := NewWorkspace()
@@ -285,7 +313,7 @@ func sweepPrimeNonOne() Totals {
 	return t
 }
 
-// sweepExamples checks the worked examples of the source section, including
+// sweepExamples checks the worked examples, including
 // the trap residue modulo three and the two-cycle case with a non-area
 // multiplier.
 func sweepExamples() Totals {

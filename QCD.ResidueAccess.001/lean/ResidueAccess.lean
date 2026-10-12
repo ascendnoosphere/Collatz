@@ -18,12 +18,20 @@ order governs the returns.  Coprimality of `q` and `D` is not needed for the
 orbit formula and the criterion; it is used for injectivity of the residue map
 and for the prime case.
 
-The results formalize Section 2.1 of the residue-criticality source: the orbit
-formula `F^j(0) = c G_j(q) mod D`, the criterion that the orbit returns to `0`
-exactly at the exponents `j` with `AccessModulus q c D ∣ q^j - 1`, pure
-periodicity of the orbit, distinctness of the residues below the least positive
-return time `m`, the counting bound `m ≤ D`, and the prime case, where the
-criterion reduces to `ord_p(q)` or to `p ∣ j`.
+The results are the orbit formula `F^j(0) = c G_j(q) mod D`, the criterion that
+the orbit returns to `0` exactly at the exponents `j` with
+`AccessModulus q c D ∣ q^j - 1`, pure periodicity of the orbit, distinctness of
+the residues below the least positive return time `m`, the counting bound
+`m ≤ D`, and the prime case, where the criterion reduces to `ord_p(q)` or to
+`p ∣ j`. The formulas below assume `2 ≤ q` and `0 < D` unless a statement adds
+further hypotheses; the offset `c` is an arbitrary natural number. Coprimality
+of `q` and `D` is not needed for the orbit formula and the criterion; it is used
+for the coprimality of the access modulus with `q`, for injectivity of the
+residue map, and as a hypothesis of the necessity statement in the prime case.
+The density-one escape for `m < D`, the entry bound of the contracting return
+core, the zero-density capture statement for the offset slice `c = 1`, the
+Hull-Dobell criterion, the general offset and the criticality ledger are not
+formalized here.
 -/
 
 namespace GeneralizedCollatz
