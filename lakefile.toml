@@ -62,7 +62,7 @@ defaultTargets = [
   "LogGap",
   "SharpEnergy",
   "NagellList",
-  "RepunitDivisor",
+  "RepunitCell",
 ]
 
 [[require]]
@@ -343,5 +343,5 @@ name = "NagellList"
 srcDir = "QCD.NagellList.001/lean"
 
 [[lean_lib]]
-name = "RepunitDivisor"
+name = "RepunitCell"
 srcDir = "QCD.RepunitDivisor.001/lean"
