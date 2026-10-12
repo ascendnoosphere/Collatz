@@ -66,6 +66,7 @@ defaultTargets = [
   "PhaseRigid",
   "UniformContraction",
   "CyclicGap",
+  "CarryGap",
 ]
 
 [[require]]
@@ -360,3 +361,7 @@ srcDir = "QCD.UniformContraction.001/lean"
 [[lean_lib]]
 name = "CyclicGap"
 srcDir = "QCD.CyclicGap.001/lean"
+
+[[lean_lib]]
+name = "CarryGap"
+srcDir = "QCD.CarryGap.001/lean"
