@@ -17,12 +17,12 @@ the raw generalized Collatz map with divisor \(d\). Write \(T^{k}\) for \(k\)
 instructions, so \(T^{0}\) is the identity and \(T^{k+1}=T\circ T^{k}\). All
 statements are over \(\mathbb{N}\) and all divisions are exact where written.
 
-The family proves four explicit families of cycles and one intersection
-statement.
+The family records four parameter slices of the raw map and proves, on each, a
+cycle or divergence statement together with one intersection statement.
 
 1. At \(d=2\) and \(q=2c+1\): an odd state always takes the affine branch;
-   for even \(c\) the affine branch returns an odd state, and for \(c\ge1\)
-   every positive seed first reaches an odd state and then passes every bound.
+   for even \(c\) the affine branch returns an odd state, and every positive
+   seed of that slice first reaches an odd state and then passes every bound.
    For odd \(c\) the gcd with \(c\) is a step invariant, so the strata of
    \(c\) are invariant, and bounded orbits are periodic inside their own
    stratum.
@@ -35,7 +35,7 @@ statement.
    \(1\mapsto4\mapsto2\mapsto1\).
 4. The intersection slice \(q=d+1\), \(c=d-1\) for \(d\ge3\): a positive
    state reaches \(1\) exactly when it is a power of \(d\), and no positive
-   power of the clock returns \(1\) to itself.
+   iterate of the map returns \(1\) to itself.
 
 Claims 1 and 2 share the divisor \(2\) and the multiplier \(2c+1\), so they are
 stated as one slice; claims 3 and 4 are independent slices. Every claim is a
@@ -51,7 +51,7 @@ below are instructions of \(T\), including every division.
 | .3 | A bounded orbit repeats one of its states: if every iterate of \(n\) is at most \(M\), then \(T^{\,k+p}(n)=T^{\,k}(n)\) for some \(k\) and some \(p>0\). | `RawStepBoundedEventuallyPeriodic` |
 | .4 | At \(d=2\) an odd state takes the affine branch; with \(q=2c+1\) this is \((2c+1)n+c\), so for even \(c\) the result is odd again, and for \(1\le c\) it exceeds \(n\). | `RawStepTwoOfOdd`, `RawStepTwoEvenOffsetAffine`, `RawStepTwoEvenOffsetOddOfOdd`, `RawStepTwoEvenOffsetIncreaseOdd` |
 | .5 | Every positive seed of the slice \(q=2c+1\), \(d=2\) reaches an odd state. | `RawStepTwoEvenOffsetReachesOdd` |
-| .6 | Even-offset divergence: for even \(c\ge2\) and every positive seed, the orbit passes every bound. | `RawStepTwoEvenOffsetUnbounded` |
+| .6 | Even-offset divergence: for even \(c\ge1\) and every positive seed, the orbit passes every bound. | `RawStepTwoEvenOffsetUnbounded` |
 | .7 | Odd-offset gcd invariance: for odd \(c\) and \(q=2c+1\), \(\gcd(T(n),c)=\gcd(n,c)\), and the same holds for every iterate. | `RawStepTwoOddOffsetGcd`, `RawStepTwoOddOffsetGcdIterate` |
 | .8 | Odd-offset stratum cycles: for odd \(c\), a bounded orbit has a periodic point in its own stratum, if no positive seed diverges then every divisor \(g\) of \(c\) occurs as \(\gcd(y,c)\) of a periodic point \(y\), and for \(c>1\) the seed \(c\) never reaches \(1\). | `RawStepTwoOddOffsetStratumCycle`, `RawStepTwoOddOffsetManyCycles`, `RawStepTwoOddOffsetSeedNoCapture` |
 | .9 | The offset \(c_h=3(8^{h}-1)/7\) is an integer, and with \(q_h=2c_h+1\) it satisfies \(7c_h=3(8^{h}-1)\) and \(3q_h+c_h=3\cdot2^{3h}\). | `SevenDvdEightPowSubOne`, `CycleC`, `CycleQ`, `CycleCMulSeven`, `CycleQIdentity` |
@@ -61,7 +61,7 @@ below are instructions of \(T\), including every division.
 | .13 | Full-residue-access slice: for \(d\ge2\) and \(k\ge2\) the multiplier exceeds \(d\) exactly by the offset, \(q=d+c\), the affine step of \(d-1\) lands on \((d-1)d^{k}\), and \(d\) does not divide \(d-1\). | `FullAccessQeq`, `FullAccessIdentity`, `FullAccessNotDvd`, `NatPowDvdSelfPow` |
 | .14 | Orbit formula: \(T^{\,j+1}(d-1)=(d-1)d^{k-j}\) for \(j\le k\). | `FullAccessIterateFormula` |
 | .15 | The seed \(d-1\) returns to itself after \(k+1\) instructions and no earlier positive time does, and for \(d\ge3\) its orbit meets \(1\) at no time. | `FullAccessReturns`, `FullAccessPrimitive`, `FullAccessAvoidsOne` |
-| .16 | At \(d=k=2\) the slice of .13 is the classical cycle \(1\mapsto4\mapsto2\mapsto1\). | `FullAccessClassicalInstance` |
+| .16 | At \(d=k=2\) the slice of .13 is the classical cycle \(1\mapsto4\mapsto2\mapsto1\), and the orbit formula of .14 is the branch form \(T^{\,j+1}(1)=2^{2-j}\) for \(j\le2\). | `FullAccessClassicalInstance`, `FullAccessIterateFormula` |
 | .17 | Zero is fixed by every raw map. | `RawStepZero` |
 | .18 | Intersection slice: for \(d\ge3\) a state whose image is \(d^{m}\) is \(d^{m+1}\). | `RawStepIntersectionPredecessor` |
 | .19 | Iterate formula: for \(d\ge3\), \(k\) instructions from a positive \(x\) land on \(d^{t}\) only from \(x=d^{k+t}\). | `RawStepIntersectionIteratePow` |
@@ -105,15 +105,16 @@ Given the orbit formula, the return at time \(3h+1\) is \(3\cdot2^{0}=3\) and
 every earlier positive time gives \(3\cdot2^{e}\) with \(e\ge1\), which is at
 least \(6\) and hence not \(3\); similarly for \(k+1\) and \(d-1\), where
 \((d-1)d^{e}\ge d-1\) is an equality only for \(e=0\). The avoidance of \(1\)
-follows because \(3\cdot2^{e}\ge3\) and \((d-1)d^{e}\ge2\cdot3=6\) for
+follows because \(3\cdot2^{e}\ge3\) and \((d-1)d^{e}\ge d-1\ge2\) for
 \(d\ge3\), \(e\ge0\). The stratum statement uses divisibility rather than
 equality: \(\gcd(T(n),c)=\gcd(n,c)\) transports the stratum of the periodic
 point back to the stratum of the seed. For the intersection family, the
 predecessor lemma is the only step that needs arithmetic beyond
 \(\mathbb{N}\): at a non-multiple of \(d\) the affine value modulo \(d+1\) is
 \(-2\), while the powers of \(d\) modulo \(d+1\) are \(\pm1\), so parity
-separates the two sides and forces \(d\equiv1\) or \(2\) modulo \(d+1\), which
-fails for \(d\ge3\). Inducting the lemma over the number of remaining steps
+separates the two sides: an even exponent would force \(d+1\mid3\) and an odd
+exponent \(d+1\mid1\), both impossible for \(d\ge3\). Inducting the lemma
+over the number of remaining steps
 gives .19, and \(t=0\) gives .20.
 
 **Difficulty decrease.** The infinite objects of the original obligation are
@@ -150,9 +151,9 @@ step and no renumbering of the clock is involved.
 - \(h=0\) in .9–.12: the offset vanishes, \(q=1\), and the cycle of \(3\) has
   length \(1\); the slice is not excluded, but the parity statement recorded in
   the certificate's first sweep is asserted only for \(h\ge1\).
-- \(k=1\) in .13–.15: the offset vanishes and the seed \(d-1\) is not yet
-  a multiple pattern of the claimed length; the hypothesis \(2\le k\) is
-  carried by every claim of the slice.
+- \(k=1\) in .13–.15: the formalized statements carry \(2\le k\). At
+  \(k=1\) the offset vanishes and the slice degenerates to the two-step cycle
+  \(d-1\mapsto d(d-1)\mapsto d-1\), which those statements do not cover.
 - \(c=1\) in .8: the seed of the last clause is \(c\) itself, so the
   hypothesis \(1<c\) is necessary; for \(c=3\) the walk of the seed stays
   inside the stratum of \(3\) and never meets the stratum of \(1\).
@@ -213,14 +214,18 @@ states grow. `TestSweepTotals`
 pins the printed total and its per-slice decomposition, `TestStepMatchesReference`
 and `TestStepBigMatchesReference` compare the step functions with independent
 references at machine and at large states, `TestCycleSliceTriples`,
-`TestFullAccessResiduesAndIdentity`, `TestIntersectionEquivalence` and
-`TestIntersectionControlAtTwo` re-derive the three cycle families,
+`TestFullAccessResiduesAndIdentity`, `TestFullAccessOrbitAndMinimality`,
+`TestIntersectionEquivalence` and `TestIntersectionControlAtTwo` re-derive the
+four parameter slices of the family,
 `TestEvenOffsetGrowthControl` and `TestOddOffsetGcdControl` re-derive the
-dichotomy together with its \(c=0\) and even-\(c\) controls,
+dichotomy together with its \(c=0\) and even-\(c\) controls, and compare
+states on both sides of the divisor with the reference,
 `TestOddOffsetSeedCapture` re-derives the seed-capture claim with the
 \(c=1\) control,
-`TestWarmedOrbitAllocation` requires zero allocations after warm-up, and
-`TestDocumentedRanges` checks the two range claims of this paragraph.
+`TestWarmedOrbitAllocation` requires zero allocations on a multi-word walk
+once its buffers have grown to the walk width, and
+`TestDocumentedRanges` checks the \(2^{18}\) bound and the wide-state claim of
+this paragraph.
 
 ## Build and checks
 

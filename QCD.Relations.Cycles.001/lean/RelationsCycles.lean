@@ -2,15 +2,14 @@
 import GeneralizedCollatz
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.ZMod.Basic
-import Mathlib.Logic.Function.Iterate
 
 /-!
 Explicit positive cycles of the raw map
 
   `NatRawStep d q c n = n / d` for `d ∣ n`, and `NatRawStep d q c n = q * n + c` otherwise,
 
-for positive integers `q`, `c` and `d ≥ 2`.  The family collects three slices on which
-positive cycles can be written down and their minimal periods proved:
+for `q ≥ 1`, `c ≥ 0` and `d ≥ 2`.  The family records four parameter slices of the raw
+map and proves, on each of them, statements about positive cycles and their periods:
 
 * `q = 2 c + 1`, `d = 2`, `c` even: every positive seed reaches an odd state and then
   increases strictly at every step, so every seed diverges.
@@ -20,7 +19,7 @@ positive cycles can be written down and their minimal periods proved:
   `3 h + 1` that avoids `1`.
 * `q = d + c` with `c = (d - 1) (d ^ (k - 1) - 1)`: the residues are a full translation
   cycle, and `d - 1` lies on a primitive cycle of length `k + 1` that avoids `1` for
-  `d ≥ 3`; `d = k = 2` is the classical cycle `1 ↦ 3 ↦ 1`.
+  `d ≥ 3`; `d = k = 2` is the classical cycle `1 ↦ 4 ↦ 2 ↦ 1`.
 * `q = d + 1`, `c = d - 1`, `d ≥ 3`: an affine step can never be followed by divisions
   down to `1`, so the seeds that reach `1` are exactly the powers of `d`, and `1` is on no
   positive cycle.

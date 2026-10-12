@@ -35,11 +35,12 @@ Division has precedence, \(T^{k}\) denotes \(k\) instructions of \(T\), so
 numbers, and a state is \emph{positive} when it is nonzero. Every division
 below is exact where it is written.
 
-The document proves four families of cycles, one dichotomy at the divisor
+The document proves three families of cycles, one dichotomy at the divisor
 \(2\), and one intersection statement. The families are the geometric-offset
 slice \(c=3(8^{h}-1)/7\), \(q=2c+1\), \(d=2\); the full-residue-access slice
-\(c=(d-1)(d^{k-1}-1)\), \(q=(d-1)d^{k-1}+1\); the divisor-two slices with
-\(q=2c+1\); and the intersection slice \(q=d+1\), \(c=d-1\) for \(d\ge3\).
+\(c=(d-1)(d^{k-1}-1)\), \(q=(d-1)d^{k-1}+1\); and the divisor-two slices with
+\(q=2c+1\), which also carry the dichotomy; the fourth and last statement is
+the intersection slice \(q=d+1\), \(c=d-1\) for \(d\ge3\).
 
 \section{The raw map and its iterates}
 
@@ -443,7 +444,7 @@ divides \(k-j\) times.
 Statement & Lean declaration \\
 \midrule
 Lemma~\ref{Lem:Branch} & \texttt{RawStepOfDvd}, \texttt{RawStepOfNotDvd}, \texttt{RawStepZero} \\
-Lemma~\ref{Lem:IterateSplit} & \texttt{RawStepIterateSucc}, \texttt{RawStepIterateSuccLast} \\
+Lemma~\ref{Lem:IterateSplit} & \texttt{RawStepIterateSucc}, \texttt{RawStepIterateSuccLast}, \texttt{IterateAdd} \\
 Lemma~\ref{Lem:Divisions} & \texttt{RawStepDivMulIterate}, \texttt{RawStepPowIterate} \\
 Lemma~\ref{Lem:Pigeonhole} & \texttt{RawStepBoundedEventuallyPeriodic} \\
 Lemma~\ref{Lem:TwoOdd} & \texttt{RawStepTwoOfOdd}, \texttt{RawStepTwoEvenOffsetAffine}, \texttt{RawStepTwoEvenOffsetOddOfOdd}, \texttt{RawStepTwoEvenOffsetIncreaseOdd} \\
@@ -456,10 +457,10 @@ Lemma~\ref{Lem:GeoOffset} & \texttt{SevenDvdEightPowSubOne}, \texttt{CycleC}, \t
 Theorem~\ref{Thm:GeoLoop} & \texttt{CycleAffineStep}, \texttt{CycleIterateFormula}, \texttt{CycleReturns}, \texttt{CyclePrimitive}, \texttt{CycleAvoidsOne} \\
 Lemma~\ref{Lem:FullIdentity} & \texttt{FullAccessQeq}, \texttt{FullAccessIdentity}, \texttt{FullAccessNotDvd}, \texttt{NatPowDvdSelfPow} \\
 Theorem~\ref{Thm:FullLoop} & \texttt{FullAccessIterateFormula}, \texttt{FullAccessReturns}, \texttt{FullAccessPrimitive}, \texttt{FullAccessAvoidsOne} \\
-Corollary~\ref{Cor:Classical} & \texttt{FullAccessClassicalInstance} \\
+Corollary~\ref{Cor:Classical} & \texttt{FullAccessClassicalInstance}, \texttt{FullAccessIterateFormula} \\
 Lemma~\ref{Lem:IntersectionPred} & \texttt{RawStepIntersectionPredecessor} \\
 Theorem~\ref{Thm:IntersectionIterate} & \texttt{RawStepIntersectionIteratePow} \\
-Theorem~\ref{Thm:IntersectionReach} & \texttt{RawStepIntersectionReachesOne}, \texttt{RawStepIntersectionReachesOneIff} \\
+Theorem~\ref{Thm:IntersectionReach} & \texttt{RawStepIntersectionReachesOne}, \texttt{RawStepIntersectionReachesOneIff}, \texttt{RawStepPowIterate} \\
 Corollary~\ref{Cor:NoReturn} & \texttt{RawStepIntersectionNoReturnToOne} \\
 Remark~\ref{Rem:NotClassicalOnly} & \texttt{FullAccessClassicalInstance}, \texttt{FullAccessAvoidsOne} \\
 Remark~\ref{Rem:TwoNecessary} & \texttt{FullAccessClassicalInstance}, \texttt{RawStepIntersectionReachesOneIff} \\

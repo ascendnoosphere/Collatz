@@ -58,10 +58,11 @@ type SliceTotals struct {
 	Failures uint64
 }
 
-// Workspace holds the buffers reused by the walks so that a sweep allocates
-// nothing after construction. The parameter buffers Divisor, Mult and Offset
-// are set once per case and only read by StepBig; the remaining buffers are
-// scratch whose roles are documented where they are used.
+// Workspace holds the buffers reused by the walks so that no walk allocates a
+// new *big.Int; a buffer may still grow internally when a value widens. The
+// parameter buffers Divisor, Mult and Offset are set once per case and only
+// read by StepBig; the remaining buffers are scratch whose roles are documented
+// where they are used.
 type Workspace struct {
 	Divisor *big.Int
 	Mult    *big.Int
@@ -115,7 +116,8 @@ func (w *Workspace) Pow(base, exp uint64) *big.Int {
 // writes the result into next; it returns next. The parameters are read from
 // Divisor, Mult and Offset, and cur and next must be distinct buffers. One
 // division produces the quotient and the remainder together, so a walk
-// allocates nothing after construction.
+// allocates no new *big.Int; the result buffers grow internally when a value
+// widens.
 func (w *Workspace) StepBig(cur, next *big.Int) *big.Int {
 	next.QuoRem(cur, w.Divisor, w.Rem)
 	if w.Rem.Sign() == 0 {

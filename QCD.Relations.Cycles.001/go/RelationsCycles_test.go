@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: CC-BY-4.0
 //
-// Tests for the exact certificate of QCD.Relations.Cycles.001. Every test
-// recomputes its subject with an independent math/big implementation, so a
-// buffer error inside the workspace cannot agree with the reference by
-// accident.
+// Tests for the exact certificate of QCD.Relations.Cycles.001. The step
+// functions and the sweep results are compared against independent math/big
+// references, so a buffer error inside the workspace cannot agree with the
+// reference by accident; the remaining tests recompute their subject through
+// the exported arithmetic of the certificate.
 
 package main
 
@@ -77,6 +78,12 @@ func TestStepBigMatchesReference(t *testing.T) {
 	if got.Cmp(want) != 0 {
 		t.Fatalf("large StepBig = %s, want %s", got, want)
 	}
+	w.Cur.SetString("123456789012345678901234567891", 10)
+	got = new(big.Int).Set(w.StepBig(w.Cur, w.Next))
+	want = referenceStepBig(big.NewInt(2), big.NewInt(3), big.NewInt(1), w.Cur)
+	if got.Cmp(want) != 0 {
+		t.Fatalf("large odd StepBig = %s, want %s", got, want)
+	}
 }
 
 // TestCycleSliceTriples checks the first three triples of the first slice and
@@ -145,6 +152,49 @@ func TestFullAccessResiduesAndIdentity(t *testing.T) {
 			rhs.Mul(rhs, big.NewInt(d-1))
 			if lhs.Cmp(rhs) != 0 {
 				t.Fatalf("identity failed at d=%d k=%d: %s vs %s", d, k, lhs, rhs)
+			}
+		}
+	}
+}
+
+// TestFullAccessOrbitAndMinimality recomputes the third slice independently:
+// the orbit formula, the return after k+1 instructions, the absence of an
+// earlier return, and the avoidance of 1 for d >= 3.
+func TestFullAccessOrbitAndMinimality(t *testing.T) {
+	one := big.NewInt(1)
+	for d := uint64(2); d <= fullAccessMaxD; d++ {
+		for k := uint64(2); k <= fullAccessMaxK; k++ {
+			w := NewWorkspace()
+			c, q := w.FullAccessOffsets(d, k)
+			if q.BitLen() <= 64 && c.BitLen() <= 64 {
+				w.SetParams(d, q.Uint64(), c.Uint64())
+			} else {
+				w.Divisor.SetUint64(d)
+				w.Mult.Set(q)
+				w.Offset.Set(c)
+			}
+			seed := new(big.Int).SetUint64(d - 1)
+			w.Cur.Set(seed)
+			for j := uint64(0); j <= k; j++ {
+				w.StepBig(w.Cur, w.Next)
+				w.Cur, w.Next = w.Next, w.Cur
+				want := new(big.Int).Mul(big.NewInt(int64(d-1)),
+					new(big.Int).Exp(big.NewInt(int64(d)), big.NewInt(int64(k-j)), nil))
+				if w.Cur.Cmp(want) != 0 {
+					t.Fatalf("orbit formula at d=%d k=%d time %d: %s, want %s",
+						d, k, j+1, w.Cur, want)
+				}
+				if j < k {
+					if w.Cur.Cmp(seed) == 0 {
+						t.Fatalf("d=%d k=%d returned to d-1 at time %d", d, k, j+1)
+					}
+					if d >= 3 && w.Cur.Cmp(one) == 0 {
+						t.Fatalf("d=%d k=%d met 1 at time %d", d, k, j+1)
+					}
+				}
+			}
+			if w.Cur.Cmp(seed) != 0 {
+				t.Fatalf("d=%d k=%d ends at %s, want %s", d, k, w.Cur, seed)
 			}
 		}
 	}
@@ -248,6 +298,15 @@ func TestOddOffsetGcdControl(t *testing.T) {
 				t.Fatalf("gcd not preserved at c=%d n=%d", c, n)
 			}
 		}
+		// The gcd identity cannot separate the two branches, so states on both
+		// sides of the divisor are compared with an independent reference.
+		for _, n := range []uint64{2, 6, 18, 5, 9} {
+			got := new(big.Int).SetUint64(Step(2, q, c, n))
+			want := referenceStep(2, int64(q), int64(c), int64(n))
+			if got.Cmp(want) != 0 {
+				t.Fatalf("branch case c=%d n=%d: %s, want %s", c, n, got, want)
+			}
+		}
 		for e := uint64(1); e <= c; e++ {
 			if c%e != 0 {
 				continue
@@ -270,7 +329,8 @@ func TestOddOffsetGcdControl(t *testing.T) {
 // TestOddOffsetSeedCapture walks the seed c of every odd offset with c > 1 and
 // requires it to avoid 1, which is the finite shadow of the exclusion of the
 // seed c from the stratum of 1. The offset c = 1 is the excluded control: its
-// seed is 1 itself.
+// seed is 1 itself, and the walk below requires its orbit to meet 1, so the
+// control satisfies the complement of the tested claim.
 func TestOddOffsetSeedCapture(t *testing.T) {
 	w := NewWorkspace()
 	for c := uint64(3); c <= oddOffsetMaxC; c += 2 {
@@ -286,8 +346,17 @@ func TestOddOffsetSeedCapture(t *testing.T) {
 	}
 	w.SetParams(2, 3, 1)
 	w.Cur.SetUint64(1)
-	if w.Cur.Cmp(BigOne) != 0 {
-		t.Fatalf("control: the seed of c=1 is not 1")
+	met := false
+	for k := 0; k < oddOffsetCaptureSteps; k++ {
+		w.StepBig(w.Cur, w.Next)
+		w.Cur, w.Next = w.Next, w.Cur
+		if w.Cur.Cmp(BigOne) == 0 {
+			met = true
+			break
+		}
+	}
+	if !met {
+		t.Fatalf("control: the c=1 slice never met 1 in %d steps", oddOffsetCaptureSteps)
 	}
 }
 
@@ -311,8 +380,12 @@ func TestSweepTotals(t *testing.T) {
 			t.Fatalf("slice %d counted %+v, want checks %d and no failures",
 				i, tot, wantSlices[i])
 		}
+		second := sweep()
+		if second.Failures != 0 || second.Checks != tot.Checks {
+			t.Fatalf("slice %d rerun counted %+v, first run %+v", i, second, tot)
+		}
 		total.Checks += tot.Checks
-		repeat.Checks += sweep().Checks
+		repeat.Checks += second.Checks
 	}
 	if total.Checks != 3229604 {
 		t.Fatalf("certificate total %d, want 3229604", total.Checks)
@@ -323,28 +396,36 @@ func TestSweepTotals(t *testing.T) {
 }
 
 // TestWarmedOrbitAllocation requires the workspace walk to allocate nothing
-// after warm-up, which keeps the sweeps free of hidden per-step allocation.
+// once its buffers have grown to the width of the walk. The seed is a
+// three-word power of three whose orbit divides down inside that width, so the
+// measurement is run on a multi-word walk rather than on machine words.
 func TestWarmedOrbitAllocation(t *testing.T) {
 	w := NewWorkspace()
-	w.SetParams(3, 4, 2)
-	allocs := testing.AllocsPerRun(50, func() {
-		w.Cur.SetUint64(5)
+	w.SetParams(3, 3, 0)
+	seed := new(big.Int).Exp(big.NewInt(3), big.NewInt(100), nil)
+	walk := func() {
+		w.Cur.Set(seed)
 		for i := 0; i < 32; i++ {
 			w.StepBig(w.Cur, w.Next)
 			w.Cur, w.Next = w.Next, w.Cur
 		}
-	})
+	}
+	walk()
+	if w.Cur.BitLen() <= 64 {
+		t.Fatalf("warmed walk stayed inside a word, width %d", w.Cur.BitLen())
+	}
+	allocs := testing.AllocsPerRun(50, walk)
 	if allocs != 0 {
 		t.Fatalf("orbit walk allocated %v values per run", allocs)
 	}
 }
 
 // TestDocumentedRanges checks the two claims the sweeps make about their own
-// arithmetic: the uint64 sweep stays far below its word limit, while the first
-// slice already needs states beyond uint64.
+// arithmetic: every value of the uint64 sweep stays below the documented
+// \(2^{18}\) bound, while the first slice already needs states beyond uint64.
 func TestDocumentedRanges(t *testing.T) {
 	maxUint64State := uint64(oddOffsetSeeds)*(2*oddOffsetMaxC+1) + oddOffsetMaxC
-	if maxUint64State >= 1<<40 {
+	if maxUint64State >= 1<<18 {
 		t.Fatalf("uint64 sweep reaches %d, beyond the documented range", maxUint64State)
 	}
 	w := NewWorkspace()
