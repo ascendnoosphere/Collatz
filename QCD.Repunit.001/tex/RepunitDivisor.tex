@@ -1,0 +1,252 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\noindent
+This document studies the raw map
+\[
+T_{q,D}(n)=\begin{cases} n/D, & D\mid n,\\ qn+1, & D\nmid n,\end{cases}
+\]
+on the slice whose divisor is the repunit sum
+\(S_k=S_k(q)=1+q+\cdots+q^{k-1}\). The offset is one, so the affine branch is
+\(n\mapsto qn+1\), and the divisor identity \((q-1)S_k=q^k-1\) exhibits
+\(S_k\) as a divisor of \(q^k-1\). The results below compute the
+multiplicative order of \(q\) modulo \(S_k\), write down the positive cycle of
+the seed \(1\) with its minimal period, describe the residue walk of
+\(1\bmod S_k\), locate the trap state, and recover the cycle from the return
+map. Every statement is about \(\N\) at the raw clock: one division or one
+affine step is one instruction.
+
+\section{The repunit sum}
+
+\begin{lemma}[Basic identities]\label{Lem:RepunitBasic}
+For all \(q,k\ge0\) one has \(S_0=0\), \(S_{k+1}=S_k+q^k\), \(S_1=1\), and
+\(qS_k+1=S_{k+1}\). For all \(j,k\ge0\) one has
+\(S_{j+k}=S_j+q^jS_k\), and for \(k\ge1\) one has
+\(S_k=q^{k-1}+S_{k-1}\).
+\end{lemma}
+
+\begin{proof}
+All identities expand the defining sum. The recurrence \(S_{k+1}=S_k+q^k\)
+splits the range \(\{0,\dots,k\}\) into \(\{0,\dots,k-1\}\) and \(\{k\}\).
+The addition rule splits \(\{0,\dots,j+k-1\}\) into \(\{0,\dots,j-1\}\) and
+\(\{j,\dots,j+k-1\}\), and the second block contributes
+\(q^j(1+q+\cdots+q^{k-1})=q^jS_k\). The formula \(qS_k+1=S_{k+1}\) is the
+case \(j=1\) of the addition rule together with \(S_1=1\), and
+\(S_k=q^{k-1}+S_{k-1}\) is the recurrence written backwards.
+\end{proof}
+
+\begin{lemma}[Divisor identity]\label{Lem:DivisorIdentity}
+For \(q\ge1\) and all \(k\ge0\) one has \((q-1)S_k=q^k-1\), and consequently
+\(S_k\mid q^k-1\).
+\end{lemma}
+
+\begin{proof}
+The difference telescopes,
+\[
+(q-1)S_k=\sum_{j=0}^{k-1}\left(q^{j+1}-q^j\right)=q^k-1,
+\]
+because consecutive powers cancel in the finite sum. Divisibility follows
+with quotient \(q-1\).
+\end{proof}
+
+\begin{lemma}[Growth]\label{Lem:Growth}
+For \(k\ge1\) one has \(1\le S_k\) and \(0<S_k\). For \(q\ge2\) one has
+\(S_k<S_{k+1}\), the sequence \(k\mapsto S_k\) is strictly increasing,
+\(S_k+1\le q^k\), and \(S_k<q^k\).
+\end{lemma}
+
+\begin{proof}
+The first two claims are immediate from \(S_k=1+\cdots+q^{k-1}\) with
+\(k\ge1\), which contains the term \(1\). For strict growth,
+\(S_{k+1}=S_k+q^k>S_k\) because \(q^k>0\). Monotonicity follows by induction
+on the difference of the indices. The bound \(S_k+1\le q^k\) is proved by
+induction on \(k\): it is \(0+1\le1\) for \(k=0\), and
+\[
+S_{k+1}+1=S_k+q^k+1\le2q^k\le q^{k+1}
+\]
+for \(q\ge2\), using the induction hypothesis and \(2\le q\). The strict
+inequality \(S_k<q^k\) follows from \(S_k+1\le q^k\).
+\end{proof}
+
+\begin{theorem}[Exact order]\label{Thm:Order}
+Let \(q\ge2\). Then \(q^k\equiv1\pmod{S_k}\) for all \(k\ge0\), and for
+\(0<j<k\) one has \(q^j\not\equiv1\pmod{S_k}\). Hence the multiplicative order
+of \(q\) modulo \(S_k\) is exactly \(k\).
+\end{theorem}
+
+\begin{proof}
+The congruence is Lemma~\ref{Lem:DivisorIdentity}. Suppose now that
+\(0<j<k\) and \(S_k\mid q^j-1\). By Lemma~\ref{Lem:Growth} the sum \(S_j\)
+satisfies \(S_j<q^j\) and \(S_j<S_k\), and by the addition rule
+\(S_k=S_j+q^jS_{k-j}\) with \(k-j\ge1\), so \(q^j\le q^jS_{k-j}=S_k-S_j<S_k\).
+Lemma~\ref{Lem:DivisorIdentity} gives \(q^j-1=(q-1)S_j\), hence
+\(0\le q^j-1<S_k\). A positive multiple of \(S_k\) in that interval is zero,
+so \(q^j=1\), which for \(q\ge2\) and \(j>0\) is impossible. Therefore
+\(S_k\nmid q^j-1\) and the order is \(k\).
+\end{proof}
+
+\section{The unit cycle}
+
+\begin{lemma}[Branches and the trap]\label{Lem:StepBranch}
+For all \(q,D,n\) one has \(T_{q,D}(n)=n/D\) when \(D\mid n\) and
+\(T_{q,D}(n)=qn+1\) when \(D\nmid n\); the value of an iterate after \(k+1\)
+steps is the value after \(k\) steps followed by one more step; and
+\(T_{q,D}(0)=0\) with \(T_{q,D}^{\,j}(0)=0\) for every \(j\).
+\end{lemma}
+
+\begin{proof}
+The first two claims are the definition and the recursion of the iterate. For
+the last one, \(D\mid0\) with quotient \(0\), so \(0\) is a fixed point, and
+an iterate of a fixed point is that fixed point.
+\end{proof}
+
+\begin{theorem}[Trap uniqueness]\label{Thm:Trap}
+If \(T_{q,D}(n)=0\), then \(n=0\).
+\end{theorem}
+
+\begin{proof}
+If \(D\mid n\), then \(n/D=0\) forces \(n=0\). If \(D\nmid n\), then
+\(qn+1=0\) is impossible because \(qn+1\ge1\).
+\end{proof}
+
+\begin{theorem}[The unit cycle]\label{Thm:Cycle}
+Let \(q\ge2\) and \(k\ge1\), and put \(D=S_k\). For \(0\le j<k\) one has
+\(T_{q,D}^{\,j}(1)=S_{j+1}\), and \(T_{q,D}^{\,k}(1)=1\). For
+\(0<j<k\) one has \(T_{q,D}^{\,j}(1)\neq1\). Hence \(1\) lies on a positive
+cycle of minimal period \(k\), whose states are \(S_2,\dots,S_k\) in that
+order.
+\end{theorem}
+
+\begin{proof}
+Induct on \(j<k\). For \(j=0\) the claim is \(S_1=1\), which is
+Lemma~\ref{Lem:RepunitBasic}. For the step, let \(j+1\le k\) and suppose that
+\(T^{\,j}(1)=S_{j+1}\). If \(j+1=k\), then the state is \(D\) itself, a
+multiple of \(D\), so the division branch gives \(T^{\,k}(1)=D/D=1\). If
+\(j+1<k\), then \(0<S_{j+1}<S_k=D\) by Lemma~\ref{Lem:Growth}, so the state is
+not a multiple of \(D\) and the affine branch applies:
+\[
+T^{\,j+1}(1)=qS_{j+1}+1=S_{j+2}
+\]
+by Lemma~\ref{Lem:RepunitBasic}. This proves both the orbit formula and the
+return. For minimality, let \(0<j<k\). By the formula just proved the state is
+\(T^{\,j}(1)=S_{j+1}\) with \(2\le j+1\le k\), and Lemma~\ref{Lem:Growth}
+gives \(S_{j+1}\ge S_2=1+q>1\), so \(1\) does not return earlier. All these
+states are distinct by the strict monotonicity of Lemma~\ref{Lem:Growth},
+which also shows that \(S_2,\dots,S_k\) are pairwise different and different
+from \(S_1=1\).
+\end{proof}
+
+\section{The return map}
+
+\begin{theorem}[Return map]\label{Thm:Return}
+Let \(k\ge2\) and define \(R(n)=(q^{\,k-1}n+S_{k-1})/S_k\). After \(k-1\)
+affine events from the seed \(1\) the state of the slice is \(S_k\), and
+\(R(1)=1\).
+\end{theorem}
+
+\begin{proof}
+By Theorem~\ref{Thm:Cycle} with \(j=k-1\) the state after \(k-1\)
+instructions is \(S_k\), which is the divisor itself, so the following
+instruction is a division and returns \(S_k/S_k=1\). The closed form is the
+same computation: \(q^{\,k-1}+S_{k-1}=S_k\) by
+Lemma~\ref{Lem:RepunitBasic}, hence
+\[
+R(1)=\frac{q^{\,k-1}\cdot1+S_{k-1}}{S_k}=\frac{S_k}{S_k}=1.
+\]
+The denominator is positive because \(S_k\ge1\) by Lemma~\ref{Lem:Growth}.
+\end{proof}
+
+\section{The residue walk}
+
+\begin{theorem}[Residue walk]\label{Thm:ResidueWalk}
+Let \(q\ge2\), let \(D=S_k\) and let \(\rho(r)=(qr+1)\bmod D\). For every
+\(j\) one has \(\rho^{\,j}(0)=S_j\bmod D\); the walk is periodic,
+\(\rho^{\,j+k}(0)=\rho^{\,j}(0)\) for every \(j\); and the residues
+\(S_0,S_1,\dots,S_{k-1}\) modulo \(D\) are pairwise distinct.
+\end{theorem}
+
+\begin{proof}
+The formula is an induction on \(j\): it holds at \(j=0\) because
+\(S_0=0\), and the step is \(\rho(S_j)=(qS_j+1)\bmod D=S_{j+1}\bmod D\) by
+Lemma~\ref{Lem:RepunitBasic}. For the period,
+\[
+\rho^{\,j+k}(0)=S_{j+k}\bmod D=\left(S_j+q^jS_k\right)\bmod D=S_j\bmod D
+=\rho^{\,j}(0),
+\]
+using the addition rule and \(S_k=D\). For distinctness, let \(j,j'<k\) with
+\(S_j\equiv S_{j'}\pmod D\). Lemma~\ref{Lem:Growth} gives \(S_j<D\) and
+\(S_{j'}<D\), so both residues are already reduced and \(S_j=S_{j'}\);
+strict monotonicity then gives \(j=j'\). In particular the accessible
+residues are \(0,S_1,\dots,S_{k-1}\), and no other residue is reached from
+\(0\).
+\end{proof}
+
+\section{Controls and scope}
+
+\begin{remark}[Boundaries of the family]\label{Rem:Controls}
+The hypotheses are needed. For \(q=1\) the divisor identity reads
+\(0=0\) and \(1^{\,j}\equiv1\pmod{k}\) for every \(j\), so the order claim
+fails and the rows using it assume \(q\ge2\). For \(k=1\) the divisor is
+\(S_1=1\), every state is divisible by it, the map is the identity and the
+cycle has length one; the return theorem assumes \(k\ge2\). For a divisor that
+is not a repunit sum, for instance \(q=2\), \(D=5\), the walk of \(1\) does not
+return to \(1\) within the tested horizon. The classical instance
+\(q=3\), \(k=2\) gives \(D=4\) and the cycle \(1\mapsto4\mapsto1\).
+\end{remark}
+
+\begin{remark}[Scope]\label{Rem:Scope}
+The statements classify the slice through the order of \(q\) modulo \(S_k\)
+and the listed cycle. They do not claim that seeds outside the cycle diverge,
+they say nothing about the density of the captured set, and they do not treat
+general divisors \(D\) that are not repunit sums. The finite certificate of
+\S6 is a bounded agreement check for the statements above, not a replacement
+for them.
+\end{remark}
+
+\section{Formal correspondence}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ll}
+\toprule
+Statement & Lean \\
+\midrule
+Definition of \(S_k\), \(T\), \(\rho\), \(R\) &
+\texttt{RepunitSum}, \texttt{RepunitStep}, \texttt{RepunitResidue}, \texttt{RepunitReturn} \\
+Lemma~\ref{Lem:RepunitBasic} & \texttt{RepunitSum\_zero}, \texttt{RepunitSum\_succ}, \texttt{RepunitSum\_one}, \texttt{RepunitSum\_succ\_mul}, \texttt{RepunitSum\_add}, \texttt{RepunitSum\_eq\_pow\_add} \\
+Lemma~\ref{Lem:DivisorIdentity} & \texttt{RepunitSum\_mul\_pred}, \texttt{RepunitSum\_dvd\_pred} \\
+Theorem~\ref{Thm:Order} & \texttt{RepunitSum\_modeq}, \texttt{RepunitSum\_modeq\_order} \\
+Lemma~\ref{Lem:Growth} & \texttt{RepunitSum\_one\_le}, \texttt{RepunitSum\_pos}, \texttt{RepunitSum\_lt\_succ}, \texttt{RepunitSum\_strictMono}, \texttt{RepunitSum\_succ\_le\_pow}, \texttt{RepunitSum\_lt\_pow} \\
+Lemma~\ref{Lem:StepBranch} & \texttt{RepunitStepOfDvd}, \texttt{RepunitStepOfNotDvd}, \texttt{RepunitIterateSuccLast}, \texttt{RepunitStep\_zero}, \texttt{RepunitStep\_iterate\_zero} \\
+Theorem~\ref{Thm:Trap} & \texttt{RepunitStep\_eq\_zero} \\
+Theorem~\ref{Thm:Cycle} & \texttt{RepunitStep\_iterate\_one}, \texttt{RepunitStep\_iterate\_one\_cycle}, \texttt{RepunitStep\_iterate\_one\_ne} \\
+Theorem~\ref{Thm:Return} & \texttt{RepunitReturn\_fixes\_one} \\
+Theorem~\ref{Thm:ResidueWalk} & \texttt{RepunitResidue\_iterate\_zero}, \texttt{RepunitResidue\_iterate\_period}, \texttt{RepunitResidue\_iterate\_injective} \\
+Remark~\ref{Rem:Controls} & certificate controls of \texttt{go/RepunitDivisor.go} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{document}

@@ -33,6 +33,7 @@ defaultTargets = [
   "OffsetObstruction",
   "RelationsCore",
   "RelationsCycles",
+  "RepunitDivisor",
 ]
 
 [[require]]
@@ -195,3 +196,7 @@ srcDir = "QCD.Relations.Core.001/lean"
 [[lean_lib]]
 name = "RelationsCycles"
 srcDir = "QCD.Relations.Cycles.001/lean"
+
+[[lean_lib]]
+name = "RepunitDivisor"
+srcDir = "QCD.Repunit.001/lean"
