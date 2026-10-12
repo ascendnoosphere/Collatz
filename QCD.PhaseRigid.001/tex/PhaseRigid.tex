@@ -1,0 +1,256 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Arithmetic phase rigidity}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For odd positive integers \(q\) and \(c\), the base-two branches \(x\mapsto x/2\) and \(x\mapsto(qx+c)/2\) send an integer of the corresponding parity to an integer. If a rational and its image both lie at distance strictly less than \(2/(q+2)\) from integers of those parities, the integer branch lands on the next integer. Two solutions of the same affine fixed-point equation then agree whenever the multiplier and the denominator differ. The argument is a congruence and a linear subtraction. It does not continue the branches off the integers, and it does not exclude a defect of zero.
+\end{abstract}
+
+\section{Divided branches}
+
+Throughout, \(q\) and \(c\) are odd positive integers. For a bit \(e\in\{0,1\}\) write
+\[
+F_0(x)=\frac{x}{2},\qquad F_1(x)=\frac{qx+c}{2}.
+\]
+The letter scale is \(a_0=1\) and \(a_1=q\), and the constant term is \(b_0=0\) and \(b_1=c\). Thus \(F_e(x)=(a_e x+b_e)/2\).
+
+\begin{lemma}
+\label{lem:odd-one}
+Every odd positive integer is at least \(1\).
+\end{lemma}
+
+\begin{proof}
+An odd positive integer has the form \(q=2k+1\) for some integer \(k\geq 0\). Then \(q=1+2k\geq 1\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:numerator}
+If \(n\) is an odd integer, then \(qn+c\) is even, and
+\[
+2\cdot\frac{qn+c}{2}=qn+c.
+\]
+If \(n\) is an even integer, then
+\[
+2\cdot\frac{n}{2}=n.
+\]
+\end{lemma}
+
+\begin{proof}
+Write \(q=2u+1\), \(c=2v+1\), and \(n=2w+1\). Then
+\begin{align*}
+qn+c
+&=(2u+1)(2w+1)+(2v+1)\\
+&=4uw+2u+2w+1+2v+1\\
+&=2(2uw+u+w+v+1).
+\end{align*}
+The quotient by \(2\) is the integer in parentheses, and multiplying by \(2\) returns \(qn+c\). If instead \(n=2w\), the quotient by \(2\) is \(w\), and \(2w=n\).
+\end{proof}
+
+\begin{definition}
+\label{def:int-branch}
+For an integer \(n\) of parity \(e\), the integer branch \(N_e(n)\) is \((qn+c)/2\) when \(e=1\) and \(n/2\) when \(e=0\). Lemma~\ref{lem:numerator} makes \(N_e(n)\) an integer, and \(F_e(n)=N_e(n)\).
+\end{definition}
+
+\begin{lemma}
+\label{lem:letter-bounds}
+The letter scale \(a_e\) satisfies \(0\leq a_e\leq q\).
+\end{lemma}
+
+\begin{proof}
+If \(e=1\), then \(a_e=q\). If \(e=0\), then \(a_e=1\), and Lemma~\ref{lem:odd-one} gives \(1\leq q\).
+\end{proof}
+
+\section{The threshold}
+
+\begin{lemma}
+\label{lem:saturate}
+For every natural number \(q\),
+\[
+\Bigl(\frac{q}{2}+1\Bigr)\cdot\frac{2}{q+2}=1
+\]
+and
+\[
+\Bigl(\frac{1}{2}+1\Bigr)\cdot\frac{2}{q+2}=\frac{3}{q+2}.
+\]
+If \(q\geq 1\), then \(3/(q+2)\leq 1\).
+\end{lemma}
+
+\begin{proof}
+The denominator \(q+2\) is positive. Clearing it gives
+\[
+\Bigl(\frac{q}{2}+1\Bigr)\cdot 2=q+2,
+\]
+which is the first identity, and
+\[
+\Bigl(\frac{1}{2}+1\Bigr)\cdot 2=3,
+\]
+which is the second. For the inequality, \(q\geq 1\) rearranges to \(3\leq q+2\), and division by the positive number \(q+2\) preserves the inequality.
+\end{proof}
+
+The first identity is equality, not a strict inequality. The congruence below therefore uses a defect strictly smaller than \(2/(q+2)\).
+
+\begin{lemma}
+\label{lem:scale}
+Let \(a\) and \(E\) be rational numbers with \(0\leq a\leq q\) and \(E<2/(q+2)\). Then
+\[
+\Bigl(\frac{a}{2}+1\Bigr)E<1.
+\]
+\end{lemma}
+
+\begin{proof}
+The coefficient \(a/2+1\) is positive because \(a\geq 0\). Multiplying the strict inequality for \(E\) by this coefficient yields
+\[
+\Bigl(\frac{a}{2}+1\Bigr)E
+<\Bigl(\frac{a}{2}+1\Bigr)\cdot\frac{2}{q+2}
+=\frac{a+2}{q+2}.
+\]
+The hypothesis \(a\leq q\) is exactly \(a+2\leq q+2\), so the last quotient is at most \(1\).
+\end{proof}
+
+\section{The congruence}
+
+\begin{lemma}
+\label{lem:discrepancy}
+Let \(a\geq 0\) and let \(E\) satisfy \((a/2+1)E<1\). Suppose
+\[
+|\xi-n|\leq E,\qquad |\xi'-n'|\leq E,
+\]
+where \(n\) and \(n'\) are integers, and suppose
+\[
+\xi'=\frac{a\xi+b}{2},\qquad N=\frac{an+b}{2}
+\]
+with \(b\) and \(N\) integers. Then \(|N-n'|<1\).
+\end{lemma}
+
+\begin{proof}
+Subtract the two affine expressions:
+\[
+N-\xi'=\frac{a}{2}(n-\xi).
+\]
+Hence
+\begin{align*}
+N-n'
+&=(N-\xi')+(\xi'-n')\\
+&=\frac{a}{2}(n-\xi)+(\xi'-n').
+\end{align*}
+The triangle inequality and \(a\geq 0\) give
+\begin{align*}
+|N-n'|
+&\leq\frac{a}{2}\,|n-\xi|+|\xi'-n'|\\
+&=\frac{a}{2}\,|\xi-n|+|\xi'-n'|\\
+&\leq\frac{a}{2}E+E
+=\Bigl(\frac{a}{2}+1\Bigr)E
+<1.
+\end{align*}
+\end{proof}
+
+\begin{lemma}
+\label{lem:abs-one}
+An integer \(k\) with \(|k|<1\) is zero.
+\end{lemma}
+
+\begin{proof}
+The inequality \(|k|<1\) says \(-1<k<1\). The only such integer is \(0\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:congruence}
+Let \(e\in\{0,1\}\) and let \(n\) be an integer of parity \(e\). Let \(E\), \(\xi\), and \(\xi'\) be rational, and let \(n'\) be an integer. Assume
+\[
+E<\frac{2}{q+2},\qquad
+|\xi-n|\leq E,\qquad
+|\xi'-n'|\leq E,\qquad
+\xi'=F_e(\xi).
+\]
+Then \(N_e(n)=n'\).
+\end{theorem}
+
+\begin{proof}
+Lemma~\ref{lem:letter-bounds} and Lemma~\ref{lem:scale} give \((a_e/2+1)E<1\). Definition~\ref{def:int-branch} supplies the integer \(N_e(n)=F_e(n)\). Lemma~\ref{lem:discrepancy} yields \(|N_e(n)-n'|<1\). Lemma~\ref{lem:abs-one} forces the integer difference to vanish.
+\end{proof}
+
+\begin{lemma}
+\label{lem:transport}
+If \(\xi'=(a\xi+b)/2\) and \(n'=(an+b)/2\), then
+\[
+\xi'-n'=\frac{a}{2}(\xi-n).
+\]
+\end{lemma}
+
+\begin{proof}
+Subtract the two expressions and cancel the constant \(b\). The coefficient of the difference is \(a/2\).
+\end{proof}
+
+Thus, once Theorem~\ref{thm:congruence} has identified \(n'\) with \(N_e(n)\), the rational error is multiplied by the branch factor \(1/2\) or \(q/2\). No new error is introduced.
+
+\section{One affine fixed point}
+
+\begin{theorem}
+\label{thm:unique}
+Let \(P\) and \(D\) be natural numbers and let \(\xi\), \(n\), and \(A\) be rational. Assume
+\[
+D\xi=P\xi+A,\qquad Dn=Pn+A.
+\]
+Then \((D-P)(\xi-n)=0\). If \(D\neq 0\), then
+\[
+\xi-n=\frac{P}{D}(\xi-n).
+\]
+If moreover \(P\neq D\), then \(\xi=n\).
+\end{theorem}
+
+\begin{proof}
+Rearrangement gives \(A=D\xi-P\xi\) and \(A=Dn-Pn\), so \(D\xi-P\xi=Dn-Pn\). The difference of these equal quantities is
+\[
+(D-P)(\xi-n)=0.
+\]
+If \(D\neq 0\), divide the equivalent identity \(D(\xi-n)=P(\xi-n)\) by \(D\). If \(P\neq D\), the coefficient \(D-P\) is nonzero, so the product identity forces \(\xi-n=0\).
+\end{proof}
+
+\begin{corollary}
+\label{cor:fifth}
+The threshold at \(q=3\) is \(2/5\). For \(q=3\) and \(c=1\), the integer branches satisfy \(N_1(1)=2\) and \(N_0(2)=1\).
+\end{corollary}
+
+\begin{proof}
+Substitute \(q=3\) in the threshold. The odd numerator is \(3\cdot 1+1=4\), and \(4/2=2\). The even value \(2\) has quotient \(1\).
+\end{proof}
+
+\begin{remark}
+\label{rem:not}
+The identities do not assert that a smooth extension of the branches has an attracting cycle, nor that a phase defect of zero is impossible. The non-strict bound \(E\leq 2/(q+2)\) is not claimed: Lemma~\ref{lem:saturate} shows that the odd letter meets \(1\) exactly at \(E=2/(q+2)\), so an integer discrepancy of absolute value \(1\) need not vanish. The stronger uniform lower bound \(3/4\) is not claimed. The word \(1011100111110100\), with ten odd letters, has denominator \(2^{16}-3^{10}=6487\) and full-phase defect \(4858/6487\). This rational is at least \(2/5\) and strictly less than \(3/4\), since \(5\cdot 4858\geq 2\cdot 6487\) and \(4\cdot 4858<3\cdot 6487\). A finite grid of odd multipliers, odd offsets, and short words is not the uniform statement.
+\end{remark}
+
+\end{document}

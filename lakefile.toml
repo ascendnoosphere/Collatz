@@ -63,6 +63,8 @@ defaultTargets = [
   "SharpEnergy",
   "NagellList",
   "RepunitCell",
+  "PhaseRigid",
+  "UniformContraction",
 ]
 
 [[require]]
@@ -345,3 +347,11 @@ srcDir = "QCD.NagellList.001/lean"
 [[lean_lib]]
 name = "RepunitCell"
 srcDir = "QCD.RepunitDivisor.001/lean"
+
+[[lean_lib]]
+name = "PhaseRigid"
+srcDir = "QCD.PhaseRigid.001/lean"
+
+[[lean_lib]]
+name = "UniformContraction"
+srcDir = "QCD.UniformContraction.001/lean"

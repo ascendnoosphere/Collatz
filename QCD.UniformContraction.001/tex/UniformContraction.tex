@@ -1,0 +1,279 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Uniform contraction outside a radius}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+If an integer map contracts absolute value by at least one half outside a fixed radius, every orbit enters that radius after finitely many steps. The same entry holds for a natural-number map bounded by an affine majorant of slope strictly less than one, and the slope bound \(2a<d\) produces a half-contraction outside an explicit radius. The argument does not assert that any particular Collatz map satisfies the contraction hypothesis.
+\end{abstract}
+
+\section{Half-contraction}
+
+Throughout, \(T\) denotes a function and \(T^{k}\) its \(k\)-fold iterate, with \(T^{0}\) the identity. For \(n\in\Z\), write \(|n|\) for the usual absolute value.
+
+\begin{definition}
+\label{def:half-contraction}
+Let \(R\in\N\) and let \(\Map{T}{\Z}{\Z}\). Say that \(T\) is a \emph{uniform half-contraction outside radius \(R\)} when
+\[
+|n|>R \quad\text{implies}\quad 2|T(n)|\le |n|.
+\]
+The displayed inequality is exactly \(|T(n)|\le |n|/2\).
+\end{definition}
+
+\begin{theorem}[UniformHalfEntry]
+\label{thm:uniform-half-entry}
+Let \(T\) be a uniform half-contraction of radius \(R\). Every integer \(n\) has a time \(k\le |n|\) at which \(|T^{k}(n)|\le R\).
+\end{theorem}
+
+\begin{proof}
+It is enough to prove the following claim. For every \(m\in\N\) and every \(x\in\Z\) with \(|x|=m\), some \(k\le m\) has \(|T^{k}(x)|\le R\). Proceed by strong induction on \(m\).
+
+If \(|x|\le R\), take \(k=0\). Suppose instead that \(|x|>R\). The contraction hypothesis gives \(2|T(x)|\le |x|\). Also \(|x|\ge 1\), so \(|x|<2|x|\). Combining these inequalities yields \(2|T(x)|<2|x|\), hence \(|T(x)|<|x|\). The inductive hypothesis, applied to \(T(x)\) and the strictly smaller measure \(|T(x)|\), supplies \(k\le |T(x)|\) with \(|T^{k}(T(x))|\le R\). Then
+\[
+k+1\le |T(x)|+1\le |x|,
+\]
+and \(T^{k+1}(x)=T^{k}(T(x))\). This closes the induction.
+\end{proof}
+
+\begin{theorem}[UniformHalfBudget]
+\label{thm:uniform-half-budget}
+Let \(T\) be a uniform half-contraction outside radius \(R\). If \(h\in\N\), \(n\in\Z\), and \(|n|<2^{h}(R+1)\), then some \(k\le h\) has \(|T^{k}(n)|\le R\).
+\end{theorem}
+
+\begin{proof}
+Induct on \(h\). If \(h=0\), then \(|n|<R+1\), so \(|n|\le R\) and \(k=0\) works. Assume the statement for \(h\), and suppose \(|n|<2^{h+1}(R+1)\). If \(|n|\le R\), take \(k=0\). If \(|n|>R\), the contraction hypothesis gives \(2|T(n)|\le |n|\). The power identity \(2^{h+1}(R+1)=2\cdot 2^{h}(R+1)\) therefore yields
+\[
+2|T(n)|<2\cdot 2^{h}(R+1),
+\]
+so \(|T(n)|<2^{h}(R+1)\). The inductive hypothesis produces \(k\le h\) with \(|T^{k}(T(n))|\le R\). Hence \(k+1\le h+1\) and \(T^{k+1}(n)\) lies in the radius.
+\end{proof}
+
+\begin{theorem}[NatHalfEntry]
+\label{thm:nat-half-entry}
+Let \(R\in\N\) and let \(\Map{T}{\N}{\N}\). If \(n>R\) implies \(2T(n)\le n\), then for every \(n\in\N\) some \(k\le n\) has \(T^{k}(n)\le R\).
+\end{theorem}
+
+\begin{proof}
+The argument of Theorem~\ref{thm:uniform-half-entry} applies verbatim with \(n\) in place of \(|n|\). While \(n>R\), the inequality \(2T(n)\le n\) and the comparison \(n<2n\) force \(T(n)<n\).
+\end{proof}
+
+\section{Affine majorant}
+
+Let \(a,d,b\in\N\) with \(a<d\). Define
+\[
+K=\frac{b}{d-a}
+\qquad\text{and}\qquad
+H(x)=\frac{ax+b}{d}
+\]
+for \(x\in\Q\). Write \(N_{0}=\lfloor K\rfloor\).
+
+\begin{theorem}[AffineMajorantIdentity]
+\label{thm:affine-identity}
+For every \(x\in\Q\),
+\[
+H(x)=K+\frac{a}{d}(x-K).
+\]
+\end{theorem}
+
+\begin{proof}
+The hypothesis \(a<d\) gives \(d>0\) and \(d-a>0\). Expand the right-hand side:
+\begin{align*}
+K+\frac{a}{d}(x-K)
+&=\frac{b}{d-a}+\frac{a}{d}x-\frac{a}{d}\cdot\frac{b}{d-a}\\
+&=\frac{a}{d}x+\frac{b}{d-a}\left(1-\frac{a}{d}\right)\\
+&=\frac{a}{d}x+\frac{b}{d-a}\cdot\frac{d-a}{d}\\
+&=\frac{ax+b}{d}.
+\end{align*}
+\end{proof}
+
+\begin{theorem}[AffineMajorantStrictDecrease]
+\label{thm:affine-decrease}
+If \(n\in\N\) and \(K<n\), then \(H(n)<n\).
+\end{theorem}
+
+\begin{proof}
+Theorem~\ref{thm:affine-identity} rearranges to
+\[
+n-H(n)=\left(1-\frac{a}{d}\right)(n-K).
+\]
+Here \(a/d<1\), so the first factor is positive, and \(n-K>0\) by hypothesis. The product is therefore positive.
+\end{proof}
+
+\begin{theorem}[AffineCoreBound]
+\label{thm:affine-core}
+If \(n\in\N\) and \(n\le N_{0}\), then \(H(n)<N_{0}+1\).
+\end{theorem}
+
+\begin{proof}
+The definition of the floor gives \(N_{0}\le K<N_{0}+1\). Since \(a/d\ge 0\) and \(n\le N_{0}\),
+\[
+\frac{a}{d}(n-K)\le \frac{a}{d}(N_{0}-K).
+\]
+Theorem~\ref{thm:affine-identity} and this comparison give
+\begin{align*}
+H(n)
+&=K+\frac{a}{d}(n-K)
+\le K+\frac{a}{d}(N_{0}-K)
+=N_{0}+\left(1-\frac{a}{d}\right)(K-N_{0}).
+\end{align*}
+The coefficient \(1-a/d\) lies in the interval \((0,1]\), and \(0\le K-N_{0}<1\). Hence
+\[
+\left(1-\frac{a}{d}\right)(K-N_{0})\le K-N_{0}<1,
+\]
+and \(H(n)<N_{0}+1\).
+\end{proof}
+
+\begin{theorem}[AffineCoreInvariant]
+\label{thm:affine-invariant}
+Let \(\Map{T}{\N}{\N}\) satisfy \(T(m)\le H(m)\) for every \(m\in\N\). If \(n\le N_{0}\), then \(T(n)\le N_{0}\).
+\end{theorem}
+
+\begin{proof}
+Theorem~\ref{thm:affine-core} gives \(T(n)\le H(n)<N_{0}+1\). Since \(T(n)\) is an integer, \(T(n)\le N_{0}\).
+\end{proof}
+
+\begin{theorem}[AffineMajorantEntry]
+\label{thm:affine-entry}
+Suppose \(T(m)\le H(m)\) for every natural number \(m\). Every natural number \(n\) has a time \(k\le n\) at which \(T^{k}(n)\le N_{0}\).
+\end{theorem}
+
+\begin{proof}
+Induct strongly on \(n\). If \(n\le N_{0}\), take \(k=0\). If \(n>N_{0}\), then \(K<n\), so Theorem~\ref{thm:affine-decrease} yields \(H(n)<n\). The bound on \(T\) gives \(T(n)<n\). The inductive hypothesis produces \(k\le T(n)\) with \(T^{k}(T(n))\le N_{0}\), and \(k+1\le n\).
+\end{proof}
+
+Let \(H^{h}\) denote the \(h\)-fold iterate of \(H\) on \(\Q\), with \(H^{0}\) the identity.
+
+\begin{theorem}[IterateMajorantFormula]
+\label{thm:iterate-formula}
+For every \(h\in\N\) and every \(x\in\Q\),
+\[
+H^{h}(x)=\left(\frac{a}{d}\right)^{h}(x-K)+K.
+\]
+\end{theorem}
+
+\begin{proof}
+For \(h=0\) both sides equal \(x\). If the formula holds at stage \(h\), Theorem~\ref{thm:affine-identity} gives \(H(x)-K=(a/d)(x-K)\), and therefore
+\begin{align*}
+H^{h+1}(x)
+&=H^{h}(H(x))
+=\left(\frac{a}{d}\right)^{h}(H(x)-K)+K
+=\left(\frac{a}{d}\right)^{h+1}(x-K)+K.
+\end{align*}
+\end{proof}
+
+\begin{theorem}[IterateMajorantBelowCore]
+\label{thm:iterate-budget}
+If
+\[
+d^{h}\bigl((N_{0}+1)-K\bigr)>a^{h}(x-K),
+\]
+then \(H^{h}(x)<N_{0}+1\).
+\end{theorem}
+
+\begin{proof}
+The hypothesis \(d>0\) implies \(d^{h}>0\). Dividing the budget inequality by \(d^{h}\) produces
+\[
+\left(\frac{a}{d}\right)^{h}(x-K)<(N_{0}+1)-K.
+\]
+Add \(K\) and apply Theorem~\ref{thm:iterate-formula}.
+\end{proof}
+
+\begin{lemma}[AffineMajorantMonotone]
+\label{lem:monotone}
+If \(x\le y\) in \(\Q\), then \(H(x)\le H(y)\). Consequently \(H^{h}(x)\le H^{h}(y)\) for every \(h\in\N\).
+\end{lemma}
+
+\begin{proof}
+The slope \(a/d\) is nonnegative and the denominator \(d\) is positive, so \(x\le y\) implies \(ax+b\le ay+b\), and dividing by \(d\) preserves the inequality. The claim for \(H^{h}\) follows by induction on \(h\).
+\end{proof}
+
+\begin{theorem}[OrbitBelowMajorant]
+\label{thm:orbit-below}
+Let \(\Map{T}{\N}{\N}\) satisfy \(T(m)\le H(m)\) for every \(m\in\N\). Then \(T^{k}(n)\le H^{k}(n)\) for every \(k,n\in\N\).
+\end{theorem}
+
+\begin{proof}
+The case \(k=0\) is equality. If \(T^{k}(T(n))\le H^{k}(T(n))\), the pointwise bound and Lemma~\ref{lem:monotone} give
+\[
+H^{k}(T(n))\le H^{k}(H(n))=H^{k+1}(n).
+\]
+Thus \(T^{k+1}(n)\le H^{k+1}(n)\).
+\end{proof}
+
+\section{Slope at most one half}
+
+The comparison \(H(n)\le n/2\) needs a stronger slope restriction than \(a<d\).
+
+\begin{theorem}[HalfFromAffineMajorant]
+\label{thm:half-from-majorant}
+If \(2a<d\) and \(2b<n(d-2a)\), then \(H(n)<n/2\).
+\end{theorem}
+
+\begin{proof}
+The inequality \(2a<d\) forces \(d>0\). Cross-multiplication converts \(2b<n(d-2a)\) into
+\[
+2(an+b)<dn,
+\]
+because
+\[
+n(d-2a)=dn-2an.
+\]
+Dividing by the positive number \(2d\) yields \(H(n)<n/2\).
+\end{proof}
+
+\begin{theorem}[RadiusTwoB]
+\label{thm:radius-two-b}
+If \(2a<d\) and \(n>2b\), then \(2b<n(d-2a)\).
+\end{theorem}
+
+\begin{proof}
+The positive integer \(d-2a\) is at least \(1\), so \(n(d-2a)\ge n\). The hypothesis \(n>2b\) finishes the comparison.
+\end{proof}
+
+\begin{theorem}[UniformHalfFromMajorant]
+\label{thm:uniform-half-from-majorant}
+Assume \(2a<d\), and let \(\Map{T}{\N}{\N}\) satisfy \(T(n)\le H(n)\) whenever \(n>2b\). Then \(n>2b\) implies \(2T(n)\le n\). In particular, Theorem~\ref{thm:nat-half-entry} supplies, for every seed, an iterate of absolute height at most \(2b\).
+\end{theorem}
+
+\begin{proof}
+If \(n>2b\), Theorems~\ref{thm:radius-two-b} and~\ref{thm:half-from-majorant} give \(H(n)<n/2\). Therefore \(T(n)<n/2\). Multiplying by \(2\) produces the strict inequality \(2T(n)<n\). Both sides are integers, so \(2T(n)\le n\). Theorem~\ref{thm:nat-half-entry}, applied with radius \(2b\), gives the entry statement.
+\end{proof}
+
+\begin{remark}
+\label{rem:not-claimed}
+The half-contraction theorem takes its contraction inequality as a hypothesis. Nothing proved here shows that the classical Collatz map, or any other named residue map, satisfies that hypothesis. The majorant theorems assume the bound \(T(m)\le H(m)\) at every natural number used by the induction, not merely along one orbit. They do not classify points at which such a bound fails, do not decide periodicity inside the radius, and do not compare densities of residue classes.
+\end{remark}
+
+\end{document}
