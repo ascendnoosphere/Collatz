@@ -15,41 +15,42 @@ and its residue dynamics is the affine map on \(\mathbb{Z}/D\mathbb{Z}\)
 F(r)=qr+c \bmod D .
 \]
 
-Every residue reached from \(0\) has a finite first-division time, and the
-accessible residues are precisely the orbit of \(0\) under \(F\). This family
-classifies that orbit. The affine offset after \(j\) steps is the repunit sum
-\(G_j(q)=1+q+\dots+q^{j-1}\), the return criterion is governed by the access
-modulus
+Every residue reached from \(0\) has a finite first-division time, and when
+\(\gcd(q,D)=1\) the accessible residues are precisely the orbit of \(0\)
+under \(F\). This family classifies that orbit. The affine offset after \(j\)
+steps is the repunit sum \(G_j(q)=1+q+\dots+q^{j-1}\), the return criterion is
+governed by the access modulus
 
 \[
 M(q,c,D)=\frac{D(q-1)}{\gcd\bigl(c,\,D(q-1)\bigr)},
 \]
 
 and the orbit length is the multiplicative order of \(q\) modulo \(M\). The
-prime case splits completely: modulo a prime \(p\) with \(p\nmid c\) the orbit
-length is the order of \(q\) modulo \(p\), and it equals \(p\) exactly when
-\(q\equiv1\pmod p\).
+prime case splits: modulo a prime \(p\) with \(p\nmid c\) the orbit returns
+after \(j\) steps exactly when \(p\mid G_j(q)\), and the return time is
+\(p\) exactly when \(q\equiv1\pmod p\), while for \(q\not\equiv1\pmod p\)
+with \(\gcd(p,q)=1\) it is smaller than \(p\).
 
 ## Statements
 
 | # | Statement | Carry |
 |---|-----------|-------|
-| .1 | The residue walk: `AccessStep q c D r = (q*r + c) % D` starts at zero, steps by the affine map, and splits any block of steps into consecutive blocks. | `AccessStep`, `AccessOrbit`, `AccessOrbit_zero`, `AccessOrbit_succ`, `AccessOrbit_add` |
-| .2 | **Closed form.** After \(j\) steps the orbit of zero is \(c\,G_j(q)\bmod D\). | `AccessOrbit_eq_offset_mul_repunit` |
-| .3 | The orbit of zero returns to zero after \(j\) steps exactly when \(D\mid c\,G_j(q)\). | `AccessOrbit_eq_zero_iff` |
-| .4 | **Gcd reduction.** For \(X\ge0\), \(D(q-1)\mid cX\) exactly when \(M(q,c,D)\mid X\). | `AccessModulus_dvd_iff_mul` |
-| .5 | **Return criterion.** The orbit of zero returns after \(j\) steps exactly when \(M(q,c,D)\mid q^{j}-1\). | `AccessOrbit_eq_zero_iff_modulus` |
-| .6 | The access modulus divides \(D(q-1)\); when \(D\) is coprime to \(q\) it is itself coprime to \(q\). | `AccessModulus_dvd_mul_pred`, `AccessModulus_coprime_q` |
-| .7 | **Injectivity.** If \(D\) is coprime to \(q\), the residue map agrees on two residues exactly when they are congruent modulo \(D\). | `AccessStep_eq_iff` |
-| .8 | Blocks commute: stepping \(m\) then \(j\) times agrees with stepping \(m+j\) times. | `AccessIterate_comm` |
-| .9 | **Period.** If \(m\) is the least positive exponent with \(M(q,c,D)\mid q^{m}-1\), the orbit returns to zero at \(m\), at every multiple of \(m\), and at no other index. | `AccessOrbit_eq_zero_of_least`, `AccessOrbit_period`, `AccessOrbit_period_mul`, `AccessOrbit_eq_zero_iff_dvd` |
-| .10 | The first \(m\) values of the orbit are pairwise distinct, hence \(m\le D\). | `AccessOrbit_distinct`, `AccessOrbit_card_le` |
-| .11 | Every accessible residue is reached at a unique index below \(m\). | `AccessOrbit_representative` |
-| .12 | Modulo a prime where the multiplier is one, the repunit sum is congruent to its length: \(G_j(q)\equiv j\pmod p\) when \(q\equiv1\pmod p\). | `AccessRepunitSum_modeq_index` |
-| .13 | **Prime case, multiplier not one.** For a prime \(p\) with \(p\nmid c\) and \(q\not\equiv1\pmod p\), the orbit returns after \(j\) steps exactly when \(p\mid q^{j}-1\). | `AccessPrime_orbit_iff` |
-| .14 | **Prime case, multiplier one.** For a prime \(p\) with \(p\nmid c\) and \(q\equiv1\pmod p\), the orbit returns after \(j\) steps exactly when \(p\mid j\). | `AccessPrime_orbit_iff_index` |
-| .15 | **Full access at a prime.** For a prime \(p\) with \(p\nmid c\) and \(q\equiv1\pmod p\), the return time is \(p\), and every residue modulo \(p\) is visited by the orbit of zero. | `AccessPrime_full_access`, `AccessPrime_orbit_surjective` |
-| .16 | **Necessity at a prime.** For a prime \(p\) with \(p\nmid c\), \(p\) coprime to \(q\) and \(q\not\equiv1\pmod p\), the return time is smaller than \(p\), so some residue is inaccessible. | `AccessPrime_not_full_access` |
+| .1 | The residue walk: `AccessStep q c D r = (q*r + c) % D` starts at zero, steps by the affine map, and splits any block of steps into consecutive blocks. | `AccessStep`, `AccessOrbit`, `AccessOrbitZero`, `AccessOrbitSucc`, `AccessOrbitAdd` |
+| .2 | **Closed form.** After \(j\) steps the orbit of zero is \(c\,G_j(q)\bmod D\). | `AccessOrbitEqOffsetMulRepunit` |
+| .3 | The orbit of zero returns to zero after \(j\) steps exactly when \(D\mid c\,G_j(q)\). | `AccessOrbitEqZeroIff` |
+| .4 | **Gcd reduction.** For \(X\ge0\), \(D(q-1)\mid cX\) exactly when \(M(q,c,D)\mid X\). | `AccessModulusDvdIffMul` |
+| .5 | **Return criterion.** The orbit of zero returns after \(j\) steps exactly when \(M(q,c,D)\mid q^{j}-1\). | `AccessOrbitEqZeroIffModulus` |
+| .6 | The access modulus divides \(D(q-1)\); when \(D\) is coprime to \(q\) it is itself coprime to \(q\). | `AccessModulusDvdMulPred`, `AccessModulusCoprimeQ` |
+| .7 | **Injectivity.** If \(D\) is coprime to \(q\), the residue map agrees on two residues exactly when they are congruent modulo \(D\). | `AccessStepEqIff` |
+| .8 | Blocks commute: stepping \(m\) then \(j\) times agrees with stepping \(m+j\) times. | `AccessIterateComm` |
+| .9 | **Period.** If \(m\) is the least positive exponent with \(M(q,c,D)\mid q^{m}-1\), the orbit returns to zero at \(m\), at every multiple of \(m\), and at no other index. | `AccessOrbitEqZeroOfLeast`, `AccessOrbitPeriod`, `AccessOrbitPeriodMul`, `AccessOrbitEqZeroIffDvd` |
+| .10 | The first \(m\) values of the orbit are pairwise distinct, hence \(m\le D\). | `AccessOrbitDistinct`, `AccessOrbitCardLe` |
+| .11 | Every accessible residue is reached at a unique index below \(m\). | `AccessOrbitRepresentative` |
+| .12 | Modulo a prime where the multiplier is one, the repunit sum is congruent to its length: \(G_j(q)\equiv j\pmod p\) when \(q\equiv1\pmod p\). | `AccessRepunitSumModeqIndex` |
+| .13 | **Prime case, multiplier not one.** For a prime \(p\) with \(p\nmid c\) and \(q\not\equiv1\pmod p\), the orbit returns after \(j\) steps exactly when \(p\mid q^{j}-1\). | `AccessPrimeOrbitIff` |
+| .14 | **Prime case, multiplier one.** For a prime \(p\) with \(p\nmid c\) and \(q\equiv1\pmod p\), the orbit returns after \(j\) steps exactly when \(p\mid j\). | `AccessPrimeOrbitIffIndex` |
+| .15 | **Full access at a prime.** For a prime \(p\) with \(p\nmid c\) and \(q\equiv1\pmod p\), the return time is \(p\), and every residue modulo \(p\) is visited by the orbit of zero. | `AccessPrimeFullAccess`, `AccessPrimeOrbitSurjective` |
+| .16 | **Necessity at a prime.** For a prime \(p\) with \(p\nmid c\), \(p\) coprime to \(q\) and \(q\not\equiv1\pmod p\), the return time is smaller than \(p\), so some residue is inaccessible. | `AccessPrimeNotFullAccess` |
 
 ## Reduction and recovery record
 
@@ -78,10 +79,13 @@ divisibility question in \(\mathbb{Z}/M(q,c,D)\mathbb{Z}\): the least exponent
 \(m\) with \(M\mid q^{m}-1\) is computed once, and all orbit questions become
 questions about \(m\) (rows .5, .9, .11). No trajectory bound is used.
 
-**Preservation conditions.** \(q\ge2\), \(c\ge1\), \(D\ge2\) and integral
-arithmetic throughout. The criterion of rows .4–.5 needs no coprimality; the
-injectivity and exhaustion statements assume \(\gcd(q,D)=1\), and the
-necessity statement additionally assumes \(\gcd(p,q)=1\).
+**Preservation conditions.** Rows .1–.3 and .8 hold for all \(q,c,D\). Rows .4–.6
+and .9–.11 assume \(q\ge2\) and \(D\ge2\); row .7 assumes \(D\ge2\) and
+\(\gcd(q,D)=1\); row .12 assumes only \(q\equiv1\pmod p\); rows .13–.15 assume
+\(q\ge2\), \(p\) prime and \(p\nmid c\); row .16 adds \(\gcd(p,q)=1\). The
+criterion of rows .4–.5 needs no coprimality, the exhaustion statements are the
+ones that use \(\gcd(q,D)=1\), and the necessity statement is the one that uses
+\(\gcd(p,q)=1\).
 
 ## Controls
 

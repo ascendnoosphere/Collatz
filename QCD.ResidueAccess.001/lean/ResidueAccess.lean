@@ -50,48 +50,48 @@ def AccessLeast (q c D m : ℕ) : Prop :=
 /-! ## The orbit formula -/
 
 /-- The first residue is the offset reduced modulo `D`. -/
-theorem AccessStep_zero (q c D : ℕ) : AccessStep q c D 0 = c % D := by
+theorem AccessStepZero (q c D : ℕ) : AccessStep q c D 0 = c % D := by
   simp [AccessStep]
 
 /-- The orbit starts at the accessible residue `0`. -/
-theorem AccessOrbit_zero (q c D : ℕ) : AccessOrbit q c D 0 = 0 := by
+theorem AccessOrbitZero (q c D : ℕ) : AccessOrbit q c D 0 = 0 := by
   simp [AccessOrbit, Iterate]
 
 /-- One step of the orbit. -/
-theorem AccessOrbit_succ (q c D j : ℕ) :
+theorem AccessOrbitSucc (q c D j : ℕ) :
     AccessOrbit q c D (j + 1) = AccessStep q c D (AccessOrbit q c D j) := by
   simp [AccessOrbit, Iterate]
 
 /-- The orbit splits at a block boundary. -/
-theorem AccessOrbit_add (q c D j k : ℕ) :
+theorem AccessOrbitAdd (q c D j k : ℕ) :
     AccessOrbit q c D (j + k) = Iterate (AccessStep q c D) k (AccessOrbit q c D j) := by
   simp only [AccessOrbit]
   exact IterateAdd (AccessStep q c D) j k 0
 
 /-- **Orbit formula.** The `j`-th residue of the orbit is `c G_j(q)` modulo
 `D`, where `G_j` is the repunit sum. -/
-theorem AccessOrbit_eq_offset_mul_repunit (q c D j : ℕ) :
+theorem AccessOrbitEqOffsetMulRepunit (q c D j : ℕ) :
     AccessOrbit q c D j = (c * RepunitSum q j) % D := by
   induction j with
   | zero => simp [AccessOrbit, Iterate, RepunitSum]
   | succ j ih =>
-      rw [AccessOrbit_succ, ih, AccessStep]
+      rw [AccessOrbitSucc, ih, AccessStep]
       have hmod : (q * ((c * RepunitSum q j) % D) + c) % D
           = (q * (c * RepunitSum q j) + c) % D :=
         (Nat.ModEq.mul_left q (Nat.mod_modEq (c * RepunitSum q j) D)).add_right c
       rw [hmod, show q * (c * RepunitSum q j) + c
-          = c * (q * RepunitSum q j + 1) by ring, RepunitSum_succ_mul]
+          = c * (q * RepunitSum q j + 1) by ring, RepunitSumSuccMul]
 /-- The orbit returns to `0` exactly when `D` divides `c G_j(q)`. -/
-theorem AccessOrbit_eq_zero_iff (q c D j : ℕ) :
+theorem AccessOrbitEqZeroIff (q c D j : ℕ) :
     AccessOrbit q c D j = 0 ↔ D ∣ c * RepunitSum q j := by
-  rw [AccessOrbit_eq_offset_mul_repunit]
+  rw [AccessOrbitEqOffsetMulRepunit]
   exact Nat.dvd_iff_mod_eq_zero.symm
 
 /-! ## The modulus criterion -/
 
 /-- Cleared form of the criterion: multiplying the dividend by `D (q - 1)`
 replaces the modulus `D (q - 1)` by its quotient by `gcd (c (D (q - 1)))`. -/
-theorem AccessModulus_dvd_iff_mul (q c D X : ℕ) (hq : 2 ≤ q) (hD : 0 < D) :
+theorem AccessModulusDvdIffMul (q c D X : ℕ) (hq : 2 ≤ q) (hD : 0 < D) :
     D * (q - 1) ∣ c * X ↔ AccessModulus q c D ∣ X := by
   have hA : 0 < D * (q - 1) := Nat.mul_pos hD (by omega)
   have hg : 0 < Nat.gcd c (D * (q - 1)) := Nat.gcd_pos_of_pos_right c hA
@@ -123,14 +123,14 @@ theorem AccessModulus_dvd_iff_mul (q c D X : ℕ) (hq : 2 ≤ q) (hD : 0 < D) :
 
 /-- **Modulus criterion.** The orbit returns to `0` at time `j` exactly when
 `AccessModulus q c D` divides `q^j - 1`. -/
-theorem AccessOrbit_eq_zero_iff_modulus (q c D j : ℕ) (hq : 2 ≤ q) (hD : 0 < D) :
+theorem AccessOrbitEqZeroIffModulus (q c D j : ℕ) (hq : 2 ≤ q) (hD : 0 < D) :
     AccessOrbit q c D j = 0 ↔ AccessModulus q c D ∣ q ^ j - 1 := by
   have hq1 : 1 ≤ q := by omega
   have hpos : 0 < q - 1 := by omega
   have hpred : c * RepunitSum q j * (q - 1) = c * (q ^ j - 1) := by
     calc c * RepunitSum q j * (q - 1) = c * ((q - 1) * RepunitSum q j) := by ring
-      _ = c * (q ^ j - 1) := by rw [RepunitSum_mul_pred q j hq1]
-  rw [AccessOrbit_eq_zero_iff]
+      _ = c * (q ^ j - 1) := by rw [RepunitSumMulPred q j hq1]
+  rw [AccessOrbitEqZeroIff]
   have h1 : D ∣ c * RepunitSum q j ↔ D * (q - 1) ∣ c * (q ^ j - 1) := by
     constructor
     · intro h
@@ -141,28 +141,28 @@ theorem AccessOrbit_eq_zero_iff_modulus (q c D j : ℕ) (hq : 2 ≤ q) (hD : 0 <
       rw [← hpred] at h
       rw [mul_comm D (q - 1), mul_comm (c * RepunitSum q j) (q - 1)] at h
       exact (Nat.mul_dvd_mul_iff_left hpos).mp h
-  exact h1.trans (AccessModulus_dvd_iff_mul q c D (q ^ j - 1) hq hD)
+  exact h1.trans (AccessModulusDvdIffMul q c D (q ^ j - 1) hq hD)
 
 /-- The modulus divides the cleared modulus `D (q - 1)`. -/
-theorem AccessModulus_dvd_mul_pred (q c D : ℕ) (hq : 2 ≤ q) (hD : 0 < D) :
+theorem AccessModulusDvdMulPred (q c D : ℕ) (hq : 2 ≤ q) (hD : 0 < D) :
     AccessModulus q c D ∣ D * (q - 1) := by
   have hA : 0 < D * (q - 1) := Nat.mul_pos hD (by omega)
   rw [AccessModulus]
   exact Nat.div_dvd_of_dvd (Nat.gcd_dvd_right c (D * (q - 1)))
 
 /-- The modulus is coprime to the multiplier `q` once `q` is coprime to `D`. -/
-theorem AccessModulus_coprime_q (q c D : ℕ) (hq : 2 ≤ q) (hD : 0 < D)
+theorem AccessModulusCoprimeQ (q c D : ℕ) (hq : 2 ≤ q) (hD : 0 < D)
     (hcop : D.Coprime q) : (AccessModulus q c D).Coprime q := by
   have hA : 0 < D * (q - 1) := Nat.mul_pos hD (by omega)
   have hq1 : (q - 1).Coprime q := by
     have := Nat.coprime_self_sub_left (show 1 ≤ q by omega)
     simpa using this.mpr (Nat.coprime_one_left q)
   have hcopA : q.Coprime (D * (q - 1)) := hcop.symm.mul_right hq1.symm
-  exact (Nat.Coprime.coprime_dvd_right (AccessModulus_dvd_mul_pred q c D hq hD) hcopA).symm
+  exact (Nat.Coprime.coprime_dvd_right (AccessModulusDvdMulPred q c D hq hD) hcopA).symm
 
 /-- The residue map remembers the residue class modulo `D` when `q` is
 coprime to `D`: it is injective on residue classes. -/
-theorem AccessStep_eq_iff (q c D r r' : ℕ) (hD : 0 < D) (hcop : D.Coprime q) :
+theorem AccessStepEqIff (q c D r r' : ℕ) (hD : 0 < D) (hcop : D.Coprime q) :
     AccessStep q c D r = AccessStep q c D r' ↔ r % D = r' % D := by
   have hgcd : D.gcd q = 1 := hcop.gcd_eq_one
   constructor
@@ -186,7 +186,7 @@ theorem AccessStep_eq_iff (q c D r r' : ℕ) (hD : 0 < D) (hcop : D.Coprime q) :
 
 /-- A divisibility `q^k - 1` is the same statement as the congruence
 `q^k ≡ 1`. -/
-theorem AccessModulus_modEq_one {M q k : ℕ} (hq : 1 ≤ q) (h : M ∣ q ^ k - 1) :
+theorem AccessModulusModEqOne {M q k : ℕ} (hq : 1 ≤ q) (h : M ∣ q ^ k - 1) :
     q ^ k ≡ 1 [MOD M] := by
   have hzero : q ^ k - 1 ≡ 0 [MOD M] := Nat.modEq_zero_iff_dvd.mpr h
   have h1 : (q ^ k - 1) + 1 ≡ 0 + 1 [MOD M] := hzero.add (Nat.ModEq.refl 1)
@@ -194,59 +194,59 @@ theorem AccessModulus_modEq_one {M q k : ℕ} (hq : 1 ≤ q) (h : M ∣ q ^ k - 
 
 /-- A congruence `q^k ≡ 1` is the same statement as the divisibility
 `M ∣ q^k - 1`. -/
-theorem AccessModulus_dvd_pred_of_modEq {M q k : ℕ} (h1 : 1 ≤ q ^ k)
+theorem AccessModulusDvdPredOfModEq {M q k : ℕ} (h1 : 1 ≤ q ^ k)
     (h : q ^ k ≡ 1 [MOD M]) : M ∣ q ^ k - 1 := by
   have hsub : q ^ k - 1 ≡ 1 - 1 [MOD M] :=
     Nat.ModEq.sub h1 le_rfl h (Nat.ModEq.refl 1)
   simpa using Nat.modEq_zero_iff_dvd.mp hsub
 
 /-- Iterates at block boundaries commute. -/
-theorem AccessIterate_comm (q c D m j : ℕ) (x : ℕ) :
+theorem AccessIterateComm (q c D m j : ℕ) (x : ℕ) :
     Iterate (AccessStep q c D) m (Iterate (AccessStep q c D) j x)
       = Iterate (AccessStep q c D) j (Iterate (AccessStep q c D) m x) := by
   rw [← IterateAdd (AccessStep q c D) j m x,
     ← IterateAdd (AccessStep q c D) m j x, Nat.add_comm]
 
 /-- The orbit returns to `0` at the least positive exponent. -/
-theorem AccessOrbit_eq_zero_of_least (q c D m : ℕ) (hq : 2 ≤ q) (hD : 0 < D)
+theorem AccessOrbitEqZeroOfLeast (q c D m : ℕ) (hq : 2 ≤ q) (hD : 0 < D)
     (hm : AccessLeast q c D m) : AccessOrbit q c D m = 0 :=
-  (AccessOrbit_eq_zero_iff_modulus q c D m hq hD).mpr hm.2.1
+  (AccessOrbitEqZeroIffModulus q c D m hq hD).mpr hm.2.1
 
 /-- **Purity of the period.** The orbit of `0` is periodic with period `m`,
 not merely eventually periodic. -/
-theorem AccessOrbit_period (q c D m j : ℕ) (hq : 2 ≤ q) (hD : 0 < D)
+theorem AccessOrbitPeriod (q c D m j : ℕ) (hq : 2 ≤ q) (hD : 0 < D)
     (hm : AccessLeast q c D m) :
     AccessOrbit q c D (j + m) = AccessOrbit q c D j := by
-  have hm0 : AccessOrbit q c D m = 0 := AccessOrbit_eq_zero_of_least q c D m hq hD hm
+  have hm0 : AccessOrbit q c D m = 0 := AccessOrbitEqZeroOfLeast q c D m hq hD hm
   calc AccessOrbit q c D (j + m)
       = Iterate (AccessStep q c D) m (AccessOrbit q c D j) :=
-        AccessOrbit_add q c D j m
+        AccessOrbitAdd q c D j m
     _ = Iterate (AccessStep q c D) j (AccessOrbit q c D m) :=
-        AccessIterate_comm q c D m j 0
+        AccessIterateComm q c D m j 0
     _ = AccessOrbit q c D j := by rw [hm0]; rfl
 
 /-- The period propagates to multiples of the least positive exponent. -/
-theorem AccessOrbit_period_mul (q c D m j t : ℕ) (hq : 2 ≤ q) (hD : 0 < D)
+theorem AccessOrbitPeriodMul (q c D m j t : ℕ) (hq : 2 ≤ q) (hD : 0 < D)
     (hm : AccessLeast q c D m) :
     AccessOrbit q c D (j + m * t) = AccessOrbit q c D j := by
   induction t with
   | zero => simp
   | succ t ih =>
       have hstep : j + m * (t + 1) = (j + m * t) + m := by ring
-      rw [hstep, AccessOrbit_period q c D m (j + m * t) hq hD hm, ih]
+      rw [hstep, AccessOrbitPeriod q c D m (j + m * t) hq hD hm, ih]
 
 /-- **Return times.** The orbit visits `0` exactly at the multiples of the
 least positive exponent. -/
-theorem AccessOrbit_eq_zero_iff_dvd (q c D m j : ℕ) (hq : 2 ≤ q) (hD : 0 < D)
+theorem AccessOrbitEqZeroIffDvd (q c D m j : ℕ) (hq : 2 ≤ q) (hD : 0 < D)
     (hm : AccessLeast q c D m) : AccessOrbit q c D j = 0 ↔ m ∣ j := by
   constructor
   · intro h
     have hmod : AccessModulus q c D ∣ q ^ j - 1 :=
-      (AccessOrbit_eq_zero_iff_modulus q c D j hq hD).mp h
+      (AccessOrbitEqZeroIffModulus q c D j hq hD).mp h
     have hqm : q ^ m ≡ 1 [MOD AccessModulus q c D] :=
-      AccessModulus_modEq_one (by omega) hm.2.1
+      AccessModulusModEqOne (by omega) hm.2.1
     have hqj : q ^ j ≡ 1 [MOD AccessModulus q c D] :=
-      AccessModulus_modEq_one (by omega) hmod
+      AccessModulusModEqOne (by omega) hmod
     have hpow : q ^ (m * (j / m)) ≡ 1 [MOD AccessModulus q c D] := by
       have h1 := Nat.ModEq.pow (j / m) hqm
       rwa [← Nat.pow_mul, one_pow] at h1
@@ -257,7 +257,7 @@ theorem AccessOrbit_eq_zero_iff_dvd (q c D m j : ℕ) (hq : 2 ≤ q) (hD : 0 < D
       rw [← Nat.div_add_mod j m] at hqj
       exact hsplit.symm.trans hqj
     have hdiv : AccessModulus q c D ∣ q ^ (j % m) - 1 :=
-      AccessModulus_dvd_pred_of_modEq (Nat.one_le_pow _ q (by omega)) hjr
+      AccessModulusDvdPredOfModEq (Nat.one_le_pow _ q (by omega)) hjr
     by_cases hr0 : j % m = 0
     · have hj : j = m * (j / m) := by
         calc j = m * (j / m) + j % m := (Nat.div_add_mod j m).symm
@@ -265,70 +265,70 @@ theorem AccessOrbit_eq_zero_iff_dvd (q c D m j : ℕ) (hq : 2 ≤ q) (hD : 0 < D
       exact ⟨j / m, hj⟩
     · exact absurd hdiv (hm.2.2 (j % m) (Nat.pos_of_ne_zero hr0) (Nat.mod_lt j hm.1))
   · rintro ⟨t, rfl⟩
-    have := AccessOrbit_period_mul q c D m 0 t hq hD hm
-    simpa [AccessOrbit_zero] using this
+    have := AccessOrbitPeriodMul q c D m 0 t hq hD hm
+    simpa [AccessOrbitZero] using this
 
 /-- No two distinct indices below `m` carry the same residue. -/
-private theorem AccessOrbit_lt_eq_false (q c D m i j : ℕ) (hq : 2 ≤ q) (hD : 0 < D)
+private theorem AccessOrbitLtEqFalse (q c D m i j : ℕ) (hq : 2 ≤ q) (hD : 0 < D)
     (hm : AccessLeast q c D m) (hj : j < m) (hij : AccessOrbit q c D i = AccessOrbit q c D j)
     (hlt : i < j) : False := by
-  have hm0 : AccessOrbit q c D m = 0 := AccessOrbit_eq_zero_of_least q c D m hq hD hm
+  have hm0 : AccessOrbit q c D m = 0 := AccessOrbitEqZeroOfLeast q c D m hq hD hm
   have hstep : AccessOrbit q c D (i + (m - j))
       = Iterate (AccessStep q c D) (m - j) (AccessOrbit q c D i) :=
-    AccessOrbit_add q c D i (m - j)
+    AccessOrbitAdd q c D i (m - j)
   rw [hij] at hstep
   have hback : Iterate (AccessStep q c D) (m - j) (AccessOrbit q c D j)
       = AccessOrbit q c D (j + (m - j)) :=
-    (AccessOrbit_add q c D j (m - j)).symm
+    (AccessOrbitAdd q c D j (m - j)).symm
   rw [hback, show j + (m - j) = m by omega, hm0] at hstep
   have hmod' : AccessModulus q c D ∣ q ^ (i + (m - j)) - 1 :=
-    (AccessOrbit_eq_zero_iff_modulus q c D (i + (m - j)) hq hD).mp hstep
+    (AccessOrbitEqZeroIffModulus q c D (i + (m - j)) hq hD).mp hstep
   exact absurd hmod'
     (hm.2.2 (i + (m - j)) (by omega) (by omega))
 
 /-- **Distinctness.** The first `m` residues of the orbit are pairwise
 distinct. -/
-theorem AccessOrbit_distinct (q c D m i j : ℕ) (hq : 2 ≤ q) (hD : 0 < D)
+theorem AccessOrbitDistinct (q c D m i j : ℕ) (hq : 2 ≤ q) (hD : 0 < D)
     (hm : AccessLeast q c D m) (hi : i < m) (hj : j < m)
     (hij : AccessOrbit q c D i = AccessOrbit q c D j) : i = j := by
   rcases lt_trichotomy i j with hlt | heq | hgt
-  · exact (AccessOrbit_lt_eq_false q c D m i j hq hD hm hj hij hlt).elim
+  · exact (AccessOrbitLtEqFalse q c D m i j hq hD hm hj hij hlt).elim
   · exact heq
-  · exact (AccessOrbit_lt_eq_false q c D m j i hq hD hm hi hij.symm hgt).elim
+  · exact (AccessOrbitLtEqFalse q c D m j i hq hD hm hi hij.symm hgt).elim
 
 /-- **Counting bound.** The least positive return time is at most `D`. -/
-theorem AccessOrbit_card_le (q c D m : ℕ) (hq : 2 ≤ q) (hD : 0 < D)
+theorem AccessOrbitCardLe (q c D m : ℕ) (hq : 2 ≤ q) (hD : 0 < D)
     (hm : AccessLeast q c D m) : m ≤ D := by
   have hinj : Set.InjOn (AccessOrbit q c D) (↑(Finset.range m) : Set ℕ) := by
     intro i hi j hj hij
-    exact AccessOrbit_distinct q c D m i j hq hD hm (Finset.mem_range.mp hi)
+    exact AccessOrbitDistinct q c D m i j hq hD hm (Finset.mem_range.mp hi)
       (Finset.mem_range.mp hj) hij
   have hcard : (Finset.image (AccessOrbit q c D) (Finset.range m)).card = m := by
     rw [Finset.card_image_of_injOn hinj, Finset.card_range]
   have hsub : Finset.image (AccessOrbit q c D) (Finset.range m) ⊆ Finset.range D := by
     intro x hx
     obtain ⟨j, _, rfl⟩ := Finset.mem_image.mp hx
-    rw [AccessOrbit_eq_offset_mul_repunit]
+    rw [AccessOrbitEqOffsetMulRepunit]
     exact Finset.mem_range.mpr (Nat.mod_lt _ hD)
   have hle := Finset.card_le_card hsub
   rw [hcard, Finset.card_range] at hle
   exact hle
 
 /-- Every accessible residue has a unique representative index below `m`. -/
-theorem AccessOrbit_representative (q c D m j : ℕ) (hq : 2 ≤ q) (hD : 0 < D)
+theorem AccessOrbitRepresentative (q c D m j : ℕ) (hq : 2 ≤ q) (hD : 0 < D)
     (hm : AccessLeast q c D m) :
     ∃! i, i < m ∧ AccessOrbit q c D j = AccessOrbit q c D i := by
   have hsplit : j % m + m * (j / m) = j := by
     have := Nat.div_add_mod j m
     omega
   refine ⟨j % m, ⟨Nat.mod_lt j hm.1, ?_⟩, ?_⟩
-  · have := AccessOrbit_period_mul q c D m (j % m) (j / m) hq hD hm
+  · have := AccessOrbitPeriodMul q c D m (j % m) (j / m) hq hD hm
     rwa [hsplit] at this
   · intro i hi
     have hthis : AccessOrbit q c D j = AccessOrbit q c D (j % m) := by
-      have := AccessOrbit_period_mul q c D m (j % m) (j / m) hq hD hm
+      have := AccessOrbitPeriodMul q c D m (j % m) (j / m) hq hD hm
       rwa [hsplit] at this
-    exact (AccessOrbit_distinct q c D m (j % m) i hq hD hm
+    exact (AccessOrbitDistinct q c D m (j % m) i hq hD hm
       (Nat.mod_lt j hm.1) hi.1 (hthis.symm.trans hi.2)).symm
 
 
@@ -336,12 +336,12 @@ theorem AccessOrbit_representative (q c D m j : ℕ) (hq : 2 ≤ q) (hD : 0 < D)
 
 /-- Modulo a prime where the multiplier is one, the repunit sum counts its
 terms. -/
-theorem AccessRepunitSum_modeq_index (q p j : ℕ) (h : q ≡ 1 [MOD p]) :
+theorem AccessRepunitSumModeqIndex (q p j : ℕ) (h : q ≡ 1 [MOD p]) :
     RepunitSum q j ≡ j [MOD p] := by
   induction j with
   | zero => exact Nat.ModEq.refl 0
   | succ j ih =>
-      rw [RepunitSum_succ]
+      rw [RepunitSumSucc]
       have hpow : q ^ j ≡ 1 [MOD p] := by
         have := Nat.ModEq.pow j h
         simpa using this
@@ -350,74 +350,74 @@ theorem AccessRepunitSum_modeq_index (q p j : ℕ) (h : q ≡ 1 [MOD p]) :
 /-- **Prime case, multiplier not one.** If `p` is prime, `p` does not divide
 `c`, and `q` is not one modulo `p`, the accessible exponents are the
 multiples of the order of `q` modulo `p`. -/
-theorem AccessPrime_orbit_iff (q c p j : ℕ) (hq : 2 ≤ q) (hp : p.Prime)
+theorem AccessPrimeOrbitIff (q c p j : ℕ) (hq : 2 ≤ q) (hp : p.Prime)
     (hc : ¬ p ∣ c) (hq1 : ¬ p ∣ q - 1) :
     AccessOrbit q c p j = 0 ↔ p ∣ q ^ j - 1 := by
-  have hpred : (q - 1) * RepunitSum q j = q ^ j - 1 := RepunitSum_mul_pred q j (by omega)
+  have hpred : (q - 1) * RepunitSum q j = q ^ j - 1 := RepunitSumMulPred q j (by omega)
   have hpc : p.Coprime c := (hp.coprime_iff_not_dvd).mpr hc
   have hpq1 : p.Coprime (q - 1) := (hp.coprime_iff_not_dvd).mpr hq1
   constructor
   · intro h
-    have hdiv : p ∣ c * RepunitSum q j := (AccessOrbit_eq_zero_iff q c p j).mp h
+    have hdiv : p ∣ c * RepunitSum q j := (AccessOrbitEqZeroIff q c p j).mp h
     have hG : p ∣ RepunitSum q j := hpc.dvd_of_dvd_mul_left hdiv
     rw [← hpred]
     exact Dvd.dvd.mul_left hG (q - 1)
   · intro h
     rw [← hpred] at h
     have hG : p ∣ RepunitSum q j := hpq1.dvd_of_dvd_mul_left h
-    exact (AccessOrbit_eq_zero_iff q c p j).mpr (Dvd.dvd.mul_left hG c)
+    exact (AccessOrbitEqZeroIff q c p j).mpr (Dvd.dvd.mul_left hG c)
 
 /-- **Prime case, multiplier one.** If `p` is prime, `p` does not divide `c`,
 and `p` divides `q - 1`, the accessible exponents are exactly the multiples
 of `p`. -/
-theorem AccessPrime_orbit_iff_index (q c p j : ℕ) (hq : 2 ≤ q) (hp : p.Prime)
+theorem AccessPrimeOrbitIffIndex (q c p j : ℕ) (hq : 2 ≤ q) (hp : p.Prime)
     (hc : ¬ p ∣ c) (hq1 : p ∣ q - 1) :
     AccessOrbit q c p j = 0 ↔ p ∣ j := by
   have hqmod : q ≡ 1 [MOD p] := by
     have hzero : q - 1 ≡ 0 [MOD p] := Nat.modEq_zero_iff_dvd.mpr hq1
     have h1 : (q - 1) + 1 ≡ 0 + 1 [MOD p] := hzero.add (Nat.ModEq.refl 1)
     rwa [Nat.sub_add_cancel (show 1 ≤ q by omega), zero_add] at h1
-  have hcount : RepunitSum q j ≡ j [MOD p] := AccessRepunitSum_modeq_index q p j hqmod
+  have hcount : RepunitSum q j ≡ j [MOD p] := AccessRepunitSumModeqIndex q p j hqmod
   have hpc : p.Coprime c := (hp.coprime_iff_not_dvd).mpr hc
   constructor
   · intro h
-    have hdiv : p ∣ c * RepunitSum q j := (AccessOrbit_eq_zero_iff q c p j).mp h
+    have hdiv : p ∣ c * RepunitSum q j := (AccessOrbitEqZeroIff q c p j).mp h
     have hG : p ∣ RepunitSum q j := hpc.dvd_of_dvd_mul_left hdiv
     have hzero : RepunitSum q j ≡ 0 [MOD p] := Nat.modEq_zero_iff_dvd.mpr hG
     exact Nat.modEq_zero_iff_dvd.mp (hcount.symm.trans hzero)
   · intro h
     have hzero : j ≡ 0 [MOD p] := Nat.modEq_zero_iff_dvd.mpr h
     have hG : p ∣ RepunitSum q j := Nat.modEq_zero_iff_dvd.mp (hcount.trans hzero)
-    exact (AccessOrbit_eq_zero_iff q c p j).mpr (Dvd.dvd.mul_left hG c)
+    exact (AccessOrbitEqZeroIff q c p j).mpr (Dvd.dvd.mul_left hG c)
 
 /-- **Full access at a prime.** If `p` is prime, `p` does not divide `c`, and
 `p` divides `q - 1`, then the least positive return time is `p` itself. -/
-theorem AccessPrime_full_access (q c p : ℕ) (hq : 2 ≤ q) (hp : p.Prime)
+theorem AccessPrimeFullAccess (q c p : ℕ) (hq : 2 ≤ q) (hp : p.Prime)
     (hc : ¬ p ∣ c) (hq1 : p ∣ q - 1) : AccessLeast q c p p := by
   refine ⟨hp.pos, ?_, ?_⟩
-  · exact (AccessOrbit_eq_zero_iff_modulus q c p p hq hp.pos).mp
-      ((AccessPrime_orbit_iff_index q c p p hq hp hc hq1).mpr (dvd_refl p))
+  · exact (AccessOrbitEqZeroIffModulus q c p p hq hp.pos).mp
+      ((AccessPrimeOrbitIffIndex q c p p hq hp hc hq1).mpr (dvd_refl p))
   · intro s hs hsp
     exact fun hdiv => Nat.not_dvd_of_pos_of_lt hs hsp
-      ((AccessPrime_orbit_iff_index q c p s hq hp hc hq1).mp
-        ((AccessOrbit_eq_zero_iff_modulus q c p s hq hp.pos).mpr hdiv))
+      ((AccessPrimeOrbitIffIndex q c p s hq hp hc hq1).mp
+        ((AccessOrbitEqZeroIffModulus q c p s hq hp.pos).mpr hdiv))
 
 /-- **Exhaustion at a prime.** If `p` is prime, `p` does not divide `c`, and
 `p` divides `q - 1`, the orbit of `0` visits every residue modulo `p`. -/
-theorem AccessPrime_orbit_surjective (q c p : ℕ) (hq : 2 ≤ q) (hp : p.Prime)
+theorem AccessPrimeOrbitSurjective (q c p : ℕ) (hq : 2 ≤ q) (hp : p.Prime)
     (hc : ¬ p ∣ c) (hq1 : p ∣ q - 1) (r : ℕ) (hr : r < p) :
     ∃ j < p, AccessOrbit q c p j = r := by
-  have hm : AccessLeast q c p p := AccessPrime_full_access q c p hq hp hc hq1
+  have hm : AccessLeast q c p p := AccessPrimeFullAccess q c p hq hp hc hq1
   have hinj : Set.InjOn (AccessOrbit q c p) (↑(Finset.range p) : Set ℕ) := by
     intro i hi j hj hij
-    exact AccessOrbit_distinct q c p p i j hq hp.pos hm (Finset.mem_range.mp hi)
+    exact AccessOrbitDistinct q c p p i j hq hp.pos hm (Finset.mem_range.mp hi)
       (Finset.mem_range.mp hj) hij
   have hcard : (Finset.image (AccessOrbit q c p) (Finset.range p)).card = p := by
     rw [Finset.card_image_of_injOn hinj, Finset.card_range]
   have hsub : Finset.image (AccessOrbit q c p) (Finset.range p) ⊆ Finset.range p := by
     intro x hx
     obtain ⟨j, _, rfl⟩ := Finset.mem_image.mp hx
-    rw [AccessOrbit_eq_offset_mul_repunit]
+    rw [AccessOrbitEqOffsetMulRepunit]
     exact Finset.mem_range.mpr (Nat.mod_lt _ hp.pos)
   have heq : Finset.image (AccessOrbit q c p) (Finset.range p) = Finset.range p :=
     Finset.eq_of_subset_of_card_le hsub (le_of_eq (by rw [hcard, Finset.card_range]))
@@ -430,7 +430,7 @@ theorem AccessPrime_orbit_surjective (q c p : ℕ) (hq : 2 ≤ q) (hp : p.Prime)
 /-- **Necessity of the prime criterion.** If `p` is prime, `p` does not divide
 `c`, and `q` is coprime to `p` but not one modulo `p`, the least positive
 return time is smaller than `p`, so the orbit cannot exhaust the residues. -/
-theorem AccessPrime_not_full_access (q c p m : ℕ) (hq : 2 ≤ q) (hp : p.Prime)
+theorem AccessPrimeNotFullAccess (q c p m : ℕ) (hq : 2 ≤ q) (hp : p.Prime)
     (hc : ¬ p ∣ c) (hcop : p.Coprime q) (hq1 : ¬ p ∣ q - 1)
     (hm : AccessLeast q c p m) : m < p := by
   haveI : Fact p.Prime := ⟨hp⟩
@@ -445,8 +445,8 @@ theorem AccessPrime_not_full_access (q c p m : ℕ) (hq : 2 ≤ q) (hp : p.Prime
       Nat.cast_one, sub_self]
   have hF : p ∣ q ^ (p - 1) - 1 := (ZMod.natCast_eq_zero_iff (q ^ (p - 1) - 1) p).mp hcast
   have hdiv : AccessModulus q c p ∣ q ^ (p - 1) - 1 :=
-    (AccessOrbit_eq_zero_iff_modulus q c p (p - 1) hq hp.pos).mp
-      ((AccessPrime_orbit_iff q c p (p - 1) hq hp hc hq1).mpr hF)
+    (AccessOrbitEqZeroIffModulus q c p (p - 1) hq hp.pos).mp
+      ((AccessPrimeOrbitIff q c p (p - 1) hq hp hc hq1).mpr hF)
   have hmle : m ≤ p - 1 := by
     by_contra h
     exact absurd hdiv (hm.2.2 (p - 1) (by omega) (Nat.lt_of_not_le h))

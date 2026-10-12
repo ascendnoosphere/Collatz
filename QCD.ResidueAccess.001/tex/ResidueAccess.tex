@@ -1,10 +1,26 @@
+% SPDX-License-Identifier: CC-BY-4.0
 \documentclass[11pt,letterpaper]{article}
 
 \usepackage[T1]{fontenc}
 \usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 \usepackage{booktabs}
 \usepackage{enumitem}
 \usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}[theorem]{Lemma}
@@ -13,7 +29,7 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{Accessible residues of a divisor slice}
+\title{Generalized Collatz Library}
 \author{ascendnoosphere}
 \date{\today}
 
@@ -24,17 +40,18 @@
 For integers \(q\ge2\), \(c\ge1\) and \(D\ge2\) the divisor slice of the raw
 map sends \(n\) to \(n/D\) when \(D\mid n\) and to \(qn+c\) otherwise. Its
 residue dynamics is the affine map \(F(r)=qr+c\bmod D\) on
-\(\mathbb{Z}/D\mathbb{Z}\), and the residues that occur on a genuine orbit are
-exactly the orbit of \(0\) under \(F\). This document classifies that orbit.
+\(\mathbb{Z}/D\mathbb{Z}\), and when \(\gcd(q,D)=1\) the residues reached by
+affine blocks that end in a division are exactly the iterates of \(0\)
+under \(F\). This document classifies that orbit.
 The affine offset after \(j\) steps is the repunit sum
 \(G_j(q)=1+q+\dots+q^{j-1}\); the orbit returns to \(0\) at time \(j\)
 precisely when the access modulus
 \(M=D(q-1)/\gcd(c,D(q-1))\) divides \(q^{j}-1\); the return time is the least
 such positive exponent, it is at most \(D\), and the first \(m\) values of the
 orbit are distinct. Modulo a prime \(p\) with \(p\nmid c\) the classification
-is complete: the return time is the multiplicative order of \(q\) modulo
-\(p\), and it equals the full period \(p\) exactly when
-\(q\equiv1\pmod p\).
+is explicit: the orbit returns at time \(j\) exactly when \(p\mid G_j(q)\),
+the return time is the full period \(p\) when \(q\equiv1\pmod p\), and it is
+smaller than \(p\) when \(q\not\equiv1\pmod p\) and \(\gcd(p,q)=1\).
 \end{abstract}
 
 \section{The residue walk}
@@ -366,26 +383,28 @@ obligations and are not claimed.
 \begin{center}
 \begin{tabular}{ll}
 \toprule
-Statement & Lean \\
+Statement & Lean / controls \\
 \midrule
 Lemma~\ref{Lem:Walk} & \texttt{AccessStep}, \texttt{AccessOrbit}, \\
- & \texttt{AccessOrbit\_zero}, \texttt{AccessOrbit\_succ}, \texttt{AccessOrbit\_add} \\
-Lemma~\ref{Lem:Offset} & \texttt{AccessOrbit\_eq\_offset\_mul\_repunit} \\
-Corollary~\ref{Cor:ReturnCondition} & \texttt{AccessOrbit\_eq\_zero\_iff} \\
-Lemma~\ref{Lem:GcdReduction} & \texttt{AccessModulus\_dvd\_iff\_mul} \\
-Theorem~\ref{Thm:Criterion} & \texttt{AccessOrbit\_eq\_zero\_iff\_modulus} \\
-Lemma~\ref{Lem:ModulusDivisor} & \texttt{AccessModulus\_dvd\_mul\_pred}, \texttt{AccessModulus\_coprime\_q} \\
-Lemma~\ref{Lem:Injectivity} & \texttt{AccessStep\_eq\_iff} \\
-Theorem~\ref{Thm:Period} & \texttt{AccessOrbit\_eq\_zero\_of\_least}, \texttt{AccessOrbit\_period}, \\
- & \texttt{AccessOrbit\_period\_mul}, \texttt{AccessOrbit\_eq\_zero\_iff\_dvd}, \texttt{AccessIterate\_comm} \\
-Lemma~\ref{Lem:Distinct} & \texttt{AccessOrbit\_distinct} \\
-Theorem~\ref{Thm:Counting} & \texttt{AccessOrbit\_card\_le} \\
-Theorem~\ref{Thm:Representatives} & \texttt{AccessOrbit\_representative} \\
-Lemma~\ref{Lem:RepunitPrime} & \texttt{AccessRepunitSum\_modeq\_index} \\
-Theorem~\ref{Thm:PrimeNotOne} & \texttt{AccessPrime\_orbit\_iff} \\
-Theorem~\ref{Thm:PrimeOne} & \texttt{AccessPrime\_orbit\_iff\_index} \\
-Theorem~\ref{Thm:FullAccess} & \texttt{AccessPrime\_full\_access}, \texttt{AccessPrime\_orbit\_surjective} \\
-Theorem~\ref{Thm:PrimeNecessity} & \texttt{AccessPrime\_not\_full\_access} \\
+ & \texttt{AccessOrbitZero}, \texttt{AccessOrbitSucc}, \texttt{AccessOrbitAdd} \\
+Lemma~\ref{Lem:Offset} & \texttt{AccessOrbitEqOffsetMulRepunit} \\
+Corollary~\ref{Cor:ReturnCondition} & \texttt{AccessOrbitEqZeroIff} \\
+Lemma~\ref{Lem:GcdReduction} & \texttt{AccessModulusDvdIffMul} \\
+Theorem~\ref{Thm:Criterion} & \texttt{AccessOrbitEqZeroIffModulus} \\
+Lemma~\ref{Lem:ModulusDivisor} & \texttt{AccessModulusDvdMulPred}, \texttt{AccessModulusCoprimeQ} \\
+Lemma~\ref{Lem:Injectivity} & \texttt{AccessStepEqIff} \\
+Theorem~\ref{Thm:Period} & \texttt{AccessOrbitEqZeroOfLeast}, \texttt{AccessOrbitPeriod}, \\
+ & \texttt{AccessOrbitPeriodMul}, \texttt{AccessOrbitEqZeroIffDvd}, \texttt{AccessIterateComm} \\
+Lemma~\ref{Lem:Distinct} & \texttt{AccessOrbitDistinct} \\
+Theorem~\ref{Thm:Counting} & \texttt{AccessOrbitCardLe} \\
+Theorem~\ref{Thm:Representatives} & \texttt{AccessOrbitRepresentative} \\
+Lemma~\ref{Lem:RepunitPrime} & \texttt{AccessRepunitSumModeqIndex} \\
+Theorem~\ref{Thm:PrimeNotOne} & \texttt{AccessPrimeOrbitIff} \\
+Theorem~\ref{Thm:PrimeOne} & \texttt{AccessPrimeOrbitIffIndex} \\
+Theorem~\ref{Thm:FullAccess} & \texttt{AccessPrimeFullAccess}, \texttt{AccessPrimeOrbitSurjective} \\
+Theorem~\ref{Thm:PrimeNecessity} & \texttt{AccessPrimeNotFullAccess} \\
+Remark~\ref{Rem:Controls} & control slice of \texttt{go/ResidueAccess.go}; boundary statements above \\
+Remark~\ref{Rem:Scope} & scope remarks for the statements above \\
 \bottomrule
 \end{tabular}
 \end{center}
