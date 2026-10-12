@@ -143,12 +143,8 @@ restricts \(|Q|\le181\) and \(2\le|D|\le32\), and refuses a prefix exceeding
 4096 raw steps. These are computational limits, not hypotheses of the formal
 theorems. Refusal is not nonabsorption, divergence or search exhaustion.
 
-## Sources and commands
+## Commands
 
-The absorption identity is formula (19) in
-`/home/dell/collatz/s.txt:1502–1510`. The gcd extraction, ceiling cutoff and
-lifted examples occur in section 7 of
-`/home/dell/collatz/README (1).md:249–268`.
 The construction extends [QCD.Scaling.001](../QCD.Scaling.001/README.md).
 
 ```sh

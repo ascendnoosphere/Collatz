@@ -141,7 +141,7 @@ reserves \(2048\)-bit operands before its hot loops. The allocation tests
 measure zero warmed allocations only at \((a,b)=(0,0),(16,12),(64,32),(3,0)\)
 with seed \(27\); they are not a universal allocation claim. The primitive
 cycle test covers all \(65\cdot33=2145\) bounded exponent presentations,
-not all possible cycles. No original source program is needed for replay.
+not all possible cycles. Replay is self-contained.
 
 ```sh
 make lean
@@ -156,15 +156,14 @@ bash Scripts/CheckIgnoredTexTemps.sh
 The Go commands use the repository's `$(HOME)/.local/go/bin` toolchain;
 export that directory in `PATH` when invoking `go` directly.
 
-## Mathematical provenance
+## Dependencies
 
-The family, designated cycle, and equivalence of positive convergence
-obligations occur in the archived source transcript `s.txt`, formulas
-(18)–(20), lines 1477–1544. The detailed proof here uses the exact guarded
-scaling and offset-entry results of `QCD.Scaling.001`, the binary block
-clock of `QCD.TimeCompression.001`, and full target recovery of
-`QCD.TimeCompression.002`. Citations and precise statements are in the
-adjacent TeX document and bibliography.
+The detailed proof uses the exact guarded scaling and offset-entry results
+of [`QCD.Scaling.001`](../QCD.Scaling.001/README.md), the binary block clock
+of [`QCD.TimeCompression.001`](../QCD.TimeCompression.001/README.md), and
+full raw-time target recovery of
+[`QCD.TimeCompression.002`](../QCD.TimeCompression.002/README.md).
+Precise statements are in the adjacent TeX document and bibliography.
 
 The broader family \((3c,c,2)\), with \(c=2^a u\) and odd \(u\), compresses
 to \((3u,u,2)\) and normalizes to \((3u,1,2)\). Its multiplier is classical
