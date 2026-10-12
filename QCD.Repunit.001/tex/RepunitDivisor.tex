@@ -3,15 +3,29 @@
 
 \usepackage[T1]{fontenc}
 \usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 \usepackage{booktabs}
 \usepackage{enumitem}
 \usepackage[hidelinks]{hyperref}
 
 \newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
@@ -92,8 +106,9 @@ inequality \(S_k<q^k\) follows from \(S_k+1\le q^k\).
 
 \begin{theorem}[Exact order]\label{Thm:Order}
 Let \(q\ge2\). Then \(q^k\equiv1\pmod{S_k}\) for all \(k\ge0\), and for
-\(0<j<k\) one has \(q^j\not\equiv1\pmod{S_k}\). Hence the multiplicative order
-of \(q\) modulo \(S_k\) is exactly \(k\).
+\(0<j<k\) one has \(q^j\not\equiv1\pmod{S_k}\). Hence for \(k\ge1\) the
+multiplicative order of \(q\) modulo the nonzero divisor \(S_k\) is exactly
+\(k\).
 \end{theorem}
 
 \begin{proof}
@@ -161,9 +176,9 @@ from \(S_1=1\).
 \section{The return map}
 
 \begin{theorem}[Return map]\label{Thm:Return}
-Let \(k\ge2\) and define \(R(n)=(q^{\,k-1}n+S_{k-1})/S_k\). After \(k-1\)
-affine events from the seed \(1\) the state of the slice is \(S_k\), and
-\(R(1)=1\).
+Let \(q\ge1\) and \(k\ge2\), and define \(R(n)=(q^{\,k-1}n+S_{k-1})/S_k\).
+After \(k-1\) affine events from the seed \(1\) the state of the slice is
+\(S_k\), and \(R(1)=1\).
 \end{theorem}
 
 \begin{proof}
@@ -211,8 +226,10 @@ The hypotheses are needed. For \(q=1\) the divisor identity reads
 fails and the rows using it assume \(q\ge2\). For \(k=1\) the divisor is
 \(S_1=1\), every state is divisible by it, the map is the identity and the
 cycle has length one; the return theorem assumes \(k\ge2\). For a divisor that
-is not a repunit sum, for instance \(q=2\), \(D=5\), the walk of \(1\) does not
-return to \(1\) within the tested horizon. The classical instance
+is not a repunit sum, for instance \(q=2\), \(D=5\), the raw orbit of the seed
+\(1\) does not return to \(1\) within the tested horizon, while the residue
+walk from \(0\) does close, because \(0\mapsto1\mapsto3\mapsto2\mapsto0\) is a
+cycle of the residue map. The classical instance
 \(q=3\), \(k=2\) gives \(D=4\) and the cycle \(1\mapsto4\mapsto1\).
 \end{remark}
 
@@ -220,9 +237,9 @@ return to \(1\) within the tested horizon. The classical instance
 The statements classify the slice through the order of \(q\) modulo \(S_k\)
 and the listed cycle. They do not claim that seeds outside the cycle diverge,
 they say nothing about the density of the captured set, and they do not treat
-general divisors \(D\) that are not repunit sums. The finite certificate of
-\S6 is a bounded agreement check for the statements above, not a replacement
-for them.
+general divisors \(D\) that are not repunit sums. The bounded Go certificate
+of \texttt{go/RepunitDivisor.go} is an agreement check for the statements
+above, not a replacement for them.
 \end{remark}
 
 \section{Formal correspondence}
@@ -231,20 +248,21 @@ for them.
 \centering
 \begin{tabular}{ll}
 \toprule
-Statement & Lean \\
+Statement & Lean / controls \\
 \midrule
 Definition of \(S_k\), \(T\), \(\rho\), \(R\) &
 \texttt{RepunitSum}, \texttt{RepunitStep}, \texttt{RepunitResidue}, \texttt{RepunitReturn} \\
-Lemma~\ref{Lem:RepunitBasic} & \texttt{RepunitSum\_zero}, \texttt{RepunitSum\_succ}, \texttt{RepunitSum\_one}, \texttt{RepunitSum\_succ\_mul}, \texttt{RepunitSum\_add}, \texttt{RepunitSum\_eq\_pow\_add} \\
-Lemma~\ref{Lem:DivisorIdentity} & \texttt{RepunitSum\_mul\_pred}, \texttt{RepunitSum\_dvd\_pred} \\
-Theorem~\ref{Thm:Order} & \texttt{RepunitSum\_modeq}, \texttt{RepunitSum\_modeq\_order} \\
-Lemma~\ref{Lem:Growth} & \texttt{RepunitSum\_one\_le}, \texttt{RepunitSum\_pos}, \texttt{RepunitSum\_lt\_succ}, \texttt{RepunitSum\_strictMono}, \texttt{RepunitSum\_succ\_le\_pow}, \texttt{RepunitSum\_lt\_pow} \\
-Lemma~\ref{Lem:StepBranch} & \texttt{RepunitStepOfDvd}, \texttt{RepunitStepOfNotDvd}, \texttt{RepunitIterateSuccLast}, \texttt{RepunitStep\_zero}, \texttt{RepunitStep\_iterate\_zero} \\
-Theorem~\ref{Thm:Trap} & \texttt{RepunitStep\_eq\_zero} \\
-Theorem~\ref{Thm:Cycle} & \texttt{RepunitStep\_iterate\_one}, \texttt{RepunitStep\_iterate\_one\_cycle}, \texttt{RepunitStep\_iterate\_one\_ne} \\
-Theorem~\ref{Thm:Return} & \texttt{RepunitReturn\_fixes\_one} \\
-Theorem~\ref{Thm:ResidueWalk} & \texttt{RepunitResidue\_iterate\_zero}, \texttt{RepunitResidue\_iterate\_period}, \texttt{RepunitResidue\_iterate\_injective} \\
-Remark~\ref{Rem:Controls} & certificate controls of \texttt{go/RepunitDivisor.go} \\
+Lemma~\ref{Lem:RepunitBasic} & \texttt{RepunitSumZero}, \texttt{RepunitSumSucc}, \texttt{RepunitSumOne}, \texttt{RepunitSumSuccMul}, \texttt{RepunitSumAdd}, \texttt{RepunitSumEqPowAdd} \\
+Lemma~\ref{Lem:DivisorIdentity} & \texttt{RepunitSumMulPred}, \texttt{RepunitSumDvdPred} \\
+Theorem~\ref{Thm:Order} & \texttt{RepunitSumModeq}, \texttt{RepunitSumModeqOrder} \\
+Lemma~\ref{Lem:Growth} & \texttt{RepunitSumOneLe}, \texttt{RepunitSumPos}, \texttt{RepunitSumLtSucc}, \texttt{RepunitSumStrictMono}, \texttt{RepunitSumSuccLePow}, \texttt{RepunitSumLtPow} \\
+Lemma~\ref{Lem:StepBranch} & \texttt{RepunitStepOfDvd}, \texttt{RepunitStepOfNotDvd}, \texttt{RepunitIterateSuccLast}, \texttt{RepunitStepZero}, \texttt{RepunitStepIterateZero} \\
+Theorem~\ref{Thm:Trap} & \texttt{RepunitStepEqZero} \\
+Theorem~\ref{Thm:Cycle} & \texttt{RepunitStepIterateOne}, \texttt{RepunitStepIterateOneCycle}, \texttt{RepunitStepIterateOneNe} \\
+Theorem~\ref{Thm:Return} & \texttt{RepunitReturnFixesOne} \\
+Theorem~\ref{Thm:ResidueWalk} & \texttt{RepunitResidueIterateZero}, \texttt{RepunitResidueIteratePeriod}, \texttt{RepunitResidueIterateInjective} \\
+Remark~\ref{Rem:Controls} & control slice of \texttt{go/RepunitDivisor.go}; boundary statements above \\
+Remark~\ref{Rem:Scope} & scope remarks for the statements above \\
 \bottomrule
 \end{tabular}
 \end{table}

@@ -382,16 +382,16 @@ certificate checks 3229604 cases.
 [QCD.Repunit.001](QCD.Repunit.001/README.md) takes the raw map with offset one and
 divisor the repunit sum \(S_k=1+q+\cdots+q^{k-1}\), so the affine branch is
 \(n\mapsto qn+1\). The divisor identity \((q-1)S_k=q^k-1\) makes \(S_k\) a
-divisor of \(q^k-1\), and because \(q^{j}-1=(q-1)S_j\) is strictly smaller
-than \(S_k\) for \(0<j<k\), the multiplicative order of \(q\) modulo \(S_k\) is
-exactly \(k\). The seed \(1\) therefore returns to itself after \(k\)
+divisor of \(q^k-1\), and for \(q\ge2\), because \(q^{j}-1=(q-1)S_j\) is
+strictly smaller than \(S_k\) for \(0<j<k\), the multiplicative order of
+\(q\) modulo \(S_k\) is exactly \(k\). The seed \(1\) therefore returns to itself after \(k\)
 instructions through the states \(S_2,\dots,S_k\), no earlier return occurs, and
 the cycle is primitive; the only state mapped to \(0\) is \(0\) itself. The
 return map \(R(n)=(q^{k-1}n+S_{k-1})/S_k\) fixes \(1\), and the residue walk
 \(r\mapsto(qr+1)\bmod S_k\) from \(0\) visits \(S_j\bmod S_k\), is periodic
 with period \(k\), and its first \(k\) residues are pairwise distinct. The
 classical instance \(q=3\), \(k=2\) gives the divisor \(4\) and the cycle
-\(1\mapsto4\mapsto1\). The bounded certificate checks 98140 cases.
+\(1\mapsto4\mapsto1\). The bounded certificate checks 98311 cases.
 
 ### Accessible residues of a divisor slice
 

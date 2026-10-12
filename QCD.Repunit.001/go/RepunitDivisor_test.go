@@ -73,6 +73,17 @@ func TestStepMatchesReference(t *testing.T) {
 	if want := referenceStep(3, D, w.Cur); got.Cmp(want) != 0 {
 		t.Fatalf("wide StepBig = %s, want %s", got, want)
 	}
+	// The division branch with both operands wider than a word: the state
+	// 2^200 is a multiple of the divisor 2^100, and the quotient is 2^100.
+	wide := new(big.Int).Lsh(big.NewInt(1), 200)
+	w.Cur.Set(wide)
+	got = new(big.Int).Set(w.StepBig(3, D, w.Cur, w.Next))
+	if want := referenceStep(3, D, w.Cur); got.Cmp(want) != 0 {
+		t.Fatalf("wide division StepBig = %s, want %s", got, want)
+	}
+	if want := new(big.Int).Lsh(big.NewInt(1), 100); got.Cmp(want) != 0 {
+		t.Fatalf("wide division quotient = %s, want %s", got, want)
+	}
 }
 
 // TestOrderMatchesReference recomputes the multiplicative order of q modulo
@@ -151,10 +162,47 @@ func TestTrapAndControl(t *testing.T) {
 		}
 	}
 	for k := 2; k <= repunitMaxK; k++ {
-		if got := new(big.Int).Exp(big.NewInt(1), big.NewInt(int64(k)),
-			RepunitSum(1, k)); got.Cmp(big.NewInt(1)) != 0 {
+		// The order claim of the slice fails at multiplier one: 1^j is one
+		// for every 0 < j < k, so the minimality predicate has no witness.
+		D := RepunitSum(1, k)
+		if got := new(big.Int).Exp(big.NewInt(1), big.NewInt(int64(k)), D); got.Cmp(big.NewInt(1)) != 0 {
 			t.Fatalf("multiplier one failed the power identity at k=%d", k)
 		}
+		violated := false
+		for j := 1; j < k; j++ {
+			if got := new(big.Int).Exp(big.NewInt(1), big.NewInt(int64(j)), D); got.Cmp(big.NewInt(1)) == 0 {
+				violated = true
+			}
+		}
+		if !violated {
+			t.Fatalf("multiplier one did not break the order claim at k=%d", k)
+		}
+	}
+}
+
+// TestSweepPredicatesDiscriminate verifies that the sweep predicates are not
+// satisfied by a different parameter: the order of q modulo the repunit sum of
+// index k is k, while the same exponent with the divisor of index k-1 leaves a
+// different residue, so the modulus of the order slice matters.
+func TestSweepPredicatesDiscriminate(t *testing.T) {
+	q := uint64(2)
+	k := 3
+	sum := RepunitSum(q, k)
+	got := new(big.Int).Exp(big.NewInt(int64(q)), big.NewInt(int64(k)), sum)
+	if got.Cmp(big.NewInt(1)) != 0 {
+		t.Fatalf("order predicate failed at q=%d k=%d: %s", q, k, got)
+	}
+	smaller := RepunitSum(q, k-1)
+	got = new(big.Int).Exp(big.NewInt(int64(q)), big.NewInt(int64(k)), smaller)
+	if got.Cmp(big.NewInt(1)) == 0 {
+		t.Fatalf("the divisor of index %d satisfies the order claim", k-1)
+	}
+	trap := RepunitSum(q, 7)
+	if got := referenceStep(q, trap, big.NewInt(0)); got.Sign() != 0 {
+		t.Fatalf("zero did not reach zero: %s", got)
+	}
+	if got := referenceStep(q, trap, big.NewInt(1)); got.Sign() == 0 {
+		t.Fatalf("a nonzero state reached zero")
 	}
 }
 
@@ -186,12 +234,12 @@ func TestSweepTotals(t *testing.T) {
 	}
 	control := Totals{}
 	sweepControls(NewWorkspace(), &control)
-	if control.Failures != 0 || control.Checks != 271 {
-		t.Fatalf("controls counted %+v, want 271 checks and no failures", control)
+	if control.Failures != 0 || control.Checks != 442 {
+		t.Fatalf("controls counted %+v, want 442 checks and no failures", control)
 	}
 	total.Checks += control.Checks
-	if total.Checks != 98140 {
-		t.Fatalf("certificate total %d, want 98140", total.Checks)
+	if total.Checks != 98311 {
+		t.Fatalf("certificate total %d, want 98311", total.Checks)
 	}
 	if repeat.Checks != 97869 {
 		t.Fatalf("second run counted %d checks, want 97869", repeat.Checks)

@@ -31,8 +31,7 @@ type Totals struct {
 	Failures uint64
 }
 
-// Workspace holds the buffers reused by the sweeps. No walk allocates a new
-// *big.Int after construction; a buffer may still grow when a value widens.
+// Workspace holds the buffers reused by the step and return walks.
 type Workspace struct {
 	Sum  *big.Int
 	Pow  *big.Int
@@ -42,7 +41,7 @@ type Workspace struct {
 	Base *big.Int
 }
 
-// NewWorkspace returns a workspace whose buffers share one value buffer.
+// NewWorkspace returns a workspace with six fresh value buffers.
 func NewWorkspace() *Workspace {
 	return &Workspace{
 		Sum:  new(big.Int),
@@ -202,16 +201,21 @@ func sweepReturns(q uint64, w *Workspace, t *Totals) {
 	}
 }
 
-// sweepControls checks the boundaries of the family: q = 1 breaks the order
-// claim, k = 1 makes the divisor one, so every state is fixed, and a divisor
-// that is not a repunit sum gives no return to 1 within the horizon.
+// sweepControls checks the boundaries of the family. The multiplier one
+// controls are discriminating: the repunit sum degenerates to the index, and
+// the order claim of the slice fails there because 1^j is one for every
+// 0 < j < k, which the recorded witnesses assert. The divisor one makes every
+// state fixed, and a divisor that is not a repunit sum gives no return to one
+// within the horizon.
 func sweepControls(w *Workspace, t *Totals) {
+	index := new(big.Int)
 	for k := 2; k <= repunitMaxK; k++ {
 		sum := RepunitSum(1, k)
-		pow := new(big.Int).Exp(BigOne, big.NewInt(int64(k)), sum)
-		t.check(pow.Cmp(BigOne) == 0)
-		pow = new(big.Int).Exp(BigOne, BigOne, sum)
-		t.check(pow.Cmp(BigOne) == 0)
+		t.check(sum.Cmp(index.SetUint64(uint64(k))) == 0)
+		for j := 1; j < k; j++ {
+			pow := new(big.Int).Exp(BigOne, big.NewInt(int64(j)), sum)
+			t.check(pow.Cmp(BigOne) == 0)
+		}
 	}
 	for q := uint64(2); q <= repunitMaxQ; q++ {
 		oneD := big.NewInt(1)
