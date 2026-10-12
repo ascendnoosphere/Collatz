@@ -1,0 +1,205 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{The first-hit clock}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Let \(d\) be a nonzero integer with \(|d|\ge 2\), and let the affine state at time \(j\) be \(q^{j}n+c\,U_{j}(q)\). If \(j\) is the first time \(d\) divides that state, the residue classes of the states at times \(0,\ldots,j-1\) are nonzero and pairwise distinct in \(\Z/|d|\Z\). Those classes inject into a set of cardinality \(|d|-1\), so \(j\le |d|-1\). Because \(|d|\ge 2\), the same bound is \(j<|d|\).
+\end{abstract}
+
+\section{Affine states and the residue walk}
+
+A parameter record consists of integers \(q\) and \(c\) and an integer \(d\) with \(|d|\ge 2\). In particular \(d\neq 0\), and the positive integer \(m=|d|\) satisfies \(m\ge 2\). The offset sum is defined by \(U_{0}(q)=0\) and \(U_{j+1}(q)=U_{j}(q)+q^{j}\). The one-step form used below is \(U_{j+1}(q)=q\,U_{j}(q)+1\).
+
+\begin{definition}
+\label{Def:AffineState}
+For \(q,c,n\in\Z\) and \(j\in\N\), the affine state is
+\[
+A_{j}(q,c,n)=q^{j}n+c\,U_{j}(q).
+\]
+When \(q\) and \(c\) are the coefficients of a fixed parameter record, write \(A_{j}(n)\) for \(A_{j}(q,c,n)\).
+\end{definition}
+
+\begin{definition}
+\label{Def:FirstHit}
+Let \(q\), \(c\) and \(d\) be a parameter record, let \(n\in\Z\), and let \(j\in\N\). The time \(j\) is a first hit of \(n\) when \(d\) divides \(A_{j}(n)\) and \(d\) divides \(A_{i}(n)\) for no natural number \(i<j\).
+\end{definition}
+
+The raw step is not used. Divisibility is read on affine states. Nothing in the statements requires a first hit to exist.
+
+\begin{lemma}
+\label{Lem:Step}
+For all \(q,c,n\in\Z\) and every \(j\in\N\),
+\[
+A_{j+1}(q,c,n)=q\,A_{j}(q,c,n)+c.
+\]
+\end{lemma}
+
+\begin{proof}
+By the offset recursion, \(U_{j+1}(q)=q\,U_{j}(q)+1\). Therefore
+\begin{align*}
+A_{j+1}(q,c,n)
+&= q^{j+1}n+c\,U_{j+1}(q)\\
+&= q^{j+1}n+c\bigl(q\,U_{j}(q)+1\bigr)\\
+&= q\cdot\bigl(q^{j}n+c\,U_{j}(q)\bigr)+c\\
+&= q\,A_{j}(q,c,n)+c.
+\end{align*}
+The identity \(q^{j+1}=q\cdot q^{j}\) was used at the third line. The argument does not restrict \(q\), \(c\), \(n\), or \(j\).
+\end{proof}
+
+Write \(\Z/m\Z\) for the ring of residue classes modulo \(m=|d|\). Let \(\rho\colon\Z/m\Z\to\Z/m\Z\) be the residue walk \(\rho(r)=qr+c\), with \(q\) and \(c\) read in \(\Z/m\Z\). Write \(\rho^{0}(r)=r\) and \(\rho^{k+1}(r)=\rho(\rho^{k}(r))\). For \(n\in\Z\) and \(i\in\N\), write \(r_{i}(n)\) for \(\rho^{i}(n\bmod m)\).
+
+\begin{lemma}
+\label{Lem:Cast}
+Let \(q\), \(c\) and \(d\) be a parameter record, and set \(m=|d|\). For every \(n\in\Z\) and every \(j\in\N\), the class of \(A_{j}(n)\) in \(\Z/m\Z\) equals \(r_{j}(n)\).
+\end{lemma}
+
+\begin{proof}
+Proceed by induction on \(j\). If \(j=0\), then \(U_{0}(q)=0\) and \(q^{0}=1\), so \(A_{0}(n)=n\). Also \(r_{0}(n)\) is the class of \(n\). The two sides agree.
+
+Suppose the claim holds at time \(j\), for this same \(n\). Lemma~\ref{Lem:Step} gives \(A_{j+1}(n)=q\,A_{j}(n)+c\). Reducing modulo \(m\) and applying the inductive hypothesis,
+\[
+A_{j+1}(n)\equiv q\,A_{j}(n)+c\equiv q\,r_{j}(n)+c=\rho(r_{j}(n))=r_{j+1}(n)
+\pmod{m}.
+\]
+Thus the claim holds at time \(j+1\). No divisibility hypothesis entered the induction.
+\end{proof}
+
+\begin{lemma}
+\label{Lem:Zero}
+Let \(q\), \(c\) and \(d\) be a parameter record, and set \(m=|d|\). For every \(z\in\Z\), \(d\) divides \(z\) if and only if the class of \(z\) in \(\Z/m\Z\) is zero.
+\end{lemma}
+
+\begin{proof}
+The integer \(d\) equals \(m\) or \(-m\). In either case, \(d\) divides \(z\) if and only if \(m\) divides \(z\): a witness \(z=d\,t\) is the witness \(z=m\,t\) or \(z=m\,(-t)\), and conversely a witness \(z=m\,t\) is \(z=d\,t\) or \(z=d\,(-t)\). By the definition of \(\Z/m\Z\), the class of \(z\) is zero if and only if \(m\) divides \(z\).
+\end{proof}
+
+\begin{lemma}
+\label{Lem:HitResidue}
+Let \(q\), \(c\) and \(d\) be a parameter record, let \(n\in\Z\), and let \(j\in\N\). If \(j\) is a first hit of \(n\), then \(r_{j}(n)=0\), and \(r_{i}(n)\neq 0\) for every natural number \(i<j\).
+\end{lemma}
+
+\begin{proof}
+Since \(j\) is a first hit, \(d\) divides \(A_{j}(n)\). Lemma~\ref{Lem:Cast} identifies the class of \(A_{j}(n)\) with \(r_{j}(n)\), and Lemma~\ref{Lem:Zero} converts divisibility into vanishing, so \(r_{j}(n)=0\).
+
+Fix \(i<j\). The first-hit hypothesis says that \(d\) does not divide \(A_{i}(n)\). The same two lemmas convert that failure into \(r_{i}(n)\neq 0\).
+\end{proof}
+
+\section{Distinct classes before the first zero}
+
+\begin{lemma}
+\label{Lem:Add}
+Let \(q\), \(c\) and \(d\) be a parameter record. For every \(n\in\Z\) and all \(a,k\in\N\),
+\[
+r_{a+k}(n)=\rho^{k}(r_{a}(n)).
+\]
+\end{lemma}
+
+\begin{proof}
+The left side is \(\rho^{a+k}(n\bmod m)\). Iteration splits a sum of clocks: \(\rho^{a+k}(s)=\rho^{k}(\rho^{a}(s))\) for every class \(s\). Taking \(s\) to be the class of \(n\) gives the identity.
+\end{proof}
+
+\begin{lemma}
+\label{Lem:Agree}
+Let \(q\), \(c\) and \(d\) be a parameter record. For every \(n\in\Z\) and all \(a,b,k\in\N\), if \(r_{a}(n)=r_{b}(n)\), then \(r_{a+k}(n)=r_{b+k}(n)\).
+\end{lemma}
+
+\begin{proof}
+Lemma~\ref{Lem:Add} rewrites both sides as \(k\)-fold iterates of \(\rho\). Those iterates start at the same class, so they remain equal.
+\end{proof}
+
+\begin{lemma}
+\label{Lem:Distinct}
+Let \(q\), \(c\) and \(d\) be a parameter record, let \(n\in\Z\), and let \(j\in\N\). Suppose \(r_{j}(n)=0\) and \(r_{i}(n)\neq 0\) for every natural number \(i<j\). If \(a,b\in\N\) satisfy \(a<b<j\), then \(r_{a}(n)\neq r_{b}(n)\).
+\end{lemma}
+
+\begin{proof}
+Suppose, on the contrary, that \(r_{a}(n)=r_{b}(n)\). Since \(b<j\), one has \(b\le j\), and therefore \(b+(j-b)=j\). The inequality \(a<b\) remains strict after adding the natural number \(j-b\), so
+\[
+a+(j-b)<b+(j-b)=j.
+\]
+Lemma~\ref{Lem:Agree}, applied with this \(k=j-b\), yields
+\[
+r_{a+(j-b)}(n)=r_{b+(j-b)}(n)=r_{j}(n)=0.
+\]
+The time \(a+(j-b)\) is strictly less than \(j\) and its residue vanishes, contradicting the hypothesis that every residue strictly before time \(j\) is nonzero. Hence \(r_{a}(n)\neq r_{b}(n)\).
+\end{proof}
+
+\section{The clock bound}
+
+For \(m\ge 1\), every class in \(\Z/m\Z\) has a unique canonical representative in the set \(\{0,1,\ldots,m-1\}\). Write \(v(r)\) for that representative. Then \(v(r)=0\) if and only if \(r=0\), and \(v\) is injective. If \(r\neq 0\), then \(v(r)\in\{1,\ldots,m-1\}\), so \(v(r)-1\in\{0,1,\ldots,m-2\}\).
+
+\begin{lemma}
+\label{Lem:IndexBound}
+Let \(m\ge 2\), and let \(r\in\Z/m\Z\) be nonzero. Then \(v(r)-1<m-1\).
+\end{lemma}
+
+\begin{proof}
+The hypothesis \(m\ge 2\) forces \(m\neq 0\), so every class has a canonical representative strictly less than \(m\). Since \(r\neq 0\), one has \(v(r)\neq 0\), and therefore \(v(r)-1<v(r)\). Combined with \(v(r)\le m-1\), which is the predecessor form of \(v(r)<m\),
+\[
+v(r)-1<v(r)\le m-1,
+\]
+so \(v(r)-1<m-1\). The predecessor \(m-1\) is a natural number because \(m\ge 1\), which follows from \(m\ge 2\).
+\end{proof}
+
+\begin{theorem}
+\label{Thm:Clock}
+Let \(q\), \(c\) and \(d\) be a parameter record, let \(n\in\Z\), and let \(j\in\N\). If \(j\) is a first hit of \(n\), then \(j<|d|\), and hence \(j\le |d|-1\).
+\end{theorem}
+
+\begin{proof}
+Set \(m=|d|\), so \(m\ge 2\) and in particular \(m>0\). Lemma~\ref{Lem:HitResidue} gives \(r_{j}(n)=0\) and \(r_{i}(n)\neq 0\) for every \(i<j\). Lemma~\ref{Lem:Distinct} then gives pairwise distinctness: if \(0\le a<b\le j-1\), then \(r_{a}(n)\neq r_{b}(n)\). The case \(j=0\) has no earlier time. The distinctness statement is then vacuous, and the empty map below is injective.
+
+Define \(\varphi\) from \(\{0,1,\ldots,j-1\}\) to \(\{0,1,\ldots,m-2\}\) by
+\[
+\varphi(i)=v(r_{i}(n))-1.
+\]
+Lemma~\ref{Lem:IndexBound} shows that the value lies in the stated codomain, because \(r_{i}(n)\neq 0\). The codomain has cardinality \(m-1\).
+
+The map \(\varphi\) is injective. Indeed, suppose \(\varphi(x)=\varphi(y)\). Then \(v(r_{x}(n))-1=v(r_{y}(n))-1\). Both representatives are at least \(1\), because the classes are nonzero, so adding \(1\) recovers \(v(r_{x}(n))=v(r_{y}(n))\). Injectivity of \(v\) yields \(r_{x}(n)=r_{y}(n)\). If \(x\neq y\), the ordering of natural numbers gives either \(x<y\) or \(y<x\). In the first case Lemma~\ref{Lem:Distinct} applies to the pair \((x,y)\), and in the second case it applies to the pair \((y,x)\). Either application contradicts equality of the classes. Therefore \(x=y\).
+
+An injective map from a set of \(j\) elements into a set of \(m-1\) elements forces
+\[
+j\le m-1.
+\]
+This is the cardinality comparison, not a strict inequality. Since \(m>0\), the predecessor relation on the natural numbers converts that bound into a strict inequality: \(j\le m-1\) if and only if \(j<m\), because \(m=(m-1)+1\). The forward direction is the one used here, so \(j<m\). Applying the backward direction to this strict inequality returns the predecessor bound. Hence \(j\le m-1\). Substituting \(m=|d|\) is the claim.
+\end{proof}
+
+\begin{remark}
+The injection uses only the residue walk of the affine branch. It does not produce a time at which \(d\) divides an affine state. If the walk never reaches the zero class, no first hit exists and the hypothesis of Theorem~\ref{Thm:Clock} does not apply. The theorem also does not identify \(A_{j}(n)\) with a raw iterate, and it says nothing about the raw step at time \(j+1\) or at any later time.
+\end{remark}
+
+\end{document}

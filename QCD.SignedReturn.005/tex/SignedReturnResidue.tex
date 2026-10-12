@@ -1,0 +1,287 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Residue criterion for the first affine hit}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Let \(q\), \(c\) and \(d\) be integers with \(|d|\ge 2\), and let
+\(A_{j}(n)=q^{j}n+c\,U_{j}(q)\) be the affine state, where \(U_{j}(q)\) is the
+sum of \(q^{0}\) through \(q^{j-1}\). The class of \(A_{j}(n)\) in
+\(\Z/|d|\Z\) is the \(j\)-th iterate of \(r\mapsto qr+c\), starting at the
+class of \(n\). Consequently \(d\) divides \(A_{j}(n)\) and divides no earlier
+affine state if and only if that walk is zero at time \(j\) and nonzero at
+every earlier time. Seeds in the same class have the same first hit.
+\end{abstract}
+
+\section{Affine states and the residue step}
+
+Throughout, a parameter record consists of integers \(q\) and \(c\) and an
+integer \(d\) with \(|d|\ge 2\). In particular \(d\neq 0\). Write \(m=|d|\) and
+write \(\pi\) for the canonical ring homomorphism \(\Map{\pi}{\Z}{\Z/m\Z}\).
+The symbol \(0\) in \(\Z/m\Z\) denotes the zero class. The offset sum is the
+integer sequence defined by \(U_{0}(q)=0\) and
+\[
+U_{j+1}(q)=U_{j}(q)+q^{j}.
+\]
+Iteration of a self-map \(f\) starts at time zero: \(f^{0}(x)=x\) and
+\(f^{j+1}(x)=f(f^{j}(x))\).
+
+\begin{definition}\label{Def:AffineState}
+The affine state of multiplier \(q\), offset \(c\), time \(j\in\N\) and seed
+\(n\in\Z\) is
+\[
+A_{j}(q,c,n)=q^{j}n+c\,U_{j}(q).
+\]
+When the parameter record is fixed, write \(A_{j}(n)\) for \(A_{j}(q,c,n)\).
+\end{definition}
+
+\begin{definition}\label{Def:FirstHit}
+The time \(j\) is a first hit of the seed \(n\) when \(d\) divides \(A_{j}(n)\)
+and \(d\) divides \(A_{i}(n)\) for no \(i<j\).
+\end{definition}
+
+\begin{definition}\label{Def:ResidueStep}
+The residue step of the parameter record is the self-map
+\(\Map{\rho}{\Z/m\Z}{\Z/m\Z}\) given by
+\[
+\rho(r)=q r+c,
+\]
+where \(q\) and \(c\) are read in \(\Z/m\Z\).
+\end{definition}
+
+The raw step, which divides by \(d\) on the divisible class and applies
+\(n\mapsto qn+c\) otherwise, is not used below. The first hit is a statement
+about affine states only.
+
+\begin{lemma}\label{Lem:TrapSumSeries}
+For every integer \(q\) and every \(j\in\N\),
+\[
+(q-1)U_{j}(q)=q^{j}-1.
+\]
+\end{lemma}
+
+\begin{proof}
+Proceed by induction on \(j\). If \(j=0\), then \(U_{0}(q)=0\) and
+\(q^{0}-1=0\), so both sides are zero. If the identity holds at \(j\), the
+recurrence gives
+\begin{align*}
+(q-1)U_{j+1}(q)
+&=(q-1)\bigl(U_{j}(q)+q^{j}\bigr)\\
+&=(q-1)U_{j}(q)+(q-1)q^{j}\\
+&=q^{j}-1+q^{j+1}-q^{j}\\
+&=q^{j+1}-1.
+\end{align*}
+Thus the identity holds at \(j+1\).
+\end{proof}
+
+\begin{lemma}\label{Lem:TrapSumRec}
+For every integer \(q\) and every \(j\in\N\),
+\[
+U_{j+1}(q)=q\,U_{j}(q)+1.
+\]
+\end{lemma}
+
+\begin{proof}
+Lemma~\ref{Lem:TrapSumSeries} rearranges to \(q^{j}=(q-1)U_{j}(q)+1\).
+Substitute this expression into the recurrence:
+\[
+U_{j+1}(q)=U_{j}(q)+q^{j}
+=U_{j}(q)+(q-1)U_{j}(q)+1
+=q\,U_{j}(q)+1.
+\]
+\end{proof}
+
+\begin{lemma}\label{Lem:AffineStateZero}
+For all integers \(q\), \(c\) and \(n\), \(A_{0}(q,c,n)=n\).
+\end{lemma}
+
+\begin{proof}
+By definition, \(A_{0}(q,c,n)=q^{0}n+c\,U_{0}(q)=n\), since \(q^{0}=1\) and
+\(U_{0}(q)=0\).
+\end{proof}
+
+\begin{lemma}\label{Lem:AffineStateSucc}
+For all integers \(q\), \(c\) and \(n\), and every \(j\in\N\),
+\[
+A_{j+1}(q,c,n)=q\,A_{j}(q,c,n)+c.
+\]
+\end{lemma}
+
+\begin{proof}
+Apply Lemma~\ref{Lem:TrapSumRec} and the definition:
+\begin{align*}
+A_{j+1}(q,c,n)
+&=q^{j+1}n+c\,U_{j+1}(q)\\
+&=q^{j+1}n+c\bigl(q\,U_{j}(q)+1\bigr)\\
+&=q\bigl(q^{j}n+c\,U_{j}(q)\bigr)+c\\
+&=q\,A_{j}(q,c,n)+c.
+\end{align*}
+\end{proof}
+
+\section{Zero in the residue ring}
+
+\begin{lemma}\label{Lem:CastZeroIffDvd}
+Let \(d\) be an integer with \(m=|d|\ge 2\), and let \(a\in\Z\). Then
+\(\pi(a)=0\) in \(\Z/m\Z\) if and only if \(d\) divides \(a\).
+\end{lemma}
+
+\begin{proof}
+The kernel of \(\pi\) is the ideal \(m\Z\). Thus \(\pi(a)=0\) if and only if
+\(m\) divides \(a\). It remains to identify the ideals \((m)\) and \((d)\).
+
+Write \(d=\varepsilon m\) with \(\varepsilon\in\{1,-1\}\). If \(m\) divides \(a\),
+then \(a=mk\) for some \(k\in\Z\), so \(a=d(\varepsilon k)\) and \(d\) divides
+\(a\). If \(d\) divides \(a\), then \(a=dk\) for some \(k\in\Z\), so
+\(a=m(\varepsilon k)\) and \(m\) divides \(a\). Therefore \(m\) divides \(a\) if
+and only if \(d\) divides \(a\).
+\end{proof}
+
+\begin{theorem}\label{Thm:AffineCast}
+Let \(q\), \(c\) and \(d\) be a parameter record. For every \(n\in\Z\) and every
+\(j\in\N\),
+\[
+\pi\bigl(A_{j}(n)\bigr)=\rho^{j}\bigl(\pi(n)\bigr)
+\]
+in \(\Z/m\Z\), where \(m=|d|\).
+\end{theorem}
+
+\begin{proof}
+Fix the parameter record and the seed \(n\), and induct on \(j\).
+
+If \(j=0\), Lemma~\ref{Lem:AffineStateZero} gives \(A_{0}(n)=n\). The zeroth
+iterate is the identity, so both sides equal \(\pi(n)\).
+
+Suppose the identity holds at time \(j\). Lemma~\ref{Lem:AffineStateSucc} gives
+\(A_{j+1}(n)=q\,A_{j}(n)+c\). Since \(\pi\) preserves addition and
+multiplication,
+\[
+\pi\bigl(A_{j+1}(n)\bigr)
+=\pi\bigl(q\,A_{j}(n)+c\bigr)
+=q\,\pi\bigl(A_{j}(n)\bigr)+\pi(c).
+\]
+The right-hand side is \(\rho\) applied to \(\pi(A_{j}(n))\). The inductive
+hypothesis replaces that class by \(\rho^{j}(\pi(n))\), and one further
+application of \(\rho\) is the iterate of length \(j+1\).
+\end{proof}
+
+\begin{lemma}\label{Lem:AffineDvdIffResidueZero}
+Let \(q\), \(c\) and \(d\) be a parameter record. For every \(n\in\Z\) and every
+\(j\in\N\), \(d\) divides \(A_{j}(n)\) if and only if
+\(\rho^{j}(\pi(n))=0\) in \(\Z/|d|\Z\).
+\end{lemma}
+
+\begin{proof}
+By Lemma~\ref{Lem:CastZeroIffDvd}, \(d\) divides \(A_{j}(n)\) if and only if
+\(\pi(A_{j}(n))=0\). Theorem~\ref{Thm:AffineCast} replaces
+\(\pi(A_{j}(n))\) by \(\rho^{j}(\pi(n))\).
+\end{proof}
+
+\section{First hits}
+
+\begin{theorem}\label{Thm:FirstHitIffResidue}
+Let \(q\), \(c\) and \(d\) be a parameter record. For every \(n\in\Z\) and every
+\(j\in\N\), the time \(j\) is a first hit of \(n\) if and only if
+\(\rho^{j}(\pi(n))=0\) and \(\rho^{i}(\pi(n))\neq 0\) for every \(i<j\).
+\end{theorem}
+
+\begin{proof}
+Write \(m=|d|\). By Lemma~\ref{Lem:AffineDvdIffResidueZero}, for every
+\(i\in\N\) the integer \(d\) divides \(A_{i}(n)\) if and only if
+\(\rho^{i}(\pi(n))=0\).
+
+Suppose \(j\) is a first hit. Then \(d\) divides \(A_{j}(n)\), so
+\(\rho^{j}(\pi(n))=0\). If some \(i<j\) satisfied \(\rho^{i}(\pi(n))=0\), the
+same equivalence would give \(d\mid A_{i}(n)\), contradicting the first-hit
+assumption. Thus \(\rho^{i}(\pi(n))\neq 0\) for every \(i<j\).
+
+Conversely, suppose \(\rho^{j}(\pi(n))=0\) and \(\rho^{i}(\pi(n))\neq 0\) for
+every \(i<j\). The equivalence gives \(d\mid A_{j}(n)\). If \(d\) divided
+\(A_{i}(n)\) for some \(i<j\), the equivalence would give
+\(\rho^{i}(\pi(n))=0\), which is excluded. Therefore \(j\) is a first hit.
+\end{proof}
+
+\begin{lemma}\label{Lem:ResidueIterateCongruent}
+Let \(q\), \(c\) and \(d\) be a parameter record, and let \(n,n'\in\Z\) satisfy
+\(\pi(n)=\pi(n')\) in \(\Z/|d|\Z\). Then for every \(i\in\N\),
+\[
+\rho^{i}\bigl(\pi(n)\bigr)=\rho^{i}\bigl(\pi(n')\bigr).
+\]
+\end{lemma}
+
+\begin{proof}
+Induct on \(i\). At \(i=0\) both sides are the common class \(\pi(n)\). If the
+iterates agree at time \(i\), apply \(\rho\) to both sides. The resulting
+classes are the iterates of length \(i+1\).
+\end{proof}
+
+\begin{lemma}\label{Lem:FirstHitOfCongruent}
+Let \(q\), \(c\) and \(d\) be a parameter record, and let \(n,n'\in\Z\) satisfy
+\(\pi(n)=\pi(n')\). If \(j\) is a first hit of \(n\), then \(j\) is a first hit
+of \(n'\).
+\end{lemma}
+
+\begin{proof}
+Theorem~\ref{Thm:FirstHitIffResidue} converts the first hit of \(n\) into the
+statement that \(\rho^{j}(\pi(n))=0\) and \(\rho^{i}(\pi(n))\neq 0\) for every
+\(i<j\). Lemma~\ref{Lem:ResidueIterateCongruent} replaces every one of these
+classes by the corresponding iterate of \(\pi(n')\).
+Theorem~\ref{Thm:FirstHitIffResidue}, read in the opposite direction for the
+seed \(n'\), returns that \(j\) is a first hit of \(n'\).
+\end{proof}
+
+\begin{theorem}\label{Thm:FirstHitCongruent}
+Let \(q\), \(c\) and \(d\) be a parameter record. If \(n,n'\in\Z\) satisfy
+\(\pi(n)=\pi(n')\) in \(\Z/|d|\Z\), then for every \(j\in\N\) the time \(j\) is
+a first hit of \(n\) if and only if it is a first hit of \(n'\).
+\end{theorem}
+
+\begin{proof}
+If \(j\) is a first hit of \(n\), Lemma~\ref{Lem:FirstHitOfCongruent} gives the
+same conclusion for \(n'\). If \(j\) is a first hit of \(n'\), the same lemma
+applies with the seeds exchanged: the hypothesis \(\pi(n)=\pi(n')\) is
+symmetric, so \(j\) is a first hit of \(n\).
+\end{proof}
+
+\begin{remark}
+The three theorems do not assert that a first hit exists. A residue walk on
+the finite ring \(\Z/m\Z\) may avoid zero at every time; the criterion then
+says that no affine state is divisible by \(d\). They also do not identify
+\(A_{j}(n)\) with a raw iterate, and they say nothing about the raw orbit at
+any time after a division. No bound on a hitting time, no return exponent, and
+no density or convergence statement is proved.
+\end{remark}
+
+\end{document}

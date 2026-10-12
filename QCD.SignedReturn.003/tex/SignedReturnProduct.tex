@@ -1,0 +1,247 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Exact product of a signed division}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+If a nonzero integer \(d\) divides an integer \(a\), the truncating quotient
+\(a/d\) is the divisibility witness, and therefore \(d\cdot(a/d)=a\). Absolute
+values multiply: \(|d|\cdot|a/d|=|a|\), including when \(d\) is negative. Both
+identities apply to the affine state at a first hit. Each one is an equality.
+No nonnegative remainder is discarded, and the triangle inequality is not used.
+\end{abstract}
+
+\section{Division on exact multiples}
+
+Throughout, \(d\) and \(a\) denote integers. The symbol \(d\mid a\) means that
+there exists an integer \(k\) with \(a=dk\). For \(d\neq 0\), truncating
+division writes every integer in the form \(a=dq+r\) with \(|r|<|d|\). On an
+exact multiple the remainder is forced to vanish, so the quotient is the
+witness itself.
+
+\begin{lemma}
+\label{lem:cancel}
+Let \(d,k,k'\in\Z\). If \(d\neq 0\) and \(dk=dk'\), then \(k=k'\).
+\end{lemma}
+
+\begin{proof}
+The hypothesis gives \(d(k-k')=0\). Suppose \(k-k'\neq 0\). Then
+\(|k-k'|\ge 1\). Also \(|d|\ge 1\), because \(d\neq 0\). Hence
+\[
+|d(k-k')|=|d|\cdot|k-k'|\ge 1,
+\]
+so \(d(k-k')\neq 0\), a contradiction. Therefore \(k-k'=0\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:quotient-witness}
+Let \(d,a,k\in\Z\) with \(d\neq 0\) and \(a=dk\). The truncating quotient
+satisfies \(a/d=k\).
+\end{lemma}
+
+\begin{proof}
+Truncating division supplies integers \(q\) and \(r\) with
+\[
+a=dq+r,\qquad |r|<|d|.
+\]
+The pair \(q=k\) and \(r=0\) is one such representation, since
+\(a=dk+0\) and \(|0|<|d|\). For this same representation, or for any other
+pair with \(|r|<|d|\),
+\[
+d(k-q)=r.
+\]
+Taking absolute values, \(|d|\cdot|k-q|=|r|<|d|\). If \(k\neq q\), then
+\(|k-q|\ge 1\), so \(|d|\le |r|\), contradicting \(|r|<|d|\). Thus \(q=k\) and
+\(r=0\). The truncating quotient is this \(q\), so \(a/d=k\).
+\end{proof}
+
+The same conclusion holds for a negative divisor. The comparison uses
+\(|d|\), not the sign of \(d\), and Lemma~\ref{lem:cancel} does not require
+\(d>0\).
+
+\begin{theorem}
+\label{thm:return-product}
+Let \(d,a\in\Z\). If \(d\neq 0\) and \(d\mid a\), then
+\[
+d\cdot(a/d)=a.
+\]
+\end{theorem}
+
+\begin{proof}
+By the definition of divisibility, there exists \(k\in\Z\) with \(a=dk\).
+Lemma~\ref{lem:quotient-witness} gives \(a/d=k\). Substituting the witness,
+\[
+d\cdot(a/d)=dk=a.
+\]
+\end{proof}
+
+\begin{lemma}
+\label{lem:abs-mul}
+For all \(x,y\in\Z\), \(|xy|=|x|\cdot|y|\).
+\end{lemma}
+
+\begin{proof}
+The identity is checked on the sign of each factor, including zero. If \(x=0\)
+or \(y=0\), then both sides are zero. Now assume \(x\neq 0\) and \(y\neq 0\).
+
+If \(x>0\) and \(y>0\), then \(|x|\cdot|y|=xy=|xy|\).
+
+If \(x>0\) and \(y<0\), then \(|y|=-y\), so
+\[
+|x|\cdot|y|=x(-y)=-(xy)=|xy|,
+\]
+where the last step uses \(xy<0\).
+
+If \(x<0\) and \(y>0\), then \(|x|=-x\), so
+\[
+|x|\cdot|y|=(-x)y=-(xy)=|xy|,
+\]
+where the last step uses \(xy<0\).
+
+If \(x<0\) and \(y<0\), then \(xy>0\), \(|x|=-x\), and \(|y|=-y\), so
+\[
+|x|\cdot|y|=(-x)(-y)=xy=|xy|.
+\]
+In every case the two sides are equal. The argument does not replace \(|xy|\)
+by \(|x|+|y|\) or by any larger quantity.
+\end{proof}
+
+\begin{theorem}
+\label{thm:return-abs-product}
+Let \(d,a\in\Z\). If \(d\neq 0\) and \(d\mid a\), then
+\[
+|d|\cdot|a/d|=|a|.
+\]
+\end{theorem}
+
+\begin{proof}
+Choose \(k\in\Z\) with \(a=dk\), as in Theorem~\ref{thm:return-product}.
+Lemma~\ref{lem:quotient-witness} gives \(a/d=k\). Therefore
+\[
+|d|\cdot|a/d|=|d|\cdot|k|.
+\]
+Lemma~\ref{lem:abs-mul}, applied to the factors \(d\) and \(k\), yields
+\(|d|\cdot|k|=|dk|\). Since \(a=dk\),
+\[
+|d|\cdot|a/d|=|a|.
+\]
+The four sign patterns of Lemma~\ref{lem:abs-mul} include every case in which
+\(d\) is negative. No nonnegative term is removed from either side: the
+remainder in Lemma~\ref{lem:quotient-witness} is \(0\), and the absolute-value
+step is an equality.
+\end{proof}
+
+\begin{remark}
+\label{rem:not-triangle}
+Theorem~\ref{thm:return-abs-product} is not the estimate
+\(|d\cdot(a/d)|\le |d|\cdot|a/d|\), nor the triangle inequality. For an exact
+multiple those comparisons become equalities, because
+\(d\cdot(a/d)=a\) and \(|dk|=|d|\cdot|k|\). A non-multiple is not assigned a
+rounded quotient: if \(d\) does not divide \(a\), the hypothesis of both
+theorems fails, and the identity \(d\cdot(a/d)=a\) is not claimed.
+\end{remark}
+
+\section{The affine state at a first hit}
+
+Let \(q,c\in\Z\) and let \(j\in\N\), including zero. The offset sum is defined
+by \(T_0(q)=0\) and \(T_{j+1}(q)=T_j(q)+q^j\).
+
+\begin{definition}
+\label{def:affine-state}
+The affine state at time \(j\) is
+\[
+A_j(q,c,n)=q^j n+c\,T_j(q).
+\]
+\end{definition}
+
+A parameter record consists of integers \(q\), \(c\), and \(d\) with
+\(|d|\ge 2\). In particular \(d\neq 0\). The raw step sends an integer \(n\) to
+\(n/d\) when \(d\mid n\), and to \(qn+c\) otherwise. The theorems below do not
+iterate that step. They apply the product identities to one affine state.
+
+\begin{definition}
+\label{def:first-hit}
+Let \(p\) be a parameter record with multiplier \(q\), offset \(c\), and
+divisor \(d\). The time \(j\) is a first hit of the seed \(n\) when
+\(d\mid A_j(q,c,n)\) and \(d\nmid A_i(q,c,n)\) for every natural number
+\(i<j\).
+\end{definition}
+
+\begin{theorem}
+\label{thm:return-product-hit}
+Let \(p\) be a parameter record with divisor \(d\), and let \(n\in\Z\) and
+\(j\in\N\). If \(j\) is a first hit of \(n\), and \(a=A_j(q,c,n)\) is the
+affine state of that record at time \(j\), then
+\[
+d\cdot(a/d)=a.
+\]
+\end{theorem}
+
+\begin{proof}
+The first-hit hypothesis gives \(d\mid a\). The admissibility condition
+\(|d|\ge 2\) gives \(d\neq 0\). Theorem~\ref{thm:return-product} applies to
+this pair \((d,a)\) and yields \(d\cdot(a/d)=a\).
+
+The clause that \(d\) divides no earlier affine state is part of the
+first-hit hypothesis. The cancellation uses only \(d\mid a\) and \(d\neq 0\).
+It does not induct on \(j\), and it does not rewrite any state at a time
+other than \(j\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:return-abs-product-hit}
+Under the hypotheses of Theorem~\ref{thm:return-product-hit},
+\[
+|d|\cdot|a/d|=|a|.
+\]
+\end{theorem}
+
+\begin{proof}
+As in Theorem~\ref{thm:return-product-hit}, \(d\mid a\) and \(d\neq 0\).
+Theorem~\ref{thm:return-abs-product} gives the absolute-value equality. The
+sign of \(d\) remains unrestricted beyond \(|d|\ge 2\), so a negative divisor
+is included by Lemma~\ref{lem:abs-mul}.
+\end{proof}
+
+\begin{remark}
+The two first-hit theorems recover the divisible affine state from its
+quotient. They do not assert that a first hit exists, and they do not describe
+the raw orbit at any time after \(j\). If \(d\) divides \(a\), the raw step at
+that single state is the quotient \(a/d\), and Theorem~\ref{thm:return-product-hit}
+says that multiplying by \(d\) returns \(a\). That is the whole claim.
+\end{remark}
+
+\end{document}

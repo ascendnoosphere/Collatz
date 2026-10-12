@@ -473,6 +473,24 @@ those two moduli are coprime. The factors can separate: for \(q=3\), \(h=6\),
 and \(r=2\) the sum modulus divides the numerator difference, while the
 difference modulus does not divide the numerator sum.
 
+### Signed return
+
+The first-division return sends a seed through the affine block
+\(q^{j}n+c\sum_{i<j}q^{i}\) until the first time the divisor divides that
+state, then divides once. On a division-free prefix the raw orbit equals
+that affine state. The quotient identity \(d\cdot(a/d)=a\) recovers the
+numerator, and the absolute value of the return is at most
+\((\lvert q\rvert^{j}\lvert n\rvert+\lvert c\rvert\sum_{i<j}\lvert q\rvert^{i})/\lvert d\rvert\).
+A seed shifted by a multiple of the divisor has the same first hit.
+For multiplier \(1\) and an offset coprime to the divisor, every orbit
+enters the shell of radius \(\lvert c\rvert\) and is eventually periodic
+there. For divisor \(2\) the period has length at most
+\(\max(\lvert c\rvert-1,1)\). For divisor \(-2\) the same bound holds, and
+the shell is entered on the logarithmic scale
+\(\lfloor\log_{2}(\lvert n\rvert-\lvert c\rvert)\rfloor+1+2\lvert c\rvert\).
+The notes are [QCD.SignedReturn.001](QCD.SignedReturn.001/README.md)
+through [QCD.SignedReturn.016](QCD.SignedReturn.016/README.md).
+
 ## Other map conventions
 
 A residue-wise affine map has the form

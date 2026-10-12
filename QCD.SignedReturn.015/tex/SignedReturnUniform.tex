@@ -1,0 +1,930 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Uniform return under a uniform hitting bound}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Assume every integer has a first time at which the signed divisor divides the affine state. That least time defines a total return by exact division. If one pair of natural numbers \(A<\lvert d\rvert\) and \(B\) bounds the multiplier power and the offset contribution at every least hit, the return satisfies \(\lvert d\rvert\cdot\lvert H(n)\rvert\le A\lvert n\rvert+B\) at every integer. The same pair is exactly the hypothesis of entry into the core radius and of eventual periodicity of \(H\). The existence of one such \(A\) for every seed is not proved. A multiplier of absolute value at least \(2\) does not supply it. The positive comparison proved without that hypothesis is ordinary division on seeds already divisible by \(d\), which is not every seed.
+\end{abstract}
+
+\section{Affine state and first hit}
+
+Throughout, a parameter record is a triple \((q,c,d)\) of integers with \(\lvert d\rvert\ge 2\). In particular \(d\neq 0\). The raw step sends \(n\) to \(n/d\) when \(d\) divides \(n\), and to \(qn+c\) otherwise. Only the undivided branch enters the state below.
+
+\begin{definition}
+The offset sum \(U_j(q)\) is defined by \(U_0(q)=0\) and \(U_{j+1}(q)=U_j(q)+q^j\). The affine state is
+\[
+A_j(q,c,n)=q^j n+c\,U_j(q).
+\]
+A natural number \(j\) is a first hit of the seed \(n\) when \(d\) divides \(A_j(q,c,n)\) and, for every natural number \(i<j\), \(d\) does not divide \(A_i(q,c,n)\).
+\end{definition}
+
+\begin{lemma}
+\label{lem:state-zero}
+For every \(q,c,n\in\Z\), one has \(A_0(q,c,n)=n\).
+\end{lemma}
+
+\begin{proof}
+The empty power is \(q^0=1\) and the empty offset sum is \(U_0(q)=0\). Therefore
+\[
+A_0(q,c,n)=1\cdot n+c\cdot 0=n.
+\]
+\end{proof}
+
+\begin{lemma}
+\label{lem:no-earlier}
+Let \(P\) be any predicate on \(\N\). Then \(\forall i\in\N\,(i<0\rightarrow P(i))\).
+\end{lemma}
+
+\begin{proof}
+No natural number is strictly less than zero. The implication is true because its hypothesis is false.
+\end{proof}
+
+\begin{lemma}
+\label{lem:hit-zero}
+Time \(0\) is a first hit of \(n\) if and only if \(d\) divides \(n\).
+\end{lemma}
+
+\begin{proof}
+Suppose time \(0\) is a first hit. Then \(d\) divides \(A_0(q,c,n)\). Lemma~\ref{lem:state-zero} replaces that state by \(n\).
+
+Conversely, suppose \(d\) divides \(n\). The same lemma gives divisibility at time \(0\). The earlier-time clause is Lemma~\ref{lem:no-earlier}.
+\end{proof}
+
+\begin{lemma}
+\label{lem:exact-div}
+If \(d\) divides \(a\), then \(\lvert d\rvert\cdot\lvert a/d\rvert=\lvert a\rvert\).
+\end{lemma}
+
+\begin{proof}
+Divisibility supplies the identity \(d\cdot(a/d)=a\). Absolute value is multiplicative, so
+\[
+\lvert d\rvert\cdot\lvert a/d\rvert=\lvert d\cdot(a/d)\rvert=\lvert a\rvert.
+\]
+\end{proof}
+
+\begin{lemma}
+\label{lem:triangle}
+For every \(q,c,n\in\Z\) and every \(j\in\N\),
+\[
+\lvert A_j(q,c,n)\rvert
+\le \lvert q\rvert^j\,\lvert n\rvert+\lvert c\rvert\,\lvert U_j(q)\rvert.
+\]
+\end{lemma}
+
+\begin{proof}
+The triangle inequality gives
+\[
+\lvert q^j n+c\,U_j(q)\rvert
+\le \lvert q^j n\rvert+\lvert c\,U_j(q)\rvert.
+\]
+The first summand is \(\lvert q^j\rvert\cdot\lvert n\rvert\), and \(\lvert q^j\rvert=\lvert q\rvert^j\). The second summand is \(\lvert c\rvert\cdot\lvert U_j(q)\rvert\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:unique}
+A seed has at most one first-hit time.
+\end{lemma}
+
+\begin{proof}
+Let \(j\) and \(k\) both be first hits. If \(j<k\), the earlier-time clause at \(k\) forbids divisibility at \(j\), contradicting the hit at \(j\). If \(k<j\), the clause at \(j\) forbids the hit at \(k\). The remaining case is \(j=k\).
+\end{proof}
+
+\section{Least hit and the total return}
+
+\begin{definition}
+\label{def:every}
+The record has every seed hitting when, for every \(n\in\Z\), there exists a first hit of \(n\). This is a hypothesis on the record. It is not a theorem of the present note.
+\end{definition}
+
+Divisibility of one integer is decidable. For each fixed horizon \(j\), the assertion that every time \(i<j\) misses is a finite conjunction, decided by recursion on \(j\). The case \(j=0\) is Lemma~\ref{lem:no-earlier}. At \(j+1\), a miss through time \(j\) together with a miss at time \(j\) extends the conjunction, and either failure refutes it. Thus the first-hit predicate is decidable. If the set of first hits of a fixed seed is nonempty, it has a least element.
+
+\begin{definition}
+\label{def:return}
+Assume every seed hits. The least hit \(j(n)\) is the least first-hit time of \(n\). The total return is the exact quotient
+\[
+H(n)=A_{j(n)}(q,c,n)/d.
+\]
+\end{definition}
+
+\begin{lemma}
+\label{lem:least-is-hit}
+The least hit is a first hit, and it is the only first hit.
+\end{lemma}
+
+\begin{proof}
+The least element of a nonempty set of natural numbers lies in the set. Lemma~\ref{lem:unique} excludes every other first hit.
+\end{proof}
+
+\begin{lemma}
+\label{lem:magnitude}
+If \(j\) is a first hit of \(n\), then
+\[
+\lvert d\rvert\cdot\bigl\lvert A_j(q,c,n)/d\bigr\rvert
+\le \lvert q\rvert^j\,\lvert n\rvert+\lvert c\rvert\,\lvert U_j(q)\rvert.
+\]
+\end{lemma}
+
+\begin{proof}
+The hit gives \(d\mid A_j(q,c,n)\). Lemma~\ref{lem:exact-div} replaces the left side by \(\lvert A_j(q,c,n)\rvert\). Lemma~\ref{lem:triangle} is the stated majorant.
+\end{proof}
+
+\begin{lemma}
+\label{lem:absorb}
+Let \(q_{\mathrm{abs}}\), \(c_{\mathrm{trap}}\), \(n_{\mathrm{abs}}\), \(A\), and \(B\) be natural numbers. If \(q_{\mathrm{abs}}\le A\) and \(c_{\mathrm{trap}}\le B\), then
+\[
+q_{\mathrm{abs}}\,n_{\mathrm{abs}}+c_{\mathrm{trap}}\le A\,n_{\mathrm{abs}}+B.
+\]
+\end{lemma}
+
+\begin{proof}
+Multiplication by \(n_{\mathrm{abs}}\) preserves the first inequality. Adding the second inequality preserves the sum.
+\end{proof}
+
+\section{Uniform bound and periodicity}
+
+The core radius of natural numbers \(A\), \(B\), and \(m\) with \(A<m\) is \(\lfloor B/(m-A)\rfloor\). Iteration of a map \(H:\Z\to\Z\) is \(H^0(n)=n\) and \(H^{k+1}(n)=H(H^k(n))\).
+
+The following two statements are used as already proved for an arbitrary map of the integers. Their hypotheses are exactly \(A<m\) and the linear bound at every integer.
+
+\begin{theorem}[Core entry]
+\label{thm:core-entry}
+Let \(A,B,m\in\N\) satisfy \(A<m\), and let \(H:\Z\to\Z\) satisfy
+\[
+m\cdot\lvert H(k)\rvert\le A\cdot\lvert k\rvert+B
+\]
+for every \(k\in\Z\). Then for every \(n\in\Z\) there exists \(j\in\N\) such that
+\[
+\lvert H^j(n)\rvert\le \lfloor B/(m-A)\rfloor.
+\]
+\end{theorem}
+
+\begin{theorem}[Core periodicity]
+\label{thm:core-period}
+Under the same hypotheses, for every \(n\in\Z\) there exist \(t,p\in\N\) with \(p>0\) such that
+\[
+H^{t+k}(n)=H^{t+k+p}(n)
+\]
+for every \(k\in\N\).
+\end{theorem}
+
+\begin{theorem}
+\label{thm:uniform-bound}
+Assume every seed hits, and let \(j(n)\) and \(H\) be as in Definition~\ref{def:return}. Let \(A,B\in\N\) satisfy \(A<\lvert d\rvert\). Suppose that for every \(n\in\Z\),
+\[
+\lvert q\rvert^{j(n)}\le A
+\qquad\text{and}\qquad
+\lvert c\rvert\cdot\lvert U_{j(n)}(q)\rvert\le B.
+\]
+Then for every \(n\in\Z\),
+\[
+\lvert d\rvert\cdot\lvert H(n)\rvert\le A\cdot\lvert n\rvert+B.
+\]
+The gap \(A<\lvert d\rvert\) is part of the statement because Theorems~\ref{thm:core-entry} and~\ref{thm:core-period} require it. The comparison itself is the triangle inequality at the least hit.
+\end{theorem}
+
+\begin{proof}
+Fix \(n\), and write \(j=j(n)\). Lemma~\ref{lem:least-is-hit} says that \(j\) is a first hit, so Lemma~\ref{lem:magnitude} yields
+\[
+\lvert d\rvert\cdot\bigl\lvert A_j(q,c,n)/d\bigr\rvert
+\le \lvert q\rvert^j\,\lvert n\rvert+\lvert c\rvert\,\lvert U_j(q)\rvert.
+\]
+The two displayed hypotheses of the theorem, fed to Lemma~\ref{lem:absorb}, replace the right side by \(A\cdot\lvert n\rvert+B\). By definition, \(H(n)\) is the quotient on the left.
+\end{proof}
+
+\begin{theorem}
+\label{thm:uniform-periodic}
+Under the hypotheses of Theorem~\ref{thm:uniform-bound}, every seed \(n\) eventually enters the core radius \(\lfloor B/(\lvert d\rvert-A)\rfloor\) under iteration of \(H\), and the orbit of \(n\) under \(H\) is eventually periodic.
+\end{theorem}
+
+\begin{proof}
+Theorem~\ref{thm:uniform-bound}, applied to every integer, is the bound
+\[
+\lvert d\rvert\cdot\lvert H(k)\rvert\le A\cdot\lvert k\rvert+B
+\]
+at every \(k\in\Z\). The remaining hypothesis is \(A<\lvert d\rvert\). Theorems~\ref{thm:core-entry} and~\ref{thm:core-period} apply with modulus \(m=\lvert d\rvert\) and with this same map \(H\). Their conclusions are entry and eventual periodicity.
+\end{proof}
+
+\begin{theorem}
+\label{thm:horizon}
+Suppose every seed hits, and every least hit is at most \(J\). Let \(A\) be the largest \(\lvert q\rvert^{j}\) for \(j\le J\), and let \(B\) be the largest \(\lvert c\rvert\,\lvert U_j(q)\rvert\) on the same range. If \(A<\lvert d\rvert\), then every seed eventually enters the core radius \(\lfloor B/(\lvert d\rvert-A)\rfloor\) under \(H\), and the orbit of \(H\) is eventually periodic.
+\end{theorem}
+
+\begin{proof}
+For a least hit \(j\le J\), the power \(\lvert q\rvert^{j}\) is one of the values whose maximum is \(A\), and the offset is one of the values whose maximum is \(B\). Theorem~\ref{thm:uniform-periodic} applies with this pair. If \(\lvert q\rvert\ge 1\), the powers are nondecreasing, so the largest is exactly \(\lvert q\rvert^{J}\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:smallslope}
+Suppose every seed hits, \(\lvert q\rvert\ge 2\), and every least hit \(j(n)\) satisfies \(\lvert q\rvert^{j(n)}<\lvert d\rvert\). Then there is a horizon \(J\) such that every least hit is at most \(J\) and \(\lvert q\rvert^{J}<\lvert d\rvert\). Every seed eventually enters the corresponding core under \(H\), and the orbit of \(H\) is eventually periodic.
+\end{theorem}
+
+\begin{proof}
+The powers of \(\lvert q\rvert\) eventually pass \(\lvert d\rvert\). Let \(J_0\) be the least exponent with \(\lvert d\rvert\le\lvert q\rvert^{J_0}\). Then \(J_0\ge 1\), because \(\lvert q\rvert^{0}=1<\lvert d\rvert\). Set \(J=J_0-1\). The preceding power is strictly below \(\lvert d\rvert\), since otherwise \(J_0\) would not be least. A least hit with \(\lvert q\rvert^{j}<\lvert d\rvert\) therefore satisfies \(j<J_0\), so \(j\le J\). The largest power up to \(J\) is \(\lvert q\rvert^{J}\), which is strictly below \(\lvert d\rvert\). Theorem~\ref{thm:horizon} applies.
+\end{proof}
+
+\begin{theorem}
+\label{thm:nosmall}
+If \(\lvert q\rvert\ge\lvert d\rvert\), the seed \(1\) has no first hit whose slope is strictly less than \(\lvert d\rvert\).
+\end{theorem}
+
+\begin{proof}
+A positive time \(j\) has \(\lvert q\rvert^{j}\ge\lvert q\rvert\ge\lvert d\rvert\). Time \(0\) is a first hit only when \(d\) divides the seed. Lemma~\ref{lem:misses-one} says that \(d\) does not divide \(1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:hitby}
+Suppose \(\lvert q\rvert\ge 1\) and \(\lvert q\rvert^{J}<\lvert d\rvert\). If every seed has some first hit at time at most \(J\), then every seed eventually enters the core of radius \(\lfloor B/(\lvert d\rvert-A)\rfloor\) under \(H\), where \(A=\lvert q\rvert^{J}\) and \(B\) is the largest \(\lvert c\rvert\,\lvert U_j(q)\rvert\) for \(j\le J\), and the orbit of \(H\) is eventually periodic.
+\end{theorem}
+
+\begin{proof}
+The least hit is at most any first hit, so it is at most \(J\). Since \(\lvert q\rvert\ge 1\), the largest power up to \(J\) is \(\lvert q\rvert^{J}\), which is strictly less than \(\lvert d\rvert\). Theorem~\ref{thm:horizon} applies.
+\end{proof}
+
+\begin{theorem}
+\label{thm:unitcoprime}
+Suppose \(q=1\) and \(\gcd(\lvert c\rvert,\lvert d\rvert)=1\). Then every seed has a first hit by time \(\lvert d\rvert\). The total return enters the corresponding core, and its orbit is eventually periodic.
+\end{theorem}
+
+\begin{proof}
+The state at time \(j\) is \(n+cj\). Since \(\lvert c\rvert\) is coprime to \(\lvert d\rvert\), multiplication by \(c\) is bijective on \(\Z/\lvert d\rvert\Z\). There is therefore a residue \(j<\lvert d\rvert\) with \(n+cj\equiv 0\pmod{\lvert d\rvert}\). The least such time is a first hit, and it is at most \(\lvert d\rvert\). The slope is \(1^{\lvert d\rvert}=1\), which is strictly less than \(\lvert d\rvert\). Theorem~\ref{thm:hitby} applies. The record \(c=0\) is excluded, because \(\gcd(0,\lvert d\rvert)=\lvert d\rvert\ne 1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:unitgcd}
+Suppose \(q=1\), and write \(g=\gcd(\lvert c\rvert,\lvert d\rvert)\). A seed \(n\) has a first hit if and only if \(g\) divides \(n\).
+\end{theorem}
+
+\begin{proof}
+The state at time \(j\) is \(n+cj\). The integer \(g\) divides both \(c\) and \(d\). If \(d\) divides \(n+cj\), then \(g\) divides \(n+cj\) and \(g\) divides \(cj\), so \(g\) divides \(n\). Conversely, Bézout's identity writes \(g=cx+dy\). If \(n=gm\), the integer time \(t=-mx\) satisfies \(d\mid n+ct\). Reducing \(t\) modulo \(\lvert d\rvert\) gives a nonnegative time at which \(d\) still divides the state, because \(\lvert d\rvert=\operatorname{sign}(d)\,d\) and \(\operatorname{sign}(d)^{2}=1\). The least such time is a first hit.
+\end{proof}
+
+\begin{theorem}
+\label{thm:everyseed}
+Suppose \(q=1\). Every seed has a first hit if and only if \(\gcd(\lvert c\rvert,\lvert d\rvert)=1\).
+\end{theorem}
+
+\begin{proof}
+If every seed hits, then the seed \(1\) hits, so the gcd divides \(1\) and equals \(1\). Conversely, if the gcd is \(1\), then it divides every seed, and Theorem~\ref{thm:unitgcd} supplies a first hit.
+\end{proof}
+
+\begin{theorem}
+\label{thm:gcdnec}
+Let \(g=\gcd(\lvert c\rvert,\lvert d\rvert)\). If \(\gcd(\lvert q\rvert,g)=1\) and a seed \(n\) has a first hit, then \(g\) divides \(n\). The multiplier need not be \(1\).
+\end{theorem}
+
+\begin{proof}
+The integer \(g\) divides both \(c\) and \(d\). At a hit, \(d\) divides \(q^{j}n+cU_{j}\), so \(g\) divides that state and \(g\) divides \(cU_{j}\). Their difference is \(q^{j}n\), hence \(g\) divides \(q^{j}n\). Passing to absolute values, \(g\) divides \(\lvert q\rvert^{j}\lvert n\rvert\). Since \(\lvert q\rvert^{j}\) is coprime to \(g\), the factor \(\lvert q\rvert^{j}\) cancels, and \(g\) divides \(\lvert n\rvert\). Therefore \(g\) divides \(n\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:shared}
+The coprimeness hypothesis cannot be omitted. For \((q,c,d)=(2,2,2)\), one has \(g=2\) and \(\gcd(\lvert q\rvert,g)=2\). The seed \(1\) has its first hit at time \(1\), and \(2\) does not divide \(1\).
+\end{theorem}
+
+\begin{proof}
+The state at time \(0\) is \(1\), which is not divisible by \(2\). The offset sum at time \(1\) is \(1\), so the state is \(2\cdot 1+2\cdot 1=4\), which is divisible by \(2\). Thus time \(1\) is the first hit. The gcd of the absolute values of the offset and the divisor is \(2\), which also divides the multiplier, and \(2\) does not divide the seed.
+\end{proof}
+
+\begin{theorem}
+\label{thm:both}
+If \(d\) divides both \(q\) and \(c\), then every seed hits by time one. The hit is at time zero exactly when \(d\) divides the seed, and at time one otherwise.
+\end{theorem}
+
+\begin{proof}
+Time zero is a hit exactly when \(d\) divides the seed. If not, the offset sum at time one is \(1\), so the state is \(q n+c\). Both coefficients are divisible by \(d\), hence so is the state. No earlier time exists, so time one is the first hit.
+\end{proof}
+
+\begin{theorem}
+\label{thm:bothreturn}
+If \(d\) divides both \(q\) and \(c\), the first return is one exact division. It is \(n/d\) when \(d\) divides \(n\). Otherwise the first step is \(qn+c\) and the second step is \((qn+c)/d\).
+\end{theorem}
+
+\begin{proof}
+If \(d\) divides \(n\), the raw step is the quotient. If not, the raw step is the affine value \(qn+c\). The preceding theorem says \(d\) divides that value, so the next raw step is its quotient.
+\end{proof}
+
+\begin{theorem}
+\label{thm:sharedorbit}
+Under \((q,c,d)=(2,2,2)\), every positive seed reaches \(1\), every negative seed reaches \(0\), and \(0\) is fixed. The seed \(1\) cycles through \(4\) and \(2\).
+\end{theorem}
+
+\begin{proof}
+An odd seed moves to \(n+1\) in two steps, and an even seed is halved. If \(n>1\), one or two steps therefore reach a smaller positive integer, so every positive seed reaches \(1\). The orbit of \(1\) is \(1,4,2,1\). If \(n<0\), the same steps strictly decrease the absolute value, and \(-1\) steps to \(0\). The quotient of \(0\) is \(0\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:sharedtime}
+Under \((q,c,d)=(2,2,2)\), a positive seed reaches \(1\) in at most \(3(|n|-1)\) raw steps.
+\end{theorem}
+
+\begin{proof}
+The seed \(1\) is already there. If \(n\) is even, one step reaches \(n/2\), and
+\[
+1+3(n/2-1)\le 3(n-1).
+\]
+If \(n\) is odd and greater than \(1\), three steps reach \((n+1)/2\). That quotient is at most \(n-1\), and
+\[
+3+3\bigl((n+1)/2-1\bigr)=3(n+1)/2\le 3(n-1).
+\]
+\end{proof}
+
+\begin{theorem}
+\label{thm:sharednegtime}
+Under \((q,c,d)=(2,2,2)\), a negative seed reaches \(0\) in at most \(2|n|\) raw steps.
+\end{theorem}
+
+\begin{proof}
+The seed \(-1\) steps to \(0\). If \(n\) is even, one step reaches \(n/2\), whose absolute value is strictly smaller, so the inductive time satisfies \(1+2|n/2|\le 2|n|\). If \(n\le -2\) is odd, two steps reach \(n+1\), and \(|n+1|=|n|-1\), so \(2+2(|n|-1)=2|n|\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:sharedentry}
+Under \((q,c,d)=(2,2,2)\), every seed enters \(\{0,1,2,4\}\) within \(3|n|\) raw steps.
+\end{theorem}
+
+\begin{proof}
+A positive seed reaches \(1\) in at most \(3(|n|-1)\) steps, and that time is at most \(3|n|\). A negative seed reaches \(0\) in at most \(2|n|\) steps. The seed \(0\) is already in the set.
+\end{proof}
+
+\begin{theorem}
+\label{thm:sharedperiodic}
+Under \((q,c,d)=(2,2,2)\), a seed is periodic if and only if it is \(0\), \(1\), \(2\), or \(4\).
+\end{theorem}
+
+\begin{proof}
+Each of these four seeds returns: \(0\) is fixed, and \(1,4,2\) is a cycle of length three. Conversely, a positive periodic seed reaches \(1\), and repeating the period shows that the seed itself lies on the orbit of \(1\), hence is \(1\), \(2\), or \(4\). A negative periodic seed reaches \(0\). The same repetition gives the seed as an iterate of \(0\), which stays at \(0\), contradicting negativity.
+\end{proof}
+
+\begin{theorem}
+\label{thm:zerooffset}
+Let \(d\ne 0\) and let the parameters be \((q,c,d)=(d,0,d)\). If \(d\) does not divide \(n\), the raw orbit is \(n,dn,n,dn,\ldots\).
+\end{theorem}
+
+\begin{proof}
+The seed is not divisible by \(d\), so the first step is the affine value \(dn\). That value is divisible by \(d\), and its quotient is \(n\). The two steps therefore alternate.
+\end{proof}
+
+\begin{theorem}
+\label{thm:zerooffsettail}
+Let \(d\ne 0\) and let the parameters be \((q,c,d)=(d,0,d)\). If \(d\) does not divide \(m\) and \(a\le k\), the state of \(d^{a}m\) at time \(k\) is \(m\) when \(k-a\) is even and \(dm\) when \(k-a\) is odd.
+\end{theorem}
+
+\begin{proof}
+The identity \(d^{a+1}m=d\cdot d^{a}m\) shows that each of the first \(a\) steps divides by \(d\). The state at time \(a\) is therefore \(m\). The remaining \(k-a\) steps follow the alternating orbit of \(m\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:zerooffsetall}
+Let \(|d|\ge 2\) and let the parameters be \((q,c,d)=(d,0,d)\). Every nonzero seed \(n\) can be written \(n=d^{a}m\) with \(d\) not dividing \(m\). For every \(k\ge a\), the state at time \(k\) is \(m\) when \(k-a\) is even and \(dm\) when \(k-a\) is odd.
+\end{theorem}
+
+\begin{proof}
+If \(d\) does not divide \(n\), take \(a=0\) and \(m=n\). If it does, write \(n=dq\). Then \(|n|=|d||q|\ge 2|q|\), so \(|q|<|n|\), and \(q\ne 0\). Induction on the absolute value removes one factor at a time. The tail statement then applies to \(m\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:equalrun}
+Let \(d\ne 0\) and let the parameters be \((q,c,d)=(d,ds,d)\). Suppose \(d\) divides none of the integers \(n+js\). At time \(2t\) the state is \(n+ts\), and at time \(2t+1\) it is \(d(n+(t+1)s)\).
+\end{theorem}
+
+\begin{proof}
+A nonmultiple steps to \(d(n+s)\). Division by \(d\) returns \(n+s\). While every translate \(n+js\) remains nonmultiple, these two steps repeat. The even state advances by \(s\), and the following odd state is \(d\) times the next translate.
+\end{proof}
+
+\begin{theorem}
+\label{thm:equalprefix}
+Let \(d\ne 0\) and let the parameters be \((q,c,d)=(d,ds,d)\). Suppose \(d\) divides none of \(n+is\) for \(i<j_{0}\). Then, for every \(t\le j_{0}\), the state at time \(2t\) is \(n+ts\). For every \(t<j_{0}\), the state at time \(2t+1\) is \(d(n+(t+1)s)\).
+\end{theorem}
+
+\begin{proof}
+The claim is immediate at \(t=0\). If \(t<j_{0}\), the even state \(n+ts\) is nonmultiple, so the next state is \(d(n+(t+1)s)\). That product is divisible by \(d\), and the quotient is \(n+(t+1)s\). Thus the formula reaches every even time through \(2j_{0}\), including the first multiple when \(j_{0}\) is that index.
+\end{proof}
+
+\begin{theorem}
+\label{thm:equalhit}
+Let the parameters be \((q,c,d)=(d,ds,d)\). If \(d\) divides \(n\), the first hit is at time \(0\). Otherwise it is at time \(1\). If \(j_{0}\) is the least natural number for which \(d\) divides \(n+j_{0}s\), the state at time \(2j_{0}+1\) is \((n+j_{0}s)/d\). When \(j_{0}>0\), this quotient is not the first hit.
+\end{theorem}
+
+\begin{proof}
+Both \(q\) and \(c\) are multiples of \(d\). A multiple seed is already a hit at time \(0\). A nonmultiple has affine state \(dn+ds=d(n+s)\) at time \(1\), which is a multiple, and time \(0\) is not. For the least \(j_{0}\), the prefix gives state \(n+j_{0}s\) at time \(2j_{0}\). The next raw step divides that multiple. If \(j_{0}>0\), time \(1\) was already a hit.
+\end{proof}
+
+\begin{theorem}
+\label{thm:leasthit}
+Suppose \(d\ne 0\) and \(\gcd(s,d)\) divides \(n\). The least \(j_{0}\) with \(d\) dividing \(n+j_{0}s\) satisfies \(j_{0}<|d|/\gcd(s,d)\). The state at time \(2j_{0}+1\) is \((n+j_{0}s)/d\).
+\end{theorem}
+
+\begin{proof}
+Some nonnegative solution is strictly less than \(|d|/\gcd(s,d)\). The least solution is no larger. The preceding translates are nonmultiples, so the prefix applies, and the next raw step divides \(n+j_{0}s\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:forever}
+Suppose \(d\ne 0\) and \(\gcd(s,d)\) does not divide \(n\). Then, for every \(t\), the state at time \(2t\) is \(n+ts\), and the state at time \(2t+1\) is \(d(n+(t+1)s)\).
+\end{theorem}
+
+\begin{proof}
+No integer translate \(n+js\) is a multiple of \(d\). The free-run formulas therefore apply at every time.
+\end{proof}
+
+\begin{theorem}
+\label{thm:translatehit}
+The congruence \(n+js\equiv 0\pmod{d}\) has an integer solution if and only if \(\gcd(s,d)\) divides \(n\). If \(d\ne 0\), it then has a nonnegative solution strictly less than \(|d|/\gcd(s,d)\).
+\end{theorem}
+
+\begin{proof}
+The gcd divides both \(s\) and \(d\), so a solution forces it to divide \(n\). Conversely Bézout's identity supplies an integer solution. The solutions differ by \(d/\gcd(s,d)\). Reducing that integer coefficient modulo the absolute value of the difference gives a nonnegative solution strictly less than that modulus, and the corresponding translate remains divisible by \(d\). The modulus equals \(|d|/\gcd(s,d)\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:residues}
+If each integer \(r\) with \(0\le r<\lvert d\rvert\) has a first hit by time \(J\), then every integer has a first hit by time \(J\).
+\end{theorem}
+
+\begin{proof}
+Let \(d_0=\lvert d\rvert\). For an arbitrary integer \(n\), the remainder \(n\bmod d_0\) lies in \(\{0,\ldots,d_0-1\}\), and
+\[
+n=(n\bmod d_0)+d_0\cdot(n/d_0).
+\]
+The identity \(\lvert d\rvert=\operatorname{sign}(d)\,d\) writes the second term as an integer multiple of \(d\), using \(\operatorname{sign}(d)^2=1\). Adding a multiple of \(d\) changes the affine state by a multiple of \(d\) at every time, so it preserves the first hit. The representative therefore carries its hit time, at most \(J\), to \(n\).
+\end{proof}
+
+No appeal is made to the core theorems except under an explicit hypothesis that supplies a first hit of every seed. That hypothesis is what defines \(H\) on all of \(\Z\).
+
+\section{Pure division on seeds already divisible}
+
+\begin{lemma}
+\label{lem:misses-one}
+The divisor \(d\) does not divide \(1\).
+\end{lemma}
+
+\begin{proof}
+If \(d\) divides \(1\), then \(\lvert d\rvert\) divides \(1\). The only positive divisor of \(1\) is \(1\), so \(\lvert d\rvert=1\). This contradicts \(\lvert d\rvert\ge 2\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:pure-division}
+Let \(d\) divide \(n\). Then time \(0\) is the first hit of \(n\), the inequality
+\[
+\lvert d\rvert\cdot\lvert n/d\rvert\le 1\cdot\lvert n\rvert+0
+\]
+holds, and \(1<\lvert d\rvert\). The quantifier is this seed \(n\). It is not every integer.
+\end{theorem}
+
+\begin{proof}
+Lemma~\ref{lem:hit-zero} is the first-hit claim. Lemma~\ref{lem:exact-div} gives equality \(\lvert d\rvert\cdot\lvert n/d\rvert=\lvert n\rvert\), and the right side is \(1\cdot\lvert n\rvert+0\). Since \(\lvert d\rvert\ge 2\) and \(1<2\), one has \(1<\lvert d\rvert\). Lemma~\ref{lem:misses-one} says that the seed \(1\) is not in the scope of the hypothesis, so the comparison is not available at every integer.
+\end{proof}
+
+\begin{lemma}
+\label{lem:least-divisible}
+If \(d\) divides \(n\), the least hit supplied by the existence of the time-zero hit is \(0\), and
+\[
+A_0(q,c,n)/d=n/d.
+\]
+\end{lemma}
+
+\begin{proof}
+Time \(0\) is a first hit by Lemma~\ref{lem:hit-zero}. The least element of a nonempty set of natural numbers is at most every member, hence at most \(0\), hence equal to \(0\). Lemma~\ref{lem:state-zero} identifies the time-zero quotient with \(n/d\).
+\end{proof}
+
+The core-entry theorem is not applied to this family. Its bound hypothesis would have to hold at every integer, and the seed \(1\) has not been given a hit.
+
+\section{A unit multiplier need not hit}
+
+\begin{lemma}
+\label{lem:one-pow}
+For every \(j\in\N\), one has \(1^j=1\).
+\end{lemma}
+
+\begin{proof}
+The case \(j=0\) is the empty power. If \(1^j=1\), then \(1^{j+1}=1^j\cdot 1=1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:unit-frozen}
+Let \(q=1\), \(c=0\), and \(d=2\). Then \(\lvert d\rvert=2\ge 2\). For every \(j\in\N\), the state of the seed \(1\) is \(A_j(1,0,1)=1\), so time \(j\) is not a first hit. In particular it is false that every seed hits.
+\end{theorem}
+
+\begin{proof}
+Lemma~\ref{lem:one-pow} gives
+\[
+A_j(1,0,1)=1^j\cdot 1+0\cdot U_j(1)=1.
+\]
+Lemma~\ref{lem:misses-one}, applied to this admissible record, says that \(2\) does not divide \(1\). A first hit requires that divisibility, so no time is a first hit of the seed \(1\). The universal hitting hypothesis fails at that seed.
+\end{proof}
+
+Thus \(q=1\) does not, for an arbitrary offset and an arbitrary admissible divisor, force every seed to hit. No uniform core is claimed for that class.
+
+\section{One missed class with multiplier two}
+
+\begin{lemma}
+\label{lem:trap-two}
+For every \(j\in\N\), one has \(U_j(2)=2^j-1\).
+\end{lemma}
+
+\begin{proof}
+The geometric identity \((2-1)U_j(2)=2^j-1\) has coefficient \(1\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:two-odd}
+If \(k\ge 1\), then \(2\) does not divide \(2^k-1\).
+\end{lemma}
+
+\begin{proof}
+The hypothesis \(k\ge 1\) rearranges as \((k-1)+1=k\), so
+\[
+2^k=2^{k-1}\cdot 2=2\cdot 2^{k-1}.
+\]
+Hence \(2\) divides \(2^k\). If \(2\) also divided \(2^k-1\), it would divide the difference
+\[
+2^k-(2^k-1)=1.
+\]
+Then \(\lvert 2\rvert\) would divide \(\lvert 1\rvert\), so \(2=1\), which is false.
+\end{proof}
+
+\begin{theorem}
+\label{thm:odd-translation}
+Let \(q=2\), \(c=1\), and \(d=2\). Then \(\lvert q\rvert=2\ge 2\) and \(\lvert d\rvert\ge 2\). For every \(j\in\N\),
+\[
+A_j(2,1,1)=2^{j+1}-1,
+\]
+so the seed \(1\) has no first hit. In particular it is false that every seed hits.
+\end{theorem}
+
+\begin{proof}
+Lemma~\ref{lem:trap-two} gives
+\begin{align*}
+A_j(2,1,1)
+&=2^j\cdot 1+1\cdot(2^j-1)
+=2^j+2^j-1
+=2\cdot 2^j-1
+=2^{j+1}-1.
+\end{align*}
+The exponent \(j+1\) is at least \(1\). Lemma~\ref{lem:two-odd} says that \(2\) does not divide this integer, so time \(j\) is not a first hit. The seed \(1\) is therefore a counterexample to the hypothesis that every seed hits.
+\end{proof}
+
+\begin{theorem}
+\label{thm:classmiss}
+Let \(m=\lvert d\rvert\). If the residue walk \(r\mapsto qr+c\) on \(\Z/m\Z\), started at the class of \(n\), never meets \(0\), then \(n\) has no first hit.
+\end{theorem}
+
+\begin{proof}
+The affine state at time \(j+1\) is \(q\) times the state at time \(j\), plus \(c\). Reducing modulo \(m\) gives the residue walk. A first hit would make the state divisible by \(d\). Since \(d\) and \(m\) differ by a unit sign, \(m\) would divide the state, and its class would be \(0\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:classhit}
+The least time the residue walk meets \(0\) is the first hit of every integer in that class. If that time \(j\) satisfies \(\lvert q\rvert^j\ge m\), no natural number \(A<m\) bounds \(\lvert q\rvert^k\) at every least residue hit.
+\end{theorem}
+
+\begin{proof}
+The affine state reduces to the residue walk. Its class is \(0\) exactly when \(m\) divides the state, and \(d\) and \(m\) divide the same integers. Thus the least residue hit is the first hit. If \(\lvert q\rvert^j\ge m\) at that time, any slope \(A<m\) fails to bound this one exponent.
+\end{proof}
+
+\begin{theorem}
+\label{thm:classsplit}
+Every residue class either never meets \(0\), or has a least time at which it does.
+\end{theorem}
+
+\begin{proof}
+If no time meets \(0\), the class is the first alternative. Otherwise some time meets \(0\), and the least such time is the least hit.
+\end{proof}
+
+\begin{theorem}
+\label{thm:slopecrit}
+Every residue class has a least hit whose exponent satisfies \(\lvert q\rvert^j<m\) if and only if every class has a least hit and no least hit satisfies \(\lvert q\rvert^j\ge m\).
+\end{theorem}
+
+\begin{proof}
+A class has only one least hit. If every class has a small exponent, then every class hits and no least hit is large. Conversely, the unique least hit of each class is not large, so its exponent is strictly less than \(m\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:integerslope}
+Every integer has a first hit whose exponent satisfies \(\lvert q\rvert^j<m\) if and only if every residue class does.
+\end{theorem}
+
+\begin{proof}
+The affine state reduces to the residue walk, and \(d\) and \(m\) divide the same integers. A first hit is therefore the least residue hit of the seed's class, and conversely. Every residue is the class of some integer, so the small-exponent condition transfers in both directions.
+\end{proof}
+
+\begin{theorem}
+\label{thm:uniformreturn}
+Suppose every integer has a first hit whose exponent satisfies \(\lvert q\rvert^j<m\). Then there are natural numbers \(A<m\) and \(B\) such that, at the first hit of every seed \(n\),
+\[
+m\left\lvert\frac{q^{j}n+cU_{j}}{d}\right\rvert
+\le A\lvert n\rvert+B.
+\]
+\end{theorem}
+
+\begin{proof}
+There are finitely many residue classes, and each has one least hit. Let \(A\) be the maximum of \(\lvert q\rvert^j\) over those hits. The hypothesis makes every term strictly less than \(m\), so \(A<m\). Let \(B\) be the maximum of \(\lvert c\rvert\) times the geometric sum of \(\lvert q\rvert\) up to that hit. The affine state splits into \(q^{j}n\) and \(cU_{j}\), and \(\lvert U_{j}\rvert\) is at most the geometric sum. Exact division by \(d\) preserves the absolute value, so the displayed inequality holds at the first hit of every seed.
+\end{proof}
+
+\begin{theorem}
+\label{thm:returnperiodic}
+Suppose every integer has a first hit whose exponent satisfies \(\lvert q\rvert^j<m\). Let \(H(n)\) be the exact quotient of the affine state at that first hit, and let \(N=B/(m-A)\) be the radius of the return bound. Every orbit of \(H\) is eventually periodic, and it has a period at most \(2N+1\).
+\end{theorem}
+
+\begin{proof}
+The preceding bound supplies \(A<m\) and \(B\) such that \(m\lvert H(n)\rvert\le A\lvert n\rvert+B\) at every integer. The first-hit time is unique, so this \(H\) is the quotient at the least hit. A map obeying that inequality contracts outside the radius \(B/(m-A)\) and preserves the radius. Every orbit therefore enters the finite set of integers of absolute value at most \(N\). That set has \(2N+1\) elements. Among the first \(2N+2\) states after entry, two agree, and the distance between them is a period of size at most \(2N+1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:entrytime}
+Under the same hypothesis, the orbit of \(H\) enters the radius \(N\) within \(\lvert n\rvert\) returns.
+\end{theorem}
+
+\begin{proof}
+Outside the radius each return strictly decreases the absolute value. The number of such decreases is at most the starting absolute value, so some state of index \(t\le\lvert n\rvert\) satisfies \(\lvert H^{t}(n)\rvert\le N\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:cycletime}
+Under the same hypothesis, there is a time \(t\le\lvert n\rvert+2N\) at which the orbit of \(H\) begins a period of size at most \(2N+1\).
+\end{theorem}
+
+\begin{proof}
+Some index \(t_{0}\le\lvert n\rvert\) has entered the radius. The next \(2N+2\) states cannot be distinct in a set of size \(2N+1\). If the earlier of the two agreeing states has index \(t_{0}+i\), then \(i\le 2N\), so \(t_{0}+i\le\lvert n\rvert+2N\). The distance to the later state is a period of size at most \(2N+1\).
+\end{proof}
+
+The hypothesis does not hold for \((q,c,d)=(2,1,3)\). Residue \(2\) never meets \(0\), so there is no total return on all of \(\mathbb{Z}\). The periodicity and time bounds above do not apply to that map. They do apply when \(q=1\), \(\lvert d\rvert\ge 2\), and \(\gcd(\lvert c\rvert,\lvert d\rvert)=1\). Every seed then has a first hit, and the exponent satisfies \(1^{j}=1<\lvert d\rvert\).
+
+\begin{theorem}
+\label{thm:unitoffset}
+If \(q=1\) and \(\gcd(\lvert c\rvert,\lvert d\rvert)=1\), the affine state at time \(j\) is \(n+cj\). The first hit time \(r\) satisfies \(r\le\lvert d\rvert\), and the return is \((n+cr)/d\).
+\end{theorem}
+
+\begin{proof}
+The offset sum at multiplier \(1\) is the time itself, so the state is \(n+cj\). The return is the exact division of that state. A hit exists at some time at most \(\lvert d\rvert\), and the first hit is no later. Writing \(r\) for that time,
+\[
+\lvert d\rvert\,\lvert H(n)\rvert=\lvert n+cr\rvert\le \lvert n\rvert+\lvert c\rvert\lvert d\rvert.
+\]
+The first hit is at most \(\lvert d\rvert-1\). A hit at time \(\lvert d\rvert\) differs from the seed by a multiple of \(d\), so the seed itself would already be a hit. Therefore
+\[
+\lvert d\rvert\,\lvert H(n)\rvert\le \lvert n\rvert+\lvert c\rvert(\,\lvert d\rvert-1).
+\]
+The coefficient of \(\lvert n\rvert\) is \(1\), and the constant term is exactly \(\lvert c\rvert\) copies of the gap \(\lvert d\rvert-1\). The core radius is therefore \(\lvert c\rvert\). Every orbit enters the shell \(\lvert x\rvert\le \lvert c\rvert\) within \(\lvert n\rvert\) steps. After entry, the next \(2\lvert c\rvert+2\) states cannot be distinct among the \(2\lvert c\rvert+1\) integers of that shell, so a period of size at most \(2\lvert c\rvert+1\) begins by time \(\lvert n\rvert+2\lvert c\rvert\). If \(d>0\), the return of \(c\) is \(c\). The radius \(\lvert c\rvert\) is therefore achieved and cannot be replaced by any smaller uniform radius. If \(d<0\), the return of \(c\) is \(-c\), and the return of \(-c\) is \(0\). This does not force every orbit to \(0\). For \((q,c,d)=(1,2,-3)\), the return of \(-1\) is \(-1\). These are the only fixed returns: a fixed seed satisfies \(n=-r/2\) with \(r\le 2\), so \(n\) is \(0\) or \(-1\). The same arithmetic is uniform. For any coprime unit offset, the return of \(n\) equals \(n\) if and only if \(n(d-1)=cr\), where \(r\) is the first hit of \(n\). Since \(r\le\lvert d\rvert-1\), a positive divisor forces \(\lvert n\rvert\le\lvert c\rvert\), with equality only at the seed \(c\). A negative divisor forces \(\lvert n\rvert(\,\lvert d\rvert+1)\le\lvert c\rvert(\,\lvert d\rvert-1)\). For \((1,2,-3)\) the shell has absolute value at most \(2\), and every one of those five states reaches \(0\) or \(-1\). Those two points are the only periodic points: a positive period returns to the seed only after the orbit has reached one of them, and both are fixed. The same shell holds for every coprime unit offset: a seed that returns to itself after a positive number of steps already satisfies \(\lvert n\rvert\le\lvert c\rvert\). It also returns to itself after some positive number of steps no larger than \(2\lvert c\rvert+1\). Every positive return time is a multiple of one such short return: return times are closed under the Euclidean algorithm. The least positive return therefore divides every return, and its length is at most \(2\lvert c\rvert+1\). That least return is the only positive period which divides every return. The first \(d\) states on it are distinct: an earlier repeat would pull back to a shorter positive return. Every one of those states has the same least return. A two-step return has the same shape as a fixed point: if \(r\) and \(s\) are the hit times of \(n\) and of its return, then \(n(d^{2}-1)=c(r+ds)\). The hits are at most \(\lvert d\rvert-1\), so a positive divisor forces \(\lvert n\rvert\le\lvert c\rvert\), while a negative divisor forces \(\lvert n\rvert(\,\lvert d\rvert+1)\le\lvert c\rvert\lvert d\rvert\). Equality in the positive bound occurs only at the seed \(c\). The same pattern continues for every length. If \(r_{i}\) is the hit of the \(i\)-th return state, then \(d^{k}H^{k}(n)=n+c\sum_{i<k}r_{i}d^{i}\). The orbit returns after \(k\) steps if and only if \(n(d^{k}-1)\) equals \(c\) times that sum. Each hit is at most \(\lvert d\rvert-1\), so the weight has absolute value at most \(\lvert d\rvert^{k}-1\). Every return therefore satisfies \(\lvert n\rvert\lvert d^{k}-1\rvert\le\lvert c\rvert(\,\lvert d\rvert^{k}-1)\). If \(d<0\) and \(k\) is odd, then \(\lvert d^{k}-1\rvert=\lvert d\rvert^{k}+1\), and therefore \(\lvert n\rvert(\,\lvert d\rvert^{k}+1)\le\lvert c\rvert(\,\lvert d\rvert^{k}-1)\). If \(d>0\) and \(k\ge 1\), the equality \(\lvert n\rvert=\lvert c\rvert\) forces \(n=c\). If \(d<0\) and \(k\ge 1\), every return is strictly inside the shell: \(\lvert n\rvert\le\lvert c\rvert-1\). For \((1,2,-3)\) the state \(-1\) is fixed and has absolute value \(1\), so this smaller shell is sharp. If \(\lvert c\rvert=1\), a negative divisor has only the periodic point \(0\), while a positive divisor has exactly the periodic points \(0\) and \(c\). In every coprime unit family, the return of \(0\) is \(0\). Thus if \(\lvert c\rvert=1\), every orbit is eventually constant by time \(\lvert n\rvert+2\): it stays at \(0\) when \(d<0\), and it stays at \(0\) or at \(c\) when \(d>0\). If also \(\lvert d\rvert=2\), one return satisfies \(\lvert H(n)\rvert\le(\lvert n\rvert+1)/2\), so absolute value \(1\) is reached within \(\lfloor\log_2\lvert n\rvert\rfloor+1\) steps, and the constant tail begins within three further steps. For \((1,1,2)\), every nonnegative seed meets the inequality as an equality: \(H(n)=(n+1)/2\). Iterating gives \(\lceil n/2^{k}\rceil\). If \(n\ge 1\), the first time this equals \(1\) is \(\lceil\log_2 n\rceil\). Every nonpositive seed returns \(-\lfloor\lvert n\rvert/2\rfloor\), so its absolute value is \(\lvert n\rvert/2\). These two formulas cover every integer. For \((1,1,-2)\), the return is the negative of that formula: \(-(\lvert n\rvert+1)/2\) when \(n\ge 0\), and \(\lvert n\rvert/2\) when \(n\le 0\). Thus two returns send a nonnegative seed to \(\lfloor(n+1)/4\rfloor\). After \(2t\) returns the value is
+\[
+\frac{n+(4^{t}-1)/3}{4^{t}}.
+\]
+The next return is \(-\lceil m/2\rceil\), where \(m\) is that value. This is zero exactly when \(3\lvert n\rvert\le 2\cdot 4^{t}\). An odd step from a positive value is negative, so the first zero is the least such even time. If \(n<0\), one return reaches \(\lfloor\lvert n\rvert/2\rfloor\). Every later state is the even or odd formula of that nonnegative value, and the first zero is one step after its first zero. For \((1,-1,-2)\), the return is \(-\lfloor n/2\rfloor\). This is the sign reverse of the \((1,1,-2)\) return at \(-n\), and the same reversal holds at every later time. For \((1,-1,2)\), the return is \(n/2\) when \(n\) is even and \((n-1)/2\) when \(n\) is odd. This is the sign reverse of the \((1,1,2)\) return at \(-n\), at every time. If \(n\le -1\), the first visit to \(-1\) is at time \(\lceil\log_2\lvert n\rvert\rceil\). For \((1,-1,-2)\), the first zero at \(n\) is the first zero of \((1,1,-2)\) at \(-n\). For \((1,-1,2)\), every return is \(\lfloor n/2\rfloor\), so the state at time \(k\) is \(\lfloor n/2^{k}\rfloor\). If \(n\ge 1\), this equals \(1\) at time \(\lfloor\log_2 n\rfloor\) and \(0\) one step later. For \((1,1,2)\) and \(n\le -1\), the same time gives \(-1\), and the next state is \(0\). The fixed points are \(0\) and \(1\) for \((1,1,2)\), \(0\) and \(-1\) for \((1,-1,2)\), and only \(0\) for both negative divisors. Every orbit reaches one of those fixed points by time \(\lfloor\log_2(3\lvert n\rvert)\rfloor+1\) and stays there. The witness is the rounded half-logarithm: an even logarithm is dominated by its own half, and an odd logarithm by one more. The bound is sharp. For \((1,1,-2)\), the seed \(1\) meets \(0\) first at time \(2\), and \(\lfloor\log_2 3\rfloor+1=2\). For \((1,-1,2)\), an even seed returns \(n/2\) and an odd seed returns \((n-1)/2\). For \((1,-1,-2)\), the return is the negative of that formula. In both of those families, an even seed has absolute value \(\lvert n\rvert/2\) and an odd seed has absolute value \(\lvert n-1\rvert/2\). An even seed meets \((\lvert n\rvert+1)/2\). A nonnegative odd seed falls short by one, and a nonpositive odd seed meets the bound. Across all four families, the absolute return equals \((\lvert n\rvert+1)/2\), except when \(n\) is odd and has the opposite sign from \(c\). Then it falls short by one. If instead \(\lvert d\rvert\ge 3\) and \(\lvert c\rvert=1\), a seed with \(\lvert n\rvert\ge 2\) satisfies \(\lvert H(n)\rvert\le\lvert n\rvert/2\). Absolute value \(1\) therefore begins by time \(\lfloor\log_2\lvert n\rvert\rfloor\). This is sharp for \((1,1,3)\): the seed \(2\) returns \(1\), and \(\lfloor\log_2 2\rfloor=1\). If instead \(\lvert d\rvert=2\) and \(\lvert n\rvert>\lvert c\rvert\), the excess over the shell at least halves, so \(\lvert x\rvert\le\lvert c\rvert\) begins by time \(\lfloor\log_2(\lvert n\rvert-\lvert c\rvert)\rfloor+1\). For \((1,1,2)\) the seed \(2\) meets this bound: its excess is \(1\) and its return is \(1\). The same division holds for every divisor at least \(2\): the excess is divided by \(\lvert d\rvert\), so the shell begins by time \(\lfloor\log_{\lvert d\rvert}(\lvert n\rvert-\lvert c\rvert)\rfloor+1\). Every seed of excess \(1\) meets the bound, since the logarithm of \(1\) is \(0\) and one return enters the shell. A state already in the shell begins a period of length at most \(2\lvert c\rvert+1\) within \(2\lvert c\rvert\) steps. Thus if \(\lvert n\rvert>\lvert c\rvert\), such a period begins by time \(\lfloor\log_{\lvert d\rvert}(\lvert n\rvert-\lvert c\rvert)\rfloor+1+2\lvert c\rvert\). The delay \(2\lvert c\rvert\) is attained by \((1,1,-2)\) at the seed \(1\): the orbit is \(1,-1,0,0,\ldots\), and no period begins before time \(2\). The period itself is at most \(2\lvert c\rvert\). The point \(0\) is fixed, so a cycle through every shell point is impossible. An orbit that reaches \(0\) has period \(1\). An orbit that avoids \(0\) has \(2\lvert c\rvert+1\) states in the remaining \(2\lvert c\rvert\) shell points.
+\end{proof}
+
+\begin{theorem}
+\label{thm:twopositive}
+Suppose \(q=1\), \(d=2\), \(c>0\), and \(\gcd(\lvert c\rvert,2)=1\). An even seed returns \(n/2\). An odd seed returns \((n+c)/2\). The states \(0\) and \(c\) are fixed, and the interval \(0\le x\le c\) is invariant. Every orbit begins a period of length at most \(\max(\lvert c\rvert-1,1)\). For \((q,c,d)=(1,3,2)\) the states \(1\) and \(2\) exchange, so the bound is achieved.
+\end{theorem}
+
+\begin{proof}
+An even seed is divisible at time \(0\). An odd seed is not, and the state at time \(1\) is \(n+c\). The coprimeness hypothesis makes \(c\) odd, so \(n+c\) is even. The two quotients are the stated returns. Both \(0\) and \(c\) are odd, and both quotients are themselves. If \(0\le n\le c\), the even quotient is at most \(c/2\) and the odd quotient is at most \(c\). A seed strictly above \(c\) returns a nonnegative integer strictly below the seed: the even case halves, and the odd case satisfies \(2H(n)=n+c<2n\). A negative seed either lands in the interval or loses absolute value. Thus every orbit enters \(0\le x\le c\). After entry, a state that meets \(0\) or \(c\) has period \(1\). Otherwise the orbit stays in the \(\lvert c\rvert-1\) positive integers below \(c\). Among the first \(\lvert c\rvert\) such states, two agree, and the distance is a period of length at most \(\lvert c\rvert-1\). For \(c=1\) that open interval is empty, so the period is \(1\). For \((1,3,2)\), the returns of \(1\) and \(2\) are \(2\) and \(1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:interiorperiod}
+Under the same hypotheses, distinct seeds in \(0<x<c\) have distinct returns. Every such seed is periodic, and its least positive period is at most \(\lvert c\rvert-1\).
+\end{theorem}
+
+\begin{proof}
+Two even interior seeds with the same return have the same half, hence are equal after multiplying by \(2\). Two odd seeds likewise recover \(n+c\). An even seed and an odd seed cannot have the same return: equating the quotients would force the even seed to be the odd seed plus \(c\), which leaves the interval. The return therefore stays inside \(0<x<c\) and is injective there. The first \(\lvert c\rvert\) states of an interior orbit cannot be distinct. If two of them agree, injectivity pulls the agreement back to the seed, and the distance is a positive period of length at most \(\lvert c\rvert-1\).
+\end{proof}
+
+For \((q,c,d)=(1,5,2)\) the interior orbit is \(1,3,4,2\), and then \(2\) returns to \(1\). The period is \(4=\lvert c\rvert-1\), so the bound is achieved. For \((1,7,2)\) the interior splits into \(1,4,2\) and \(3,5,6\). Both periods are \(3\), and these six states exhaust \(\{1,\ldots,6\}\). Length \(6\) does not occur.
+
+Every interior state has an interior preimage. If \(0<m<c\) and \(2m<c\), the even seed \(2m\) returns to \(m\). If instead \(c<2m\), the odd seed \(2m-c\) lies in the open interval and returns to \(m\). Since \(c\) is odd, these two comparisons cover every such \(m\). If an interior seed returns to \(m\), it equals that preimage.
+
+The same hitting times with divisor \(-2\) change only the quotient. An even seed returns \(-n/2\). An odd seed returns \(-(n+c)/2\). For \((1,3,-2)\), the seed \(1\) goes to \(-2\) and \(-2\) returns to \(1\), while \(-1\) is fixed. The positive open interval is therefore not invariant. For the same odd offset, the return at divisor \(-2\) is exactly the negation of the return at divisor \(2\). Let \(m\) be that positive return. If \(m\) is even, the second negative return is \(m/2\), which is also the second positive return. If \(m\) is odd, the second negative return is \((m-c)/2\) instead. The second positive return is then \((m+c)/2\), so the two second returns differ by \(c\). If \(\lvert n\rvert\le\lvert c\rvert\), the return at divisor \(-2\) stays in that shell: an even seed returns with absolute value \(\lvert n\rvert/2\), and an odd seed returns with absolute value \(\lvert n+c\rvert/2\le(\lvert n\rvert+\lvert c\rvert)/2\). A periodic point lies in the shell. If it were larger, the predecessor of a largest state would be either larger, and then its image would drop, or already in the shell, and then the image could not be larger. For a positive offset, the endpoints \(c\) and \(-c\) both reach zero, so neither is periodic. A nonzero cycle therefore satisfies \(0<\lvert x\rvert<\lvert c\rvert\). On a minimal cycle the return is injective. An even residue and the same residue shifted by \(-c\) have the same image, so a minimal cycle contains at most one of them. An odd positive residue \(u\) and the shift \(u-c\) step to \((c-u)/2-c\) and \((c-u)/2\). The positive residue of an interior state lies in \(\{1,\ldots,\lvert c\rvert-1\}\). A nonzero minimal cycle whose residues are pairwise distinct therefore has length at most \(\lvert c\rvert-1\). If \(\lvert n\rvert>\lvert c\rvert\), one return drops the absolute value by at least one, so the shell is entered by time \(\lvert n\rvert\). Zero is fixed. If the orbit meets zero, the period from that time is \(1\). Otherwise the remaining shell has \(2\lvert c\rvert\) integers. Among \(2\lvert c\rvert+1\) consecutive states, two agree, and the later copies of that pair repeat. Thus a period of length at most \(2\lvert c\rvert\) begins by time \(\lvert n\rvert+2\lvert c\rvert\).
+
+\begin{theorem}
+\label{thm:negtwosharp}
+Suppose \(q=1\), \(d=-2\), \(c>0\), and \(\gcd(\lvert c\rvert,2)=1\). A minimal cycle of the return has length at most \(\max(\lvert c\rvert-1,1)\).
+\end{theorem}
+
+\begin{proof}
+Zero is fixed, so its least positive return is \(1\). A nonzero minimal cycle lies in the open shell \(0<\lvert x\rvert<\lvert c\rvert\). If its residues are pairwise distinct, there are at most \(\lvert c\rvert-1\) of them. If two times share a residue, that residue is odd and both of its representatives lie on the cycle. The doubled recurrence then forces the residue to equal \(c/3\), and those two states form a cycle of length \(2\). The offset is an odd integer at least \(3\), so this length is at most \(\lvert c\rvert-1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:negtwodelay}
+Under the same hypotheses, the closed shell \(\lvert x\rvert\le\lvert c\rvert\) is entered in at most \(\lvert n\rvert-\lvert c\rvert\) steps, with the natural subtraction. The smaller shell \(\lvert x\rvert\le\lvert c\rvert-1\) is invariant and is entered within two further steps. A repeat of length at most \(2\lvert c\rvert-1\) therefore begins by time \(\lvert n\rvert-\lvert c\rvert+2\lvert c\rvert\). The least positive return of that state has length at most \(\max(\lvert c\rvert-1,1)\).
+\end{theorem}
+
+\begin{proof}
+Outside the closed shell, one return decreases the absolute value by at least one, so the number of such returns is at most the excess \(\lvert n\rvert-\lvert c\rvert\). An endpoint \(c\) returns to \(-c\), and \(-c\) returns to \(0\). Thus two further steps reach the smaller shell. That shell contains \(2\lvert c\rvert-1\) integers and is invariant: an even seed is halved, and an odd seed has numerator of absolute value at most \(2\lvert c\rvert-1\). Among the next \(2\lvert c\rvert\) states, two agree. The earlier index is at most \(2\lvert c\rvert-2\) after entry, and the distance is a period of length at most \(2\lvert c\rvert-1\). The least positive return of the entry state is itself a period of the forward orbit, and a minimal return has length at most \(\max(\lvert c\rvert-1,1)\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:negtwolog}
+Under the same hypotheses, if \(\lvert n\rvert\ge\lvert c\rvert\), then
+\[
+\lvert H(n)\rvert\le\lvert c\rvert+\frac{\lvert n\rvert-\lvert c\rvert}{2},
+\]
+with integer division. The closed shell is therefore entered by time \(\lfloor\log_{2}(\lvert n\rvert-\lvert c\rvert)\rfloor+1\).
+\end{theorem}
+
+\begin{proof}
+An even seed returns with absolute value \(\lvert n\rvert/2\). An odd seed returns with absolute value \(\lvert n+c\rvert/2\le(\lvert n\rvert+\lvert c\rvert)/2\). Both are at most \(\lvert c\rvert\) plus half the excess. If the image is already in the shell, one step suffices, and the logarithm of a positive excess is nonnegative. Otherwise the excess of the image is at most half the excess. For an integer at least \(2\), halving decreases the base-two logarithm by one, so the inductive step stays within \(\lfloor\log_{2}(\lvert n\rvert-\lvert c\rvert)\rfloor+1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:negtwologdelay}
+A period of length at most \(\max(\lvert c\rvert-1,1)\) begins by time
+\[
+\lfloor\log_{2}(\lvert n\rvert-\lvert c\rvert)\rfloor+1+2\lvert c\rvert.
+\]
+\end{theorem}
+
+\begin{proof}
+The logarithmic bound produces a state \(y\) in the closed shell. The sharp delay applied to \(y\) begins a period within \(\lvert y\rvert-\lvert c\rvert+2\lvert c\rvert\) further steps. The natural subtraction is zero, so the total time is at most the logarithm plus one plus \(2\lvert c\rvert\). Shifting the orbit by the entry time carries the period back to \(n\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:negtwopower}
+If \(c=1\), the orbit of \(2^{e}\) at time \(t\le e\) is \((-1)^{t}2^{e-t}\). Its absolute value first drops to \(1\) at time \(e\), and
+\[
+e=\lfloor\log_{2}(2^{e}-1)\rfloor+1.
+\]
+Thus the logarithmic entry bound is achieved.
+\end{theorem}
+
+\begin{proof}
+The seed is even, and every later state is plus or minus a positive power of two until time \(e\). An even return negates and halves, which multiplies by \(-1\) and lowers the exponent by one. At time \(t<e\) the absolute value is at least \(2\). At time \(e\) it is \(1\). Since \(2^{e-1}\le 2^{e}-1<2^{e}\), the base-two logarithm of \(2^{e}-1\) is \(e-1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:negtwodelaysharp}
+If \(c=1\) and \(e\) is positive and even, the first time a period of \(2^{e}\) begins is \(e+2\). That period has length \(1\), and
+\[
+e+2=\lfloor\log_{2}(2^{e}-1)\rfloor+1+2.
+\]
+Thus the logarithmic delay bound is achieved.
+\end{theorem}
+
+\begin{proof}
+Time \(e\) is the state \(1\), time \(e+1\) is \(-1\), and time \(e+2\) is \(0\). Every later state is \(0\), so length \(1\) is a period from time \(e+2\). Before time \(e\) the absolute values are distinct powers of two. From \(1\) the next state is \(-1\), and from \(-1\) every positive step is \(0\). None of these agrees with the starting state of that time, so no period begins earlier.
+\end{proof}
+
+\begin{theorem}
+\label{thm:negtwodelayodd}
+If \(c=1\) and \(e\) is positive and odd, the first time a period of \(2^{e}\) begins is \(e+1\). That time equals \(\lfloor\log_{2}(2^{e}-1)\rfloor+2\), so it is strictly smaller than the delay bound \(\lfloor\log_{2}(2^{e}-1)\rfloor+3\).
+\end{theorem}
+
+\begin{proof}
+Time \(e\) is the state \(-1\), and every later state is \(0\). Thus length \(1\) is a period from time \(e+1\), while time \(e\) itself is not followed by \(-1\). The same absolute-value separation used for an even exponent excludes every earlier time. Since the logarithm of \(2^{e}-1\) is \(e-1\), the entry time is \(e+1=\lfloor\log_{2}(2^{e}-1)\rfloor+2\), and the delay bound is one larger.
+\end{proof}
+
+\begin{theorem}
+\label{thm:negtwodelayparity}
+If \(c=1\) and \(e\) is positive, the first time a period of \(2^{e}\) begins is \(e+2-(e \bmod 2)\). This equals the logarithmic delay bound when \(e\) is even, and it is strictly smaller when \(e\) is odd.
+\end{theorem}
+
+\begin{proof}
+Every positive integer is even or odd. The even case begins at time \(e+2\), and \(e \bmod 2=0\). The odd case begins at time \(e+1\), and \(e \bmod 2=1\), so \(e+2-(e \bmod 2)=e+1\). The two comparisons with the delay bound are the preceding theorems.
+\end{proof}
+
+\begin{theorem}
+\label{thm:negtwoonezero}
+If \(c=1\), let \(\tau\) be the first time the raw return orbit equals \(0\). A period of length \(1\) begins at \(\tau\), no period begins earlier, and
+\[
+\tau\le\lfloor\log_{2}(\lvert n\rvert-1)\rfloor+3.
+\]
+\end{theorem}
+
+\begin{proof}
+The logarithmic delay supplies a period. Its starting state returns to itself. A nonzero periodic state would have absolute value strictly between \(0\) and \(1\), which is impossible, so the state is \(0\). Thus a first visit \(\tau\) exists, and the delay bound passes to it. From \(0\) every later state is \(0\), so length \(1\) is a period. If a period began at an earlier time \(s\), the state at time \(\tau-1\) would equal the state \(\mathrm{period}-1\) steps after \(\tau\). The first is nonzero and the second is \(0\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:negtwopredecessor}
+A state sent to \(0\) is \(0\) or \(-c\). If \(c=1\) and the seed is nonzero, the state immediately before the first visit to \(0\) is \(-1\).
+\end{theorem}
+
+\begin{proof}
+An even state returns \(-n/2\). This is \(0\) only when \(n=0\). An odd state returns \(-(n+c)/2\). The offset is odd because it is coprime to \(2\), so the sum of two odd integers is even, and the quotient is \(0\) only when \(n=-c\). For \(c=1\), a nonzero seed has a positive first-visit time. The preceding state is sent to \(0\) and is not \(0\), so it is \(-1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:negtwotonegone}
+If \(c=1\), the only states sent to \(-1\) are \(1\) and \(2\).
+\end{theorem}
+
+\begin{proof}
+An even state returns \(-n/2\). This equals \(-1\) only when \(n=2\). An odd state returns \(-(n+1)/2\). This equals \(-1\) only when \(n=1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:negtwotwobefore}
+If \(c=1\) and the first visit to \(0\) occurs at a time \(\tau\ge 2\), then the state at time \(\tau-2\) is \(1\) or \(2\).
+\end{theorem}
+
+\begin{proof}
+The state at time \(\tau-1\) is \(-1\). It is the return of the state at time \(\tau-2\), so that state is \(1\) or \(2\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:oneoffset}
+If \(q=1\), \(c=1\), and \(\lvert d\rvert\ge 2\), the affine state at time \(j\) is \(n+j\). The first hit time is the remainder of \(-n\) modulo \(\lvert d\rvert\), and the return is \((n+j)/d\).
+\end{theorem}
+
+\begin{proof}
+The offset sum at multiplier \(1\) is the time itself, so the state is \(n+j\). Let \(m=\lvert d\rvert\) and let \(r\) be the remainder of \(-n\) modulo \(m\). Then \(0\le r<m\) and \(m\) divides \(n+r\), hence so does \(d\). A smaller nonnegative time would leave a positive difference strictly less than \(m\) and still divisible by \(m\). The return divides the state \(n+r\) by \(d\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:oneoffsetdrop}
+Under the same hypotheses, \(\lvert n\rvert\ge 2\) implies that the return has strictly smaller absolute value. Every orbit enters the shell \(\lvert x\rvert\le 1\) within \(\lvert n\rvert\) steps, and that shell is invariant. A period of size at most \(3\) begins by time \(\lvert n\rvert+2\).
+\end{theorem}
+
+\begin{proof}
+The numerator has absolute value at most \(\lvert n\rvert+r\le\lvert n\rvert+m-1\). For \(\lvert n\rvert\ge 2\) this is strictly less than \(m\lvert n\rvert\), so dividing by \(m\) decreases the absolute value. Each such step reduces a positive integer, and the number of reductions is at most the starting absolute value. Inside the shell, the remainder of \(0\) is \(0\), the remainder of \(-1\) is \(m-1\), and the remainder of \(1\) is \(1\). The three returns are \(0\), \(\pm 1\), and \(0\). After entry, the next four states lie among these three values, so two agree. The earlier index is at most two steps after entry.
+\end{proof}
+
+\begin{theorem}
+\label{thm:oneoffsetend}
+Under the same hypotheses, the returns of \(-1\) and \(0\) are both \(0\). If \(d>0\), the return of \(1\) is \(1\), and every orbit reaches \(0\) or \(1\) within \(\lvert n\rvert+1\) steps. If \(d<0\), the return of \(1\) is \(-1\), and every orbit reaches \(0\) within \(\lvert n\rvert+2\) steps.
+\end{theorem}
+
+\begin{proof}
+The remainder of \(0\) is \(0\), so its return is \(0\). The remainder of \(-1\) is \(1\), so its numerator is \(0\) and its return is \(0\). The remainder of \(1\) is \(m-1\), so its numerator is \(m\). Dividing by a positive \(d\) gives \(1\), and dividing by a negative \(d\) gives \(-1\). After entry, a state \(-1\) moves to \(0\). If \(d<0\), a state \(1\) moves to \(-1\) and then to \(0\). Entry takes at most \(\lvert n\rvert\) steps, so the positive case adds at most one step and the negative case adds at most two.
+\end{proof}
+
+\begin{theorem}
+\label{thm:oneoffsetclosed}
+Under the same hypotheses, write \(m=\lvert d\rvert\) and let the quotient be the floor quotient. If \(d>0\), the return is \(-\lfloor -n/m\rfloor\). If \(d<0\), the return is \(\lfloor -n/m\rfloor\).
+\end{theorem}
+
+\begin{proof}
+The division identity gives \(-n=\lfloor -n/m\rfloor\, m+r\) with \(0\le r<m\). Hence \(n+r=-m\lfloor -n/m\rfloor\). Dividing by a positive \(d\) cancels \(m\) and leaves the negative floor quotient. Dividing by a negative \(d\) cancels \(-m\) and leaves the floor quotient itself. If \(d>0\) and \(\lvert n\rvert\le m\), then \(-n\) lies in \([-m,m]\), so the floor quotient is \(-1\), \(0\), or \(1\). The return is therefore \(1\), \(0\), or \(-1\). In every case the remainder satisfies \(0\le r<m\), so
+\[
+m\lvert H(n)\rvert=\lvert n+r\rvert\le \lvert n\rvert+m-1.
+\]
+If \(\lvert n\rvert\le m^{k}\), the same inequality gives \(\lvert H(n)\rvert\le m^{k-1}\) whenever the seed is outside the shell. Thus the orbit enters \(\lvert x\rvert\le 1\) within \(k\) steps. The bound is sharp for a positive divisor: the orbit of \(d^{k}\) is \(d^{k},d^{k-1},\ldots,d,1\), so time \(k\) is the first shell state. For a negative divisor the same powers alternate. If \(j\le k\), time \(j\) sends \(m^{k}\) to \((-1)^{j}m^{k-j}\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:oneonetwo}
+For \((q,c,d)=(1,1,2)\), the return is \(n/2\) when \(2\) divides \(n\), and \((n+1)/2\) otherwise.
+\end{theorem}
+
+\begin{proof}
+An even seed is already divisible, so the first hit is at time \(0\) and the quotient is \(n/2\). An odd seed is not divisible. The state at time \(1\) is \(n+1\), which is even, and no earlier time exists. The quotient is \((n+1)/2\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:oneonetwoenters}
+For \((q,c,d)=(1,1,2)\), the orbit of the return reaches \(0\) or \(1\) within \(\lvert n\rvert\) steps.
+\end{theorem}
+
+\begin{proof}
+The states \(0\) and \(1\) are already there. The state \(-1\) is odd, so its return is \(0\). If \(\lvert n\rvert\ge 2\), the return has strictly smaller absolute value: an even seed is halved, and an odd seed of absolute value at least \(3\) satisfies \(\lvert (n+1)/2\rvert<\lvert n\rvert\). The number of decreases is at most the starting absolute value.
+\end{proof}
+
+\begin{theorem}
+\label{thm:oneonetwoterminal}
+For \((q,c,d)=(1,1,2)\), every positive seed reaches \(1\), and every nonpositive seed reaches \(0\).
+\end{theorem}
+
+\begin{proof}
+A positive seed has a positive return, so its orbit never meets \(0\). The entry theorem therefore lands on \(1\). A nonpositive seed has a nonpositive return, so its orbit never meets \(1\). The entry theorem therefore lands on \(0\).
+\end{proof}
+
+\begin{remark}
+\label{rem:class}
+The inequality \(\lvert q\rvert\ge 2\) removes neither alternative: a class may never meet \(0\), or its least hit may satisfy \(\lvert q\rvert^j\ge m\). Theorem~\ref{thm:odd-translation} is the instance \(q=2\), \(c=1\), \(d=2\), in which the odd class never meets \(0\).
+\end{remark}
+
+\end{document}

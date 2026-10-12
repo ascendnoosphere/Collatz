@@ -1,0 +1,188 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Division-free affine prefixes}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Let the raw step send \(n\) to \(n/d\) when \(d\) divides \(n\), and to \(qn+c\) otherwise. If \(d\) divides no raw iterate of a seed at a time strictly before \(j\), the raw iterate at time \(j\) equals the affine state \(q^{j}n+c\,U_{j}(q)\). The same induction shows that a prefix of affine states which \(d\) does not divide is the raw prefix. Divisibility at time \(j\) is allowed. Nothing is asserted at any later time.
+\end{abstract}
+
+\section{Raw prefixes and affine states}
+
+Throughout, a parameter record consists of integers \(q\) and \(c\) and an integer \(d\) with \(|d|\ge 2\). In particular \(d\neq 0\). The raw step is the map \(\Map{T}{\Z}{\Z}\) given by
+\[
+T(n)=\begin{cases}
+n/d, & d\mid n,\\
+qn+c, & d\nmid n.
+\end{cases}
+\]
+Iteration starts at time zero: \(T^{0}(n)=n\), and \(T^{j+1}(n)=T(T^{j}(n))\). The offset sum is the integer sequence defined by \(U_{0}(q)=0\) and
+\[
+U_{j+1}(q)=U_{j}(q)+q^{j}.
+\]
+The one-step form \(U_{j+1}(q)=q\,U_{j}(q)+1\) is the offset recursion. It is the identity used at the inductive step below; its proof is the comparison of the two expressions for \(q^{j}\). By the recurrence, \(U_{j+1}(q)=U_{j}(q)+q^{j}\). The shifted geometric series \((q-1)U_{j}(q)=q^{j}-1\), proved by a separate induction on \(j\) whose successor step adds \(q^{j}(q-1)=q^{j+1}-q^{j}\), rearranges to \(q^{j}=(q-1)U_{j}(q)+1\). Substituting that expression yields
+\[
+U_{j+1}(q)=U_{j}(q)+(q-1)U_{j}(q)+1=q\,U_{j}(q)+1.
+\]
+
+\begin{definition}\label{Def:AffineState}
+The affine state of multiplier \(q\), offset \(c\), time \(j\in\N\) and seed \(n\in\Z\) is
+\[
+A_{j}(q,c,n)=q^{j}n+c\,U_{j}(q).
+\]
+When the parameter record is fixed, write \(A_{j}(n)\) for \(A_{j}(q,c,n)\).
+\end{definition}
+
+\begin{definition}\label{Def:FirstHit}
+The time \(j\) is a first hit of the seed \(n\) when \(d\) divides \(A_{j}(n)\) and \(d\) divides \(A_{i}(n)\) for no \(i<j\).
+\end{definition}
+
+If \(d\) does not divide a state \(m\), the definition of \(T\) gives \(T(m)=qm+c\). This is the only evaluation of the raw step used below. Exact division is never applied to a state that the inductive hypothesis has assumed to be non-divisible.
+
+\section{The raw prefix}
+
+\begin{theorem}\label{Thm:PrefixAffine}
+Let \(q\), \(c\) and \(d\) be a parameter record, let \(n\in\Z\), and let \(j\in\N\). If \(d\) does not divide \(T^{i}(n)\) for every \(i<j\), then
+\[
+T^{j}(n)=A_{j}(n).
+\]
+\end{theorem}
+
+\begin{proof}
+Proceed by induction on \(j\).
+
+If \(j=0\), then there is no natural number \(i<0\), so the hypothesis is vacuous. The left side is \(T^{0}(n)=n\). The right side is \(q^{0}n+c\,U_{0}(q)=n\), since \(q^{0}=1\), \(U_{0}(q)=0\), and \(c\cdot 0=0\).
+
+Suppose the claim holds at time \(j\), and assume \(d\) does not divide \(T^{i}(n)\) for every \(i<j+1\). Then the same non-divisibility holds for every \(i<j\), so the inductive hypothesis yields \(T^{j}(n)=A_{j}(n)\). The index \(j\) itself satisfies \(j<j+1\), so \(d\) does not divide \(T^{j}(n)\). Therefore the raw step takes the affine branch:
+\[
+T^{j+1}(n)=T(T^{j}(n))=q\,T^{j}(n)+c.
+\]
+Substitute the inductive hypothesis and the definition of the affine state:
+\begin{align*}
+q\,T^{j}(n)+c
+&= q\bigl(q^{j}n+c\,U_{j}(q)\bigr)+c \\
+&= q^{j+1}n+c\,q\,U_{j}(q)+c \\
+&= q^{j+1}n+c\bigl(q\,U_{j}(q)+1\bigr).
+\end{align*}
+The offset recursion replaces \(q\,U_{j}(q)+1\) by \(U_{j+1}(q)\). The right-hand side is \(A_{j+1}(n)\).
+
+The statement does not assume that \(d\) fails to divide \(T^{j}(n)\) when the time under discussion is \(j\). In the successor step, non-divisibility is used only at time \(j\), which is strictly before \(j+1\).
+\end{proof}
+
+\begin{corollary}\label{Cor:RawPrefix}
+Let \(q\), \(c\) and \(d\) be a parameter record, let \(n\in\Z\), and let \(j\in\N\). If \(d\) does not divide \(T^{i}(n)\) for every \(i<j\), then \(T^{k}(n)=A_{k}(n)\) for every \(k\le j\).
+\end{corollary}
+
+\begin{proof}
+Fix \(k\le j\). If \(i<k\), then \(i<j\), so \(d\) does not divide \(T^{i}(n)\). Theorem~\ref{Thm:PrefixAffine} at time \(k\) gives the equality.
+\end{proof}
+
+\section{The affine prefix}
+
+\begin{theorem}\label{Thm:AffinePrefixRaw}
+Let \(q\), \(c\) and \(d\) be a parameter record, let \(n\in\Z\), and let \(j\in\N\). If \(d\) does not divide \(A_{i}(n)\) for every \(i<j\), then
+\[
+T^{j}(n)=A_{j}(n).
+\]
+\end{theorem}
+
+\begin{proof}
+Proceed by induction on \(j\), as in Theorem~\ref{Thm:PrefixAffine}, with the non-divisibility hypothesis read on affine states.
+
+If \(j=0\), both sides equal \(n\) by the same evaluation as in Theorem~\ref{Thm:PrefixAffine}. The hypothesis is again vacuous.
+
+Suppose the claim holds at time \(j\), and assume \(d\) does not divide \(A_{i}(n)\) for every \(i<j+1\). Restricting the hypothesis to \(i<j\) and applying the inductive hypothesis gives \(T^{j}(n)=A_{j}(n)\). Since \(j<j+1\), the hypothesis also says that \(d\) does not divide \(A_{j}(n)\). The equality just obtained transfers that non-divisibility to the raw state: \(d\) does not divide \(T^{j}(n)\). The raw step therefore takes the affine branch,
+\[
+T^{j+1}(n)=q\,T^{j}(n)+c=q\,A_{j}(n)+c.
+\]
+The same expansion as in Theorem~\ref{Thm:PrefixAffine} gives
+\[
+q\,A_{j}(n)+c=q^{j+1}n+c\bigl(q\,U_{j}(q)+1\bigr)=q^{j+1}n+c\,U_{j+1}(q)=A_{j+1}(n),
+\]
+where the middle equality is the offset recursion.
+\end{proof}
+
+\begin{corollary}\label{Cor:AffinePrefix}
+Let \(q\), \(c\) and \(d\) be a parameter record, let \(n\in\Z\), and let \(j\in\N\). If \(d\) does not divide \(A_{i}(n)\) for every \(i<j\), then \(T^{k}(n)=A_{k}(n)\) for every \(k\le j\). Thus the division-free affine prefix is the raw prefix through time \(j\).
+\end{corollary}
+
+\begin{proof}
+Fix \(k\le j\). If \(i<k\), then \(i<j\), so \(d\) does not divide \(A_{i}(n)\). Theorem~\ref{Thm:AffinePrefixRaw} at time \(k\) gives the equality.
+\end{proof}
+
+\section{The first hit}
+
+\begin{theorem}\label{Thm:FirstHit}
+Let \(q\), \(c\) and \(d\) be a parameter record, let \(n\in\Z\), and let \(j\in\N\). The time \(j\) is a first hit of \(n\) if and only if \(d\) divides \(T^{j}(n)\) and \(d\) divides \(T^{i}(n)\) for no \(i<j\).
+\end{theorem}
+
+\begin{proof}
+First suppose \(j\) is a first hit. Then \(d\) divides \(A_{j}(n)\), and \(d\) divides \(A_{i}(n)\) for no \(i<j\). Theorem~\ref{Thm:AffinePrefixRaw} at time \(j\) yields \(T^{j}(n)=A_{j}(n)\), so \(d\) divides \(T^{j}(n)\). For the earlier times, fix \(i<j\). If \(k<i\), then \(k<j\), so \(d\) does not divide \(A_{k}(n)\). Theorem~\ref{Thm:AffinePrefixRaw} at time \(i\) yields \(T^{i}(n)=A_{i}(n)\). The first-hit hypothesis says that \(d\) does not divide \(A_{i}(n)\), hence \(d\) does not divide \(T^{i}(n)\).
+
+Conversely, suppose \(d\) divides \(T^{j}(n)\) and \(d\) divides \(T^{i}(n)\) for no \(i<j\). Theorem~\ref{Thm:PrefixAffine} at time \(j\) yields \(T^{j}(n)=A_{j}(n)\), so \(d\) divides \(A_{j}(n)\). For \(i<j\), the hypothesis restricts to every \(k<i\), and Theorem~\ref{Thm:PrefixAffine} at time \(i\) yields \(T^{i}(n)=A_{i}(n)\). Therefore \(d\) does not divide \(A_{i}(n)\). This is Definition~\ref{Def:FirstHit}.
+
+Both directions use equality only at times at most \(j\). If \(d\) divides the state at time \(j\), those two directions stop there.
+\end{proof}
+
+\begin{theorem}\label{Thm:FirstHitQuotient}
+If \(j\) is a first hit of \(n\), then \(T^{j+1}(n)=A_{j}(n)/d\).
+\end{theorem}
+
+\begin{proof}
+Theorem~\ref{Thm:FirstHit} gives \(d\mid T^{j}(n)\) and \(d\nmid T^{i}(n)\) for every \(i<j\). Theorem~\ref{Thm:PrefixAffine} at time \(j\) gives \(T^{j}(n)=A_{j}(n)\). The raw step on a divisible state is exact division, so
+\[
+T^{j+1}(n)=T\bigl(T^{j}(n)\bigr)=T^{j}(n)/d=A_{j}(n)/d.
+\]
+The identity uses no iterate after time \(j+1\). Since \(d\) divides \(A_{j}(n)\),
+\[
+d\cdot T^{j+1}(n)=A_{j}(n).
+\]
+Thus \(|d|\,|T^{j+1}(n)|=|A_{j}(n)|\). The triangle inequality gives
+\[
+|A_{j}(n)|\le |q|^{j}|n|+|c|\,|U_{j}(q)|,
+\]
+so
+\[
+|d|\,|T^{j+1}(n)|\le |q|^{j}|n|+|c|\,|U_{j}(q)|.
+\]
+The majorant is the absolute value of the offset sum, not the sum of the absolute powers.
+\end{proof}
+
+\begin{remark}
+The two inductions give the same closed form under different readings of the guard. Theorem~\ref{Thm:PrefixAffine} assumes the guard on raw states and concludes the affine formula. Theorem~\ref{Thm:AffinePrefixRaw} assumes the guard on affine states and concludes that those states are the raw states. Theorem~\ref{Thm:FirstHitQuotient} identifies only the immediate successor of a first hit, and it identifies that successor with \(A_{j}(n)/d\), not with \(A_{j+1}(n)\). No later iterate is identified.
+\end{remark}
+
+\end{document}

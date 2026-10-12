@@ -1,0 +1,180 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{One division at a first hit}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Let the raw step send an integer \(n\) to the exact quotient \(n/d\) when \(d\) divides \(n\), and to \(qn+c\) otherwise. If \(j\) is the first time the affine state \(q^{j}n+c\,U_{j}(q)\) is divisible by \(d\), the raw iterate at time \(j\) equals that affine state, and the next raw step equals the same state divided once by \(d\). The identification is the division-free prefix formula. It applies because a second induction shows that an earlier affine hit is an earlier raw hit, and conversely. The following step uses the division branch once and does not cancel a higher power of \(d\).
+\end{abstract}
+
+\section{The raw step and the offset sum}
+
+A parameter record is a triple of integers \(q\), \(c\) and \(d\) with \(|d|\ge 2\). In particular \(d\neq 0\). The raw step is the map \(\Map{T}{\Z}{\Z}\) defined by
+\[
+T(m)=\begin{cases}
+m/d, & d\mid m,\\
+qm+c, & d\nmid m.
+\end{cases}
+\]
+Whenever \(d\) divides \(m\), there is a unique integer, written \(m/d\), such that \(m=(m/d)\,d\). The raw step returns that integer and no further factor of \(d\). Iteration starts at the seed: \(T^{0}(n)=n\) and \(T^{j+1}(n)=T(T^{j}(n))\).
+
+The offset sum is defined by \(U_{0}(q)=0\) and \(U_{j+1}(q)=U_{j}(q)+q^{j}\).
+
+\begin{lemma}\label{Lem:OffsetRecursion}
+For every integer \(q\) and every natural number \(j\),
+\[
+U_{j+1}(q)=q\,U_{j}(q)+1.
+\]
+\end{lemma}
+
+\begin{proof}
+The identity \((q-1)U_{j}(q)=q^{j}-1\) holds for \(j=0\), since both sides are zero. If it holds at \(j\), then
+\begin{align*}
+(q-1)U_{j+1}(q)
+&= (q-1)\bigl(U_{j}(q)+q^{j}\bigr) \\
+&= (q-1)U_{j}(q)+(q-1)q^{j} \\
+&= q^{j}-1+q^{j+1}-q^{j} \\
+&= q^{j+1}-1.
+\end{align*}
+Thus \(q^{j}=(q-1)U_{j}(q)+1\). Substituting the recurrence \(U_{j+1}(q)=U_{j}(q)+q^{j}\) gives
+\[
+U_{j+1}(q)=U_{j}(q)+(q-1)U_{j}(q)+1=q\,U_{j}(q)+1.
+\]
+\end{proof}
+
+\begin{definition}\label{Def:AffineState}
+The affine state of multiplier \(q\), offset \(c\), time \(j\in\N\) and seed \(n\in\Z\) is
+\[
+A_{j}(q,c,n)=q^{j}n+c\,U_{j}(q).
+\]
+When the parameter record is fixed, write \(A_{j}(n)\) for \(A_{j}(q,c,n)\).
+\end{definition}
+
+\begin{definition}\label{Def:FirstHit}
+The time \(j\) is a first hit of the seed \(n\) when \(d\) divides \(A_{j}(n)\) and \(d\) divides \(A_{i}(n)\) for no natural number \(i<j\).
+\end{definition}
+
+\begin{lemma}\label{Lem:RawStepDivide}
+If \(d\) divides an integer \(m\), then \(T(m)=m/d\).
+\end{lemma}
+
+\begin{proof}
+The hypothesis is the condition of the first branch in the definition of \(T\). That branch returns the unique integer \(m/d\) satisfying \(m=(m/d)\,d\). The affine expression \(qm+c\) is not evaluated.
+\end{proof}
+
+\section{The division-free raw prefix}
+
+\begin{theorem}\label{Thm:PrefixAffine}
+Let \(q\), \(c\) and \(d\) be a parameter record, let \(n\in\Z\), and let \(j\in\N\). If \(d\) does not divide \(T^{i}(n)\) for every \(i<j\), then
+\[
+T^{j}(n)=A_{j}(n).
+\]
+\end{theorem}
+
+\begin{proof}
+Proceed by induction on \(j\).
+
+If \(j=0\), the hypothesis quantifies over no index. The left side is \(T^{0}(n)=n\). The right side is \(q^{0}n+c\,U_{0}(q)\). Here \(q^{0}=1\), \(U_{0}(q)=0\) and \(c\cdot 0=0\), so the right side equals \(n\).
+
+Suppose the claim is known at time \(j\), and assume \(d\) does not divide \(T^{i}(n)\) for every \(i<j+1\). Every \(i<j\) satisfies \(i<j+1\), so the inductive hypothesis yields \(T^{j}(n)=A_{j}(n)\). The same hypothesis at the index \(j\) itself says that \(d\) does not divide \(T^{j}(n)\). The raw step therefore takes the affine branch:
+\[
+T^{j+1}(n)=T\bigl(T^{j}(n)\bigr)=q\,T^{j}(n)+c.
+\]
+Substitute the inductive hypothesis and expand:
+\begin{align*}
+q\,T^{j}(n)+c
+&= q\bigl(q^{j}n+c\,U_{j}(q)\bigr)+c \\
+&= q^{j+1}n+cq\,U_{j}(q)+c \\
+&= q^{j+1}n+c\bigl(q\,U_{j}(q)+1\bigr).
+\end{align*}
+Lemma~\ref{Lem:OffsetRecursion} replaces \(q\,U_{j}(q)+1\) by \(U_{j+1}(q)\). The right side is \(A_{j+1}(n)\).
+
+Non-divisibility was used at time \(j\), which is strictly before the time \(j+1\) in the conclusion. The statement at time \(j\) does not require \(d\) to fail to divide \(T^{j}(n)\).
+\end{proof}
+
+\section{Equivalence of the two prefix guards}
+
+The two guards compared here are predicates of the time \(j\), for a fixed parameter record and a fixed seed. The raw guard says that \(d\) divides \(T^{i}(n)\) for no \(i<j\). The affine guard says that \(d\) divides \(A_{i}(n)\) for no \(i<j\).
+
+\begin{theorem}\label{Thm:PrefixIff}
+Let \(q\), \(c\) and \(d\) be a parameter record, let \(n\in\Z\), and let \(j\in\N\). The raw guard at time \(j\) holds if and only if the affine guard at time \(j\) holds.
+\end{theorem}
+
+\begin{proof}
+Proceed by a second induction on \(j\). Theorem~\ref{Thm:PrefixAffine} is already available and is not re-proved. The inductive step calls it only at the strictly smaller time named by the inductive hypothesis.
+
+If \(j=0\), both guards quantify over the empty set of indices \(i<0\). Both are true, so they are equivalent.
+
+Suppose the two guards are equivalent at time \(j\). The raw guard at time \(j+1\) is the conjunction of the raw guard at time \(j\) and the statement that \(d\) does not divide \(T^{j}(n)\). The affine guard at time \(j+1\) is the conjunction of the affine guard at time \(j\) and the statement that \(d\) does not divide \(A_{j}(n)\). It is enough to show that these two conjunctions are equivalent.
+
+First assume the raw guard at time \(j+1\). Its first conjunct is the raw guard at time \(j\). The inductive hypothesis converts that conjunct into the affine guard at time \(j\). The second conjunct says that \(d\) does not divide \(T^{j}(n)\). The raw guard at time \(j\) is exactly the hypothesis of Theorem~\ref{Thm:PrefixAffine}, so \(T^{j}(n)=A_{j}(n)\). Therefore \(d\) does not divide \(A_{j}(n)\). Both conjuncts of the affine guard at time \(j+1\) hold.
+
+Conversely, assume the affine guard at time \(j+1\). Its first conjunct is the affine guard at time \(j\). The inductive hypothesis converts that conjunct into the raw guard at time \(j\). Only after that conversion does Theorem~\ref{Thm:PrefixAffine} apply, and it yields \(T^{j}(n)=A_{j}(n)\). The second conjunct of the hypothesis says that \(d\) does not divide \(A_{j}(n)\), hence \(d\) does not divide \(T^{j}(n)\). Both conjuncts of the raw guard at time \(j+1\) hold.
+
+The equivalence identifies hits at the same time. Suppose \(d\) divides \(A_{i}(n)\) for some natural number \(i\). The set of such times is a nonempty set of natural numbers, so it has a least element \(r\). By minimality, the affine guard holds at time \(r\). The equivalence converts that guard into the raw guard at time \(r\). Theorem~\ref{Thm:PrefixAffine} yields \(T^{r}(n)=A_{r}(n)\), and therefore \(d\) divides \(T^{r}(n)\). An affine hit is a raw hit at the same least time. Conversely, if \(d\) divides \(T^{i}(n)\) for some \(i\), the least such time \(s\) carries the raw guard. The equivalence gives the affine guard at time \(s\), and Theorem~\ref{Thm:PrefixAffine} yields \(T^{s}(n)=A_{s}(n)\). Thus \(d\) divides \(A_{s}(n)\). A raw hit is an affine hit at the same least time.
+\end{proof}
+
+\section{The step at a first hit}
+
+\begin{theorem}\label{Thm:FirstHitStep}
+Let \(q\), \(c\) and \(d\) be a parameter record, let \(n\in\Z\), and let \(j\in\N\). If \(j\) is a first hit of \(n\), then
+\[
+T^{j}(n)=A_{j}(n)
+\]
+and
+\[
+T^{j+1}(n)=A_{j}(n)/d.
+\]
+The second equality is one application of the division branch. If a higher power of \(d\) divides \(A_{j}(n)\), that power is not removed.
+\end{theorem}
+
+\begin{proof}
+The first-hit hypothesis says that \(d\) divides \(A_{j}(n)\) and that the affine guard holds at time \(j\). By Theorem~\ref{Thm:PrefixIff}, the raw guard holds at time \(j\): an earlier raw hit would be an earlier affine hit, and no earlier affine hit exists. Theorem~\ref{Thm:PrefixAffine}, applied to that raw guard, gives \(T^{j}(n)=A_{j}(n)\).
+
+Since \(d\) divides \(A_{j}(n)\) and the two integers are equal, \(d\) divides \(T^{j}(n)\). Lemma~\ref{Lem:RawStepDivide} therefore gives
+\[
+T^{j+1}(n)=T\bigl(T^{j}(n)\bigr)=T^{j}(n)/d=A_{j}(n)/d.
+\]
+The quotient is the unique integer \(q_{0}\) such that \(A_{j}(n)=q_{0}\,d\). The raw step is applied once. If \(d^{2}\) divides \(A_{j}(n)\), then \(d\) still divides \(q_{0}\), and the theorem does not replace \(q_{0}\) by \(q_{0}/d\).
+
+No later time is identified with an affine state. The argument does not require a time at which \(d\) divides a state of every seed, and it does not compare absolute values before and after the division.
+\end{proof}
+
+\begin{remark}
+The case \(j=0\) is included. A first hit at time zero means that \(d\) divides the seed \(n\), the empty earlier guard is true, \(T^{0}(n)=n=A_{0}(n)\), and \(T(n)=n/d\). If \(d\) divides \(n\) more than once, \(T(n)\) retains the remaining factors.
+\end{remark}
+
+\end{document}

@@ -1,0 +1,398 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{No uniform bound on one affine class}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+If a time \(j\) is the first time the divisor of a parameter record divides the
+affine state of a seed, and if the multiplier power at that time is at least
+the absolute value of the divisor, then no single pair of natural numbers
+\(A<|d|\) and \(B\) bounds \(|d|\) times the absolute value of the quotient
+by \(A|n|+B\) for every integer in the residue class of the seed. The argument
+moves the seed by natural multiples of \(|d|\), keeps the first hit, and
+compares one seed whose absolute value exceeds an explicit threshold. A single
+seed in the class may still satisfy the inequality.
+\end{abstract}
+
+\section{Affine state and first hit}
+
+Let \(q,c\in\Z\). Define \(T_0(q)=0\) and \(T_{j+1}(q)=T_j(q)+q^j\) for every
+natural number \(j\). Thus \(T_j(q)=\sum_{i=0}^{j-1}q^i\), with the empty sum
+equal to zero.
+
+\begin{definition}
+For \(q,c,n\in\Z\) and \(j\in\N\), the affine state is
+\[
+A_j(q,c,n)=q^j n+c\,T_j(q).
+\]
+\end{definition}
+
+A parameter record \(p\) consists of integers \(q\), \(c\), and \(d\) with
+\(|d|\ge 2\). In particular \(d\neq 0\). Write \(A_j(n)\) for
+\(A_j(q,c,n)\) when the record is fixed.
+
+\begin{definition}
+The time \(j\in\N\) is a first hit of the seed \(n\in\Z\), written
+\(\operatorname{Hit}(p,n,j)\), when \(d\) divides \(A_j(n)\) and \(d\) divides
+\(A_i(n)\) for no natural number \(i<j\).
+\end{definition}
+
+The residue class of \(n_0\) is taken modulo \(|d|\). Two integers \(n\) and
+\(n_0\) lie in the same class when their images in \(\Z/|d|\Z\) agree, or
+equivalently when \(|d|\) divides \(n-n_0\).
+
+\section{Transport by a multiple of the divisor}
+
+\begin{lemma}
+\label{lem:shift}
+For all \(q,c,n,t,d\in\Z\) and every \(j\in\N\),
+\[
+A_j(q,c,n+td)=A_j(q,c,n)+q^j td.
+\]
+\end{lemma}
+
+\begin{proof}
+Expand both sides. The offset sum depends on \(q\) and \(j\) only, so
+\[
+A_j(q,c,n+td)=q^j(n+td)+c\,T_j(q)
+=q^j n+c\,T_j(q)+q^j td.
+\]
+The first two summands are \(A_j(q,c,n)\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:difference}
+For all \(q,c,n,t,d\in\Z\) and every \(j\in\N\), the integer \(d\) divides
+\(A_j(q,c,n+td)-A_j(q,c,n)\).
+\end{lemma}
+
+\begin{proof}
+Lemma~\ref{lem:shift} gives the difference \(q^j td\), which is
+\(d\cdot(q^j t)\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:div-shift}
+Let \(p\) be a parameter record with divisor \(d\). For every \(n,t\in\Z\) and
+every \(i\in\N\),
+\[
+d\mid A_i(n)\quad\text{if and only if}\quad d\mid A_i(n+td).
+\]
+\end{lemma}
+
+\begin{proof}
+Let \(k\) be the integer given by Lemma~\ref{lem:difference}, so
+\(A_i(n+td)-A_i(n)=dk\). If \(A_i(n)=dm\), then
+\(A_i(n+td)=d(m+k)\). If \(A_i(n+td)=dm\), then
+\(A_i(n)=d(m-k)\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:hit-shift}
+Let \(p\) be a parameter record with divisor \(d\). For every \(n,t\in\Z\) and
+every \(j\in\N\),
+\[
+\operatorname{Hit}(p,n,j)\quad\text{if and only if}\quad
+\operatorname{Hit}(p,n+td,j).
+\]
+\end{lemma}
+
+\begin{proof}
+Lemma~\ref{lem:div-shift} is an equivalence at time \(j\) and at every
+\(i<j\). The divisibility clause and the failure clause therefore transport
+together, in both directions.
+\end{proof}
+
+\begin{lemma}
+\label{lem:sign}
+For every \(d\in\Z\),
+\[
+|d|=
+\begin{cases}
+d & \text{if }0\le d,\\
+-d & \text{if }d<0.
+\end{cases}
+\]
+Equivalently, \(|d|=\varepsilon d\) in \(\Z\), where \(\varepsilon=1\) if
+\(0\le d\) and \(\varepsilon=-1\) if \(d<0\).
+\end{lemma}
+
+\begin{proof}
+If \(0\le d\), then \(|d|=d=1\cdot d\). If \(d<0\), then \(0\le -d\) and
+\(|d|=|-d|=-d=(-1)\cdot d\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:residue}
+For every \(n_0\in\Z\) and all \(m,t\in\N\),
+\[
+n_0+tm\equiv n_0\pmod{m}
+\]
+in \(\Z/m\Z\). If \(m=0\), both sides are interpreted in the zero ring, and
+the multiple of \(m\) is still zero.
+\end{lemma}
+
+\begin{proof}
+The image of \(m\) in \(\Z/m\Z\) is zero, so the image of \(tm\) is zero.
+Adding it does not change the image of \(n_0\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:natabs-shift}
+Let \(p\) be a parameter record with divisor \(d\), and let \(n_0\in\Z\) and
+\(j,t\in\N\). If \(\operatorname{Hit}(p,n_0,j)\), then
+\[
+\operatorname{Hit}(p,\,n_0+t|d|,\,j).
+\]
+\end{lemma}
+
+\begin{proof}
+Let \(\varepsilon\) be the sign from Lemma~\ref{lem:sign}, so \(|d|=\varepsilon d\)
+as integers. Then
+\[
+t|d|=t(\varepsilon d)=(t\varepsilon)d=(\varepsilon t)d.
+\]
+Lemma~\ref{lem:hit-shift}, applied to the integer shift \(\varepsilon t\),
+gives the first hit of \(n_0+(\varepsilon t)d\).
+\end{proof}
+
+The sequence \(n_0+t|d|\) is the explicit increasing sequence of absolute
+values used below. It is not necessary to invoke infinitude of the class
+separately: the next lemma names a particular \(t\).
+
+\begin{lemma}
+\label{lem:exists-t}
+Let \(n_0\in\Z\) and let \(m,B\in\N\) with \(m\ge 1\). There exists \(t\in\N\)
+such that
+\[
+B\le |n_0+tm|.
+\]
+One such value is \(t=|n_0|+B\).
+\end{lemma}
+
+\begin{proof}
+Set \(t=|n_0|+B\). Since \(m\ge 1\) and \(t\ge 0\),
+\[
+t=t\cdot 1\le t m.
+\]
+Hence \(|n_0|+B\le tm\). Also \(tm\ge 0\), so \(|tm|=tm\). The splitting
+\(tm=(n_0+tm)+(-n_0)\) and the triangle inequality give
+\[
+tm=|tm|\le |n_0+tm|+|n_0|.
+\]
+Therefore
+\[
+|n_0|+B\le |n_0+tm|+|n_0|.
+\]
+Cancel the nonnegative integer \(|n_0|\) on the right to obtain
+\(B\le |n_0+tm|\).
+\end{proof}
+
+\section{Quotient and reverse triangle}
+
+\begin{lemma}
+\label{lem:product}
+Let \(d,a\in\Z\) and suppose \(d\) divides \(a\). Then
+\[
+|d|\cdot |a/d|=|a|.
+\]
+\end{lemma}
+
+\begin{proof}
+Exact division gives \((a/d)\cdot d=a\). Absolute value is multiplicative, so
+\[
+|a/d|\cdot |d|=|a|.
+\]
+Commutativity of multiplication of natural numbers swaps the factors.
+\end{proof}
+
+\begin{lemma}
+\label{lem:reverse}
+Let \(q,c,n\in\Z\) and \(j\in\N\). If
+\[
+|c|\,|T_j(q)|\le |q|^j\,|n|,
+\]
+then
+\[
+|q|^j\,|n|-|c|\,|T_j(q)|\le |A_j(q,c,n)|.
+\]
+The subtraction on the left is the natural-number subtraction. The hypothesis
+makes it exact.
+\end{lemma}
+
+\begin{proof}
+The linear term splits as
+\[
+q^j n=A_j(q,c,n)+(-(c\,T_j(q))).
+\]
+The triangle inequality and \(|-x|=|x|\) give
+\[
+|q^j n|\le |A_j(q,c,n)|+|c\,T_j(q)|.
+\]
+Subtract \(|c\,T_j(q)|\) from both sides in \(\Z\). Multiplicativity of
+absolute value converts the three terms into the natural numbers
+\(|q|^j|n|\), \(|c|\,|T_j(q)|\), and \(|A_j(q,c,n)|\). The hypothesis lets the
+integer subtraction of the first two pass to the corresponding natural-number
+subtraction.
+\end{proof}
+
+\section{One large seed}
+
+\begin{lemma}
+\label{lem:large}
+Let \(p\) be a parameter record with multiplier \(q\), offset \(c\), and
+divisor \(d\). Let \(n\in\Z\), let \(j,A,B\in\N\), and assume
+\(\operatorname{Hit}(p,n,j)\), \(|d|\le |q|^j\), and \(A<|d|\). Set
+\(M=|q|^j\) and \(K=|c|\,|T_j(q)|\). If
+\[
+B+K+1\le |n|
+\]
+and
+\[
+|d|\cdot |A_j(n)/d|\le A|n|+B,
+\]
+then the two displayed inequalities cannot hold simultaneously.
+\end{lemma}
+
+\begin{proof}
+The first-hit hypothesis supplies \(d\mid A_j(n)\). Lemma~\ref{lem:product}
+converts the proposed bound into
+\[
+|A_j(n)|\le A|n|+B.
+\]
+Since \(A<|d|\) and \(|d|\le M\), one has \(A+1\le M\), hence \(A\le M\) and
+\[
+1\le M-A.
+\]
+The size hypothesis gives \(K\le B+K+1\le |n|\). Also \(M\ge |d|\ge 2\), so
+\(1\le M\) and \(|n|\le M|n|\). Therefore \(K\le M|n|\).
+Lemma~\ref{lem:reverse} yields
+\[
+M|n|-K\le |A_j(n)|\le A|n|+B.
+\]
+Adding \(K\) to both sides of the outer comparison, using that the natural
+subtraction is exact under \(K\le M|n|\), gives
+\[
+M|n|\le A|n|+(B+K),
+\]
+and then
+\[
+M|n|-A|n|\le B+K.
+\]
+The left side is \((M-A)|n|\) because \(A\le M\). Since \(1\le M-A\),
+\[
+|n|\le (M-A)|n|\le B+K.
+\]
+This contradicts \(B+K+1\le |n|\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:no-uniform}
+Let \(p\) be a parameter record with multiplier \(q\), offset \(c\), and
+divisor \(d\). Let \(n_0\in\Z\) and \(j\in\N\). Assume
+\(\operatorname{Hit}(p,n_0,j)\) and \(|d|\le |q|^j\). There do not exist
+\(A,B\in\N\) with \(A<|d|\) such that for every \(n\in\Z\) in the residue
+class of \(n_0\) modulo \(|d|\),
+\[
+|d|\cdot |A_j(n)/d|\le A|n|+B.
+\]
+\end{theorem}
+
+\begin{proof}
+Suppose \(A\) and \(B\) were such natural numbers. Set
+\(K=|c|\,|T_j(q)|\) and \(m=|d|\). Then \(m\ge 2\ge 1\).
+Lemma~\ref{lem:exists-t} supplies a natural number \(t\) with
+\[
+B+K+1\le |n_0+tm|.
+\]
+Set \(n=n_0+t|d|\). Lemma~\ref{lem:residue} puts \(n\) in the class of \(n_0\),
+so the supposed bound applies to \(n\). Lemma~\ref{lem:natabs-shift} gives
+\(\operatorname{Hit}(p,n,j)\). The power hypothesis is unchanged, and
+\(A<|d|\). Lemma~\ref{lem:large} then says that the bound and the size
+inequality cannot both hold. This contradiction shows that no such pair
+\(A,B\) exists.
+\end{proof}
+
+The quantifier is on the pair. Theorem~\ref{thm:no-uniform} does not say that
+every seed fails every inequality of this shape. A seed with small absolute
+value can satisfy \(A|n|+B\) for a pair that already fails on a larger seed of
+the same class.
+
+\begin{remark}
+\label{rem:example}
+Take \(q=2\), \(c=4\), \(d=4\), \(n_0=1\), and \(j=2\). Then \(|d|=4=|q|^j\),
+\(T_2(2)=1+2=3\), and
+\[
+A_2(2,4,n)=4n+12.
+\]
+For \(n_0=1\), the state is \(16\), while the earlier states are \(1\) and
+\(6\). Thus \(j=2\) is a first hit. The seed \(n=1\) satisfies
+\[
+|d|\cdot |A_2(1)/d|=16\le 3\cdot 1+1000.
+\]
+The seed \(n=1001=1+250\cdot 4\) is in the same class, and the states at times
+\(0\) and \(1\) are \(1001\) and \(2006\), neither divisible by \(4\), while
+\[
+A_2(2,4,1001)=4016,\qquad 4016/4=1004.
+\]
+Hence \(4\cdot 1004=4016>3\cdot 1001+1000=4003\). The same first hit and the
+same absolute quotient occur for the divisor \(-4\), because a sign change of
+the divisor does not change divisibility and replaces the quotient by its
+negative. The pair \(A=3\), \(B=1000\) therefore fails on this class, although
+it holds at the original seed.
+\end{remark}
+
+\begin{theorem}
+\label{thm:trichotomy}
+Fix a seed \(n_0\). Exactly one of the following descriptions applies to the
+integers \(n\equiv n_0\pmod{|d|}\). No such \(n\) has a first hit. Or there
+is one time \(j\) such that every such \(n\) has its first hit at \(j\) and
+\(|d|\le |q|^j\). Or there is one time \(j\) such that every such \(n\) has
+its first hit at \(j\) and \(|q|^j<|d|\).
+\end{theorem}
+
+\begin{proof}
+If \(|d|\) divides \(n'-n\), write \(|d|=\varepsilon d\) with
+\(\varepsilon=\pm 1\). Then \(n' = n+(\varepsilon k)d\) for the quotient
+\(k\), so the first-hit time is the same. Thus either \(n_0\) has no first
+hit, in which case no congruent seed has one, or \(n_0\) has a first hit at
+some \(j\), in which case every congruent seed has that same first hit. The
+power \(|q|^j\) is then either at least \(|d|\) or strictly smaller. These
+branches exclude one another. The modulus divides \(0\), so \(n_0\) lies in
+its own class: a first hit of \(n_0\) refutes the empty branch. A power cannot
+be both strictly smaller than \(|d|\) and at least \(|d|\).
+\end{proof}
+
+\end{document}

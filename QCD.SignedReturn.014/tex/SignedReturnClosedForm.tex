@@ -1,0 +1,306 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Closed form of the signed offset sum}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For an integer multiplier \(q\) and a time \(j\in\N\), the offset sum \(U_j(q)\) is defined by \(U_0(q)=0\) and \(U_{j+1}(q)=q\,U_j(q)+1\). If \(q\ge 2\), then \((q-1)U_j(q)=q^j-1\), the quotient \((q^j-1)/(q-1)\) is an exact nonnegative integer, and it equals \(U_j(q)\). If only \(|q|\ge 2\), the same signed quotient remains exact, but the positive repunit \((|q|^j-1)/(|q|-1)\) need not equal \(|U_j(q)|\). The absolute bound that survives is \((|q|-1)\,|U_j(q)|\le |q|^j-1\).
+\end{abstract}
+
+\section{Offset sum and affine state}
+
+\begin{definition}
+\label{def:offset}
+For \(q\in\Z\) and \(j\in\N\), the offset sum \(U_j(q)\) is the integer defined by \(U_0(q)=0\) and
+\[
+U_{j+1}(q)=U_j(q)+q^j.
+\]
+Equivalently, \(U_{j+1}(q)=q\,U_j(q)+1\).
+\end{definition}
+
+The two recurrences agree. The second holds at \(j=0\) because both sides equal \(1\). If it holds at time \(j\), then
+\begin{align*}
+U_{j+2}(q)
+&=U_{j+1}(q)+q^{j+1}
+=q\,U_j(q)+1+q\cdot q^j
+=q\bigl(U_j(q)+q^j\bigr)+1
+=q\,U_{j+1}(q)+1.
+\end{align*}
+
+\begin{definition}
+\label{def:affine}
+For \(q,c,n\in\Z\) and \(j\in\N\), the affine state is
+\[
+A_j(q,c,n)=q^j n+c\,U_j(q).
+\]
+Let \(D,Q,C\in\Z\) be the denominator, multiplier, and offset of a parameter triple, with \(|D|\ge 2\). The time \(j\) is a first hit of the seed \(n\) when \(D\) divides \(A_j(Q,C,n)\) and \(D\) divides \(A_i(Q,C,n)\) for no \(i<j\).
+\end{definition}
+
+No classification of first hits is proved below. The definition only fixes the state in which the offset sum appears.
+
+\begin{lemma}
+\label{lem:mul}
+For every \(q\in\Z\) and every \(j\in\N\),
+\[
+(q-1)U_j(q)=q^j-1.
+\]
+\end{lemma}
+
+\begin{proof}
+At \(j=0\) both sides are \(0\). If the identity holds at time \(j\), the recurrence gives
+\begin{align*}
+(q-1)U_{j+1}(q)
+&=(q-1)\bigl(q\,U_j(q)+1\bigr)
+=q\bigl((q-1)U_j(q)\bigr)+(q-1)
+=q(q^j-1)+(q-1)
+=q^{j+1}-1.
+\end{align*}
+\end{proof}
+
+\begin{lemma}
+\label{lem:nonneg}
+If \(q\ge 0\), then \(U_j(q)\ge 0\) for every \(j\in\N\).
+\end{lemma}
+
+\begin{proof}
+The value at time \(0\) is \(0\). If \(U_j(q)\ge 0\) and \(q\ge 0\), then \(q^j\ge 0\), so \(U_{j+1}(q)=U_j(q)+q^j\ge 0\).
+\end{proof}
+
+\section{Positive closed form}
+
+\begin{lemma}
+\label{lem:denom}
+If \(|q|\ge 2\), then \(q-1\neq 0\).
+\end{lemma}
+
+\begin{proof}
+If \(q-1=0\), then \(q=1\), so \(|q|=1\), contradicting \(|q|\ge 2\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:exact}
+If \(|q|\ge 2\), then for every \(j\in\N\) the division
+\[
+U_j(q)=\frac{q^j-1}{q-1}
+\]
+is exact in \(\Z\).
+\end{theorem}
+
+\begin{proof}
+Lemma~\ref{lem:denom} gives \(q-1\neq 0\). Lemma~\ref{lem:mul} gives \((q-1)U_j(q)=q^j-1\). Therefore \(q^j-1\) is the product of \(q-1\) with \(U_j(q)\), and division by the nonzero integer \(q-1\) returns \(U_j(q)\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:positive}
+If \(q\ge 2\), then for every \(j\in\N\)
+\[
+(q-1)U_j(q)=q^j-1,
+\]
+the integer \(q-1\) divides \(q^j-1\), the quotient \((q^j-1)/(q-1)\) is exact, \(U_j(q)\) equals that quotient, and \(U_j(q)\ge 0\).
+\end{theorem}
+
+\begin{proof}
+The product identity is Lemma~\ref{lem:mul}, so \(q-1\) divides \(q^j-1\) with quotient \(U_j(q)\). Since \(q\ge 2\), one has \(q\ge 0\) and \(|q|=q\ge 2\). Lemma~\ref{lem:nonneg} gives nonnegativity, and Theorem~\ref{thm:exact} gives the displayed quotient.
+\end{proof}
+
+\begin{corollary}
+\label{cor:affine}
+If \(q\ge 2\), then for all \(c,n\in\Z\) and every \(j\in\N\),
+\[
+A_j(q,c,n)=q^j n+c\cdot\frac{q^j-1}{q-1}.
+\]
+\end{corollary}
+
+\begin{proof}
+Substitute the quotient from Theorem~\ref{thm:positive} into Definition~\ref{def:affine}.
+\end{proof}
+
+\section{The multiplier \texorpdfstring{\(-2\)}{-2}}
+
+The positive repunit is not the absolute value of a negative multiplier. The second offset sum is computed before any general negative formula is chosen.
+
+\begin{lemma}
+\label{lem:neg-two}
+\(U_2(-2)=-1\), and \(U_j(-2)=\bigl((-2)^j-1\bigr)/(-3)\) for every \(j\in\N\). In particular the quotient at time \(2\) is \(-1\). On the other hand
+\[
+\bigl|U_2(-2)\bigr|=1
+\neq 3
+=\frac{|-2|^2-1}{|-2|-1}.
+\]
+\end{lemma}
+
+\begin{proof}
+The recurrence gives \(U_0(-2)=0\), \(U_1(-2)=1\), and \(U_2(-2)=(-2)\cdot 1+1=-1\). Since \(|-2|=2\ge 2\) and \((-2)-1=-3\), Theorem~\ref{thm:exact} is the displayed signed quotient. Its value at time \(2\) is \((4-1)/(-3)=-1\). The positive repunit with ratio \(2\) is \((4-1)/(2-1)=3\), which is not \(1\).
+\end{proof}
+
+Thus the identity \(U_j(q)=(q^j-1)/(q-1)\) is the integer quotient already proved for \(|q|\ge 2\). Replacing the denominator \(q-1\) by \(|q|-1\), or the numerator by \(|q|^j-1\), changes the value. For \(q\le -2\) one has \(|q-1|=|q|+1\), so the factor in the product identity is not the factor \(|q|-1\) used in the absolute bound.
+
+\section{Absolute bound}
+
+Throughout this section, subtraction and multiplication of the stated inequalities are the operations of \(\N\). Truncation of a difference does not affect the identities cited below: each is an identity of \(\N\), not an identity imported from \(\Z\) without a nonnegativity check.
+
+\begin{lemma}
+\label{lem:step-plus}
+Let \(r,a,j\in\N\) with \(r\ge 1\). If \((r-1)a\le r^j-1\), then
+\[
+(r-1)(ra+1)\le r^{j+1}-1.
+\]
+\end{lemma}
+
+\begin{proof}
+Expand the new left side:
+\[
+(r-1)(ra+1)=(r-1)(ra)+(r-1)=r\bigl((r-1)a\bigr)+(r-1).
+\]
+Multiplication by \(r\) preserves the inductive inequality, so \(r\bigl((r-1)a\bigr)\le r(r^j-1)\). The natural-number identity \(r(r^j-1)=r\cdot r^j-r\) and \(r\cdot r^j=r^{j+1}\) then yield
+\[
+r\bigl((r-1)a\bigr)+(r-1)\le (r^{j+1}-r)+(r-1).
+\]
+Since \(r\ge 1\), one has \(r\le r^{j+1}\). In \(\N\), adding the predecessor \(r-1\) is adding \(r\) and then subtracting \(1\), and adding \(r\) cancels the subtracted \(r\). Therefore
+\[
+(r^{j+1}-r)+(r-1)=r^{j+1}-1,
+\]
+which is the required bound.
+\end{proof}
+
+\begin{lemma}
+\label{lem:step-minus}
+Let \(r,a,j\in\N\) with \(r\ge 2\). If \((r-1)a\le r^j-1\), then
+\[
+(r-1)(ra-1)\le r^{j+1}-1.
+\]
+\end{lemma}
+
+\begin{proof}
+From \(r\ge 2\) one has \(r\ge 1\). Expand the new left side in \(\N\):
+\[
+(r-1)(ra-1)=(r-1)(ra)-(r-1)=r\bigl((r-1)a\bigr)-(r-1).
+\]
+Multiplication by \(r\) and the identity \(r(r^j-1)=r^{j+1}-r\) give
+\[
+r\bigl((r-1)a\bigr)-(r-1)\le (r^{j+1}-r)-(r-1).
+\]
+The right side equals \(r^{j+1}-(2r-1)\). Also \(1\le r\le r+(r-1)=2r-1\), so subtracting the larger integer \(2r-1\) from \(r^{j+1}\) yields a smaller natural number than subtracting \(1\). Hence
+\[
+(r^{j+1}-r)-(r-1)\le r^{j+1}-1.
+\]
+\end{proof}
+
+\begin{lemma}
+\label{lem:sign}
+If \(q\le -1\), then for every \(j\in\N\) the sum \(U_j(q)\) is nonpositive when \(j\) is even and positive when \(j\) is odd.
+\end{lemma}
+
+\begin{proof}
+At time \(0\) the sum is \(0\), and \(0\) is even. Suppose the claim holds at time \(j\), and write \(U_{j+1}(q)=q\,U_j(q)+1\).
+
+If \(j+1\) is even, then \(j\) is odd, so the inductive claim gives \(U_j(q)\ge 1\). Multiplication by this positive integer preserves the inequality \(q\le -1\). Since \((-1)U_j(q)=-U_j(q)\), one obtains \(q\,U_j(q)\le -U_j(q)\). Adding \(1\) gives \(q\,U_j(q)+1\le -U_j(q)+1\), and \(U_j(q)\ge 1\) forces the right side to be at most \(0\).
+
+If \(j+1\) is odd, then \(j\) is even, so \(U_j(q)\le 0\). Both factors \(q\) and \(U_j(q)\) are nonpositive, hence \(q\,U_j(q)\ge 0\) and \(q\,U_j(q)+1\ge 1\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:abs-step}
+If \(q\le -1\), then for every \(j\in\N\),
+\begin{align*}
+j\text{ even}&\Longrightarrow
+\bigl|U_{j+1}(q)\bigr|=|q|\,\bigl|U_j(q)\bigr|+1,\\
+j\text{ odd}&\Longrightarrow
+\bigl|U_{j+1}(q)\bigr|=|q|\,\bigl|U_j(q)\bigr|-1.
+\end{align*}
+In the odd case, \(|q|\,\bigl|U_j(q)\bigr|\ge 1\), so the subtraction is exact in \(\Z\) as well as in \(\N\).
+\end{lemma}
+
+\begin{proof}
+Write \(r=|q|\) and \(a_j=\bigl|U_j(q)\bigr|\). Since \(q\le -1\), one has \(q=-r\) and \(r\ge 1\).
+
+Suppose \(j\) is even. Lemma~\ref{lem:sign} gives \(U_j(q)\le 0\), so \(U_j(q)=-a_j\). The recurrence becomes
+\[
+U_{j+1}(q)=(-r)(-a_j)+1=ra_j+1.
+\]
+The right side is a nonnegative integer, so its absolute value is \(ra_j+1\).
+
+Suppose \(j\) is odd. Lemma~\ref{lem:sign} gives \(U_j(q)\ge 1\), so \(a_j=U_j(q)\ge 1\) and \(ra_j\ge 1\). Then
+\[
+U_{j+1}(q)=(-r)a_j+1=-(ra_j-1),
+\]
+and the absolute value is \(ra_j-1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:geometric-pos}
+If \(q\ge 2\), then for every \(j\in\N\),
+\[
+\bigl(|q|-1\bigr)\,\bigl|U_j(q)\bigr|=|q|^j-1.
+\]
+\end{theorem}
+
+\begin{proof}
+Here \(|q|=q\) and, by Theorem~\ref{thm:positive}, \(U_j(q)\ge 0\), so \(\bigl|U_j(q)\bigr|=U_j(q)\). The same theorem gives \((q-1)U_j(q)=q^j-1\). Both \(q-1\) and \(q^j-1\) are nonnegative, and transporting the equality from \(\Z\) to \(\N\) is the stated identity.
+\end{proof}
+
+\begin{theorem}
+\label{thm:geometric-neg}
+If \(q<0\) and \(|q|\ge 2\), then for every \(j\in\N\),
+\[
+\bigl(|q|-1\bigr)\,\bigl|U_j(q)\bigr|\le |q|^j-1.
+\]
+\end{theorem}
+
+\begin{proof}
+The hypotheses force \(q\le -2\), hence \(q\le -1\). Write \(r=|q|\), so \(r\ge 2\), and write \(a_j=\bigl|U_j(q)\bigr|\). The claim is \((r-1)a_j\le r^j-1\).
+
+At time \(0\), one has \(a_0=0\) and \(r^0-1=0\). Suppose the inequality holds at time \(j\). If \(j\) is even, Lemma~\ref{lem:abs-step} gives \(a_{j+1}=ra_j+1\), and Lemma~\ref{lem:step-plus} supplies the next bound. If \(j\) is odd, Lemma~\ref{lem:abs-step} gives \(a_{j+1}=ra_j-1\), and Lemma~\ref{lem:step-minus} supplies the next bound.
+\end{proof}
+
+\begin{theorem}
+\label{thm:geometric}
+If \(|q|\ge 2\), then for every \(j\in\N\),
+\[
+\bigl(|q|-1\bigr)\,\bigl|U_j(q)\bigr|\le |q|^j-1.
+\]
+If moreover \(q\ge 2\), the two sides are equal.
+\end{theorem}
+
+\begin{proof}
+If \(q<0\), apply Theorem~\ref{thm:geometric-neg}. If \(q\ge 0\), then \(|q|\ge 2\) forces \(q\ge 2\), and Theorem~\ref{thm:geometric-pos} is the equality, hence the inequality.
+\end{proof}
+
+\begin{remark}
+\label{rem:not-equality}
+Equality in Theorem~\ref{thm:geometric} is not claimed for negative multipliers. Lemma~\ref{lem:neg-two} is a strict case: \((2-1)\cdot 1=1<3=2^2-1\). The proof for negative \(q\) uses the alternating absolute recurrence rather than the false formula \(\bigl|U_j(q)\bigr|=(|q|^j-1)/(|q|-1)\).
+\end{remark}
+
+\end{document}

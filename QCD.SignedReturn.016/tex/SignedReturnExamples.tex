@@ -1,0 +1,1179 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{First hits for multiplier two, offset one, and divisor three}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For the raw step that divides by \(3\) when the state is divisible by \(3\) and otherwise sends \(n\) to \(2n+1\), the residue of a seed modulo \(3\) decides the first hit. Remainder \(0\) hits at time zero, remainder \(1\) hits at time one, and remainder \(2\) is fixed by the undivided step, so it never hits. Every seed that does hit satisfies \(3\lvert\mathrm{return}\rvert\le 2\lvert\mathrm{seed}\rvert+1\). Seed \(2\) is a witness that not every integer has a first hit, and its raw orbit never meets a multiple of \(3\). Every orbit meets \(0\), \(1\), or \(-1\), or else the absolute values are unbounded, and exactly one of these four outcomes occurs.
+\end{abstract}
+
+\section{The step and the first hit}
+
+Throughout, the raw step on \(\Z\) is
+\[
+  S(n)=
+  \begin{cases}
+    n/3 & \text{if }3\mid n,\\
+    2n+1 & \text{if }3\nmid n.
+  \end{cases}
+\]
+Write \(S^{0}(n)=n\) and \(S^{j+1}(n)=S(S^{j}(n))\). The undivided offset sum is \(T_{0}=0\) and \(T_{j+1}=2T_{j}+1\), so \(T_{j}=1+2+\cdots+2^{j-1}\) for \(j\ge 1\). The affine state is
+\[
+  A_{j}(n)=2^{j}n+T_{j}.
+\]
+In particular \(A_{0}(n)=n\) and \(A_{j+1}(n)=2A_{j}(n)+1\). Thus \(A_{1}(n)=2n+1\).
+
+\begin{definition}
+A natural number \(j\) is a first hit of a seed \(n\in\Z\) when \(3\mid A_{j}(n)\) and \(3\nmid A_{i}(n)\) for every natural number \(i<j\). The return of that hit is \(S(S^{j}(n))\).
+\end{definition}
+
+Division by a positive integer is the truncating quotient of \(\Z\), so \(3\cdot(a/3)+a\bmod 3=a\). The remainder \(a\bmod 3\) lies in \(\{0,1,2\}\).
+
+\begin{lemma}
+\label{lem:prefix}
+If \(3\) divides \(A_{i}(n)\) for no \(i<j\), then \(S^{j}(n)=A_{j}(n)\).
+\end{lemma}
+
+\begin{proof}
+The case \(j=0\) is \(S^{0}(n)=n=A_{0}(n)\). Assume the claim for \(j\), and assume no time before \(j+1\) is an affine hit. Then no time before \(j\) is an affine hit, so the inductive hypothesis gives \(S^{j}(n)=A_{j}(n)\). Time \(j\) itself is not an affine hit, so \(3\nmid A_{j}(n)\), hence \(3\nmid S^{j}(n)\). The raw step therefore takes the affine branch:
+\[
+  S^{j+1}(n)=2S^{j}(n)+1=2A_{j}(n)+1=A_{j+1}(n).
+\]
+\end{proof}
+
+\begin{lemma}
+\label{lem:unique}
+A seed has at most one first-hit time.
+\end{lemma}
+
+\begin{proof}
+Suppose \(j\) and \(k\) are both first hits and \(j\le k\). If \(j<k\), then the first-hit condition at \(k\) forbids \(3\mid A_{j}(n)\), while the first-hit condition at \(j\) requires it. Thus \(j=k\). The case \(k\le j\) is the same with the two times exchanged.
+\end{proof}
+
+\section{The three remainders}
+
+\begin{lemma}
+\label{lem:zero}
+If \(n\equiv 0\pmod{3}\), then \(0\) is a first hit of \(n\) and the return is \(n/3\).
+\end{lemma}
+
+\begin{proof}
+Here \(A_{0}(n)=n\) is divisible by \(3\), and there is no natural number strictly less than \(0\). So \(0\) is a first hit. Also \(S^{0}(n)=n\), and the raw step divides, so the return is \(n/3\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:one}
+If \(n\equiv 1\pmod{3}\), then \(1\) is a first hit of \(n\), the affine state at time one is \(2n+1\), and the return is \((2n+1)/3\).
+\end{lemma}
+
+\begin{proof}
+The division identity gives \(n=3(n/3)+1\). Substituting this expression yields
+\[
+  2n+1=3\bigl(2(n/3)+1\bigr),
+\]
+so \(3\mid 2n+1\). On the other hand \(3\nmid n\), and \(A_{0}(n)=n\), so time \(0\) is not a hit. Since \(A_{1}(n)=2n+1\), time \(1\) is a first hit. Lemma~\ref{lem:prefix} gives \(S^{1}(n)=A_{1}(n)=2n+1\). The raw step divides this state, and the return is \((2n+1)/3\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:fix}
+The residue step \(r\mapsto 2r+1\) of \(\Z/3\Z\) fixes the class of \(2\). Consequently every iterate of that step, started at \(2\), remains \(2\). The class of \(2\) is not the zero class.
+\end{lemma}
+
+\begin{proof}
+The integer calculation \(2\cdot 2+1=5\) and \(5-2=3\) shows that \(5\) and \(2\) have the same class modulo \(3\). Thus the residue step sends the class of \(2\) to itself. Starting at that class, every iterate remains there. The class is not zero because \(2\bmod 3=2\neq 0\), so \(3\) does not divide \(2\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:two}
+If \(n\equiv 2\pmod{3}\), then \(3\) divides no raw iterate of \(n\), and \(n\) has no first hit.
+\end{lemma}
+
+\begin{proof}
+The division identity gives \(n=3(n/3)+2\), so the class of \(n\) is the class of \(2\). Let \(\rho\) be the residue step of Lemma~\ref{lem:fix}. Then \(\rho^{j}(n\bmod 3)=2\) for every natural number \(j\). In particular the residue walk never meets the zero class.
+
+Suppose, for a contradiction, that some raw iterate is divisible by \(3\), and let \(j\) be the least such time. For every \(i<j\), the state \(S^{i}(n)\) is not divisible by \(3\), so the raw step takes the affine branch up through time \(j\). Lemma~\ref{lem:prefix} gives \(S^{j}(n)=A_{j}(n)\). Along this division-free prefix the class of the raw state is the residue walk: it starts at the class of \(n\) and applies \(r\mapsto 2r+1\) at each step. That walk is the class of \(2\), which is not zero. Hence \(3\nmid S^{j}(n)\), contradicting the choice of \(j\).
+
+Thus no raw iterate is divisible by \(3\). A first hit at time \(j\) would require \(3\mid A_{j}(n)\). The same division-free prefix would give \(S^{j}(n)=A_{j}(n)\), so \(3\mid S^{j}(n)\), which has just been excluded.
+\end{proof}
+
+\begin{theorem}
+\label{thm:tri}
+Every integer \(n\) satisfies exactly one of the following.
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item \(n\equiv 0\pmod{3}\), the first hit is \(0\), and the return is \(n/3\).
+\item \(n\equiv 1\pmod{3}\), the first hit is \(1\), the affine state is \(2n+1\), and the return is \((2n+1)/3\).
+\item \(n\equiv 2\pmod{3}\), and \(n\) has no first hit.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+The remainder modulo \(3\) is one of \(0\), \(1\), and \(2\). Lemmas~\ref{lem:zero}, \ref{lem:one}, and~\ref{lem:two} give the three conclusions. Lemma~\ref{lem:unique} says the hit time in the first two cases is the only one.
+\end{proof}
+
+\section{The two numerator bounds}
+
+\begin{lemma}
+\label{lem:num0}
+For every integer \(n\), \(\lvert n\rvert\le 2\lvert n\rvert+1\).
+\end{lemma}
+
+\begin{proof}
+The natural number \(\lvert n\rvert\) satisfies \(\lvert n\rvert\le \lvert n\rvert+(\lvert n\rvert+1)\), and the right-hand side is \(2\lvert n\rvert+1\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:num1}
+For every integer \(n\), \(\lvert 2n+1\rvert\le 2\lvert n\rvert+1\).
+\end{lemma}
+
+\begin{proof}
+If \(n\ge 0\), then \(2n+1\ge 0\), so \(\lvert 2n+1\rvert=2n+1\) and \(\lvert n\rvert=n\). Both sides of the claimed inequality equal \(2n+1\).
+
+If \(n<0\), then \(2n+1\le -1<0\), so \(\lvert 2n+1\rvert=-(2n+1)\) and \(\lvert n\rvert=-n\). The inequality becomes \(-2n-1\le -2n+1\), which holds because \(-1\le 1\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:cancel}
+If \(3\mid a\), then \(3\lvert a/3\rvert=\lvert a\rvert\).
+\end{lemma}
+
+\begin{proof}
+Write \(a=3k\). Exact division gives \(a/3=k\). Absolute values multiply, so \(\lvert a\rvert=\lvert 3k\rvert=3\lvert k\rvert\). Therefore \(3\lvert a/3\rvert=3\lvert k\rvert=\lvert a\rvert\).
+\end{proof}
+
+\section{Three seeds}
+
+\begin{theorem}
+\label{thm:seeds}
+Consider the three seeds \(1\), \(4\), and \(2\).
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item Seed \(1\) has first hit \(1\), affine state \(3\), and return \(1\).
+\item Seed \(4\) has first hit \(1\), affine state \(9\), and return \(3\).
+\item The residue step fixes the class of \(2\). Every residue iterate of seed \(2\) is the class of \(2\). Seed \(2\) has no first hit, and \(3\) divides no raw iterate of seed \(2\).
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+The remainder of \(1\) modulo \(3\) is \(1\). Lemma~\ref{lem:one} gives first hit \(1\), affine state \(2\cdot 1+1=3\), and return \(3/3\). Since \(3=3\cdot 1\), the quotient is \(1\).
+
+The integer \(4\) is \(3\cdot 1+1\), so its remainder modulo \(3\) is the remainder of \(1\), namely \(1\). Lemma~\ref{lem:one} gives first hit \(1\) and affine state \(2\cdot 4+1=9\). Since \(9=3\cdot 3\), the return is \(3\).
+
+The remainder of \(2\) modulo \(3\) is \(2\). Lemma~\ref{lem:fix} says the residue step fixes this class and that every iterate stays there. Lemma~\ref{lem:two} says there is no first hit and that no raw iterate is divisible by \(3\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:nototal}
+It is not true that every integer has a first hit.
+\end{theorem}
+
+\begin{proof}
+By Theorem~\ref{thm:seeds}, seed \(2\) has no first hit. One counterexample is enough.
+\end{proof}
+
+\section{The return bound}
+
+\begin{theorem}
+\label{thm:bound}
+If a seed \(n\) has a first hit at time \(j\), and \(r\) is the corresponding return, then
+\[
+  3\lvert r\rvert\le 2\lvert n\rvert+1.
+\]
+\end{theorem}
+
+\begin{proof}
+Theorem~\ref{thm:tri} places \(n\) in one of the three residue classes. The third class has no first hit, so it cannot occur under the hypothesis. 
+
+If the remainder is \(0\), then \(j=0\) by Lemma~\ref{lem:unique} and the return is \(n/3\). Lemma~\ref{lem:cancel} gives \(3\lvert n/3\rvert=\lvert n\rvert\), and Lemma~\ref{lem:num0} gives \(\lvert n\rvert\le 2\lvert n\rvert+1\).
+
+If the remainder is \(1\), then \(j=1\) and the return is \((2n+1)/3\). Lemma~\ref{lem:one} supplies the divisibility \(3\mid 2n+1\). Lemma~\ref{lem:cancel} gives \(3\lvert(2n+1)/3\rvert=\lvert 2n+1\rvert\), and Lemma~\ref{lem:num1} gives \(\lvert 2n+1\rvert\le 2\lvert n\rvert+1\).
+\end{proof}
+
+\begin{remark}
+The inequality is not asserted for a seed with no first hit, because such a seed has no return. In particular it is not asserted for seed \(2\). Theorem~\ref{thm:seeds} also says that the raw orbit of seed \(2\) never meets a multiple of \(3\). Nothing above claims that the raw orbit of every seed eventually divides, or that every seed enters a core.
+\end{remark}
+
+\section{The four outcomes}
+
+\begin{definition}
+The orbit of \(n\) is absolutely unbounded when, for every natural number \(B\), some time \(j\) satisfies \(B<\lvert S^{j}(n)\rvert\). It meets a value \(a\) when \(S^{j}(n)=a\) for some natural number \(j\).
+\end{definition}
+
+\begin{lemma}
+\label{lem:closed}
+If \(n\equiv 2\pmod{3}\), then \(S^{j}(n)=2^{j}(n+1)-1\) for every natural number \(j\), and \(3\) divides no term of this orbit.
+\end{lemma}
+
+\begin{proof}
+The class \(2\) is fixed by the undivided residue step, so no term is divisible by \(3\). Thus every raw step is the affine branch. The formula holds at time \(0\). If it holds at time \(j\), then
+\[
+  S^{j+1}(n)=2S^{j}(n)+1=2\bigl(2^{j}(n+1)-1\bigr)+1=2^{j+1}(n+1)-1.
+\]
+\end{proof}
+
+\begin{lemma}
+\label{lem:grow}
+If \(n\equiv 2\pmod{3}\) and \(n\neq -1\), then the orbit of \(n\) is absolutely unbounded.
+\end{lemma}
+
+\begin{proof}
+Lemma~\ref{lem:closed} gives \(S^{k}(n)=2^{k}(n+1)-1\). Since \(n\neq -1\), one has \(\lvert n+1\rvert\ge 1\). For a prescribed bound \(B\), choose \(k\) with \(2^{k}>B+1\). Then
+\[
+  \lvert S^{k}(n)\rvert
+  \ge 2^{k}\lvert n+1\rvert-1
+  \ge 2^{k}-1
+  >B.
+\]
+\end{proof}
+
+\begin{lemma}
+\label{lem:tails}
+If \(S^{j}(n)=0\), then \(S^{j+t}(n)=0\) for every natural number \(t\). If \(S^{j}(n)=-1\), then \(S^{j+t}(n)=-1\). If \(S^{j}(n)=1\), then every later term is \(1\) or \(3\).
+\end{lemma}
+
+\begin{proof}
+The raw step fixes \(0\), because \(3\mid 0\) and the quotient is \(0\). It fixes \(-1\), because \(-1\equiv 2\pmod{3}\), so the step is \(2(-1)+1=-1\). From \(1\), the first step is \(2\cdot 1+1=3\), and the next step is \(3/3=1\). Alternating these two values gives the claim.
+\end{proof}
+
+\begin{lemma}
+\label{lem:drop}
+If the orbit of \(n\) is absolutely unbounded and \(t\) is a natural number, then the orbit of \(S^{t}(n)\) is absolutely unbounded.
+\end{lemma}
+
+\begin{proof}
+Let \(M\) be the maximum of \(\lvert S^{0}(n)\rvert,\ldots,\lvert S^{t-1}(n)\rvert\), interpreted as \(0\) when \(t=0\). For a bound \(B\), choose \(j\) with \(\max(B,M)<\lvert S^{j}(n)\rvert\). The time \(j\) cannot be strictly less than \(t\), because those absolute values are at most \(M\). Thus \(j\ge t\) and \(S^{j}(n)=S^{j-t}(S^{t}(n))\), so the tail passes \(B\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:quot}
+If \(3\mid n\) and \(n\neq 0\), then \(\lvert n/3\rvert<\lvert n\rvert\).
+\end{lemma}
+
+\begin{proof}
+The hypothesis \(3\mid n\) gives \(\lvert n\rvert=3\lvert n/3\rvert\). A nonzero multiple of \(3\) has absolute value at least \(3\), so \(\lvert n/3\rvert\ge 1\). Therefore
+\[
+  \lvert n\rvert=3\lvert n/3\rvert=\lvert n/3\rvert+2\lvert n/3\rvert
+  \ge\lvert n/3\rvert+2>\lvert n/3\rvert.
+\]
+\end{proof}
+
+\begin{lemma}
+\label{lem:returnabs}
+If \(n\equiv 1\pmod{3}\) and \(\lvert n\rvert\ge 2\), then \(\lvert(2n+1)/3\rvert<\lvert n\rvert\).
+\end{lemma}
+
+\begin{proof}
+Write \(n=3q+1\). Then \(2n+1=6q+3=3(2q+1)\), so the quotient is \(2q+1\). If \(q\ge 1\), then \(\lvert n\rvert=3q+1\) and \(\lvert 2q+1\rvert=2q+1\), and the difference is \(q\ge 1\). The remaining case is \(q\le -1\). Set \(q=-t\) with \(t\ge 1\). Then \(\lvert n\rvert=\lvert 1-3t\rvert=3t-1\) and \(\lvert 2q+1\rvert=\lvert 1-2t\rvert=2t-1\). The difference is \(t\ge 1\). The case \(q=0\) is \(n=1\), which is excluded by \(\lvert n\rvert\ge 2\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:unbounded}
+The orbit of \(n\) is absolutely unbounded if and only if some term is congruent to \(2\) modulo \(3\) and is different from \(-1\).
+\end{theorem}
+
+\begin{proof}
+Suppose \(S^{j}(n)=m\) with \(m\equiv 2\pmod{3}\) and \(m\neq -1\). Lemma~\ref{lem:grow} says that the orbit of \(m\) is absolutely unbounded. Every term of that orbit is a term of the orbit of \(n\), so the orbit of \(n\) is absolutely unbounded.
+
+Conversely, suppose the orbit of \(n\) is absolutely unbounded. Proceed by induction on \(\lvert n\rvert\). If \(\lvert n\rvert=0\), then \(n=0\). Lemma~\ref{lem:tails} keeps every term at \(0\), which is not absolutely unbounded.
+
+If \(n\equiv 0\pmod{3}\), then \(n\neq 0\), because the zero orbit is bounded. Lemma~\ref{lem:quot} gives \(\lvert n/3\rvert<\lvert n\rvert\). The next term is this quotient, and Lemma~\ref{lem:drop} says that its orbit is absolutely unbounded. The inductive hypothesis supplies a later bad residue.
+
+If \(n\equiv 1\pmod{3}\) and \(\lvert n\rvert\ge 2\), Lemma~\ref{lem:returnabs} gives a strictly smaller first return \((2n+1)/3\). That return is \(S^{2}(n)\), so Lemma~\ref{lem:drop} and the inductive hypothesis apply. If instead \(\lvert n\rvert=1\) in this class, then \(n=1\), because \(-1\equiv 2\pmod{3}\). Lemma~\ref{lem:tails} confines the orbit of \(1\) to \(\{1,3\}\), so it is not absolutely unbounded.
+
+If \(n\equiv 2\pmod{3}\), unboundedness excludes \(n=-1\) by Lemma~\ref{lem:tails}. The seed itself is the required term.
+\end{proof}
+
+\begin{lemma}
+\label{lem:onlyzero}
+The raw step equals \(0\) if and only if the input is \(0\). Consequently, the orbit of \(n\) meets \(0\) if and only if \(n=0\).
+\end{lemma}
+
+\begin{proof}
+Suppose \(S(n)=0\). If \(3\mid n\), the quotient is \(0\), so the division identity gives \(n=3\cdot 0=0\). If \(3\nmid n\), then \(2n+1=0\), which is impossible for an integer \(n\). The converse is \(S(0)=0/3=0\).
+
+If \(S^{j}(n)=0\), induct on \(j\). Time \(0\) is the seed. At a positive time the previous paragraph forces the preceding term to be \(0\), and the inductive hypothesis forces the seed to be \(0\). Conversely, \(S^{0}(0)=0\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:preimage}
+The raw step equals \(-1\) if and only if the input is \(-1\) or \(-3\).
+\end{lemma}
+
+\begin{proof}
+Suppose \(S(n)=-1\). If \(3\mid n\), the quotient is \(-1\), so \(n=3\cdot(-1)=-3\). If \(3\nmid n\), then \(2n+1=-1\), hence \(n=-1\). Conversely, \(3\nmid -1\), so \(S(-1)=2\cdot(-1)+1=-1\). Also \(3\mid -3\) and \(S(-3)=(-3)/3=-1\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:preimageall}
+For every integer \(a\), the equation \(S(n)=a\) holds if and only if either \(n=3a\), or \(2\mid(a-1)\), \(n=(a-1)/2\), and \(3\nmid n\). The two alternatives are disjoint. In particular, \(S(n)=1\) if and only if \(n=3\), while \(S(n)=3\) if and only if \(n=1\) or \(n=9\).
+\end{lemma}
+
+\begin{proof}
+If \(3\mid n\) and \(n/3=a\), the division identity gives \(n=3a\). If \(3\nmid n\) and \(2n+1=a\), then \(a-1=2n\), so \(2\mid(a-1)\) and \(n=(a-1)/2\). Conversely, \(3\mid 3a\) and \((3a)/3=a\). In the second alternative the step is affine, and \(2\cdot((a-1)/2)+1=a\). Finally \(3\mid 3a\), so the second alternative cannot hold for the same \(n\). For \(a=1\), the affine candidate is \(0\), and \(3\mid 0\), so only \(n=3\) remains. For \(a=3\), the affine candidate is \(1\), which is not divisible by \(3\), and the division preimage is \(9\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:branchmod}
+The equation \(S(n)=a\) holds if and only if \(n=3a\), or \(a\equiv 3\pmod{6}\) or \(a\equiv 5\pmod{6}\) and \(n=(a-1)/2\). In every other residue class the second alternative is absent.
+\end{theorem}
+
+\begin{proof}
+Write \(a=6q+r\) with \(0\le r\le 5\). Then \(a-1=6q+(r-1)\). Since \(2\) divides \(6q\), it divides \(a-1\) exactly when it divides \(r-1\). That fails for \(r=0,2,4\). For \(r=1\), one has \(a-1=6q\), so \((a-1)/2=3q\) and \(3\) divides the affine candidate. For \(r=3\), one has \(a-1=2(3q+1)\), and \(3\) does not divide \(3q+1\). For \(r=5\), one has \(a-1=2(3q+2)\), and \(3\) does not divide \(3q+2\). Thus the affine alternative is open exactly for residues \(3\) and \(5\). The preceding preimage lemma then leaves only \(n=3a\) in every other class.
+\end{proof}
+
+\begin{theorem}
+\label{thm:children}
+Let \(a=6q+3\). Its preimages are \(3a\), which is congruent to \(3\) modulo \(6\), and \(3q+1\). The second is congruent to \(1\) when \(q\) is even and to \(4\) when \(q\) is odd. Let \(a=6q+5\). Its preimages are \(3a\), again congruent to \(3\), and \(3q+2\). The second is congruent to \(2\) when \(q\) is even and to \(5\) when \(q\) is odd.
+\end{theorem}
+
+\begin{proof}
+The identity \(3(6q+3)=6(3q+1)+3\) shows that the division child of residue \(3\) has remainder \(3\). Likewise \(3(6q+5)=6(3q+2)+3\). If \(q=2k\), then \(3q+1=6k+1\) and \(3q+2=6k+2\). If \(q=2k+1\), then \(3q+1=6k+4\) and \(3q+2=6k+5\). A sum \(6k+r\) with \(0\le r<6\) has remainder \(r\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:infinite}
+For every integer \(m\), \(S(3m)=m\). Consequently \(S^{k}(3^{k}a)=a\) for every integer \(a\) and every natural number \(k\). If \(a\ne 0\), then for every natural number \(N\) the seed \(3^{N}a\) has absolute value greater than \(N\) and reaches \(a\). Thus every nonzero integer is reached by infinitely many seeds. The value \(0\) is not: its only preimage is itself.
+\end{theorem}
+
+\begin{proof}
+The integer \(3m\) is divisible by \(3\), and the quotient is \(m\). Iterating gives the power statement. The inequality \(n<3^{n}\) holds for \(n=0\), and if it holds for \(n\) then \(n+1\le 3^{n}<3^{n}\cdot 3=3^{n+1}\). Therefore \(|3^{N}a|=3^{N}|a|\ge 3^{N}>N\) whenever \(a\ne 0\). These seeds are unbounded as \(N\) grows, so infinitely many of them reach \(a\). The zero statement is the earlier characterization of the basin of \(0\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:external}
+The orbit of \(n\) meets \(1\), with \(n\) equal to neither \(1\) nor \(3\), if and only if it meets \(9\). The orbit meets \(-1\), with \(n\ne -1\), if and only if it meets \(-3\).
+\end{theorem}
+
+\begin{proof}
+Two steps send \(9\) to \(1\), since \(S(9)=3\) and \(S(3)=1\). One step sends \(-3\) to \(-1\). Thus a meeting of either gate is a later meeting of the corresponding cycle point. Conversely, let \(j\) be the least time at which the orbit equals \(1\). The seed is not \(1\), so \(j\ge 1\). It is not \(3\), so the preceding term is not the only preimage of \(1\), and therefore \(j\ge 2\). The gate theorem supplies the term \(9\) two steps earlier. The same minimality argument, using the two preimages of \(-1\), supplies \(-3\) one step before the first positive meeting of \(-1\). The cycle \(\{1,3\}\) never contains \(9\), and the fixed orbit of \(-1\) never contains \(-3\), so a seed already on either cycle does not meet the corresponding gate.
+\end{proof}
+
+\begin{theorem}
+\label{thm:once}
+The value \(9\) occurs at most once on any orbit. If it occurs, the next term is \(3\), the term after that is \(1\), and every later term lies in \(\{1,3\}\). The value \(-3\) occurs at most once. If it occurs, every later term is \(-1\).
+\end{theorem}
+
+\begin{proof}
+Suppose two times on the orbit of \(n\) equal \(9\), and let the earlier be \(i\) and the later \(j\). The segment of length \(j-i\) is then an orbit of \(9\) that returns to \(9\). At time \(1\) that orbit equals \(3\). At time \(2\) it equals \(1\), and every later term lies in \(\{1,3\}\). None of these equals \(9\), so \(j-i=0\). The same comparison for \(-3\) uses the fact that its first step is \(-1\) and every later term remains \(-1\). The forward descriptions of the tails are the two evaluations \(S(9)=3\), \(S(3)=1\), and \(S(-3)=-1\), together with the tails already proved for \(1\) and \(-1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:generated}
+Fix an integer \(g\). Let \(X\) be a set of integers such that \(g\in X\), such that \(a\in X\) implies \(3a\in X\), and such that \(a\in X\) and \(a\equiv 3\) or \(5\pmod{6}\) imply \((a-1)/2\in X\). Every seed whose orbit meets \(g\) lies in \(X\).
+\end{theorem}
+
+\begin{proof}
+Proceed by induction on the least time \(k\) at which the seed \(n\) is sent to \(g\). If \(k=0\), then \(n=g\). If \(k\ge 1\), the next term \(S(n)\) meets \(g\) at time \(k-1\), and no earlier term of its orbit does: an earlier meeting would give an earlier meeting on the orbit of \(n\). The inductive hypothesis puts \(S(n)\) in \(X\). The seed \(n\) is a preimage of \(S(n)\), so either \(n=3S(n)\) or \(S(n)\) is congruent to \(3\) or \(5\) modulo \(6\) and \(n=(S(n)-1)/2\). Both alternatives preserve membership in \(X\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:iffgenerated}
+An orbit meets \(g\) if and only if the seed lies in every set that contains \(g\) and is closed under the two inverse branches.
+\end{theorem}
+
+\begin{proof}
+One direction is the preceding theorem. For the other, take the set of all integers whose orbits meet \(g\). It contains \(g\) at time zero. If the orbit of \(a\) meets \(g\), the orbit of \(3a\) meets \(g\) one step later, because \(S(3a)=a\). If \(a\) is congruent to \(3\) or \(5\) modulo \(6\), the same delay holds for \((a-1)/2\), because that child is sent to \(a\). Thus this set is one of the sets in the hypothesis, and the seed belongs to it.
+\end{proof}
+
+\begin{theorem}
+\label{thm:exclusive}
+No orbit meets more than one of \(0\), \(1\), and \(-1\).
+\end{theorem}
+
+\begin{proof}
+Suppose the orbit meets two of these values, and compare the times. The later value is then a term of the orbit of the earlier value. The orbit of \(0\) remains \(0\). The orbit of \(1\) remains in \(\{1,3\}\). The orbit of \(-1\) remains \(-1\). None of these three tails contains either of the other two targets.
+\end{proof}
+
+\begin{theorem}
+\label{thm:returnfixed}
+Suppose \(j\) is the first time \(3\) divides the affine state of \(n\), and the following exact division returns \(n\). Then \(n=0\) or \(n=1\).
+\end{theorem}
+
+\begin{proof}
+The raw map sends \(n\) back to itself in \(j+1\) steps, so \(n\) is periodic. The periodic points are \(0\), \(-1\), \(1\), and \(3\). The point \(-1\) is congruent to \(2\) modulo \(3\), so it never divides and has no return. The point \(3\) divides at time zero, and the quotient is \(1\), not \(3\). A later hit would not be the first. The points \(0\) and \(1\) do return to themselves.
+\end{proof}
+
+\begin{theorem}
+\label{thm:returnchain}
+Suppose \(m>0\) and \(s(0),\ldots,s(m)\) satisfy \(s(0)=s(m)=n\), with each later term the exact quotient at the first division of the preceding term. Then \(n=0\) or \(n=1\).
+\end{theorem}
+
+\begin{proof}
+Each return takes at least one raw step, so the chain gives a positive raw period. Thus \(n\) is \(0\), \(-1\), \(1\), or \(3\). The point \(-1\) never divides, so it has no first return. If \(n=3\), the first return is \(1\). Every first return of \(1\) is \(1\), so every later term of the chain is \(1\). The chain cannot close at \(3\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:chaintoone}
+If the orbit of \(n\) meets \(1\), then a finite chain of exact returns runs from \(n\) to \(1\). The same holds with \(-1\) in place of \(1\). When the seed is already \(-1\), that chain has no steps, because \(-1\) never divides.
+\end{theorem}
+
+\begin{proof}
+Let \(k\) be the first time the orbit equals \(1\), and induct on \(k\). If \(k=0\), then \(n=1\) and the sequence has one term. If \(k>0\), the preceding term is \(3\), so \(3\) divides a term of the orbit. The least such raw time is a first division, at some \(j<k\), and the quotient \(r\) reaches \(1\) in \(k-j-1\) steps. No earlier term of the orbit of \(r\) is \(1\), because that would give an earlier visit from \(n\). The inductive hypothesis supplies a chain from \(r\) to \(1\). Placing \(n\) in front of that chain gives the sequence.
+
+For \(-1\), induct on the first time \(k\) at which the orbit equals \(-1\). If \(k=0\), then \(n=-1\) and the chain has no steps. If \(k>0\), the preceding term is \(-3\), so again some term is divisible by \(3\). The quotient at the first division reaches \(-1\) strictly sooner, and the same prefixing step applies.
+\end{proof}
+
+\begin{theorem}
+\label{thm:chainunique}
+A return chain that first meets its target at the last term is unique. The length and every term are determined by the seed and the target.
+\end{theorem}
+
+\begin{proof}
+At each term before the target, the first division time is unique, so the next term, the exact quotient at that time, is unique. Two such chains that start at the same seed therefore agree at every index up to the shorter length. If one ended sooner, the other would already equal the target before its last term.
+\end{proof}
+
+\begin{theorem}
+\label{thm:chainlength}
+Let \(s(0),\ldots,s(m)\) be the return chain from \(n\) to \(1\), and let \(L(i)\) be the first division time of \(s(i)\). If \(k\) is the first time the raw orbit of \(n\) equals \(1\), then
+\[
+\sum_{i<m}(L(i)+1)=k.
+\]
+\end{theorem}
+
+\begin{proof}
+Induct on \(m\). If \(m=0\), then \(n=1\) and \(k=0\). If \(m>0\), the step into \(1\) comes from \(3\), so \(k>0\) and time \(k-1\) is divisible by \(3\). The first division of \(n\) is therefore at \(L(0)\le k-1\). The quotient \(s(1)\) meets \(1\) first at time \(k-L(0)-1\). The inductive hypothesis sums the remaining lengths to that time, and the shift identity
+\[
+\sum_{i<m}(L(i)+1)=(L(0)+1)+\sum_{i<m-1}(L(i+1)+1)
+\]
+completes the sum. The same identity holds for the chain to \(-1\). The predecessor is then \(-3\), and the base seed is \(-1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:chainorbit}
+Let \(s(0),\ldots,s(m)\) be a return chain starting at \(n\), and let \(L(i)\) be the first division time of \(s(i)\). Write \(T(0)=0\) and \(T(i+1)=T(i)+L(i)+1\). Then, for every \(i\le m\),
+\[
+s(i)=S^{T(i)}(n).
+\]
+The parameters need not be \((2,1,3)\).
+\end{theorem}
+
+\begin{proof}
+The case \(i=0\) is \(s(0)=n\). If the identity holds at \(t<m\), the next chain term is the raw successor of the state at time \(L(t)\) on the orbit of \(s(t)\). That state is \(S^{T(t)}(n)\), and one more block of length \(L(t)+1\) reaches time \(T(t+1)\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:divisiontimes}
+Let \(T\) be the accumulated length of a return chain of \(m\) steps. For \(j<T(m)\), the divisor divides \(S^{j}(n)\) if and only if \(j=T(i)+L(i)\) for some \(i<m\).
+\end{theorem}
+
+\begin{proof}
+The partial sums are strictly increasing, so \(j\) lies in a unique block: \(T(i)\le j<T(i+1)\). The offset \(r=j-T(i)\) then satisfies \(r\le L(i)\). The state at time \(j\) is the raw state of \(s(i)\) at time \(r\). If \(r<L(i)\), the first-hit condition says that this prefix is not divisible. Thus \(r=L(i)\). Conversely, at time \(L(i)\) on \(s(i)\) the affine state equals the raw state and is divisible, and that time is \(T(i)+L(i)\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:divisioncount}
+The map \(i\mapsto T(i)+L(i)\) is a bijection from the \(m\) steps of a return chain onto the times \(j<T(m)\) at which the divisor divides the raw state. In particular there are exactly \(m\) such times.
+\end{theorem}
+
+\begin{proof}
+Each block end lies before \(T(m)\), because \(T(i+1)=T(i)+L(i)+1\) and the accumulated length does not decrease. It is a division time by the preceding theorem. Every division time before \(T(m)\) arises this way. If \(i<i'\), then \(T(i+1)\le T(i')\), so \(T(i)+L(i)<T(i')+L(i')\). Equal end times therefore come from the same step.
+\end{proof}
+
+\begin{theorem}
+\label{thm:remaining}
+After the first \(i\) steps of a return chain of length \(m\), with \(i\le m\), the times \(j\) satisfying \(T(i)\le j<T(m)\) at which the divisor divides the raw state are exactly \(T(u)+L(u)\) for \(i\le u<m\). There are \(m-i\) of them.
+\end{theorem}
+
+\begin{proof}
+If \(u<i\), then \(T(u+1)\le T(i)\), so the block end \(T(u)+L(u)\) lies strictly before \(T(i)\). If \(i\le u\), then \(T(i)\le T(u)\le T(u)+L(u)\). Every division time before \(T(m)\) is some block end, and block ends do not repeat. The later block ends are therefore the divisions in the half-open interval from \(T(i)\) to \(T(m)\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:abscount}
+Let \(s(0),\ldots,s(m)\) be a minimal return chain from \(n\) to \(1\), or from \(n\) to \(-1\), for the parameters \((2,1,3)\). Then \(m+1\le |n|\).
+\end{theorem}
+
+\begin{proof}
+A first hit occurs at time \(0\) or time \(1\). In the first case the seed is divisible by \(3\) and the quotient is \(n/3\). In the second case the seed is congruent to \(1\) and the quotient is \((2n+1)/3\). If \(|n|\ge 2\), both quotients are strictly smaller in absolute value. A proper chain term cannot be \(0\), \(1\), or \(-1\): the first would put \(0\) and the target on one orbit, and either of the others would put both units on one orbit or end the chain early. Thus every proper term has absolute value at least \(2\), and each return drops that value. After \(m\) drops the last absolute value is \(1\), so \(m+1\le |n|\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:sixfive}
+Let \(s(0),\ldots,s(m)\) be a minimal return chain from \(n\) to \(1\), or from \(n\) to \(-1\), for the parameters \((2,1,3)\). Then \(6^{m}\le 5^{m}|n|\).
+\end{theorem}
+
+\begin{proof}
+Every proper term has absolute value at least \(2\). A return from such a term is either \(n/3\) or \((2n+1)/3\). In the first case \(6|n/3|=2|n|\le 5|n|\). In the second case \(6|(2n+1)/3|=2|2n+1|\). If \(n\ge 2\), then \(|2n+1|=2n+1\) and \(4n+2\le 5n\). If \(n\le -2\), then \(|2n+1|=2|n|-1\) and \(4|n|-2\le 5|n|\). Thus each return \(H\) satisfies \(6|H|\le 5|\mathrm{seed}|\). Multiplying these inequalities gives \(6^{i}|s(i)|\le 5^{i}|n|\). The last term has absolute value \(1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:hitsixfive}
+Suppose the raw orbit of \(n\) meets \(1\), or meets \(-1\), for the parameters \((2,1,3)\). Then there is a return count \(m\) such that \(6^{m}\le 5^{m}|n|\).
+\end{theorem}
+
+\begin{proof}
+The orbit that meets \(1\) has a finite chain of exact returns from \(n\) to \(1\), and the orbit that meets \(-1\) has such a chain to \(-1\). In either construction the target occurs only at the last term: the first term is the seed, which is not the target when the first visit is positive, and every later term belongs to the chain of the first quotient. The factor bound of Theorem~\ref{thm:sixfive} applies to that chain.
+\end{proof}
+
+\begin{theorem}
+\label{thm:fourthree}
+Let \(s(0),\ldots,s(m)\) be a minimal return chain from \(n\) to \(1\), or from \(n\) to \(-1\), for the parameters \((2,1,3)\). Then \(4^{m}\le 3^{m}|n|\).
+\end{theorem}
+
+\begin{proof}
+Every proper term has absolute value at least \(2\). A return from such a term is either \(n/3\) or \((2n+1)/3\). In the first case \(4|n/3|\le 3|n|\), because \(4|n|\le 9|n|\). In the second case the same comparison is \(4|2n+1|\le 9|n|\). A positive residue-one seed of absolute value at least \(2\) is at least \(4\), so \(|2n+1|=2n+1\) and \(8n+4\le 9n\). A negative seed satisfies \(|2n+1|=2|n|-1\) and \(8|n|-4\le 9|n|\). Thus each return \(H\) satisfies \(4|H|\le 3|\mathrm{seed}|\). Multiplying these inequalities gives \(4^{i}|s(i)|\le 3^{i}|n|\). The last term has absolute value \(1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:hitfourthree}
+Suppose the raw orbit of \(n\) meets \(1\), or meets \(-1\), for the parameters \((2,1,3)\). Then there is a return count \(m\) such that \(4^{m}\le 3^{m}|n|\).
+\end{theorem}
+
+\begin{proof}
+The chain supplied by Theorem~\ref{thm:hitsixfive} is minimal, so Theorem~\ref{thm:fourthree} applies. The factor \(3/4\) is stricter than \(5/6\): the seed \(4\) returns to \(3\), and \(4\cdot 3=3\cdot 4\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:halftime}
+Suppose the raw orbit of \(n\) under the parameters \((2,1,3)\) meets \(1\), or meets \(-1\), and let \(k\) be the first such time. Then
+\[
+4^{(k+1)/2}\le 3^{(k+1)/2}|n|,
+\]
+where the exponents are integer quotients.
+\end{theorem}
+
+\begin{proof}
+The minimal return chain to the target has \(m\) steps, and the sum of its block lengths equals \(k\). Each first hit occurs at time \(0\) or time \(1\), so each block contributes \(1\) or \(2\) to that sum. Hence \(m\le k\le 2m\), and \((k+1)/2\le m\). The factor bound gives \(4^{m}\le 3^{m}|n|\). Since \(3^{d}\le 4^{d}\), passing to the smaller exponent \((k+1)/2\) preserves the inequality.
+\end{proof}
+
+\begin{theorem}
+\label{thm:mixed}
+Suppose the raw orbit of \(n\) under the parameters \((2,1,3)\) meets \(1\), or meets \(-1\), and let \(k\) be the first such time. Then there are nonnegative integers \(a_{0}\) and \(a_{1}\) such that \(a_{0}+2a_{1}=k\) and
+\[
+3^{a_{0}}4^{a_{1}}\le 3^{a_{1}}|n|.
+\]
+\end{theorem}
+
+\begin{proof}
+Let \(a_{0}\) be the number of blocks whose first hit is at time \(0\), and let \(a_{1}\) be the number whose first hit is at time \(1\). A time-zero hit divides the absolute value by exactly three, so it contributes a factor \(3\) on the left and nothing on the right. A time-one hit contributes a factor \(4\) on the left and a factor \(3\) on the right. The product is the displayed inequality, and the block lengths sum to \(k\).
+\end{proof}
+
+The seed \(4\) has orbit \(4,9,3,1\). One block has length two and one has length one, so \(a_{0}=a_{1}=1\) and \(3\cdot 4=3\cdot 4\). The seed \(9\) has orbit \(9,3,1\). Both blocks have length one, so \(a_{0}=2\), \(a_{1}=0\), and \(9=|9|\). In both cases the mixed bound is an equality, while the uniform factor \(3/4\) is strict for \(9\).
+
+\begin{theorem}
+\label{thm:mixedunique}
+The integers \(a_{0}\) and \(a_{1}\) in Theorem~\ref{thm:mixed} are unique. Two minimal return chains from the same seed to the same target have the same length, the same terms, and the same first-hit time at each term, so they have the same number of length-one blocks and the same number of length-two blocks.
+\end{theorem}
+
+\begin{proof}
+A minimal return chain is unique: at each term before the target, the first division time is unique, and the next term is the exact quotient at that time. Equal block lengths give equal counts by induction on the length of the chain.
+\end{proof}
+
+\begin{theorem}
+\label{thm:cleared}
+Let \(m\) be the number of returns in the minimal chain, and let \(k\) be the first hitting time, so \(m\le k\le 2m\). Then \(a_{0}=2m-k\), \(a_{1}=k-m\), and
+\[
+3^{2m-k}4^{k-m}\le 3^{k-m}|n|.
+\]
+If \(2k\le 3m\), the common power of three cancels and
+\[
+3^{3m-2k}4^{k-m}\le |n|.
+\]
+If \(3m\le 2k\), the same cancellation gives
+\[
+4^{k-m}\le 3^{2k-3m}|n|.
+\]
+\end{theorem}
+
+\begin{proof}
+The two counts satisfy \(a_{0}+a_{1}=m\) and \(a_{0}+2a_{1}=k\), so they are the displayed differences. Substituting them into the mixed bound gives the first inequality. The exponent \(2m-k\) splits as \((k-m)+(3m-2k)\) when \(2k\le 3m\), and the exponent \(k-m\) splits as \((2m-k)+(2k-3m)\) when \(3m\le 2k\). In each case the shared positive power of three may be cancelled.
+\end{proof}
+
+For the seed \(4\), one has \(m=2\) and \(k=3\). Then \(2k=3m\), and both cleared forms say \(4\le 4\). For the seed \(9\), one has \(m=k=2\). Then \(2k\le 3m\), and the first cleared form says \(9\le 9\).
+
+\begin{theorem}
+\label{thm:countform}
+If \(3^{a_{0}}4^{a_{1}}\le 3^{a_{1}}N\), then \(a_{1}\le a_{0}\) implies \(3^{a_{0}-a_{1}}4^{a_{1}}\le N\), and \(a_{0}\le a_{1}\) implies \(4^{a_{1}}\le 3^{a_{1}-a_{0}}N\).
+\end{theorem}
+
+\begin{proof}
+Set \(m=a_{0}+a_{1}\) and \(k=a_{0}+2a_{1}\). These satisfy \(m\le k\le 2m\), and the mixed bound becomes \(3^{2m-k}4^{k-m}\le 3^{k-m}N\). The differences are \(a_{0}-a_{1}=3m-2k\) and \(a_{1}-a_{0}=2k-3m\), so the two cleared forms are the stated implications.
+\end{proof}
+
+\begin{theorem}
+\label{thm:puredivision}
+Let \(n=3^{t}\). The raw orbit at time \(j\le t\) is \(3^{t-j}\), and the first visit to \(1\) is at time \(t\). Every one of the \(t\) returns is an immediate division, so \(a_{0}=t\) and \(a_{1}=0\). The count form is the equality \(3^{t}=|n|\).
+\end{theorem}
+
+\begin{proof}
+One division sends \(3m\) to \(m\). By induction, \(j\) divisions send \(3^{t}\) to \(3^{t-j}\). In particular, time \(t\) is \(1\). For \(j<t\), the power \(3^{t-j}\) is at least \(3\), so it is not \(1\). Each term before the last is divisible by \(3\), hence its first hit is at time zero and its quotient is the next lower power. The chain therefore has \(t\) blocks of length one and none of length two. Both sides of the count form equal \(3^{t}\).
+\end{proof}
+
+The same count holds for the negative seed. One division sends \(3m\) to \(m\), so it sends \(-3^{t-j}\) to \(-3^{t-j-1}\). Thus the orbit of \(-3^{t}\) at time \(j\le t\) is \(-3^{t-j}\), and the first visit to \(-1\) is at time \(t\). Every return is an immediate division. The absolute value is still \(3^{t}\), so the count form is again an equality.
+
+\begin{theorem}
+\label{thm:mixedfour}
+The raw orbit of \(4\) is \(4,9,3,1\). The first visit to \(1\) is at time \(3\). The return chain is \(4\mapsto 3\mapsto 1\), with block lengths \(1\) and \(0\). Thus \(a_{0}=1\) and \(a_{1}=1\), and both sides of the count form equal \(12\).
+\end{theorem}
+
+\begin{proof}
+The seed \(4\) has remainder \(1\), so its first hit is at time \(1\) and the affine state is \(2\cdot 4+1=9\). The quotient is \(9/3=3\). The seed \(3\) is divisible at once, and its quotient is \(1\). The two earlier states are \(4\) and \(9\), neither of which is \(1\), so time \(3\) is the first visit. One block has length two and one has length one. Both sides of the count form are \(3\cdot 4=12\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:equalpower}
+If \(a_{0}=a_{1}=a\) and the count form is an equality, then \(|n|=4^{a}\). In particular, if \(|n|=4\) and the seed has a first hit, then \(n=4\).
+\end{theorem}
+
+\begin{proof}
+The equality \(3^{a}4^{a}=3^{a}|n|\) cancels the positive factor \(3^{a}\). An integer of absolute value \(4\) is \(4\) or \(-4\). The residue of \(-4\) is \(2\), so \(-4\) never divides and has no first hit.
+\end{proof}
+
+\begin{theorem}
+\label{thm:puretwostrict}
+If \(a_{0}=0\) and \(a_{1}>0\), the count bound is strict:
+\[
+4^{a_{1}}<3^{a_{1}}|n|.
+\]
+\end{theorem}
+
+\begin{proof}
+The count form gives the nonstrict inequality. Equality would say \(4^{a_{1}}=3^{a_{1}}|n|\). Since \(a_{1}>0\), the right side is divisible by \(3\), so \(3\) divides \(4^{a_{1}}\). A prime dividing a power divides the base, and \(3\) does not divide \(4\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:moretwos}
+If \(a_{0}<a_{1}\), the count bound is strict:
+\[
+4^{a_{1}}<3^{a_{1}-a_{0}}|n|.
+\]
+\end{theorem}
+
+\begin{proof}
+Equality would say \(4^{a_{1}}=3^{a_{1}-a_{0}}|n|\). The exponent \(a_{1}-a_{0}\) is positive, so \(3\) divides \(4^{a_{1}}\), and hence \(3\) divides \(4\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:criterion}
+The count form is an equality if and only if \(a_{1}\le a_{0}\) and
+\[
+|n|=3^{a_{0}-a_{1}}4^{a_{1}}.
+\]
+\end{theorem}
+
+\begin{proof}
+If \(a_{0}<a_{1}\), canceling the positive factor \(3^{a_{0}}\) gives \(4^{a_{1}}=3^{a_{1}-a_{0}}|n|\), which is impossible. If \(a_{1}\le a_{0}\), canceling \(3^{a_{1}}\) leaves the displayed formula. Conversely, substituting that formula and writing \(a_{0}=(a_{0}-a_{1})+a_{1}\) restores the equality. The counts of a first visit to \(1\), and the counts of a first visit to \(-1\), satisfy the same equivalence.
+\end{proof}
+
+\begin{theorem}
+\label{thm:forcefour}
+Suppose a chain of exact returns satisfies
+\[
+3^{a_{0}}4^{a_{1}}|s(i)|=3^{a_{1}}|n|
+\]
+at index \(i\), where \(a_{0}\) and \(a_{1}\) count the blocks before \(i\). Then every length-two block before \(i\) begins at \(4\).
+\end{theorem}
+
+\begin{proof}
+Induct on \(i\). The claim is vacuous at \(i=0\). At \(i=r+1\), a length-one block multiplies both sides by the same factor \(3\), so the equality at \(r+1\) is the equality at \(r\). A length-two block replaces the left side by the factor \(4|s(r+1)|\). Equality at both ends forces \(4|s(r+1)|=3|s(r)|\), and the only seed of absolute value at least \(2\) with a time-one hit meeting that factor is \(4\). Every earlier length-two block is supplied by the inductive hypothesis.
+\end{proof}
+
+\begin{theorem}
+\label{thm:hitforcefour}
+If a chain of exact returns ends at \(1\) or at \(-1\) and its count form is an equality, then every length-two block begins at \(4\).
+\end{theorem}
+
+\begin{proof}
+The final term has absolute value \(1\), so the count equality is the product equality of the preceding theorem. A proper term cannot be \(0\), \(1\), or \(-1\), so every earlier term has absolute value at least \(2\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:negpower}
+If a chain of exact returns ends at \(-1\) and its count form is an equality, then there is no length-two block, and \(|n|=3^{a_{0}}\).
+\end{theorem}
+
+\begin{proof}
+A length-two block would begin at \(4\). The raw orbit of \(4\) is \(4,9,3\), and thereafter it alternates between \(1\) and \(3\). None of these values is \(-1\). Thus there is no length-two block. The count equality then reduces to \(3^{a_{0}}=|n|\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:oneshape}
+If a chain of exact returns ends at \(1\) and its count form is an equality, then either there is no length-two block and \(n=3^{a_{0}}\), or there is exactly one length-two block, \(a_{0}\ge 1\), and \(n=4\cdot 3^{a_{0}-1}\).
+\end{theorem}
+
+\begin{proof}
+A length-two block begins at \(4\) and returns to \(3\), and \(3\) returns at once to \(1\). The chain therefore ends two steps later, so there is at most one such block, and it is the second-to-last block. If there is none, every return divides by \(3\), and the chain from \(n\) to \(1\) is \(3^{a_{0}},3^{a_{0}-1},\ldots,1\). If there is one, the earlier returns are the same divisions applied to \(4\), so \(n=4\cdot 3^{a_{0}-1}\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:mixedpower}
+For every natural number \(t\), the seed \(4\cdot 3^{t}\) reaches \(1\) by the chain
+\[
+4\cdot 3^{t},\; 4\cdot 3^{t-1},\; \ldots,\; 4,\; 3,\; 1.
+\]
+Every term before \(4\) divides at once, the term \(4\) has first hit at time one and returns to \(3\), and \(3\) returns at once to \(1\). Thus \(a_{0}=t+1\), \(a_{1}=1\), and both sides of the count form equal \(4\cdot 3^{t+1}\).
+\end{theorem}
+
+\begin{proof}
+If \(k\ge 1\), then \(4\cdot 3^{k}=3\cdot(4\cdot 3^{k-1})\), so the quotient is the next term and the first hit is at time zero. The seed \(4\) has residue \(1\), hence first hit at time one, and the quotient is \(3\). The seed \(3\) divides at once and its quotient is \(1\). No earlier term is \(1\). Exactly one block has length two, so \(a_{0}=t+1\) and \(a_{1}=1\). Both sides are \(3^{t+1}\cdot 4\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:classify}
+A seed has a minimal chain of exact returns to \(1\) whose count form is an equality if and only if it equals \(3^{t}\) or \(4\cdot 3^{t}\) for some natural number \(t\).
+\end{theorem}
+
+\begin{proof}
+If the chain has no length-two block, the shape theorem gives \(n=3^{a_{0}}\). If it has one, the same theorem gives \(n=4\cdot 3^{a_{0}-1}\). Conversely, the pure division chain of \(3^{t}\) and the mixed chain of \(4\cdot 3^{t}\) both end at \(1\) and both make the count form an equality.
+\end{proof}
+
+\begin{theorem}
+\label{thm:classifyneg}
+A seed has a minimal chain of exact returns to \(-1\) whose count form is an equality if and only if it equals \(-3^{t}\) for some natural number \(t\).
+\end{theorem}
+
+\begin{proof}
+Equality excludes every length-two block, so every return divides by \(3\). Working backward from \(-1\) gives \(s(m-k)=-3^{k}\). The seed is therefore \(-3^{m}\), and \(m=a_{0}\). Conversely, the orbit of \(-3^{t}\) is \(-3^{t},-3^{t-1},\ldots,-1\), every block has length one, and both sides of the count form equal \(3^{t}\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:basins}
+The three families \(3^{t}\), \(4\cdot 3^{t}\), and \(-3^{t}\) are pairwise disjoint. A seed has a minimal equality chain to \(1\) or to \(-1\) if and only if it belongs to one of them.
+\end{theorem}
+
+\begin{proof}
+A positive power of three is not four times a power of three: cancelling the smaller power leaves either a power of three equal to \(4\), hence divisible by \(3\), or \(1\) equal to at least \(4\). A positive value is not a negative one. The two classifications then place a chain to \(1\) on the first two families and a chain to \(-1\) on the third.
+\end{proof}
+
+\begin{theorem}
+\label{thm:strict}
+If the raw orbit meets \(1\) or meets \(-1\), and the seed is not \(3^{t}\), \(4\cdot 3^{t}\), or \(-3^{t}\) for any natural number \(t\), then its block counts satisfy
+\[
+3^{a_{0}}4^{a_{1}}<3^{a_{1}}|n|.
+\]
+\end{theorem}
+
+\begin{proof}
+The return chain gives the weak inequality. If it were an equality, the seed would belong to one of the three families. It does not, so the inequality is strict.
+\end{proof}
+
+\begin{theorem}
+\label{thm:sharp}
+If the raw orbit meets \(1\) or meets \(-1\), then its block counts satisfy
+\[
+3^{a_{0}}4^{a_{1}}\le 3^{a_{1}}|n|,
+\]
+and equality holds if and only if the seed is \(3^{t}\), \(4\cdot 3^{t}\), or \(-3^{t}\) for some natural number \(t\).
+\end{theorem}
+
+\begin{proof}
+If the seed belongs to one of the three families, the corresponding chain makes the count form an equality. Otherwise the preceding theorem gives a strict inequality, so equality fails.
+\end{proof}
+
+\begin{theorem}
+\label{thm:countunique}
+Two minimal chains of exact returns from the same seed to the same target have the same length, the same terms, and the same block counts \(a_{0}\) and \(a_{1}\).
+\end{theorem}
+
+\begin{proof}
+The chains agree at the seed. If they agree at one term, that term has a unique first-hit time, so the next return is the same. A shorter chain would meet the target before the longer one ends, contradicting minimality. Equal lengths and equal hit times give equal block counts.
+\end{proof}
+
+\begin{theorem}
+\label{thm:familycounts}
+Let the chain be minimal. If \(n=3^{t}\) and the target is \(1\), then the chain has length \(t\), with \(a_{0}=t\) and \(a_{1}=0\). If \(n=4\cdot 3^{t}\) and the target is \(1\), then the chain has length \(t+2\), with \(a_{0}=t+1\) and \(a_{1}=1\). If \(n=-3^{t}\) and the target is \(-1\), then the chain has length \(t\), with \(a_{0}=t\) and \(a_{1}=0\).
+\end{theorem}
+
+\begin{proof}
+The pure division chain, the mixed chain, and the negative division chain realize these counts. Any other minimal chain to the same target has the same length and the same counts.
+\end{proof}
+
+\begin{theorem}
+\label{thm:rawtime}
+If a minimal chain to \(1\) or to \(-1\) has block counts \(a_{0}\) and \(a_{1}\), and \(k\) is the first time the raw orbit equals that target, then \(k=a_{0}+2a_{1}\). In particular, \(3^{t}\) meets \(1\) first at time \(t\), \(4\cdot 3^{t}\) meets \(1\) first at time \(t+3\), and \(-3^{t}\) meets \(-1\) first at time \(t\).
+\end{theorem}
+
+\begin{proof}
+Every first hit is at time \(0\) or time \(1\), so the raw length of the chain is \(a_{0}+2a_{1}\). That length is the first time the orbit equals the target. On \(3^{t}\) and on \(-3^{t}\) every block has length one, so the time is \(t\). On \(4\cdot 3^{t}\) the counts are \(a_{0}=t+1\) and \(a_{1}=1\), hence the time is \(t+3\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:mixedorbit}
+For every \(j\le t\), the raw orbit of \(4\cdot 3^{t}\) at time \(j\) equals \(4\cdot 3^{t-j}\). The next three states are \(9\), \(3\), and \(1\).
+\end{theorem}
+
+\begin{proof}
+While a factor \(3\) remains, the state is divisible by \(3\), and one exact division removes that factor. After \(t\) divisions the state is \(4\). The next raw step is \(2\cdot 4+1=9\), then \(9/3=3\), then \(3/3=1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:nine}
+The raw step sends \(n\) to \(9\) if and only if \(n=27\) or \(n=4\).
+\end{theorem}
+
+\begin{proof}
+If \(3\) divides \(n\) and the quotient is \(9\), then \(n=27\). If \(3\) does not divide \(n\) and \(2n+1=9\), then \(n=4\). Both seeds step to \(9\): \(27/3=9\), and \(2\cdot 4+1=9\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:nineplace}
+On the orbit of \(3^{t}\), the state \(9\) occurs only at time \(t-2\), and if that time is positive then the previous state is \(27\). On the orbit of \(4\cdot 3^{t}\), the state \(9\) occurs only at time \(t+1\), and the previous state is \(4\). The orbit of \(-3^{t}\) never meets \(9\).
+\end{theorem}
+
+\begin{proof}
+Through time \(t\), the pure orbit is \(3^{t-j}\). This equals \(9\) only when the exponent is \(2\). After time \(t\) the state is \(1\), and the orbit then alternates between \(1\) and \(3\). On \(4\cdot 3^{t}\), every state through time \(t\) is divisible by \(4\), hence is not \(9\). Time \(t+1\) is \(9\), time \(t\) is \(4\), and every later state is \(3\) or \(1\). Every state of \(-3^{t}\) through time \(t\) is negative, and the orbit then stays at \(-1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:tails}
+If the raw orbit meets \(1\) at time \(k\), then at time \(k+2m\) the state is \(1\) and at time \(k+2m+1\) the state is \(3\). If the raw orbit meets \(-1\) at time \(k\), then every later state is \(-1\).
+\end{theorem}
+
+\begin{proof}
+The raw step sends \(1\) to \(3\) and \(3\) to \(1\), so the orbit of \(1\) has period two. The raw step sends \(-1\) to \(-1\). Splitting the clock at time \(k\) transfers both tails to an arbitrary seed.
+\end{proof}
+
+\begin{theorem}
+\label{thm:fixed}
+The raw step fixes \(n\) if and only if \(n=0\) or \(n=-1\).
+\end{theorem}
+
+\begin{proof}
+If \(3\) divides \(n\) and \(n/3=n\), then \(n=3n\), so \(n=0\). If \(3\) does not divide \(n\) and \(2n+1=n\), then \(n=-1\). Both values are fixed: the quotient of \(0\) is \(0\), and \(2\cdot(-1)+1=-1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:periodtwo}
+The second raw step returns to \(n\) if and only if \(n\) is \(0\), \(-1\), \(1\), or \(3\). The return is not a fixed point exactly when \(n=1\) or \(n=3\).
+\end{theorem}
+
+\begin{proof}
+If \(3\) divides \(n\), write \(n=3a\). The first step is \(a\). If \(3\) also divides \(a\), the second quotient equals \(n\) only when \(n=0\). If not, then \(2a+1=3a\), so \(a=1\) and \(n=3\). If \(3\) does not divide \(n\), the first step is \(2n+1\). Division at the second step forces \(n=1\). Another affine step forces \(n=-1\). The orbits are \(0\), the fixed point \(-1\), and \(1,3,1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:disjoint}
+No seed meets both \(1\) and \(-1\).
+\end{theorem}
+
+\begin{proof}
+Suppose time \(k\) is \(1\) and time \(j\) is \(-1\). If \(k\le j\), the tail from \(1\) is \(1\) or \(3\). If \(j<k\), the tail from \(-1\) stays at \(-1\). Neither tail contains the other value.
+\end{proof}
+
+\begin{theorem}
+\label{thm:zero}
+The raw step sends \(n\) to \(0\) if and only if \(n=0\). Consequently the raw orbit meets \(0\) if and only if the seed is \(0\).
+\end{theorem}
+
+\begin{proof}
+If \(3\) divides \(n\) and the quotient is \(0\), then \(n=0\). If \(3\) does not divide \(n\), then \(2n+1=0\) has no integer solution. Thus every positive time at which the orbit is \(0\) is preceded by another time at which it is \(0\). The time-zero case is the seed itself.
+\end{proof}
+
+\begin{theorem}
+\label{thm:separate}
+A fixed point has a constant orbit. Consequently no seed meets both \(0\) and \(1\), and no seed meets both \(0\) and \(-1\).
+\end{theorem}
+
+\begin{proof}
+If the raw step fixes \(n\), induction on the clock leaves every later state equal to \(n\). A seed that meets \(0\) is \(0\), so its whole orbit is \(0\). That orbit is neither \(1\) nor \(-1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:periodthree}
+The third raw step returns to \(n\) if and only if \(n=0\) or \(n=-1\). There is no state of exact raw period three.
+\end{theorem}
+
+\begin{proof}
+Each step is either division by \(3\) or the affine map \(2n+1\). The eight combinations give a linear equation. The only solutions that obey the branch chosen for them are \(n=0\), from three divisions, and \(n=-1\), from three affine steps. Both are fixed points, so neither has exact period three. The other six equations are either impossible or produce a value that belongs to a different branch.
+\end{proof}
+
+\begin{theorem}
+\label{thm:residue2}
+If \(n\equiv 2\pmod{3}\), then every later state is \(2^{k}n+2^{k}-1\), and that state is again congruent to \(2\). If also \(n\ne -1\), the seed never returns.
+\end{theorem}
+
+\begin{proof}
+A residue-\(2\) integer is not divisible by \(3\), so the raw step is \(2n+1\). Substituting \(n=2+3q\) gives \(2n+1=2+3(2q+1)\), whose residue is \(2\). Induction gives the closed form. A return at time \(k>0\) rearranges to \((2^{k}-1)(n+1)=0\). The power is greater than \(1\), so \(n=-1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:residueabs}
+If \(n\equiv 2\pmod{3}\), the absolute value at time \(k\) is \(2^{k}(|n|+1)-1\) when \(n\ge 0\), and \(2^{k}(|n|-1)+1\) when \(n<0\).
+\end{theorem}
+
+\begin{proof}
+The state is \(2^{k}(n+1)-1\). If \(n\ge 0\), then \(n+1\ge 1\) and \(2^{k}\ge 1\), so the state is nonnegative and equals \(2^{k}(|n|+1)-1\). If \(n<0\), then \(n+1\le 0\), so the state is negative. Its absolute value is \(2^{k}(-n-1)+1\). Since \(|n|=-n\), this is \(2^{k}(|n|-1)+1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:residueinc}
+If \(n\equiv 2\pmod{3}\) and \(n\ne -1\), the absolute value strictly increases at every step.
+\end{theorem}
+
+\begin{proof}
+A nonnegative residue is at least \(2\), and a negative residue other than \(-1\) has absolute value at least \(2\). In the first case the unsubtracted term \(2^{k}(|n|+1)\) doubles its coefficient of the positive quantity \(|n|+1\), so removing \(1\) preserves the inequality. In the second case \(|n|-1\ge 1\), and adding \(1\) to both sides of the same doubling preserves it.
+\end{proof}
+
+\begin{theorem}
+\label{thm:residuediff}
+If \(n\equiv 2\pmod{3}\), then
+\[
+|S^{k+1}(n)|=|S^{k}(n)|+2^{k}(|n|+1)
+\]
+when \(n\ge 0\), and
+\[
+|S^{k+1}(n)|=|S^{k}(n)|+2^{k}(|n|-1)
+\]
+when \(n<0\). At \(n=-1\) the added term is \(0\).
+\end{theorem}
+
+\begin{proof}
+Write \(m=2^{k}(|n|+1)\) in the nonnegative case. The two absolute values are \(2m-1\) and \(m-1\), and \(m\ge 1\), so \(2m-1=(m-1)+m\). In the negative case write \(t=2^{k}(|n|-1)\). The two absolute values are \(2t+1\) and \(t+1\), and \(2t+1=(t+1)+t\). If \(n=-1\), then \(t=0\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:residueunb}
+If \(n\equiv 2\pmod{3}\) and \(n\ne -1\), then for every natural number \(N\) there is a time \(k\) with \(|S^{k}(n)|>N\). In fact \(|S^{k}(n)|\ge k\).
+\end{theorem}
+
+\begin{proof}
+The absolute value strictly increases at every step, so it is at least the time index. Time \(N+1\) therefore exceeds \(N\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:residuetail}
+If the state at time \(j\) has residue \(2\), then the absolute value \(k\) steps later is \(2^{k}(|S^{j}(n)|+1)-1\) when that state is nonnegative, and \(2^{k}(|S^{j}(n)|-1)+1\) when it is negative.
+\end{theorem}
+
+\begin{proof}
+The residue-\(2\) orbit formula applies to the state \(S^{j}(n)\). Shifting the clock by \(j\) gives the later state.
+\end{proof}
+
+\begin{theorem}
+\label{thm:fatebound}
+For every integer \(n\) there is a time \(j\le |n|\) at which \(S^{j}(n)\) is \(0\), \(1\), \(-1\), or has residue \(2\).
+\end{theorem}
+
+\begin{proof}
+The nine seeds with absolute value at most \(4\) are checked directly. For a larger seed, residue \(2\) stops at time \(0\). Residue \(0\) moves to \(n/3\) in one step and strictly decreases the absolute value. Residue \(1\) moves to \((2n+1)/3\) in two steps. The factor \(4|(2n+1)/3|\le 3|n|\) forces that quotient to be at least two smaller once \(|n|\ge 5\), so the two steps fit inside the remaining budget.
+\end{proof}
+
+\begin{theorem}
+\label{thm:fatesplit}
+By time \(|n|\), the raw orbit has met \(0\), \(1\), or \(-1\), or else it is unbounded.
+\end{theorem}
+
+\begin{proof}
+The preceding bound gives a state \(S^{j}(n)\) with \(j\le |n|\) equal to \(0\), \(1\), or \(-1\), or of residue \(2\). The residue \(-1\) is already the third alternative. If the residue-\(2\) state is not \(-1\), its later absolute values are unbounded, and shifting the clock by \(j\) makes the original orbit unbounded.
+\end{proof}
+
+\begin{theorem}
+\label{thm:fateexclusive}
+No seed meets two of \(0\), \(1\), and \(-1\). An orbit that meets one of them is bounded.
+\end{theorem}
+
+\begin{proof}
+Meeting \(0\) forces the seed to be \(0\), after which every state is \(0\). That orbit misses \(1\) and \(-1\). After a visit to \(1\), every later state is \(1\) or \(3\). After a visit to \(-1\), every later state is \(-1\). In each case the finite prefix through the visit and the later values have a common absolute bound, so the orbit is not unbounded. The tails \(\{1,3\}\) and \(\{-1\}\) are disjoint, so no seed meets both \(1\) and \(-1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:fatepartition}
+Every seed has exactly one fate. By time \(|n|\) it has met \(0\), or it has met \(1\), or it has met \(-1\), or some state has residue \(2\) and is not \(-1\). In the last case the orbit is unbounded. In each of the first three cases the orbit meets neither of the other two values and is bounded.
+\end{theorem}
+
+\begin{proof}
+The time bound supplies one of the four alternatives, with the residue-\(2\) state separated from \(-1\). The exclusivity statement rules out every other alternative.
+\end{proof}
+
+\begin{theorem}
+\label{thm:periodic}
+The raw orbit is eventually periodic if and only if it meets \(0\), \(1\), or \(-1\).
+\end{theorem}
+
+\begin{proof}
+A positive shift that fixes the whole tail repeats every later state on a residue of the period. Those values lie in a finite prefix, so the orbit is bounded. The unbounded fate is therefore impossible, and the partition supplies a visit to \(0\), \(1\), or \(-1\). Conversely, a visit to \(0\) makes every state \(0\). A visit to \(-1\) makes every later state \(-1\). A visit to \(1\) makes the later states alternate between \(1\) and \(3\), which is a shift by \(2\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:tail}
+The orbit is identically \(0\), or from some time \(j\le |n|\) it is identically \(-1\), or from some time \(j\le |n|\) it alternates \(1,3\), or it is unbounded.
+\end{theorem}
+
+\begin{proof}
+The partition gives one of the four fates, with a terminal hit by time \(|n|\). A hit at \(0\) makes every state \(0\). A hit at \(-1\) makes every later state \(-1\). A hit at \(1\) makes the even later offsets equal \(1\) and the odd later offsets equal \(3\). The remaining fate is the unbounded orbit.
+\end{proof}
+
+\begin{theorem}
+\label{thm:entry}
+If the orbit meets \(1\), the first visit to \(\{1,3\}\) is the seed \(1\), or it is the state \(3\) immediately before the first \(1\). No earlier state is \(1\) or \(3\). From that visit the orbit alternates through the cycle. The visit occurs by time \(|n|\).
+\end{theorem}
+
+\begin{proof}
+Let \(k\) be the least time at which the state is \(1\). If \(k=0\), the seed is \(1\) and the later states alternate \(1,3\). If \(k>0\), the preceding state is \(3\). An earlier \(3\) would be sent to \(1\) at the next step, before time \(k\). From that preceding state, the even offsets are \(3\) and the odd offsets are \(1\). Some visit to \(1\) occurs by time \(|n|\), since otherwise the orbit would meet \(0\), meet \(-1\), or be unbounded. The least such time is no later, and the preceding state is earlier.
+\end{proof}
+
+\begin{theorem}
+\label{thm:negentry}
+If the orbit meets \(-1\), the first such visit occurs by time \(|n|\). No earlier state is \(-1\), and every later state is \(-1\).
+\end{theorem}
+
+\begin{proof}
+Some visit to \(-1\) occurs by time \(|n|\), since otherwise the orbit would meet \(0\), meet \(1\), or be unbounded. The least such time is no later. Every later state remains \(-1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:entryclass}
+The seed is \(0\), or the first visit to \(-1\) occurs by time \(|n|\) and the tail stays there, or the first visit to \(\{1,3\}\) occurs by time \(|n|\) and the tail alternates through that cycle, or the orbit is unbounded.
+\end{theorem}
+
+\begin{proof}
+The four fates are exhaustive. A visit to \(0\) forces the seed to be \(0\). A visit to \(-1\) has a least time, and that time is at most \(|n|\). A visit to \(1\) gives a first visit to \(\{1,3\}\) by time \(|n|\): the seed \(1\), or the state \(3\) immediately before the first \(1\). In the first of those cases the orbit alternates \(1,3\) from time \(0\). In the second, it alternates \(3,1\) from that preceding state. The remaining fate is unbounded.
+\end{proof}
+
+\begin{theorem}
+\label{thm:escape}
+If the orbit is unbounded, some time \(j\le |n|\) has residue \(2\) and is not \(-1\), and
+\[
+|S^{j+k}(n)|\ge 2^{k}+1
+\]
+for every natural number \(k\).
+\end{theorem}
+
+\begin{proof}
+The partition supplies the residue-\(2\) state \(r\). It is not \(0\), \(1\), or \(-1\), so \(|r|\ge 2\). The later absolute value is \(2^{k}(|r|+1)-1\) when \(r\ge 0\), and \(2^{k}(|r|-1)+1\) when \(r<0\). The first is at least \(3\cdot 2^{k}-1\), and the second is at least \(2^{k}+1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:escapetime}
+If the orbit is unbounded, then for every natural number \(N\) the absolute value exceeds \(N\) by time \(|n|+N\).
+\end{theorem}
+
+\begin{proof}
+The preceding lower bound at the residue-\(2\) time \(j\le |n|\) gives \(|S^{j+N}(n)|\ge 2^{N}+1\). The comparison \(N<2^{N}+1\) is proved by induction: it holds at \(0\), and if it holds at \(N\) then \(N+1\le 2^{N}+1<2\cdot 2^{N}+1\). Thus time \(j+N\) is at most \(|n|+N\) and the state is larger than \(N\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:escapelog}
+If the orbit is unbounded, then for every natural number \(N\) the absolute value exceeds \(N\) by time \(|n|+\log_{2}N+1\), where \(\log_{2}N\) is the integer logarithm.
+\end{theorem}
+
+\begin{proof}
+Let \(k=\log_{2}N+1\) and let \(j\le |n|\) be the residue-\(2\) time. Then \(|S^{j+k}(n)|\ge 2^{k}+1\). If \(N=0\), the power is at least \(2\). If \(N>0\), the integer logarithm satisfies \(N<2^{k}\). In either case the state at time \(j+k\) exceeds \(N\), and \(j+k\le |n|+\log_{2}N+1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:twoescape}
+The absolute value of the orbit of \(2\) at time \(k\) is \(3\cdot 2^{k}-1\). For every \(N\), this exceeds \(N\) at exactly one least time, and every earlier state is at most \(N\).
+\end{theorem}
+
+\begin{proof}
+The seed \(2\) has residue \(2\) and is nonnegative, so the residue formula is \(2^{k}(2+1)-1\). The value \(3\cdot 2^{N+1}-1\) exceeds \(N\), so a least such time \(k\) exists. At that time the absolute value equals the formula. At every earlier time the formula is still at most \(N\), because a smaller time would contradict minimality.
+\end{proof}
+
+\begin{theorem}
+\label{thm:residueescape}
+If \(n\equiv 2\pmod{3}\) and \(n\ne -1\), then for every \(N\) there is a least time at which the residue formula exceeds \(N\). The absolute value equals that formula, and every earlier state is at most \(N\).
+\end{theorem}
+
+\begin{proof}
+Such a seed has absolute value at least \(2\). At time \(N+1\) the nonnegative formula is at least \(2^{N+2}-1\), and the negative formula is at least \(2^{N+1}+1\). Either exceeds \(N\), so a least time exists. The absolute value equals the formula at every time, and minimality keeps every earlier value at most \(N\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:unboundedescape}
+If the orbit is unbounded, then for every \(N\) there are times \(j\le |n|\) and \(k\) such that the state \(r\) at time \(j\) has residue \(2\) and is not \(-1\), the absolute value at time \(j+k\) exceeds \(N\) and equals the residue formula of \(r\), and every earlier offset from \(j\) has absolute value at most \(N\).
+\end{theorem}
+
+\begin{proof}
+The partition supplies \(r\). The residue-two escape theorem, applied to \(r\), supplies the least offset \(k\). Shifting the clock by \(j\) carries the absolute values back to the orbit of \(n\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:eventually}
+If the orbit is unbounded, then for every \(N\) there is a time \(T\) such that every later state has absolute value greater than \(N\).
+\end{theorem}
+
+\begin{proof}
+At the least offset \(k\) from the residue-two state, the absolute value already exceeds \(N\). Along that residue the absolute value strictly increases, so every later time remains larger than \(N\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:infinity}
+The orbit tends to infinity if and only if it never meets \(0\), \(1\), or \(-1\). Tending to infinity means that for every \(N\) there is a time after which every state has absolute value greater than \(N\).
+\end{theorem}
+
+\begin{proof}
+A visit to one of the three terminals makes the orbit eventually periodic, hence bounded, so the absolute value does not stay above that bound. If none of the three occurs, the partition says the orbit is unbounded. An unbounded orbit is eventually larger than every bound.
+\end{proof}
+
+\begin{theorem}
+\label{thm:terminalabs}
+If the orbit meets \(0\), \(1\), or \(-1\), then every state has absolute value at most \(2|n|+1\).
+\end{theorem}
+
+\begin{proof}
+A visit to \(0\) forces every state to be \(0\). Otherwise the minimal return chain reaches \(1\) or \(-1\). Before that time, each state lies in a block of length one or two. The length-one state is a chain term, hence at most \(|n|\). The extra state in a length-two block is the affine image \(2s+1\), whose absolute value is at most \(2|s|+1\le 2|n|+1\). After the first visit to \(1\), the orbit is \(1,3,1,3,\ldots\), and \(3\le 2|n|+1\) because the seed is not \(0\). After the first visit to \(-1\), the orbit stays at \(-1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:dichotomy}
+The bound \(2|n|+1\) is attained: the orbit of \(1\) contains \(3\). Every orbit either is eventually larger than every bound, or stays at most \(2|n|+1\) at every time.
+\end{theorem}
+
+\begin{proof}
+The raw step sends \(1\) to \(2\cdot 1+1=3\), and \(|3|=2|1|+1\). In particular \(2|n|\) is not a uniform bound, since \(|3|=3>2\). If the orbit meets \(0\), \(1\), or \(-1\), the preceding bound applies. If it meets none of them, it tends to infinity.
+\end{proof}
+
+\begin{theorem}
+\label{thm:gates}
+Let \(j\) be the first time at which the orbit of \(n\) equals \(1\). If \(j\ge 2\), then \(S^{j-2}(n)=9\) and \(S^{j-1}(n)=3\). If the first visit to \(-1\) occurs at a positive time \(k\), then \(S^{k-1}(n)=-3\).
+\end{theorem}
+
+\begin{proof}
+The only input sent to \(1\) is \(3\), so \(S^{j-1}(n)=3\). The inputs sent to \(3\) are \(1\) and \(9\). The value \(1\) cannot occur at time \(j-2\), because \(j\) is the first visit to \(1\). Thus \(S^{j-2}(n)=9\). Likewise, the inputs sent to \(-1\) are \(-1\) and \(-3\). Since \(k\) is the first visit, the value \(-1\) cannot occur at time \(k-1\), so \(S^{k-1}(n)=-3\). The seed \(-1\) itself is excluded: its first visit is at time zero.
+\end{proof}
+
+\begin{theorem}
+\label{thm:branch}
+Every integer \(a\) has \(3a\) as a preimage. It has a second preimage if and only if \(2\mid(a-1)\) and \(3\nmid(a-1)/2\), in which case that preimage is \((a-1)/2\) and is distinct from \(3a\). Otherwise \(3a\) is the only preimage.
+\end{theorem}
+
+\begin{proof}
+The division branch of Lemma~\ref{lem:preimageall} always supplies \(3a\). If the stated divisibility test holds, the same lemma says that \((a-1)/2\) is sent to \(a\). It is not equal to \(3a\), because \(3\) divides \(3a\) and does not divide \((a-1)/2\). If the test fails, the affine alternative of the lemma is unavailable, so no other integer is sent to \(a\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:partition}
+For every integer \(n\), exactly one of the following holds: the orbit meets \(0\); the orbit meets \(1\); the orbit meets \(-1\); or the absolute values are unbounded.
+\end{theorem}
+
+\begin{proof}
+The covering is an induction on \(\lvert n\rvert\). If \(n=0\), the orbit meets \(0\). If \(n\equiv 0\pmod{3}\) and \(n\neq 0\), Lemma~\ref{lem:quot} supplies the smaller seed \(n/3=S(n)\), and the inductive hypothesis transfers a meeting or unboundedness along the tail. If \(n\equiv 1\pmod{3}\) and \(\lvert n\rvert\ge 2\), the same transfer uses Lemma~\ref{lem:returnabs} at time \(2\). If \(n=1\), the orbit meets \(1\). If \(n=-1\), the orbit meets \(-1\). If \(n\equiv 2\pmod{3}\) and \(n\neq -1\), Lemma~\ref{lem:grow} says that the absolute values are unbounded.
+
+The three meetings are mutually exclusive. The tail after \(0\) is constantly \(0\), so it is neither \(1\) nor \(-1\). The tail after \(-1\) is constantly \(-1\), so it is neither \(0\) nor \(1\). The tail after \(1\) lies in \(\{1,3\}\), so it is neither \(0\) nor \(-1\). If the earlier time were the other cycle, the same tail obstruction applies with the times exchanged.
+
+A meeting of \(0\), \(1\), or \(-1\) produces a tail of absolute value at most \(3\). The finite prefix before that meeting is bounded by its own maximum, so the orbit is not absolutely unbounded.
+\end{proof}
+
+\end{document}

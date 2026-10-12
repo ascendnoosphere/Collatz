@@ -1,0 +1,251 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Unit return at multiplier one}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Let \(T_j(q)\) be the sum of \(q^0,\dots,q^{j-1}\), with the empty sum equal to
+zero, and let \(A_j(q,c,n)=q^j n+c\,T_j(q)\). When the multiplier is \(1\),
+the offset sum is the time itself, so \(A_j(1,c,n)=n+jc\). If \(j\) is the
+first time the signed divisor \(d\) divides this state, the raw orbit agrees
+with the translation through time \(j\), and the next raw step is the exact
+quotient \((n+jc)/d\). Cancelling \(|d|\) leaves
+\[
+|d|\cdot\bigl|(n+jc)/d\bigr|\le |n|+j|c|.
+\]
+Since \(|1|=1<|d|\), this is a core inequality at that seed, with expansion
+\(1\) and additive term \(j|c|\). The term still depends on the hitting time.
+\end{abstract}
+
+\section{The raw step and the affine state}
+
+A parameter record \(p\) consists of integers \(q\), \(c\), and \(d\) with
+\(|d|\ge 2\). In particular \(d\neq 0\). The raw step is
+\[
+S_p(n)=
+\begin{cases}
+n/d, & \text{if \(d\) divides \(n\)},\\
+qn+c, & \text{otherwise.}
+\end{cases}
+\]
+Write \(S_p^{0}(n)=n\) and \(S_p^{k+1}(n)=S_p(S_p^{k}(n))\). The offset sum is
+defined by \(T_0(q)=0\) and \(T_{j+1}(q)=T_j(q)+q^j\). It satisfies
+\(T_{j+1}(q)=q\,T_j(q)+1\), and the unit case \(T_j(1)=j\) is used below as a
+known evaluation of this sum.
+
+\begin{definition}
+\label{def:affine-state}
+The affine state at time \(j\) is \(A_j(q,c,n)=q^j n+c\,T_j(q)\).
+\end{definition}
+
+\begin{definition}
+\label{def:first-hit}
+Let \(p\) have multiplier \(q\), offset \(c\), and divisor \(d\). The time
+\(j\) is a first hit of the seed \(n\), written \(\operatorname{Hit}(p,n,j)\),
+when \(d\) divides \(A_j(q,c,n)\) and \(d\) divides \(A_i(q,c,n)\) for no
+natural number \(i<j\).
+\end{definition}
+
+When \(j=0\), the failure clause is vacuous, so a first hit at time zero is
+divisibility of the seed. The predicate does not assert that a first hit
+exists.
+
+\begin{theorem}
+\label{thm:unit-affine}
+For every \(c,n\in\Z\) and every \(j\in\N\),
+\[
+A_j(1,c,n)=n+jc.
+\]
+\end{theorem}
+
+\begin{proof}
+The unit evaluation of the offset sum gives \(T_j(1)=j\). The power \(1^j\)
+equals \(1\), including the case \(j=0\), where both sides are \(1\). Therefore
+\begin{align*}
+A_j(1,c,n)
+&=1^j\,n+c\,T_j(1)\\
+&=1\cdot n+c\cdot j\\
+&=n+jc,
+\end{align*}
+where the last step is commutativity of multiplication in \(\Z\).
+\end{proof}
+
+\section{The division-free prefix}
+
+The next theorem is the bridge from the affine state to the raw orbit. Its
+hypothesis is non-divisibility of affine states before time \(j\).
+Divisibility at time \(j\) itself is not forbidden.
+
+\begin{theorem}
+\label{thm:unit-prefix}
+Let \(p\) be a parameter record with multiplier \(q\), offset \(c\), and
+divisor \(d\), and assume \(q=1\). Let \(n\in\Z\) and \(j\in\N\). If
+\(d\nmid A_i(q,c,n)\) for every natural number \(i<j\), then
+\[
+S_p^{j}(n)=n+jc.
+\]
+\end{theorem}
+
+\begin{proof}
+The proof is by induction on \(j\).
+
+If \(j=0\), then \(S_p^{0}(n)=n\) by definition of iteration, and
+\(n+0\cdot c=n\). The hypothesis on earlier times is empty.
+
+Suppose the statement holds at time \(j\), and fix a seed for which
+\(d\nmid A_i(q,c,n)\) whenever \(i<j+1\). Every \(i<j\) satisfies \(i<j+1\),
+so the inductive hypothesis applies and yields \(S_p^{j}(n)=n+jc\).
+Theorem~\ref{thm:unit-affine}, together with \(q=1\), gives
+\(A_j(q,c,n)=n+jc\). The hypothesis at time \(j\) says that \(d\) does not
+divide \(A_j(q,c,n)\). Substituting the two equalities, \(d\) does not divide
+\(S_p^{j}(n)\).
+
+The raw step on a non-divisible state is the affine branch, so
+\[
+S_p^{j+1}(n)=S_p(S_p^{j}(n))=q\,S_p^{j}(n)+c.
+\]
+Insert \(q=1\) and the inductive evaluation:
+\[
+S_p^{j+1}(n)=1\cdot(n+jc)+c=n+jc+c.
+\]
+The natural-number successor casts to the integer successor,
+\((j+1)=j+1\) in \(\Z\), hence \(n+jc+c=n+(j+1)c\), as required.
+\end{proof}
+
+\section{The return}
+
+\begin{theorem}
+\label{thm:unit-return}
+Let \(p\) be a parameter record with multiplier \(q\), offset \(c\), and
+divisor \(d\), and assume \(q=1\). If \(\operatorname{Hit}(p,n,j)\), then
+\[
+S_p\bigl(S_p^{j}(n)\bigr)=(n+jc)/d.
+\]
+The quotient is an integer.
+\end{theorem}
+
+\begin{proof}
+Write \(\operatorname{Hit}(p,n,j)\) as the conjunction of
+\(d\mid A_j(q,c,n)\) and \(d\nmid A_i(q,c,n)\) for every \(i<j\).
+Theorem~\ref{thm:unit-prefix} applies to the second clause and gives
+\(S_p^{j}(n)=n+jc\). Theorem~\ref{thm:unit-affine} and the hypothesis \(q=1\)
+give \(A_j(q,c,n)=n+jc\). Therefore \(d\) divides \(n+jc\), and hence \(d\)
+divides \(S_p^{j}(n)\).
+
+On a divisible state the raw step is exact division by \(d\):
+\[
+S_p\bigl(S_p^{j}(n)\bigr)=S_p^{j}(n)/d=(n+jc)/d.
+\]
+Exactness is the integer identity \(d\cdot((n+jc)/d)=n+jc\), which holds
+whenever \(d\) divides \(n+jc\). Admissibility \(|d|\ge 2\) is not required for
+this cancellation; it is part of the record, and it is used only to place the
+same quotient in the core comparison below.
+\end{proof}
+
+\section{The magnitude bound}
+
+\begin{theorem}
+\label{thm:unit-magnitude}
+Let \(p\) be a parameter record with multiplier \(q\), offset \(c\), and
+divisor \(d\), and assume \(q=1\). If \(\operatorname{Hit}(p,n,j)\), and if
+\(r=S_p(S_p^{j}(n))\), then
+\[
+|d|\cdot|r|\le |n|+j|c|.
+\]
+\end{theorem}
+
+\begin{proof}
+Theorem~\ref{thm:unit-return} gives \(r=(n+jc)/d\). The same argument shows
+that \(d\) divides \(n+jc\). For any integers \(a\) and \(b\) with \(b\)
+dividing \(a\), the absolute value of the quotient in \(\Z\) is the
+quotient of the absolute values in \(\N\):
+\[
+|a/b|=|a|/|b|.
+\]
+Taking \(a=n+jc\) and \(b=d\) gives \(|r|=|n+jc|/|d|\). Divisibility in
+\(\Z\) implies divisibility of absolute values, so \(|d|\) divides
+\(|n+jc|\) in \(\N\). Multiplying by \(|d|\) therefore cancels that
+division:
+\[
+|d|\cdot|r|=|d|\cdot\bigl(|n+jc|/|d|\bigr)=|n+jc|.
+\]
+The triangle inequality in \(\Z\) gives \(|n+jc|\le |n|+|jc|\). Since \(j\) is
+a natural number, \(|jc|=|j|\,|c|=j|c|\). Combining these relations yields
+\[
+|d|\cdot|r|=|n+jc|\le |n|+j|c|.
+\]
+\end{proof}
+
+\begin{theorem}
+\label{thm:unit-core}
+Let \(p\) be a parameter record with multiplier \(q\), offset \(c\), and
+divisor \(d\), and assume \(q=1\). If \(\operatorname{Hit}(p,n,j)\), and if
+\(r=S_p(S_p^{j}(n))\), then \(|q|<|d|\) and
+\[
+|d|\cdot|r|\le |q|\cdot|n|+j|c|.
+\]
+Thus, at the seed \(n\), the return obeys the core inequality with expansion
+\(A=|q|=1\) and additive term \(B=j|c|\).
+\end{theorem}
+
+\begin{proof}
+The hypothesis \(q=1\) gives \(|q|=1\). The record supplies \(|d|\ge 2\), so
+\(|q|<|d|\). Theorem~\ref{thm:unit-magnitude} is the inequality
+\(|d|\cdot|r|\le |n|+j|c|\). Multiplying \(|n|\) by \(|q|=1\) does not change
+the right-hand side, and the resulting inequality is the one stated.
+\end{proof}
+
+\begin{remark}
+\label{rem:not-uniform}
+The additive term \(B=j|c|\) depends on the hitting time of the seed under
+consideration. The comparison \(|q|<|d|\) is uniform for every record with
+multiplier \(1\), because it uses only \(|d|\ge 2\). No proof is given here
+that a first hit, when it exists, satisfies \(j\le |d|-1\). Without that
+clock bound, \(B\) is not replaced by \((|d|-1)|c|\) or by any other quantity
+independent of \(j\).
+\end{remark}
+
+\begin{remark}
+\label{rem:not-claimed}
+The three comparisons do not assert that any seed has a first hit. They do not
+assert the core inequality at a state that is not the seed of the chosen hit,
+so they do not by themselves put every orbit into a finite invariant interval.
+Nothing is claimed for a multiplier other than \(1\). Equality of the raw
+iterate with \(n+jc\) uses the division-free prefix and is not claimed at any
+time after the division.
+\end{remark}
+
+\end{document}

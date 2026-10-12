@@ -1,0 +1,246 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Congruence transport of affine states}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Let \(T_j(q)\) be the sum of the powers \(q^0,\dots,q^{j-1}\), with the empty
+sum equal to zero, and let
+\(A_j(q,c,n)=q^j n+c\,T_j(q)\). Replacing the seed \(n\) by \(n+td\) adds
+exactly \(q^j td\) to this state, for every pair of integers \(t,d\) and every
+time \(j\). The difference is therefore a multiple of \(d\) at every time, and
+divisibility by \(d\) is unchanged at every time. When \(d\) is the signed
+divisor of a parameter record, the first time at which the divisor divides the
+affine state is the same for \(n\) and for \(n+td\). The argument is an
+identity in \(\Z\). It does not produce a state of large absolute value.
+\end{abstract}
+
+\section{Affine states}
+
+Throughout, \(q,c,n,t,d\) denote integers and \(j\) denotes a natural number,
+including zero. The offset sum is defined by \(T_0(q)=0\) and
+\[
+T_{j+1}(q)=T_j(q)+q^j.
+\]
+Thus \(T_j(q)=q^0+\cdots+q^{j-1}\) when \(j\ge 1\). No closed form of this sum
+is required below: the sum depends on \(q\) and \(j\), not on the seed.
+
+\begin{definition}
+\label{def:affine-state}
+The \emph{affine state} at time \(j\) is
+\[
+A_j(q,c,n)=q^j n+c\,T_j(q).
+\]
+\end{definition}
+
+A parameter record consists of integers \(q\), \(c\), and \(d\) with
+\(|d|\ge 2\). In particular \(d\neq 0\), since \(|d|\ge 2>0\). The raw map
+sends \(n\) to \(n/d\) when \(d\) divides \(n\), and to \(qn+c\) otherwise.
+The theorems in this note do not iterate that map. They concern only the
+integer \(A_j(q,c,n)\) and divisibility of that integer.
+
+\begin{definition}
+\label{def:first-hit}
+Let \(p\) be a parameter record with multiplier \(q\), offset \(c\), and
+divisor \(d\). The time \(j\) is a \emph{first hit} of the seed \(n\), written
+\(\operatorname{Hit}(p,n,j)\), when
+\[
+d\mid A_j(q,c,n)
+\]
+and
+\[
+d\nmid A_i(q,c,n)\qquad\text{for every natural number \(i<j\).}
+\]
+\end{definition}
+
+When \(j=0\), the second requirement is vacuous, so a first hit at time zero
+is exactly divisibility of the seed. The predicate does not assert that a raw
+orbit equals the affine state, and it does not assert that any seed has a
+first hit.
+
+\section{The shift identity}
+
+\begin{theorem}
+\label{thm:affine-class-shift}
+For all \(q,c,n,t,d\in\Z\) and every \(j\in\N\),
+\[
+A_j(q,c,n+td)=A_j(q,c,n)+q^j td.
+\]
+\end{theorem}
+
+\begin{proof}
+Expand the left-hand side by Definition~\ref{def:affine-state}:
+\[
+A_j(q,c,n+td)=q^j(n+td)+c\,T_j(q).
+\]
+Distributivity in \(\Z\) gives \(q^j(n+td)=q^j n+q^j(td)\), and multiplication
+of integers is associative, so \(q^j(td)=(q^j t)d=q^j td\). Therefore
+\begin{align*}
+A_j(q,c,n+td)
+&=q^j n+q^j td+c\,T_j(q)\\
+&=(q^j n+c\,T_j(q))+q^j td\\
+&=A_j(q,c,n)+q^j td,
+\end{align*}
+where the last step is again Definition~\ref{def:affine-state}. The offset
+sum is the same on both sides because it does not depend on the seed.
+\end{proof}
+
+The identity is an equality of integers, not merely a congruence. It holds
+for every integer \(d\), including zero and the units \(\pm 1\), and for
+negative \(q\), \(t\), and \(d\). Admissibility \(|d|\ge 2\) is not used.
+
+\begin{theorem}
+\label{thm:difference-multiple}
+For all \(q,c,n,t,d\in\Z\) and every \(j\in\N\),
+\[
+d\mid A_j(q,c,n+td)-A_j(q,c,n).
+\]
+In particular, if \(i<j\), the same statement at time \(i\) gives
+\[
+d\mid A_i(q,c,n+td)-A_i(q,c,n).
+\]
+\end{theorem}
+
+\begin{proof}
+Theorem~\ref{thm:affine-class-shift} at time \(j\) rearranges to
+\[
+A_j(q,c,n+td)-A_j(q,c,n)=q^j td.
+\]
+The right-hand side equals \(d\cdot(q^j t)\), so \(d\) divides the difference.
+The natural number \(j\) was arbitrary. Applying the same conclusion at an
+earlier time \(i\) gives the second claim.
+\end{proof}
+
+\begin{theorem}
+\label{thm:divisibility-shift}
+Let \(p\) be a parameter record with multiplier \(q\), offset \(c\), and
+divisor \(d\). For every \(n,t\in\Z\) and every \(i\in\N\),
+\[
+d\mid A_i(q,c,n)
+\quad\text{if and only if}\quad
+d\mid A_i(q,c,n+td).
+\]
+\end{theorem}
+
+\begin{proof}
+Write \(S=A_i(q,c,n+td)\) and \(U=A_i(q,c,n)\). By
+Theorem~\ref{thm:difference-multiple} there is an integer \(k\) such that
+\[
+S-U=d k.
+\]
+Both directions are witnessed explicitly.
+
+Suppose first that \(d\) divides \(U\). Then \(U=dm\) for some \(m\in\Z\).
+Substituting the difference gives
+\[
+S=U+(S-U)=dm+dk=d(m+k),
+\]
+so \(d\) divides \(S\).
+
+Suppose conversely that \(d\) divides \(S\). Then \(S=dm\) for some
+\(m\in\Z\). Solving the difference for the unshifted state gives
+\[
+U=S-(S-U)=dm-dk=d(m-k),
+\]
+so \(d\) divides \(U\).
+
+The two constructions are inverses as integer witnesses, but the proof uses
+only that each direction produces some witness. The time \(i\) is arbitrary,
+so the equivalence holds at the hitting time and at every earlier time.
+\end{proof}
+
+\section{Transport of the first hit}
+
+\begin{theorem}
+\label{thm:first-hit-shift}
+Let \(p\) be a parameter record with divisor \(d\). For every \(n,t\in\Z\) and
+every \(j\in\N\),
+\[
+\operatorname{Hit}(p,n,j)
+\quad\text{if and only if}\quad
+\operatorname{Hit}(p,n+td,j).
+\]
+\end{theorem}
+
+\begin{proof}
+Let \(q\) and \(c\) be the multiplier and offset of \(p\). By
+Definition~\ref{def:first-hit}, the forward implication assumes
+\[
+d\mid A_j(q,c,n)
+\]
+and \(d\nmid A_i(q,c,n)\) for every \(i<j\), and must produce the same two
+statements with seed \(n+td\). The backward implication assumes the two
+statements for \(n+td\) and must return them for \(n\).
+
+Apply Theorem~\ref{thm:divisibility-shift} at time \(j\). Divisibility of
+\(A_j(q,c,n)\) is equivalent to divisibility of \(A_j(q,c,n+td)\), so the
+hitting clause transports in both directions.
+
+It remains to transport the failures, also in both directions. Fix \(i<j\).
+Theorem~\ref{thm:difference-multiple} supplies a multiple of \(d\) at this
+earlier time, and Theorem~\ref{thm:divisibility-shift} turns that multiple
+into the equivalence
+\[
+d\mid A_i(q,c,n)
+\quad\text{if and only if}\quad
+d\mid A_i(q,c,n+td).
+\]
+Thus failure for \(n\) implies failure for \(n+td\), and failure for
+\(n+td\) implies failure for \(n\). Since \(i<j\) was arbitrary, the universal
+quantifier over earlier times is preserved. Both directions of
+Definition~\ref{def:first-hit} follow.
+\end{proof}
+
+\begin{remark}
+\label{rem:not-a-large-state}
+The equivalence identifies two divisibility patterns. It does not assert that
+either pattern occurs, and the correction term \(q^j td\) may be zero, for
+instance when \(t=0\) or \(j>0\) and \(q=0\). Nothing in the identity forces
+\(|A_j(q,c,n)|\) to exceed a prescribed bound. Producing a large state, if it
+is possible, requires a separate choice of seed or shift and a separate
+estimate.
+\end{remark}
+
+\begin{remark}
+\label{rem:not-the-raw-orbit}
+If some earlier raw iterate is divisible by \(d\), the raw map leaves the
+affine branch, while \(A_i(q,c,n)\) is still defined. Equality of the raw
+iterate with the affine state needs a division-free prefix and is not proved
+here. The transport applies to the affine state whether or not that prefix
+holds.
+\end{remark}
+
+\end{document}

@@ -1,0 +1,487 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Reflection at the negative unit multiplier}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For the multiplier \(-1\), the affine state at an even time is the seed and at
+an odd time is the reflection of the seed through the offset. The two-step
+recurrence repeats those values, with times \(0\) and \(1\) as base cases.
+Consequently the signed divisor meets the affine state at time \(0\), at time
+\(1\), or never. A return quotient exists only in the first two cases. If
+neither value is divisible, the raw orbit alternates and never divides, so
+that alternation is a trap of the undivided branch and not a cycle of the
+return map.
+\end{abstract}
+
+\section{Affine state and return}
+
+Throughout, \(q\), \(c\), \(n\), and \(d\) denote integers and \(j\) denotes a
+natural number, including zero. The offset sum is defined by \(T_0(q)=0\) and
+\[
+T_{j+1}(q)=T_j(q)+q^j.
+\]
+The two evaluations used below are \(T_{2k}(-1)=0\) and \(T_{2k+1}(-1)=1\)
+for every \(k\in\N\).
+
+\begin{definition}
+\label{def:affine-state}
+The affine state at time \(j\) is
+\[
+A_j(q,c,n)=q^j n+c\,T_j(q).
+\]
+\end{definition}
+
+A parameter record consists of a multiplier \(q\), an offset \(c\), and a
+divisor \(d\) with \(|d|\ge 2\). In particular \(d\neq 0\). The raw step is
+\[
+S(n)=\begin{cases}
+n/d, & d\mid n,\\
+qn+c, & d\nmid n.
+\end{cases}
+\]
+Write \(S^{0}(n)=n\) and \(S^{j+1}(n)=S(S^{j}(n))\). Division of an exact
+multiple is the integer quotient: if \(d\mid m\) and \(m=dk\), then
+\(m/d=k\), hence \(m=d\cdot(m/d)\). This uses \(d\neq 0\).
+
+\begin{definition}
+\label{def:first-hit}
+Time \(j\) is a first hit of the seed \(n\), written
+\(\operatorname{Hit}(p,n,j)\), when \(d\mid A_j(q,c,n)\) and
+\(d\nmid A_i(q,c,n)\) for every natural number \(i<j\).
+\end{definition}
+
+When \(j=0\), the second requirement quantifies over the empty set of earlier
+times.
+
+\begin{definition}
+\label{def:return}
+An integer \(r\) is a return of \(n\), written
+\(\operatorname{Ret}(p,n,r)\), when there exists \(j\in\N\) such that
+\(\operatorname{Hit}(p,n,j)\) and \(A_j(q,c,n)=dr\). The pair \((n,r)\) is a
+two-cycle of the return map when \(\operatorname{Ret}(p,n,r)\) and
+\(\operatorname{Ret}(p,r,n)\).
+\end{definition}
+
+The return map is defined only at seeds that have a first hit. An undivided
+orbit is not in its domain.
+
+\section{Powers of minus one}
+
+\begin{lemma}
+\label{lem:pow-even}
+For every \(k\in\N\), \((-1)^{2k}=1\).
+\end{lemma}
+
+\begin{proof}
+The exponent identity \(a^{2k}=(a^2)^k\) gives
+\((-1)^{2k}=((-1)^2)^k\). Proceed by induction on \(k\). If \(k=0\), then
+\(((-1)^2)^0=1\). If the claim holds at \(k\), then
+\[
+((-1)^2)^{k+1}=((-1)^2)^k\cdot(-1)^2=1\cdot(-1)^2.
+\]
+The square is \((-1)^2=(-1)\cdot(-1)=1\), so the product is \(1\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:pow-odd}
+For every \(k\in\N\), \((-1)^{2k+1}=-1\).
+\end{lemma}
+
+\begin{proof}
+The successor rule \(a^{m+1}=a^m\cdot a\) at \(m=2k\) gives
+\[
+(-1)^{2k+1}=(-1)^{2k}\cdot(-1).
+\]
+Lemma~\ref{lem:pow-even} replaces the even power by \(1\), and
+\(1\cdot(-1)=-1\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:parity}
+For every \(j\in\N\), either \(j=2k\) for some \(k\in\N\), or \(j=2k+1\) for
+some \(k\in\N\).
+\end{lemma}
+
+\begin{proof}
+Induce on \(j\). The time \(0\) equals \(2\cdot 0\). If \(j=2k\), then
+\(j+1=2k+1\). If \(j=2k+1\), then \(j+1=2k+2=2(k+1)\).
+\end{proof}
+
+\section{The closed form}
+
+\begin{theorem}
+\label{thm:reflection-affine}
+Let \(C,n\in\Z\) and let \(j\in\N\). If \(j=2k\) for some \(k\in\N\), then
+\[
+A_j(-1,C,n)=n.
+\]
+If \(j=2k+1\) for some \(k\in\N\), then
+\[
+A_j(-1,C,n)=C-n.
+\]
+\end{theorem}
+
+\begin{proof}
+Suppose first that \(j=2k\). Definition~\ref{def:affine-state} expands the
+state as
+\[
+A_{2k}(-1,C,n)=(-1)^{2k}n+C\,T_{2k}(-1).
+\]
+The even offset sum is \(T_{2k}(-1)=0\), and Lemma~\ref{lem:pow-even} gives
+\((-1)^{2k}=1\). Therefore the state equals \(1\cdot n+C\cdot 0=n\).
+
+Suppose instead that \(j=2k+1\). The same expansion gives
+\[
+A_{2k+1}(-1,C,n)=(-1)^{2k+1}n+C\,T_{2k+1}(-1).
+\]
+The odd offset sum is \(T_{2k+1}(-1)=1\), and Lemma~\ref{lem:pow-odd} gives
+\((-1)^{2k+1}=-1\). Therefore the state equals \(-n+C=C-n\).
+\end{proof}
+
+The two base times are the cases \(k=0\). They are recorded separately
+because the repetition argument below takes them as its starting values.
+
+\begin{lemma}
+\label{lem:time-zero}
+For all \(C,n\in\Z\), \(A_0(-1,C,n)=n\).
+\end{lemma}
+
+\begin{proof}
+Here \(0=2\cdot 0\), so \(T_0(-1)=T_{2\cdot 0}(-1)=0\) and
+\((-1)^0=(-1)^{2\cdot 0}=1\) by Lemma~\ref{lem:pow-even}. Hence
+\[
+A_0(-1,C,n)=1\cdot n+C\cdot 0=n.
+\]
+\end{proof}
+
+\begin{lemma}
+\label{lem:time-one}
+For all \(C,n\in\Z\), \(A_1(-1,C,n)=C-n\).
+\end{lemma}
+
+\begin{proof}
+Here \(1=2\cdot 0+1\), so \(T_1(-1)=1\) and \((-1)^1=-1\) by
+Lemma~\ref{lem:pow-odd}. Hence
+\[
+A_1(-1,C,n)=-n+C\cdot 1=C-n.
+\]
+\end{proof}
+
+\section{Two-time repetition}
+
+The offset sum adds two powers at once:
+\[
+T_{j+2}(q)=T_j(q)+q^j+q^{j+1}.
+\]
+For \(q=-1\) those two powers cancel, so the affine state is periodic of
+period \(2\).
+
+\begin{lemma}
+\label{lem:repeat-two}
+For all \(C,n\in\Z\) and every \(j\in\N\),
+\[
+A_{j+2}(-1,C,n)=A_j(-1,C,n).
+\]
+\end{lemma}
+
+\begin{proof}
+Expand both sides by Definition~\ref{def:affine-state}. The offset identity
+replaces \(T_{j+2}(-1)\) by
+\[
+T_j(-1)+(-1)^j+(-1)^{j+1}.
+\]
+The successor rule gives \((-1)^{j+1}=(-1)^j\cdot(-1)=-(-1)^j\), so
+\[
+(-1)^j+(-1)^{j+1}=(-1)^j-(-1)^j=0.
+\]
+For the leading power, \(j+2=2+j\) and
+\((-1)^{2+j}=(-1)^2\cdot(-1)^j\). Since \((-1)^2=1\),
+\[
+(-1)^{j+2}=(-1)^j.
+\]
+Therefore
+\begin{align*}
+A_{j+2}(-1,C,n)
+&=(-1)^j n+C\bigl(T_j(-1)+0\bigr)\\
+&=(-1)^j n+C\,T_j(-1)\\
+&=A_j(-1,C,n).
+\end{align*}
+The integer \(j\) was arbitrary, so the identity holds at every time,
+including the base times \(j=0\) and \(j=1\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:repeat-bases}
+For all \(C,n\in\Z\),
+\[
+A_{2}(-1,C,n)=A_0(-1,C,n)
+\quad\text{and}\quad
+A_{3}(-1,C,n)=A_1(-1,C,n).
+\]
+In particular \(A_2(-1,C,n)=n\) and \(A_3(-1,C,n)=C-n\).
+\end{lemma}
+
+\begin{proof}
+Lemma~\ref{lem:repeat-two} at \(j=0\) is \(A_{0+2}=A_0\). The same lemma at
+\(j=1\) is \(A_{1+2}=A_1\). Lemmas~\ref{lem:time-zero} and~\ref{lem:time-one}
+replace the base states by \(n\) and \(C-n\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:from-bases}
+For all \(C,n\in\Z\) and every \(k\in\N\),
+\[
+A_{2k}(-1,C,n)=A_0(-1,C,n)
+\quad\text{and}\quad
+A_{2k+1}(-1,C,n)=A_1(-1,C,n).
+\]
+\end{lemma}
+
+\begin{proof}
+Induce on \(k\). If \(k=0\), then \(2k=0\) and \(2k+1=1\), so both claims
+are equalities of a state with itself. These are the base cases of the
+repetition: time \(0\) and time \(1\).
+
+Suppose both claims hold at \(k\). The index identities
+\(2(k+1)=2k+2\) and \(2(k+1)+1=(2k+1)+2\), together with
+Lemma~\ref{lem:repeat-two}, give
+\[
+A_{2(k+1)}(-1,C,n)=A_{2k}(-1,C,n)
+\]
+and
+\[
+A_{2(k+1)+1}(-1,C,n)=A_{2k+1}(-1,C,n).
+\]
+The inductive hypothesis replaces the right-hand sides by \(A_0(-1,C,n)\)
+and \(A_1(-1,C,n)\).
+\end{proof}
+
+\begin{corollary}
+\label{cor:by-repeat}
+For all \(C,n\in\Z\) and every \(k\in\N\),
+\[
+A_{2k}(-1,C,n)=n
+\quad\text{and}\quad
+A_{2k+1}(-1,C,n)=C-n.
+\]
+\end{corollary}
+
+\begin{proof}
+Lemma~\ref{lem:from-bases} reduces the even time to time \(0\) and the odd
+time to time \(1\). Lemmas~\ref{lem:time-zero} and~\ref{lem:time-one} supply
+the two base values.
+\end{proof}
+
+Corollary~\ref{cor:by-repeat} is the same closed form as
+Theorem~\ref{thm:reflection-affine}, reached by repeating the base times
+instead of invoking the offset-sum evaluation at a general index. Both
+derivations are used below: the theorem evaluates an arbitrary time directly,
+and the corollary explains why a later time cannot introduce a third residue.
+
+\section{The three hit clauses}
+
+Fix a parameter record with multiplier \(q=-1\), offset \(C\), and divisor
+\(d\) satisfying \(|d|\ge 2\). For every seed \(n\in\Z\) and every time \(j\),
+Theorem~\ref{thm:reflection-affine} transports across \(q=-1\):
+\[
+A_j(-1,C,n)=\begin{cases}
+n, & j=2k,\\
+C-n, & j=2k+1.
+\end{cases}
+\]
+
+\begin{theorem}
+\label{thm:hit-zero}
+\(\operatorname{Hit}(p,n,0)\) if and only if \(d\mid n\). If \(d\mid n\), then
+\(n=d\cdot(n/d)\), the raw step is \(S(n)=n/d\), and
+\(\operatorname{Hit}(p,n,j)\) is false for every \(j>0\).
+\end{theorem}
+
+\begin{proof}
+By Lemma~\ref{lem:time-zero}, \(A_0(-1,C,n)=n\). Thus \(d\) divides the time-zero
+state if and only if \(d\) divides \(n\). There is no natural number \(i<0\),
+so the earlier-time requirement in Definition~\ref{def:first-hit} holds
+automatically at time \(0\). This is the equivalence.
+
+Now assume \(d\mid n\). Since \(d\neq 0\) and \(n=dk\) for the witness \(k\) of
+divisibility, the quotient rule gives \(n/d=k\), hence
+\(n=d\cdot(n/d)\). The raw step on a divisible input is division, so
+\(S(n)=n/d\).
+
+Suppose \(j>0\) and, for a contradiction, that time \(j\) is a first hit.
+Definition~\ref{def:first-hit} then requires \(d\nmid A_0(-1,C,n)\). But
+\(A_0(-1,C,n)=n\) and \(d\mid n\), a contradiction. Thus no positive time is a
+first hit. The return at this seed is the time-zero quotient \(n/d\), because
+\(A_0(-1,C,n)=n=d\cdot(n/d)\) and time \(0\) is a first hit.
+\end{proof}
+
+\begin{theorem}
+\label{thm:hit-one}
+Assume \(d\nmid n\) and \(d\mid C-n\). Then \(\operatorname{Hit}(p,n,1)\),
+\[
+A_1(-1,C,n)=C-n=d\cdot\frac{C-n}{d},
+\]
+the raw steps are \(S(n)=C-n\) and \(S(S(n))=(C-n)/d\), and
+\(\operatorname{Hit}(p,n,j)\) is false for every \(j\neq 1\).
+\end{theorem}
+
+\begin{proof}
+Lemma~\ref{lem:time-one} gives \(A_1(-1,C,n)=C-n\). The hypothesis
+\(d\mid C-n\) is therefore divisibility at time \(1\). The only natural number
+strictly less than \(1\) is \(0\), and \(A_0(-1,C,n)=n\) is not divisible by
+\(d\). Hence time \(1\) is a first hit. The quotient rule, using \(d\neq 0\),
+gives \(C-n=d\cdot((C-n)/d)\). Combined with the evaluation of the state,
+the return is \((C-n)/d\).
+
+Since \(d\nmid n\), the raw step uses the affine branch:
+\[
+S(n)=(-1)\cdot n+C=C-n.
+\]
+The value \(C-n\) is divisible by \(d\), so the next raw step divides:
+\[
+S(C-n)=(C-n)/d.
+\]
+Substituting \(S(n)=C-n\) yields \(S(S(n))=(C-n)/d\).
+
+It remains to exclude every time other than \(1\). If time \(0\) were a first
+hit, Theorem~\ref{thm:hit-zero} would give \(d\mid n\), contrary to hypothesis.
+If \(j\ge 2\) were a first hit, Definition~\ref{def:first-hit} would require
+\(d\nmid A_1(-1,C,n)\). But \(A_1(-1,C,n)=C-n\) and \(d\mid C-n\). Thus the
+first hit is exactly time \(1\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:no-hit}
+Assume \(d\nmid n\) and \(d\nmid C-n\). Then for every \(j\in\N\), time \(j\)
+is not a first hit. For every \(k\in\N\),
+\[
+A_{2k}(-1,C,n)=n,\qquad A_{2k+1}(-1,C,n)=C-n,
+\]
+and the raw iterates satisfy
+\[
+S^{2k}(n)=n,\qquad S^{2k+1}(n)=C-n.
+\]
+There is no return of \(n\), and \(n\) lies on no two-cycle of the return map.
+\end{theorem}
+
+\begin{proof}
+The affine evaluations are Corollary~\ref{cor:by-repeat}. To see that they
+forbid a first hit, fix \(j\) and apply Lemma~\ref{lem:parity}. If \(j=2k\),
+then every later even time repeats the time-zero value, so
+\(A_j(-1,C,n)=n\). Divisibility at time \(j\) would mean \(d\mid n\), which
+is false. If \(j=2k+1\), then every later odd time repeats the time-one
+value, so \(A_j(-1,C,n)=C-n\). Divisibility at time \(j\) would mean
+\(d\mid C-n\), which is false. In both cases time \(j\) fails
+Definition~\ref{def:first-hit}. Since \(j\) was arbitrary, no return exists:
+a return requires some first hit.
+
+Suppose there were a return two-cycle. By Definition~\ref{def:return} it
+would supply an integer \(r\) with \(\operatorname{Ret}(p,n,r)\). That already
+requires a return of \(n\), which has just been excluded. The alternating
+pair is therefore not a cycle of the return map.
+
+The same two residues are the raw orbit. Because \(d\nmid n\), the first raw
+step is the affine branch, \(S(n)=C-n\). Because \(d\nmid C-n\), the next
+raw step is again the affine branch,
+\[
+S(C-n)=(-1)\cdot(C-n)+C=n.
+\]
+Induce on \(k\). For \(k=0\), one has \(S^{0}(n)=n\) and \(S^{1}(n)=S(n)=C-n\).
+These are the raw base cases. If \(S^{2k}(n)=n\) and \(S^{2k+1}(n)=C-n\), then
+\[
+S^{2(k+1)}(n)=S(S^{2k+1}(n))=S(C-n)=n
+\]
+and
+\[
+S^{2(k+1)+1}(n)=S(S^{2(k+1)}(n))=S(n)=C-n.
+\]
+Every raw state is \(n\) or \(C-n\), neither of which is divisible by \(d\).
+The orbit remains on the undivided branch forever. That is a trap of the raw
+map. It is not a cycle of the return map, whose steps exist only after a
+division.
+\end{proof}
+
+\begin{theorem}
+\label{thm:reflection-hit}
+Let \(p\) be a parameter record with multiplier \(-1\), offset \(C\), and
+divisor \(d\) satisfying \(|d|\ge 2\), and let \(n\in\Z\). Then:
+\begin{enumerate}
+\item \(\operatorname{Hit}(p,n,0)\) if and only if \(d\mid n\). In that case
+the return is \(n/d\), the raw step equals that quotient, and no later time
+is a first hit.
+\item If \(d\nmid n\) and \(d\mid C-n\), then the first hit is exactly time
+\(1\) and the return is \((C-n)/d\). The raw orbit follows one affine step
+to \(C-n\) and then divides.
+\item If \(d\) divides neither \(n\) nor \(C-n\), then there is no first hit.
+Every even time repeats \(n\) and every odd time repeats \(C-n\), including
+the base times \(0\) and \(1\), and the raw orbit alternates between those
+two values.
+\end{enumerate}
+A return exists if and only if \(d\mid n\) or \(d\mid C-n\). Thus a return
+exists only in the first two clauses. The third clause is a trap, not a
+cycle of the return map.
+\end{theorem}
+
+\begin{proof}
+The three clauses are Theorems~\ref{thm:hit-zero}, \ref{thm:hit-one},
+and~\ref{thm:no-hit}, together with the transport of
+Theorem~\ref{thm:reflection-affine} from the multiplier \(-1\) to the record.
+
+Suppose a return exists, and let \(j\) be a first-hit time. By
+Lemma~\ref{lem:parity} and Theorem~\ref{thm:reflection-affine}, the state at
+time \(j\) is \(n\) or \(C-n\). Divisibility of that state yields
+\(d\mid n\) or \(d\mid C-n\).
+
+Conversely, if \(d\mid n\), Theorem~\ref{thm:hit-zero} supplies the return
+\(n/d\) at time \(0\). If \(d\mid C-n\) and also \(d\mid n\), the same
+time-zero return applies; the first hit is not time \(1\), because time \(0\)
+already hits. If \(d\mid C-n\) and \(d\nmid n\), Theorem~\ref{thm:hit-one}
+supplies the return \((C-n)/d\) at time \(1\). If neither divisibility holds,
+Theorem~\ref{thm:no-hit} says that no return exists. Therefore a return
+exists precisely on the complement of the third clause, which is the union
+of the situations covered by the first two clauses.
+\end{proof}
+
+\begin{remark}
+\label{rem:not-after-division}
+After the return in the first clause, the raw orbit has divided once. After
+the return in the second clause, it has taken one affine step and then
+divided. Neither clause describes the raw state at any later time. The third
+clause describes every raw time because no division ever occurs.
+\end{remark}
+
+\end{document}

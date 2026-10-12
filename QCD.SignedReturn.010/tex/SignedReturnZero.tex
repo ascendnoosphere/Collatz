@@ -1,0 +1,161 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Returns for a zero multiplier}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+With multiplier zero, the affine state at time zero is the seed, and the affine state at every positive time is the offset. The signed divisor meets that itinerary at time zero when it divides the seed, and at time one when it misses the seed but divides the offset. The raw return is then \(n/d\) or \(c/d\), respectively. If the divisor misses both integers, no time is a first hit. The constant continuation is a trap, not a return.
+\end{abstract}
+
+\section{Affine states and the raw step}
+
+Throughout, a parameter record consists of integers \(q\) and \(c\) and an integer \(d\) with \(|d|\ge 2\). In particular \(d\neq 0\). The raw step is the map \(\Map{T}{\Z}{\Z}\) given by
+\[
+T(x)=\begin{cases}
+x/d, & d\mid x,\\
+qx+c, & d\nmid x.
+\end{cases}
+\]
+When \(d\) divides \(x\), the integer \(x/d\) is the unique \(a\in\Z\) such that \(x=da\). It exists because \(d\mid x\), and it is unique because \(d\neq 0\): if \(da=db\), then \(d(a-b)=0\), so \(a-b=0\). The same uniqueness applies to negative divisors and negative seeds. Iteration starts at time zero, but the return statements below use at most two applications of \(T\).
+
+The offset sum is defined by \(U_0(q)=0\) and \(U_{j+1}(q)=U_j(q)+q^j\). Thus \(U_j(q)\) is the sum of \(q^0,\ldots,q^{j-1}\) when \(j\ge 1\), and the empty sum is zero. Powers of zero use the convention \(0^0=1\).
+
+\begin{lemma}
+\label{lem:trap-sum-zero}
+For every natural number \(k\), including zero, \(U_{k+1}(0)=1\).
+\end{lemma}
+
+\begin{proof}
+Proceed by induction on \(k\). If \(k=0\), then
+\[
+U_1(0)=U_0(0)+0^0=0+1=1.
+\]
+Suppose \(U_{k+1}(0)=1\). The successor index satisfies
+\[
+U_{(k+1)+1}(0)=U_{k+1}(0)+0^{k+1}.
+\]
+Here \(k+1\ge 1\), so \(0^{k+1}=0\). The inductive hypothesis replaces the first summand by \(1\), and \(1+0=1\).
+\end{proof}
+
+\begin{definition}
+\label{def:affine-state}
+The affine state of multiplier \(q\), offset \(c\), time \(j\in\N\) and seed \(n\in\Z\) is
+\[
+A_j(q,c,n)=q^j n+c\,U_j(q).
+\]
+When the parameter record is fixed, write \(A_j(n)\) for \(A_j(q,c,n)\).
+\end{definition}
+
+\begin{lemma}
+\label{lem:affine-at-zero}
+For all \(q,c,n\in\Z\), \(A_0(q,c,n)=n\).
+\end{lemma}
+
+\begin{proof}
+By definition, \(A_0(q,c,n)=q^0 n+c\,U_0(q)\). The empty power is \(q^0=1\) and the empty sum is \(U_0(q)=0\), so the expression is \(1\cdot n+c\cdot 0=n\).
+\end{proof}
+
+\begin{definition}
+\label{def:first-hit}
+Let \(p\) be a parameter record with multiplier \(q\), offset \(c\) and divisor \(d\). The time \(j\) is a first hit of the seed \(n\), written \(\operatorname{Hit}(p,n,j)\), when \(d\) divides \(A_j(n)\) and \(d\) divides \(A_i(n)\) for no natural number \(i<j\).
+\end{definition}
+
+When \(j=0\), there is no natural number \(i<0\), so a first hit at time zero is exactly divisibility of \(A_0(n)\). By Lemma~\ref{lem:affine-at-zero}, that state is the seed.
+
+\section{The zero-multiplier state}
+
+\begin{theorem}
+\label{thm:zero-affine}
+Let \(C,n\in\Z\) and let \(j\in\N\). If \(1\le j\), then \(A_j(0,C,n)=C\).
+\end{theorem}
+
+\begin{proof}
+Since \(1\le j\), one has \(j=(j-1)+1\) with \(j-1\in\N\). Lemma~\ref{lem:trap-sum-zero} at \(k=j-1\) gives \(U_j(0)=1\). The power in the affine state has positive exponent, so \(0^j=0\). Therefore
+\[
+A_j(0,C,n)=0^j n+C\,U_j(0)=0\cdot n+C\cdot 1=C.
+\]
+The seed \(n\) is multiplied by zero and does not appear in the value.
+\end{proof}
+
+Thus, for multiplier zero, the entire positive-time itinerary is the single integer \(c\). Every comparison at a time \(j\ge 2\) repeats the comparison at time one.
+
+\section{The three regimes}
+
+\begin{theorem}
+\label{thm:zero-hit-cases}
+Let \(p\) be a parameter record with multiplier \(q=0\), offset \(c\) and divisor \(d\), and let \(n\in\Z\). Then all three of the following hold.
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item If \(d\mid n\), then \(\operatorname{Hit}(p,n,0)\), the raw return is \(T(n)=n/d\), and every first-hit time of \(n\) equals \(0\).
+\item If \(d\nmid n\) and \(d\mid c\), then \(\operatorname{Hit}(p,n,1)\), the raw return is \(T(T(n))=c/d\), and every first-hit time of \(n\) equals \(1\).
+\item If \(d\nmid n\) and \(d\nmid c\), then \(A_0(n)=n\), \(A_j(n)=c\) for every \(j\ge 1\), and no natural number is a first hit of \(n\).
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+The multiplier of \(p\) is zero throughout.
+
+First assume \(d\mid n\). Lemma~\ref{lem:affine-at-zero} gives \(A_0(n)=n\), so \(d\) divides \(A_0(n)\). There is no natural number strictly less than \(0\), hence \(\operatorname{Hit}(p,n,0)\). The definition of the raw step on a divisible input gives \(T(n)=n/d\).
+
+It remains to exclude every positive time. Let \(j\) satisfy \(\operatorname{Hit}(p,n,j)\). If \(j=k+1\) for some \(k\in\N\), then \(0<j\), so the first-hit condition requires \(d\nmid A_0(n)\). But \(A_0(n)=n\) and \(d\mid n\), a contradiction. Therefore \(j=0\). In particular, divisibility of \(c\) does not create a second first hit: time zero has already occurred.
+
+Next assume \(d\nmid n\) and \(d\mid c\). Theorem~\ref{thm:zero-affine} at time \(1\) gives \(A_1(n)=c\), so \(d\) divides \(A_1(n)\). The only natural number strictly less than \(1\) is \(0\), and \(A_0(n)=n\) is not divisible by \(d\). Hence \(\operatorname{Hit}(p,n,1)\).
+
+The same two facts identify the raw return. Since \(d\nmid n\), the first raw step takes the affine branch. The multiplier is zero, so
+\[
+T(n)=0\cdot n+c=c.
+\]
+Since \(d\mid c\), the second raw step takes the division branch, and \(T(T(n))=T(c)=c/d\).
+
+Now let \(j\) be any first-hit time. The time \(j=0\) is impossible, because \(A_0(n)=n\) and \(d\nmid n\). Suppose \(j\ge 2\), and write \(j=\ell+2\) with \(\ell\in\N\). Then \(1<j\), so the first-hit condition requires \(d\nmid A_1(n)\). Theorem~\ref{thm:zero-affine} gives \(A_1(n)=c\), and \(d\mid c\), a contradiction. The only remaining possibility is \(j=1\).
+
+Finally assume \(d\nmid n\) and \(d\nmid c\). Lemma~\ref{lem:affine-at-zero} gives \(A_0(n)=n\). Theorem~\ref{thm:zero-affine}, applied to the offset \(c\) and the seed \(n\), gives \(A_j(n)=c\) for every \(j\ge 1\). These are the only two values the itinerary takes.
+
+Suppose toward a contradiction that \(\operatorname{Hit}(p,n,j)\) holds for some \(j\). If \(j=0\), then \(d\) divides \(A_0(n)=n\), contradicting \(d\nmid n\). If \(j\ge 1\), then \(d\) divides \(A_j(n)=c\), contradicting \(d\nmid c\). Therefore no natural number is a first hit.
+
+No quotient is attached to this third regime. The state \(c\) continues under the affine branch, because \(d\) does not divide it, but that continuation is not a division and is not a return. The theorem does not set \(T(n)\), \(c\), or \(n\) as a return value when both divisibility tests fail.
+\end{proof}
+
+\begin{remark}
+\label{rem:exhaustive}
+The three hypotheses are exhaustive. Exactly one of \(d\mid n\) and \(d\nmid n\) holds. In the second alternative, exactly one of \(d\mid c\) and \(d\nmid c\) holds. When both \(d\mid n\) and \(d\mid c\), only clause \textup{(i)} applies: the first hit is time zero and the return is \(n/d\), not the later quotient \(c/d\). Clause \textup{(ii)} is blocked by the hypothesis \(d\nmid n\). Clause \textup{(iii)} is the only regime in which the itinerary has no return.
+\end{remark}
+
+\begin{remark}
+\label{rem:zero-offset}
+If \(c=0\), then \(d\mid c\), because \(0=d\cdot 0\). Clause \textup{(iii)} does not occur. A seed divisible by \(d\) returns at time zero with value \(n/d\). A seed not divisible by \(d\) returns at time one with value \(0/d=0\). For a positive seed, that positive-time quotient is \(0\), hence is not the seed. The zero state is the quotient of the offset, not a declaration that the trapped constant \(0\) is a return of a non-divisible seed by some other rule: the seed is not trapped, because time one is divisible.
+\end{remark}
+
+\end{document}

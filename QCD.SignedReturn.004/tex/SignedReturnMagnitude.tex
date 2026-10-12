@@ -1,0 +1,212 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Magnitude of one affine return}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+The absolute value of the affine state \(q^{j}n+c\,U_{j}(q)\) is at most
+\(|q|^{j}|n|+|c|\,|U_{j}(q)|\). The only inequality is the triangle inequality.
+The absolute value of a product and the absolute value of a power are
+equalities, so they preserve the direction. If that state is the first affine
+state divisible by the signed divisor \(d\), exact division gives
+\(|d|\,|(q^{j}n+c\,U_{j}(q))/d|\) equal to the absolute value of the state, and
+the same majorant bounds the quotient. The comparison is one seed and one
+hitting time. It is not a uniform core.
+\end{abstract}
+
+\section{Affine states}
+
+Throughout, \(q\), \(c\), and \(n\) denote integers and \(j\) denotes a natural
+number, including zero. The offset sum is defined by \(U_{0}(q)=0\) and
+\[
+U_{j+1}(q)=U_{j}(q)+q^{j}.
+\]
+Thus \(U_{j}(q)\) is the sum of \(q^{0},\ldots,q^{j-1}\) when \(j\ge 1\), and
+the empty sum is zero. No closed form of the sum is required.
+
+\begin{definition}
+\label{def:affine-state}
+The \emph{affine state} at time \(j\) is
+\[
+A_{j}(q,c,n)=q^{j}n+c\,U_{j}(q).
+\]
+\end{definition}
+
+A parameter record consists of integers \(q\), \(c\), and \(d\) with
+\(|d|\ge 2\). Then \(d\neq 0\), since \(|d|\ge 2>0\). The raw map sends an
+integer \(m\) to \(m/d\) when \(d\) divides \(m\), and to \(qm+c\) otherwise.
+The theorems below do not iterate that map past a first hit. They bound the
+integer \(A_{j}(q,c,n)\) at one time at which \(d\) divides it.
+
+\begin{definition}
+\label{def:first-hit}
+Let the parameter record have multiplier \(q\), offset \(c\), and divisor
+\(d\). The time \(j\) is a \emph{first hit} of the seed \(n\) when
+\(d\) divides \(A_{j}(q,c,n)\) and \(d\) divides \(A_{i}(q,c,n)\) for no
+natural number \(i<j\).
+\end{definition}
+
+When \(j=0\), there is no natural number \(i<0\), so a first hit at time zero
+is divisibility of the seed. The definition does not assert that a first hit
+exists.
+
+\section{The triangle bound}
+
+\begin{theorem}
+\label{thm:affine-triangle}
+For all \(q,c,n\in\Z\) and every \(j\in\N\),
+\[
+\bigl|q^{j}n+c\,U_{j}(q)\bigr|
+\le |q|^{j}\,|n|+|c|\,\bigl|U_{j}(q)\bigr|.
+\]
+\end{theorem}
+
+\begin{proof}
+Write \(a=q^{j}n\) and \(b=c\,U_{j}(q)\). The triangle inequality on \(\Z\)
+states that \(|a+b|\le |a|+|b|\). This is the only step that is an inequality.
+
+The absolute value of a product is the product of the absolute values, so
+\[
+|a|=|q^{j}n|=|q^{j}|\,|n|
+\]
+and
+\[
+|b|=|c\,U_{j}(q)|=|c|\,\bigl|U_{j}(q)\bigr|.
+\]
+For every integer \(x\) and every natural number \(k\), including zero,
+\(|x^{k}|=|x|^{k}\). Indeed, \(x^{0}=1\) and \(|x|^{0}=1\). If the identity
+holds at \(k\), then
+\[
+|x^{k+1}|=|x^{k}x|=|x^{k}|\,|x|=|x|^{k}\,|x|=|x|^{k+1}.
+\]
+Applied to \(x=q\) and \(k=j\), this gives \(|q^{j}|=|q|^{j}\). Therefore
+\[
+|a|+|b|=|q|^{j}\,|n|+|c|\,\bigl|U_{j}(q)\bigr|.
+\]
+Substituting this equality into the right-hand side of
+\(|a+b|\le |a|+|b|\) does not change that side. The resulting comparison is
+still \(\le\), not \(\ge\). The left-hand side is
+\(\bigl|q^{j}n+c\,U_{j}(q)\bigr|\).
+\end{proof}
+
+The two terms on the left may cancel. The inequality may therefore be strict.
+Equality holds when \(q^{j}n\) and \(c\,U_{j}(q)\) are both nonnegative or both
+nonpositive, but the theorem does not require that alignment.
+
+\section{Exact division}
+
+\begin{theorem}
+\label{thm:exact-division}
+Let \(d,a\in\Z\), and assume \(d\) divides \(a\). Let \(a/d\) denote the
+integer quotient satisfying \(d\cdot(a/d)=a\). Then
+\[
+|d|\,\bigl|a/d\bigr|=|a|.
+\]
+\end{theorem}
+
+\begin{proof}
+Divisibility supplies an integer witness \(m\) with \(a=dm\). The quotient in
+the statement is that witness: \(m=a/d\), and the displayed product identity
+is \(d\cdot(a/d)=a\). The absolute value of a product then gives
+\[
+|a|=|d\cdot(a/d)|=|d|\,\bigl|a/d\bigr|.
+\]
+Both steps after the choice of quotient are equalities. If \(d\neq 0\), the
+witness \(m\) is unique. A parameter divisor satisfies \(|d|\ge 2\), hence
+\(d\neq 0\), so the quotient in the return bound below is that unique integer.
+The identity itself uses only \(d\cdot(a/d)=a\), not a lower bound on \(|d|\).
+\end{proof}
+
+\section{One return}
+
+\begin{theorem}
+\label{thm:return-magnitude}
+Let \(q\), \(c\), and \(d\) be a parameter record, so \(|d|\ge 2\). Let
+\(n\in\Z\) and \(j\in\N\). If \(j\) is a first hit of the seed \(n\), then
+\[
+|d|\,\Bigl|\frac{A_{j}(q,c,n)}{d}\Bigr|
+\le |q|^{j}\,|n|+|c|\,\bigl|U_{j}(q)\bigr|.
+\]
+The left-hand side equals \(\bigl|A_{j}(q,c,n)\bigr|\) by
+Theorem~\ref{thm:exact-division}. The right-hand side is the majorant of
+Theorem~\ref{thm:affine-triangle}. The statement concerns one seed and one
+hitting time. It is not a uniform core.
+\end{theorem}
+
+\begin{proof}
+Write \(A=A_{j}(q,c,n)\). By Definition~\ref{def:first-hit}, \(d\) divides
+\(A\). Theorem~\ref{thm:exact-division}, applied to this divisor and this
+integer, yields
+\[
+|d|\,\bigl|A/d\bigr|=|A|.
+\]
+Definition~\ref{def:affine-state} expands the right-hand absolute value as
+\[
+|A|=\bigl|q^{j}n+c\,U_{j}(q)\bigr|.
+\]
+Theorem~\ref{thm:affine-triangle}, at the same \(q\), \(c\), \(n\), and \(j\),
+yields
+\[
+|A|\le |q|^{j}\,|n|+|c|\,\bigl|U_{j}(q)\bigr|.
+\]
+The preceding display is an equality, so replacing \(|A|\) by
+\(|d|\,\bigl|A/d\bigr|\) preserves the inequality direction. This is the
+required comparison.
+
+The first-hit hypothesis also says that \(d\) divides \(A_{i}(q,c,n)\) for no
+\(i<j\). That clause is not an input to the estimate. The estimate uses
+divisibility at the single time \(j\), the exact-quotient identity at that
+time, and the triangle inequality at that same time. Retaining the clause
+keeps the hypothesis equal to a first hit rather than to divisibility at an
+arbitrary time.
+
+No second seed appears. No second time appears. The majorant still depends on
+\(q\), \(j\), \(n\), \(c\), and \(U_{j}(q)\). The argument does not take a
+supremum over seeds, over hitting times, or over a family of blocks, and it
+does not produce a bound independent of the seed and the time. In that sense
+the comparison is not a uniform core.
+\end{proof}
+
+\begin{remark}
+The estimate uses divisibility only at time \(j\). The clause that no earlier
+affine state is divisible is retained so that the hypothesis is a first hit,
+and it is not used as an input to either absolute value. The quantifiers remain
+one parameter record, one seed, and one time. Nothing is asserted about a raw
+state after the hit, about existence of a hit, or about a bound on the hitting
+time.
+\end{remark}
+
+\end{document}

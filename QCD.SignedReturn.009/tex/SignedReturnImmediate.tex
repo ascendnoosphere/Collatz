@@ -1,0 +1,220 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Immediate return at exponent zero}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+At time zero the affine state of an arbitrary integer seed is the seed itself.
+The requirement that the signed divisor divide no earlier affine state is a
+bounded quantifier over the empty initial segment of the natural numbers, hence
+is true for every predicate. A first hit at time zero is therefore exactly
+divisibility of the seed. On that event the raw step is division by the signed
+divisor, absolute values multiply back to the absolute value of the seed, and
+the core comparison holds with slope \(1\) and constant \(0\). The argument uses
+\(|d|\ge 2\) only to obtain the strict inequality \(1<|d|\). No positive
+exponent is treated.
+\end{abstract}
+
+\section{Definitions}
+
+Throughout, a parameter record \(p\) consists of integers \(q\), \(c\), and
+\(d\) with \(|d|\ge 2\). In particular \(d\neq 0\). The raw step is
+\[
+T(n)=\begin{cases}
+n/d, & d\mid n,\\
+qn+c, & d\nmid n.
+\end{cases}
+\]
+The offset sum is defined by \(U_0(q)=0\) and
+\(U_{j+1}(q)=U_j(q)+q^j\). Thus \(U_0(q)\) is the empty sum.
+
+\begin{definition}
+\label{def:affine-state}
+For \(q,c,n\in\Z\) and \(j\in\N\), the affine state is
+\[
+A_j(q,c,n)=q^j n+c\,U_j(q).
+\]
+\end{definition}
+
+\begin{definition}
+\label{def:first-hit}
+The time \(j\in\N\) is a first hit of the seed \(n\in\Z\), written
+\(\operatorname{Hit}(p,n,j)\), when
+\[
+d\mid A_j(q,c,n)
+\]
+and, for every natural number \(i<j\),
+\[
+d\nmid A_i(q,c,n).
+\]
+The second clause is the bounded quantifier \(\forall i\,(i<j\rightarrow
+d\nmid A_i(q,c,n))\).
+\end{definition}
+
+\section{The empty initial segment}
+
+\begin{lemma}
+\label{lem:affine-zero}
+For all \(q,c,n\in\Z\),
+\[
+A_0(q,c,n)=n.
+\]
+\end{lemma}
+
+\begin{proof}
+By Definition~\ref{def:affine-state} and the clauses \(q^0=1\) and \(U_0(q)=0\),
+\[
+A_0(q,c,n)=q^0 n+c\,U_0(q)=1\cdot n+c\cdot 0.
+\]
+The integer identities \(1\cdot n=n\), \(c\cdot 0=0\), and \(n+0=n\) give
+\(A_0(q,c,n)=n\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:no-earlier}
+Let \(P\) be any predicate on \(\N\). Then \(\forall i\in\N,\ i<0\rightarrow P(i)\).
+\end{lemma}
+
+\begin{proof}
+By definition, the bounded quantifier over the initial segment of natural
+numbers strictly less than \(0\) is the ordinary quantifier
+\[
+\forall i\in\N,\quad (i<0\rightarrow P(i)).
+\]
+Fix \(i\in\N\). Every natural number is at least \(0\), so the statement
+\(i<0\) is false. A false hypothesis implies \(P(i)\), whatever the predicate
+\(P\) is. The range is empty: the implication is not obtained by restricting
+\(P\), nor by ignoring the quantifier.
+\end{proof}
+
+\begin{theorem}
+\label{thm:first-hit-zero}
+For every parameter record \(p\) with divisor \(d\), and every \(n\in\Z\),
+\[
+\operatorname{Hit}(p,n,0)\quad\text{if and only if}\quad d\mid n.
+\]
+\end{theorem}
+
+\begin{proof}
+Unfold Definition~\ref{def:first-hit} at time \(0\). The statement
+\(\operatorname{Hit}(p,n,0)\) is the conjunction of \(d\mid A_0(q,c,n)\) and
+\[
+\forall i\in\N,\quad i<0\rightarrow d\nmid A_i(q,c,n).
+\]
+Lemma~\ref{lem:affine-zero} gives \(A_0(q,c,n)=n\), so the first conjunct is
+equivalent to \(d\mid n\).
+
+The second conjunct is Lemma~\ref{lem:no-earlier} applied to the predicate
+\(i\mapsto d\nmid A_i(q,c,n)\). It is therefore true, and it does not depend
+on \(n\) or on \(d\).
+
+If \(\operatorname{Hit}(p,n,0)\) holds, the first conjunct and
+Lemma~\ref{lem:affine-zero} yield \(d\mid n\). Conversely, if \(d\mid n\), then
+\(d\mid A_0(q,c,n)\) by the same lemma, and the second conjunct holds by
+Lemma~\ref{lem:no-earlier}. Both conjuncts are proved; the earlier-time
+conjunct is not omitted in the converse direction.
+\end{proof}
+
+\section{The immediate quotient}
+
+\begin{theorem}
+\label{thm:immediate-quotient}
+Let \(p\) be a parameter record with divisor \(d\), and let \(n\in\Z\) satisfy
+\(d\mid n\). Then the raw step equals the quotient,
+\[
+T(n)=n/d,
+\]
+and the absolute values cancel,
+\[
+|d|\cdot |n/d|=|n|.
+\]
+\end{theorem}
+
+\begin{proof}
+The hypothesis \(d\mid n\) selects the division branch of the raw step, so
+\(T(n)=n/d\) by the definition of \(T\). The same hypothesis is the integer
+cancellation law
+\[
+d\cdot(n/d)=n.
+\]
+Absolute value is multiplicative, hence
+\[
+|d\cdot(n/d)|=|d|\cdot|n/d|.
+\]
+The left-hand side equals \(|n|\) because \(d\cdot(n/d)=n\). Therefore
+\(|d|\cdot|n/d|=|n|\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:immediate-core}
+Let \(p\) be a parameter record with divisor \(d\), and let \(n\in\Z\) satisfy
+\(d\mid n\). Let \(A,B\in\N\) satisfy \(A=1\) and \(B=0\). Then
+\[
+A<|d|
+\]
+and
+\[
+|d|\cdot|n/d|\le A\,|n|+B.
+\]
+\end{theorem}
+
+\begin{proof}
+The record supplies \(|d|\ge 2\). Since \(1<2\) and \(2\le|d|\), transitivity
+of the strict and non-strict orders on \(\N\) yields \(1<|d|\). The hypothesis
+\(A=1\) rewrites this as \(A<|d|\).
+
+Theorem~\ref{thm:immediate-quotient} gives \(|d|\cdot|n/d|=|n|\). Equality
+implies the non-strict comparison \(|d|\cdot|n/d|\le|n|\). The remaining
+hypotheses are \(A=1\) and \(B=0\), so
+\[
+A\,|n|+B=1\cdot|n|+0=|n|,
+\]
+where \(1\cdot|n|=|n|\) and \(|n|+0=|n|\). Substituting this right-hand side
+yields
+\[
+|d|\cdot|n/d|\le A\,|n|+B,
+\]
+as claimed. The inequality \(|d|\ge 2\) is used for \(A<|d|\) and is not
+required for the absolute-value cancellation.
+\end{proof}
+
+\begin{remark}
+The two conclusions are the core comparison for the single map \(n\mapsto n/d\)
+on the set of integers divisible by \(d\), with slope \(1\) and constant \(0\).
+They do not assert the same bound for a return taken after one or more affine
+steps, nor do they assert that every seed is eventually divisible by \(d\).
+\end{remark}
+
+\end{document}

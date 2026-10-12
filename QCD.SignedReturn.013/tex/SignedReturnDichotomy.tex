@@ -1,0 +1,161 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{The dichotomy between a first hit and a trapped orbit}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Let the raw step send an integer \(n\) to \(n/d\) when \(d\) divides \(n\), and to \(qn+c\) otherwise, where \(|d|\ge 2\). Write \(A_j(n)\) for the affine state \(q^j n+c\,U_j(q)\). A time \(j\) is a first hit when \(d\) divides \(A_j(n)\) and divides no earlier affine state. Such a time exists if and only if the raw orbit is not division-free at every time. The forward implication identifies the raw prefix with the affine prefix. The reverse implication takes the least raw time at which \(d\) divides, using the least-number operator on \(\N\) whose hypotheses are decidability of integer divisibility and existence of one divisible time.
+\end{abstract}
+
+\section{Raw step, offset sum, and first hit}
+
+A parameter record consists of integers \(q\) and \(c\) and an integer \(d\) with \(|d|\ge 2\). In particular \(d\neq 0\). The raw step is the map \(\Map{T}{\Z}{\Z}\) given by
+\[
+T(n)=\begin{cases}
+n/d, & d\mid n,\\
+qn+c, & d\nmid n.
+\end{cases}
+\]
+Iteration starts at time zero: \(T^{0}(n)=n\), and \(T^{j+1}(n)=T(T^{j}(n))\). The offset sum is the integer sequence defined by \(U_{0}(q)=0\) and
+\[
+U_{j+1}(q)=U_{j}(q)+q^{j}.
+\]
+The one-step form used below is \(U_{j+1}(q)=q\,U_{j}(q)+1\). It follows from the shifted geometric identity \((q-1)U_{j}(q)=q^{j}-1\), which is proved by induction on \(j\): the base \(j=0\) is \(0=0\), and the successor step adds \(q^{j}(q-1)=q^{j+1}-q^{j}\) to both sides. Rearrangement gives \(q^{j}=(q-1)U_{j}(q)+1\). Substituting the chronological recurrence then yields
+\[
+U_{j+1}(q)=U_{j}(q)+q^{j}=U_{j}(q)+(q-1)U_{j}(q)+1=q\,U_{j}(q)+1.
+\]
+
+\begin{definition}\label{Def:AffineState}
+The affine state of multiplier \(q\), offset \(c\), time \(j\in\N\) and seed \(n\in\Z\) is
+\[
+A_{j}(q,c,n)=q^{j}n+c\,U_{j}(q).
+\]
+When the parameter record is fixed, write \(A_{j}(n)\) for \(A_{j}(q,c,n)\).
+\end{definition}
+
+\begin{definition}\label{Def:FirstHit}
+The time \(j\) is a first hit of the seed \(n\) when \(d\) divides \(A_{j}(n)\) and \(d\) divides \(A_{i}(n)\) for no natural number \(i<j\).
+\end{definition}
+
+\begin{definition}\label{Def:NeverDivides}
+The seed \(n\) is trapped when \(d\) divides \(T^{j}(n)\) for no natural number \(j\).
+\end{definition}
+
+If \(d\) does not divide a state \(m\), the definition of \(T\) gives \(T(m)=qm+c\). Exact division is used only where a divisibility hypothesis has already been recorded. No identity below describes \(T^{m}(n)\) at a time strictly after the first time at which \(d\) divides a state.
+
+\section{The division-free raw prefix}
+
+\begin{theorem}\label{Thm:PrefixAffine}
+Let \(q\), \(c\) and \(d\) be a parameter record, let \(n\in\Z\), and let \(j\in\N\). If \(d\) does not divide \(T^{i}(n)\) for every \(i<j\), then
+\[
+T^{j}(n)=A_{j}(n).
+\]
+\end{theorem}
+
+\begin{proof}
+Proceed by induction on \(j\).
+
+If \(j=0\), there is no natural number \(i<0\), so the hypothesis is empty. The left side is \(T^{0}(n)=n\). The right side is \(q^{0}n+c\,U_{0}(q)\). Here \(q^{0}=1\) and \(U_{0}(q)=0\), so the right side equals \(n\).
+
+Suppose the claim holds at time \(j\), and assume \(d\) does not divide \(T^{i}(n)\) for every \(i<j+1\). Every \(i<j\) satisfies \(i<j+1\), so the inductive hypothesis yields \(T^{j}(n)=A_{j}(n)\). The index \(j\) itself satisfies \(j<j+1\), so \(d\) does not divide \(T^{j}(n)\). The raw step therefore takes the affine branch:
+\[
+T^{j+1}(n)=T(T^{j}(n))=q\,T^{j}(n)+c.
+\]
+Substitute the inductive hypothesis:
+\begin{align*}
+q\,T^{j}(n)+c
+&= q\bigl(q^{j}n+c\,U_{j}(q)\bigr)+c \\
+&= q^{j+1}n+c\,q\,U_{j}(q)+c \\
+&= q^{j+1}n+c\bigl(q\,U_{j}(q)+1\bigr).
+\end{align*}
+The offset recursion replaces \(q\,U_{j}(q)+1\) by \(U_{j+1}(q)\). The right-hand side is \(A_{j+1}(n)\).
+
+Non-divisibility is required only at times strictly earlier than the time named by the conclusion. In the successor step that earlier time is \(j\), and divisibility of \(T^{j+1}(n)\) is not forbidden.
+\end{proof}
+
+\begin{lemma}\label{Lem:RawFree}
+Let \(q\), \(c\) and \(d\) be a parameter record, let \(n\in\Z\), and let \(j\in\N\). If \(d\) does not divide \(A_{i}(n)\) for every \(i<j\), then \(d\) does not divide \(T^{i}(n)\) for every \(i<j\).
+\end{lemma}
+
+\begin{proof}
+Proceed by induction on \(j\).
+
+If \(j=0\), the conclusion quantifies over \(i<0\) and is empty.
+
+Suppose the claim holds at time \(j\), and assume \(d\) does not divide \(A_{k}(n)\) for every \(k<j+1\). The same hypothesis restricts to every \(k<j\). The inductive hypothesis therefore says that \(d\) does not divide \(T^{k}(n)\) for every \(k<j\). Fix \(i<j+1\). Then \(i\le j\). If \(i<j\), the inductive conclusion already gives the required non-divisibility. If \(i=j\), Theorem~\ref{Thm:PrefixAffine} at time \(j\), applied to the raw guard just obtained, yields \(T^{j}(n)=A_{j}(n)\). The outer hypothesis at the index \(j<j+1\) says that \(d\) does not divide \(A_{j}(n)\). Hence \(d\) does not divide \(T^{j}(n)\).
+\end{proof}
+
+\section{Decidability and the least raw time}
+
+\begin{lemma}\label{Lem:Decidable}
+Let \(q\), \(c\) and \(d\) be a parameter record and let \(n\in\Z\). For each \(j\in\N\), the assertion that \(d\) divides \(T^{j}(n)\) is decidable.
+\end{lemma}
+
+\begin{proof}
+Since \(|d|\ge 2\), one has \(d\neq 0\). For any integer \(b\), the division algorithm supplies a quotient and a remainder such that \(b\) equals that quotient times \(d\) plus the remainder, and \(d\) divides \(b\) if and only if the remainder is \(0\). Equality of an integer with \(0\) is decidable, so divisibility of one integer by another nonzero integer is decidable. The state \(T^{j}(n)\) is obtained by applying the raw step \(j\) times. Each application branches on a divisibility test of the same kind and then either divides exactly or forms \(qm+c\). A finite composition of decidable tests and ring operations is decidable. Therefore the predicate \(j\mapsto(d\mid T^{j}(n))\) is a decidable predicate on \(\N\).
+\end{proof}
+
+The least-number operator on \(\N\) is the following construction. Let \(P\) be a decidable predicate on \(\N\), and assume that \(P(t)\) holds for at least one \(t\). Define a value by well-founded recursion on \(\N\), starting at \(0\): if \(P(0)\) holds, return \(0\); otherwise repeat the search at \(1\), and so on. The existence hypothesis makes the recursion well founded, because a search that passed the known witness would have rejected a time at which \(P\) holds. The returned time \(j_{\ast}\) satisfies \(P(j_{\ast})\), and \(P(i)\) fails for every \(i<j_{\ast}\). Those two properties are the specification and the minimality of the operator. No separate minimum is constructed. The operator is applied only after both hypotheses have been proved: decidability in Lemma~\ref{Lem:Decidable}, and existence in the reverse half of the next theorem.
+
+\section{The dichotomy}
+
+\begin{theorem}\label{Thm:Dichotomy}
+Let \(q\), \(c\) and \(d\) be a parameter record and let \(n\in\Z\). There exists a natural number \(j\) which is a first hit of \(n\) if and only if \(n\) is not trapped.
+\end{theorem}
+
+\begin{proof}
+Both directions are proved. The parameter record and the seed stay fixed.
+
+First suppose that some \(j\) is a first hit of \(n\). Then \(d\) divides \(A_{j}(n)\), and \(d\) divides \(A_{i}(n)\) for no \(i<j\). Lemma~\ref{Lem:RawFree} converts the second clause into the raw guard: \(d\) divides \(T^{i}(n)\) for no \(i<j\). Theorem~\ref{Thm:PrefixAffine} at that same \(j\) yields \(T^{j}(n)=A_{j}(n)\). Therefore \(d\) divides \(T^{j}(n)\). The seed is not trapped, because a trapped seed would be undivided at this \(j\).
+
+Conversely, suppose \(n\) is not trapped. By Definition~\ref{Def:NeverDivides}, it is false that every natural number \(j\) fails to be a time at which \(d\) divides \(T^{j}(n)\). Existence of one such time follows by contradiction. If no natural number \(j\) satisfied \(d\mid T^{j}(n)\), then every \(j\) would fail that divisibility, and \(n\) would be trapped. That contradicts the hypothesis of this paragraph. Thus there exists at least one \(j\) with \(d\mid T^{j}(n)\).
+
+Let \(P(j)\) denote the assertion \(d\mid T^{j}(n)\). Lemma~\ref{Lem:Decidable} states that \(P\) is decidable, and the previous paragraph states that \(P\) holds at some time. Apply the least-number operator to these two hypotheses, and write \(j_{\ast}\) for the time it returns. The specification of the operator gives \(d\mid T^{j_{\ast}}(n)\). Its minimality gives that \(d\) does not divide \(T^{i}(n)\) for every \(i<j_{\ast}\).
+
+The minimality guard is the hypothesis of Theorem~\ref{Thm:PrefixAffine} at time \(j_{\ast}\), so
+\[
+T^{j_{\ast}}(n)=A_{j_{\ast}}(n).
+\]
+Combined with the specification, \(d\) divides \(A_{j_{\ast}}(n)\). It remains to check the earlier affine states. Fix \(i<j_{\ast}\). If \(k<i\), then \(k<j_{\ast}\), so minimality says that \(d\) does not divide \(T^{k}(n)\). Theorem~\ref{Thm:PrefixAffine} at time \(i\) yields \(T^{i}(n)=A_{i}(n)\). Minimality at this same \(i\) says that \(d\) does not divide \(T^{i}(n)\), hence \(d\) does not divide \(A_{i}(n)\). Therefore \(j_{\ast}\) is a first hit of \(n\).
+
+The two directions together are the stated equivalence. The trapped case is the forward implication read in contrapositive form, and it is also the case excluded by the existence hypothesis of the least-number operator: if every raw time fails to be divisible, that operator is not applied, and the existence of a first hit has already been shown to imply that some raw time is divisible.
+\end{proof}
+
+\begin{remark}
+The time \(j_{\ast}\) is a time of the original raw orbit. The affine formula is used only at \(j_{\ast}\) and at earlier times, where the raw guard has been established. The argument does not identify \(T^{m}(n)\) with \(A_{m}(n)\) for any \(m>j_{\ast}\).
+\end{remark}
+
+\end{document}

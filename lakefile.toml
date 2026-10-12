@@ -41,6 +41,22 @@ defaultTargets = [
   "OddRoot",
   "ThreeStuck",
   "EqualHalves",
+  "SignedReturnPrefix",
+  "SignedReturnStep",
+  "SignedReturnProduct",
+  "SignedReturnMagnitude",
+  "SignedReturnResidue",
+  "SignedReturnClock",
+  "SignedReturnShift",
+  "SignedReturnObstruction",
+  "SignedReturnImmediate",
+  "SignedReturnZero",
+  "SignedReturnUnit",
+  "SignedReturnReflection",
+  "SignedReturnDichotomy",
+  "SignedReturnClosedForm",
+  "SignedReturnUniform",
+  "SignedReturnExamples",
 ]
 
 [[require]]
@@ -235,3 +251,67 @@ srcDir = "QCD.ThreeStuck.001/lean"
 [[lean_lib]]
 name = "EqualHalves"
 srcDir = "QCD.EqualHalves.001/lean"
+
+[[lean_lib]]
+name = "SignedReturnPrefix"
+srcDir = "QCD.SignedReturn.001/lean"
+
+[[lean_lib]]
+name = "SignedReturnStep"
+srcDir = "QCD.SignedReturn.002/lean"
+
+[[lean_lib]]
+name = "SignedReturnProduct"
+srcDir = "QCD.SignedReturn.003/lean"
+
+[[lean_lib]]
+name = "SignedReturnMagnitude"
+srcDir = "QCD.SignedReturn.004/lean"
+
+[[lean_lib]]
+name = "SignedReturnResidue"
+srcDir = "QCD.SignedReturn.005/lean"
+
+[[lean_lib]]
+name = "SignedReturnClock"
+srcDir = "QCD.SignedReturn.006/lean"
+
+[[lean_lib]]
+name = "SignedReturnShift"
+srcDir = "QCD.SignedReturn.007/lean"
+
+[[lean_lib]]
+name = "SignedReturnObstruction"
+srcDir = "QCD.SignedReturn.008/lean"
+
+[[lean_lib]]
+name = "SignedReturnImmediate"
+srcDir = "QCD.SignedReturn.009/lean"
+
+[[lean_lib]]
+name = "SignedReturnZero"
+srcDir = "QCD.SignedReturn.010/lean"
+
+[[lean_lib]]
+name = "SignedReturnUnit"
+srcDir = "QCD.SignedReturn.011/lean"
+
+[[lean_lib]]
+name = "SignedReturnReflection"
+srcDir = "QCD.SignedReturn.012/lean"
+
+[[lean_lib]]
+name = "SignedReturnDichotomy"
+srcDir = "QCD.SignedReturn.013/lean"
+
+[[lean_lib]]
+name = "SignedReturnClosedForm"
+srcDir = "QCD.SignedReturn.014/lean"
+
+[[lean_lib]]
+name = "SignedReturnUniform"
+srcDir = "QCD.SignedReturn.015/lean"
+
+[[lean_lib]]
+name = "SignedReturnExamples"
+srcDir = "QCD.SignedReturn.016/lean"
