@@ -1,0 +1,98 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{The even row of a local split}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section*{The even row}
+
+Let \(T\) be the classical shortcut on the natural numbers: \(T(n)=n/2\) when \(n\) is even, and \(T(n)=(3n+1)/2\) when \(n\) is odd. A parity word is read chronologically. The letter \(0\) is one even step and the letter \(1\) is one odd step. The empty word fixes its input.
+
+The even row consists of the integers \(n>1\) that are divisible by \(2\). Its source word is the single letter \(0\), and its parent word is empty. The parent attached to such an \(n\) is \(n/2\). This note proves that row and nothing else.
+
+\begin{definition}
+\label{def:words}
+Write \(S_0(n)=n/2\) and \(S_1(n)=(3n+1)/2\). For a parity word \(W\), the evaluation \(R_W(n)\) is \(n\) when \(W\) is empty, and \(R_{W'}(S_b(n))\) when \(W=bW'\). The even source word is \(W_s=0\), and the even parent word is \(W_p=\varepsilon\).
+\end{definition}
+
+\begin{lemma}
+\label{lem:identity}
+If \(2\) divides \(n\), then \(2\cdot(n/2)=n\) and \(T(n)=n/2\). The source word and the parent word then satisfy
+\[
+R_{W_s}(n)=n/2, \qquad R_{W_p}(n/2)=n/2, \qquad 2\cdot R_{W_s}(n)=n.
+\]
+\end{lemma}
+
+\begin{proof}
+Division with remainder gives \(n=(n/2)\cdot 2+(n\bmod 2)\). The hypothesis \(n\bmod 2=0\) removes the remainder, so \(n=(n/2)\cdot 2\). Commutation of the factors is \(2\cdot(n/2)=n\).
+
+The even branch of \(T\) is \(n/2\), so \(T(n)=n/2\). The word \(W_s=0\) applies \(S_0\) once and then the empty word, hence \(R_{W_s}(n)=n/2\). The empty word fixes \(n/2\), so \(R_{W_p}(n/2)=n/2\). Multiplying the source evaluation by \(2\) and using the doubling identity gives \(2\cdot R_{W_s}(n)=n\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:even-split}
+Let \(n>1\) be even, and set \(p=n/2\). Then \(p\) is a positive integer, \(p<n\), \(T(n)=p\), and
+\[
+R_{W_s}(n)=R_{W_p}(p).
+\]
+Thus one even letter carries \(n\) to a strictly smaller positive parent, and the empty word on that parent is already the common endpoint.
+\end{theorem}
+
+\begin{proof}
+Lemma~\ref{lem:identity} gives \(2p=n\), \(T(n)=p\), \(R_{W_s}(n)=p\), and \(R_{W_p}(p)=p\). The two word evaluations are therefore equal.
+
+The quotient \(p\) cannot be \(0\): otherwise \(n=2\cdot 0=0\), contradicting \(n>1\). Since \(p\ge 1\),
+\[
+p<p+p=2p=n.
+\]
+Hence \(0<p<n\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:odd-outside}
+If \(n\) is odd, then \(n\) is not a member of the even row. In particular \(3>1\) lies outside the row, and \(2\cdot(3/2)=2\neq 3\).
+\end{theorem}
+
+\begin{proof}
+Membership requires \(n\) even. An odd residue is not the residue \(0\) modulo \(2\), so the membership conjunction fails.
+
+The integer \(3\) has residue \(1\) modulo \(2\), so the preceding sentence applies. Separately, integer division gives \(3/2=1\), and \(2\cdot 1=2\). The positive difference \(3-2=1\) shows that the doubling identity of Lemma~\ref{lem:identity} fails at \(3\).
+\end{proof}
+
+\begin{remark}
+Theorem~\ref{thm:even-split} is one local row. It does not treat an input congruent to \(2\) modulo \(3\), an input congruent to \(1\) modulo \(4\), or an input of the form \(2^a u-1\) with \(u\) odd. It does not classify a complement of this row, and it does not assert that every integer greater than \(1\) has a parent in any family. Theorem~\ref{thm:odd-outside} is only the obstruction to reading the even row as a cover.
+\end{remark}
+
+\end{document}

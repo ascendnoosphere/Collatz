@@ -72,6 +72,7 @@ defaultTargets = [
   "TwoAffineCongruence",
   "TwoAffineEven",
   "OneExcursion",
+  "FamilySplit",
 ]
 
 [[require]]
@@ -390,3 +391,7 @@ srcDir = "QCD.TwoAffineEven.001/lean"
 [[lean_lib]]
 name = "OneExcursion"
 srcDir = "QCD.OneExcursion.001/lean"
+
+[[lean_lib]]
+name = "FamilySplit"
+srcDir = "QCD.FamilySplit.001/lean"
