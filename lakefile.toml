@@ -61,6 +61,8 @@ defaultTargets = [
   "CaptureChain",
   "LogGap",
   "SharpEnergy",
+  "NagellList",
+  "RepunitDivisor",
 ]
 
 [[require]]
@@ -335,3 +337,11 @@ srcDir = "QCD.LogGap.001/lean"
 [[lean_lib]]
 name = "SharpEnergy"
 srcDir = "QCD.SharpEnergy.001/lean"
+
+[[lean_lib]]
+name = "NagellList"
+srcDir = "QCD.NagellList.001/lean"
+
+[[lean_lib]]
+name = "RepunitDivisor"
+srcDir = "QCD.RepunitDivisor.001/lean"

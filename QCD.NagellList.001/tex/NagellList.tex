@@ -1,0 +1,131 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Five displayed solutions of \(x^{2}+7=2^{n}\)}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+The five pairs \((1,3)\), \((3,4)\), \((5,5)\), \((11,7)\), and \((181,15)\) satisfy \(x^{2}+7=2^{n}\). Each proof evaluates one square and one power of two. The same arithmetic does not show that every positive solution is one of these pairs.
+\end{abstract}
+
+\section{The equation}
+
+Let \(\N\) be the nonnegative integers. For \(x,n\in\N\), write \(E(x,n)\) for the equation \(x^{2}+7=2^{n}\). With the exponent fixed, this is the statement that the natural number \(x\) is a root of the polynomial \(X^{2}+7-2^{n}\).
+
+\begin{definition}
+The five displayed pairs are $(1,3)$, $(3,4)$, $(5,5)$, $(11,7)$, and $(181,15)$.
+\end{definition}
+
+\section{Powers of two}
+
+\begin{lemma}
+\label{lem:powers}
+\(2^{3}=8\), \(2^{4}=16\), \(2^{5}=32\), \(2^{6}=64\), \(2^{7}=128\), and \(2^{15}=32768\).
+\end{lemma}
+
+\begin{proof}
+The rule \(2^{k+1}=2^{k}\cdot 2\), starting from \(2^{1}=2\), gives \(2^{2}=4\), \(2^{3}=8\), \(2^{4}=16\), \(2^{5}=32\), \(2^{6}=64\), and \(2^{7}=128\). The exponent splits \(10=5+5\) and \(15=10+5\), so
+\[
+2^{10}=2^{5}\cdot 2^{5}=32\cdot 32=1024
+\]
+and
+\[
+2^{15}=2^{10}\cdot 2^{5}=1024\cdot 32=32768.
+\]
+\end{proof}
+
+\section{Squares}
+
+\begin{lemma}
+\label{lem:squares}
+\(1^{2}=1\), \(3^{2}=9\), \(5^{2}=25\), \(11^{2}=121\), and \(181^{2}=32761\).
+\end{lemma}
+
+\begin{proof}
+The first three products are \(1\cdot 1=1\), \(3\cdot 3=9\), and \(5\cdot 5=25\). For the fourth, \(11=10+1\), so
+\begin{align*}
+11\cdot 11
+&=(10+1)(10+1)\\
+&=(10+1)\cdot 10+(10+1)\cdot 1\\
+&=(10\cdot 10+1\cdot 10)+(10\cdot 1+1\cdot 1)\\
+&=121.
+\end{align*}
+For the fifth, \(180=18\cdot 10\) and \(18\cdot 18=324\), hence
+\begin{align*}
+180\cdot 180
+&=(18\cdot 10)(18\cdot 10)\\
+&=18\cdot(10\cdot(18\cdot 10))\\
+&=18\cdot(18\cdot(10\cdot 10))\\
+&=(18\cdot 18)\cdot(10\cdot 10)\\
+&=324\cdot 100\\
+&=32400.
+\end{align*}
+Then \(181=180+1\), so
+\begin{align*}
+181\cdot 181
+&=(180+1)(180+1)\\
+&=(180+1)\cdot 180+(180+1)\cdot 1\\
+&=(180\cdot 180+1\cdot 180)+(180\cdot 1+1\cdot 1)\\
+&=32761.
+\end{align*}
+\end{proof}
+
+\section{The five pairs}
+
+\begin{theorem}
+\label{thm:displayed}
+Each displayed pair satisfies \(E(x,n)\):
+\begin{align*}
+1^{2}+7&=2^{3},\\
+3^{2}+7&=2^{4},\\
+5^{2}+7&=2^{5},\\
+11^{2}+7&=2^{7},\\
+181^{2}+7&=2^{15}.
+\end{align*}
+\end{theorem}
+
+\begin{proof}
+Lemma~\ref{lem:squares} and Lemma~\ref{lem:powers} give
+\(1+7=8\), \(9+7=16\), \(25+7=32\), \(121+7=128\), and \(32761+7=32768\).
+These are the five powers \(2^{3}\), \(2^{4}\), \(2^{5}\), \(2^{7}\), and \(2^{15}\).
+\end{proof}
+
+\begin{remark}
+Theorem~\ref{thm:displayed} is an evaluation at five pairs.
+It does not assert that a positive solution of \(x^{2}+7=2^{n}\) equals one of those pairs.
+It does not classify solutions of \(x^{2}+D=2^{n}\) for a general positive integer \(D\).
+It does not produce a cycle, a congruence, or a positivity window.
+\end{remark}
+
+\end{document}

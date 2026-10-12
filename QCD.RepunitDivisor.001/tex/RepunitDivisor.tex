@@ -1,0 +1,151 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Divisibility by the repunit sum}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For an integer \(q\ge 1\), the repunit sum \(G_k(q)=1+q+\cdots+q^{k-1}\) satisfies \(q^k=1+(q-1)G_k(q)\). Thus \(G_k(q)\) divides \(q^k-1\). For \(k\ge 1\), this sum is congruent to \(1\) modulo \(q\) and is coprime to \(q\). Consequently \(k\) iterations of \(x\mapsto qx+c\) are congruent to the identity modulo \(G_k(q)\). The identity specializes to the five cells \((q,c,D,k)=(2,1,3,2)\), \((2,1,7,3)\), \((2,1,15,4)\), \((3,1,4,2)\), and \((3,1,13,3)\). It does not classify orbits or compare growth constants.
+\end{abstract}
+
+\section{The geometric identity}
+
+\begin{definition}
+For integers \(q\ge 0\) and \(k\ge 0\), the repunit sum is
+\[
+G_k(q)=\sum_{j=0}^{k-1}q^j,
+\]
+and \(G_0(q)=0\).
+\end{definition}
+
+\begin{lemma}
+\label{lem:recurrence}
+\(G_1(q)=1\), \(G_{k+1}(q)=G_k(q)+q^k\), and \(qG_k(q)+1=G_{k+1}(q)\).
+\end{lemma}
+
+\begin{proof}
+The range of length one contains only the power \(q^0=1\). Splitting off the last index gives \(G_{k+1}(q)=G_k(q)+q^k\). The product rule is proved by induction on \(k\). If \(k=0\), then \(q\cdot 0+1=1=G_1(q)\). If the rule holds for \(k\), then
+\begin{align*}
+qG_{k+1}(q)+1
+&=q\bigl(G_k(q)+q^k\bigr)+1 \\
+&=qG_k(q)+1+q\cdot q^k \\
+&=G_{k+1}(q)+q^{k+1} \\
+&=G_{k+2}(q).
+\end{align*}
+The third equality is the inductive hypothesis.
+\end{proof}
+
+\begin{theorem}
+\label{thm:geom}
+If \(q\ge 1\), then \(q^k=1+(q-1)G_k(q)\). Equivalently, \((q-1)G_k(q)=q^k-1\).
+\end{theorem}
+
+\begin{proof}
+Proceed by induction on \(k\). For \(k=0\), both sides of the first identity equal \(1\). Assume the identity for \(k\). Lemma~\ref{lem:recurrence} gives
+\[
+1+(q-1)G_{k+1}(q)
+=1+(q-1)G_k(q)+(q-1)q^k
+=q^k+(q-1)q^k.
+\]
+The last sum factors as \(\bigl((q-1)+1\bigr)q^k\). Since \(q\ge 1\), one has \((q-1)+1=q\), so the product is \(q\cdot q^k=q^{k+1}\).
+
+The cofactor form follows by cancelling the added \(1\): the identity just proved says \(1+(q-1)G_k(q)=q^k\), and subtracting \(1\) from both sides leaves \((q-1)G_k(q)=q^k-1\).
+\end{proof}
+
+\begin{corollary}
+\label{cor:div}
+If \(q\ge 1\), then \(G_k(q)\) divides \(q^k-1\), and \(q^k\equiv 1\pmod{G_k(q)}\). If also \(k\ge 1\), then \(G_k(q)\equiv 1\pmod q\) and \(\gcd\bigl(q,G_k(q)\bigr)=1\).
+\end{corollary}
+
+\begin{proof}
+Theorem~\ref{thm:geom} supplies the witness \(q-1\), because \(q^k-1=G_k(q)\cdot(q-1)\). Reducing that equality modulo \(G_k(q)\) gives \(q^k\equiv 1\).
+
+Now take \(k=t+1\). Lemma~\ref{lem:recurrence} gives \(G_{t+1}(q)=1+qG_t(q)\). The second summand is divisible by \(q\), so \(G_{t+1}(q)\equiv 1\pmod q\). The same splitting gives \(\gcd\bigl(q,qG_t(q)+1\bigr)=\gcd(q,1)=1\).
+\end{proof}
+
+\section{The affine return}
+
+\begin{theorem}
+\label{thm:closed}
+Let \(F(x)=qx+c\). For every nonnegative integer \(k\) and every integer \(r\),
+\[
+F^k(r)=q^kr+c\,G_k(q).
+\]
+If \(q\ge 1\), then \(F^k(r)\equiv r\pmod{G_k(q)}\).
+\end{theorem}
+
+\begin{proof}
+The closed form is proved by induction on \(k\). The zero-fold iterate is \(r\), and \(q^0r+c\,G_0(q)=r\). If the formula holds for \(k\), one application of \(F\) produces
+\begin{align*}
+F^{k+1}(r)
+&=q\bigl(q^kr+c\,G_k(q)\bigr)+c
+=q^{k+1}r+c\bigl(qG_k(q)+1\bigr).
+\end{align*}
+Lemma~\ref{lem:recurrence} replaces the parenthesis by \(G_{k+1}(q)\).
+
+For the congruence, reduce the closed form. Corollary~\ref{cor:div} gives \(q^k\equiv 1\pmod{G_k(q)}\), so \(q^kr\equiv r\). The remaining term \(c\,G_k(q)\) is divisible by \(G_k(q)\). Adding these congruences yields \(F^k(r)\equiv r\).
+\end{proof}
+
+\section{The displayed cells}
+
+\begin{lemma}
+\label{lem:values}
+\(G_2(q)=1+q\), \(G_3(q)=1+q+q^2\), and \(G_4(q)=1+q+q^2+q^3\). In particular,
+\[
+G_2(2)=3,\quad G_3(2)=7,\quad G_4(2)=15,\quad G_2(3)=4,\quad G_3(3)=13.
+\]
+\end{lemma}
+
+\begin{proof}
+Apply the successor rule of Lemma~\ref{lem:recurrence} three times, starting from \(G_1(q)=1\). The five numerical values are then direct substitutions.
+\end{proof}
+
+\begin{theorem}
+\label{thm:cells}
+On each cell
+\[
+(q,c,D,k)\in\bigl\{(2,1,3,2),(2,1,7,3),(2,1,15,4),(3,1,4,2),(3,1,13,3)\bigr\},
+\]
+one has \(D=G_k(q)\), \(q^k=1+(q-1)D\), \((q-1)D=q^k-1\), \(D\mid q^k-1\), \(D\equiv 1\pmod q\), and \(\gcd(q,D)=1\). For every integer \(r\), \(k\) iterations of \(x\mapsto qx+1\) are congruent to \(r\) modulo \(D\).
+\end{theorem}
+
+\begin{proof}
+Lemma~\ref{lem:values} identifies \(D\) with \(G_k(q)\) on every listed cell, and each listed length is positive. Corollary~\ref{cor:div} therefore gives the divisibility, the congruence modulo \(q\), and the coprimality. Theorem~\ref{thm:geom} gives the two product identities after substituting \(D=G_k(q)\). Theorem~\ref{thm:closed}, with offset \(c=1\) and with the modulus rewritten by the same equality, gives the return congruence.
+\end{proof}
+
+\begin{remark}
+Theorem~\ref{thm:cells} is an evaluation of Theorem~\ref{thm:geom} and Theorem~\ref{thm:closed}. It does not assert that every positive orbit is eventually periodic or trapped, that escape has density one, or that a core is contracting. It does not assert uniqueness of a raw cycle, the Hull–Dobell criterion, a conditional mean slope \(1/k\), or the comparison \(2\rho\le\mu\le 4\rho\).
+\end{remark}
+
+\end{document}
