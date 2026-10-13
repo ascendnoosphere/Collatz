@@ -54,6 +54,21 @@ The finite-field examples instead study specified affine maps and their
 functional-graph cohomology. The [verification ledger](QCD.ComplexAtlas.001/Verification.md)
 records exact checks and their limits.
 
+## Source provenance and migration coverage
+
+The [public source catalogue](Library.SourceCatalogue.001/README.md) accounts for
+2,195 included current files, retains historical hashes and duplicate identities,
+and checks 1,627 current ZIP payloads. Its
+[reconciliation ledger](Library.SourceCatalogue.001/other/Reconciliation.json)
+records exclusions and exact snapshot differences. The 1,491 current 7z file
+entries are header-only; unavailable external archives remain metadata-only.
+
+**Byte provenance is not mathematical review.** The exhaustive source-to-result
+crosswalk, reading coverage, and remaining supported-result migration are still
+open. A pending assignment is not an exclusion or a claim that a source contains
+no result. [Reproduction and verification](Library.SourceCatalogue.001/README.md#reproduction-and-input-contract)
+state the scanner's finite scope and safety limits.
+
 ## Foundations
 
 [Definitions and theorems](Foundations.Main.StartHere/README.md) ·
