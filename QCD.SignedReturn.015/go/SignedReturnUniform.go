@@ -21,14 +21,14 @@ import (
 // through time 7 checks that no later hit appears without an early one.
 // Every state used below has absolute value at most 20+4*7 = 48.
 const (
-	seedMin     = int64(-20)
-	seedMax     = int64(20)
-	offsetMin   = int64(-4)
-	offsetMax   = int64(4)
-	earlyHorizon = 2
-	scanHorizon  = 8
+	seedMin        = int64(-20)
+	seedMax        = int64(20)
+	offsetMin      = int64(-4)
+	offsetMax      = int64(4)
+	earlyHorizon   = 2
+	scanHorizon    = 8
 	uniformWorkers = 4
-	uniformQ     = int64(1)
+	uniformQ       = int64(1)
 )
 
 // Totals counts comparisons, hits, misses, and disagreements.

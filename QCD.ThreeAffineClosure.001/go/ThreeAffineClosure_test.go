@@ -26,10 +26,10 @@ func TestRejectsConstantTrue(t *testing.T) {
 // TestKnownWitnesses checks the integer solutions used to read the identity.
 func TestKnownWitnesses(t *testing.T) {
 	type point struct {
-		a, b, c, q    int64
-		x, y, z       int64
-		delta, first  int64
-		third         int64
+		a, b, c, q   int64
+		x, y, z      int64
+		delta, first int64
+		third        int64
 	}
 	points := []point{
 		{1, 1, 1, 1, 1, 1, 1, 7, 7, 7},

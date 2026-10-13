@@ -19,11 +19,11 @@ import (
 // ±2, ±3, and ±5. Then |n+j*c| <= 20+48 = 68, and |d| times a return is at
 // most 5*68 = 340. Every product used below fits in an int64.
 const (
-	unitCMin   = -6
-	unitCMax   = 6
-	unitNMin   = -20
-	unitNMax   = 20
-	unitJMax   = 8
+	unitCMin    = -6
+	unitCMax    = 6
+	unitNMin    = -20
+	unitNMax    = 20
+	unitJMax    = 8
 	unitWorkers = 4
 )
 

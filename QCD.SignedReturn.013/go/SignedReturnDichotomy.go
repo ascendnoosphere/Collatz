@@ -23,12 +23,12 @@ import (
 // and every raw branch is dominated by that pure affine majorant, so no
 // int64 multiplication overflows.
 const (
-	dichAbsQ     = 3
-	dichAbsC     = 3
-	dichAbsN     = 6
-	dichMaxM     = 5
-	dichPerSeed  = 4
-	dichWorkers  = 3
+	dichAbsQ    = 3
+	dichAbsC    = 3
+	dichAbsN    = 6
+	dichMaxM    = 5
+	dichPerSeed = 4
+	dichWorkers = 3
 )
 
 // dichDivisors is the signed divisor list ±2, ±3, ±5.

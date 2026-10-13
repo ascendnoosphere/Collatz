@@ -30,10 +30,10 @@ type Totals struct {
 
 // Workspace holds the integer buffers reused while one word is evaluated.
 type Workspace struct {
-	P    *big.Int
-	B    *big.Int
-	Pow  *big.Int
-	Acc  *big.Int
+	P     *big.Int
+	B     *big.Int
+	Pow   *big.Int
+	Acc   *big.Int
 	Term  *big.Int
 	Left  *big.Int
 	Right *big.Int

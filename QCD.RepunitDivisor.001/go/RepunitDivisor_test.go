@@ -50,10 +50,10 @@ func TestNonDivisorIsRejected(t *testing.T) {
 // TestRepunitValues checks the five displayed sums and powers directly.
 func TestRepunitValues(t *testing.T) {
 	type row struct {
-		q    uint64
-		k    uint64
-		sum  uint64
-		pow  uint64
+		q   uint64
+		k   uint64
+		sum uint64
+		pow uint64
 	}
 	rows := []row{
 		{q: 2, k: 2, sum: 3, pow: 4},

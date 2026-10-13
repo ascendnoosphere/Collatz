@@ -137,7 +137,7 @@ func checkParent() error {
 	if 167%3 != 2 || (2*167-1)/3 != 111 {
 		return fmt.Errorf("one inverse odd step at 167 does not return 111")
 	}
-	ancestor := uint64((1 << 0) * (222 + 1) - 1)
+	ancestor := uint64((1<<0)*(222+1) - 1)
 	if ancestor != 222 {
 		return fmt.Errorf("the zero-division odd-chain ancestor is not 222")
 	}

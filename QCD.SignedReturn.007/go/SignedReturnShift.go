@@ -20,26 +20,26 @@ import (
 // sweep uses |q| <= 3, j <= 4, |c| <= 2, |n| <= 6, |t| <= 3 and the six
 // divisors ±2, ±3, ±5. Every product used below fits in an int64.
 const (
-	shiftQMin   = -3
-	shiftQMax   = 3
-	shiftJMax   = 6
-	shiftNMin   = -5
-	shiftNMax   = 5
-	shiftCMin   = -4
-	shiftCMax   = 4
-	shiftTMin   = -5
-	shiftTMax   = 5
-	shiftDMin   = -5
-	shiftDMax   = 5
-	hitQMin     = -3
-	hitQMax     = 3
-	hitJMax     = 4
-	hitNMin     = -6
-	hitNMax     = 6
-	hitCMin     = -2
-	hitCMax     = 2
-	hitTMin     = -3
-	hitTMax     = 3
+	shiftQMin    = -3
+	shiftQMax    = 3
+	shiftJMax    = 6
+	shiftNMin    = -5
+	shiftNMax    = 5
+	shiftCMin    = -4
+	shiftCMax    = 4
+	shiftTMin    = -5
+	shiftTMax    = 5
+	shiftDMin    = -5
+	shiftDMax    = 5
+	hitQMin      = -3
+	hitQMax      = 3
+	hitJMax      = 4
+	hitNMin      = -6
+	hitNMax      = 6
+	hitCMin      = -2
+	hitCMax      = 2
+	hitTMin      = -3
+	hitTMax      = 3
 	shiftWorkers = 4
 )
 
