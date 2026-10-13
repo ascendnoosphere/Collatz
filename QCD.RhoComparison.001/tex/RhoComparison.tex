@@ -1,0 +1,348 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Telescoping Weights and Mass-Ratio Bounds}
+\author{ascendnoosphere}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For the positive weights $\rho(n)=1/(n(n+1))$ and $\mu(n)=2/(n(n-1))$, every integer $n\ge 3$ satisfies $2\rho(n)\le\mu(n)\le 4\rho(n)$. The same factor passes to finite or infinite positive label masses. The telescopes establish summability and the source totals; when an unresolved $\rho$-mass is positive, the corresponding quotients differ by at most a factor of $2$. The upper bound fails at $n=2$, and it fails for signed sums.
+\end{abstract}
+
+\section{Definitions}
+
+Throughout, $\N=\{0,1,2,\ldots\}$. The two rational weights are
+\begin{equation*}
+\rho(n)=\frac{1}{n(n+1)}\qquad(n\ge 1),
+\qquad
+\mu(n)=\frac{2}{n(n-1)}\qquad(n\ge 2).
+\end{equation*}
+Both denominators are positive on the stated ranges, so both weights are positive there. The comparison below starts at $3$, where the scalar ratio is at most $4$. The partial sums for $\mu$ below start at $3$, not at $2$; the excluded value is $\mu(2)=1$.
+
+\begin{definition}
+For rational masses $c$ and $u$ with $u\neq 0$, the \emph{mass quotient} is $c/u$. If $c$ is a captured mass and $u$ is an unresolved mass, this quotient is their ratio and nothing more.
+\end{definition}
+
+\section{Telescopes and partial sums}
+
+\begin{lemma}
+\label{lem:rho-step}
+For every integer $n\ge 1$,
+\begin{equation*}
+\rho(n)=\frac{1}{n}-\frac{1}{n+1}.
+\end{equation*}
+\end{lemma}
+
+\begin{proof}
+The integers $n$ and $n+1$ are nonzero. Subtracting the reciprocals over the common denominator gives
+\begin{equation*}
+\frac{1}{n}-\frac{1}{n+1}
+=\frac{(n+1)-n}{n(n+1)}
+=\frac{1}{n(n+1)}
+=\rho(n).
+\end{equation*}
+\end{proof}
+
+\begin{lemma}
+\label{lem:mu-step}
+For every integer $n\ge 2$,
+\begin{equation*}
+\mu(n)=\frac{2}{n-1}-\frac{2}{n}.
+\end{equation*}
+\end{lemma}
+
+\begin{proof}
+The integers $n-1$ and $n$ are nonzero. Therefore
+\begin{equation*}
+\frac{2}{n-1}-\frac{2}{n}
+=\frac{2n-2(n-1)}{(n-1)n}
+=\frac{2}{n(n-1)}
+=\mu(n).
+\end{equation*}
+\end{proof}
+
+\begin{lemma}
+\label{lem:rho-closed}
+For every integer $R\ge 0$,
+\begin{equation*}
+\frac{R}{R+1}=1-\frac{1}{R+1}.
+\end{equation*}
+\end{lemma}
+
+\begin{proof}
+Since $R+1\neq 0$,
+\begin{equation*}
+1-\frac{1}{R+1}=\frac{(R+1)-1}{R+1}=\frac{R}{R+1}.
+\end{equation*}
+\end{proof}
+
+\begin{theorem}
+\label{thm:rho-partial}
+For every integer $R\ge 0$,
+\begin{equation*}
+\sum_{n=1}^{R}\rho(n)=\frac{R}{R+1}.
+\end{equation*}
+The empty sum, at $R=0$, is $0$. Consequently the complementary mass is the tail
+\begin{equation*}
+1-\sum_{n=1}^{R}\rho(n)=\frac{1}{R+1}.
+\end{equation*}
+\end{theorem}
+
+\begin{proof}
+Proceed by induction on $R$. At $R=0$ both sides are $0$. If the identity holds at $R$, Lemma~\ref{lem:rho-step} gives
+\begin{equation*}
+\sum_{n=1}^{R+1}\rho(n)
+=\frac{R}{R+1}+\left(\frac{1}{R+1}-\frac{1}{R+2}\right).
+\end{equation*}
+The first two terms are $(R+1)/(R+1)=1$, so the right-hand side is $1-1/(R+2)$. Lemma~\ref{lem:rho-closed} at $R+1$ rewrites that quantity as $(R+1)/(R+2)$. The tail identity is the same partial-sum formula rewritten by Lemma~\ref{lem:rho-closed}.
+\end{proof}
+
+\begin{theorem}
+\label{thm:mu-partial}
+For every integer $R\ge 2$,
+\begin{equation*}
+\sum_{n=3}^{R}\mu(n)=1-\frac{2}{R}.
+\end{equation*}
+The sum is empty at $R=2$, and both sides are $0$. Consequently the complementary mass is the tail $2/R$.
+\end{theorem}
+
+\begin{proof}
+Write $R=2+d$ and induct on $d$. At $d=0$ the range is empty and $1-2/2=0$. If the identity holds for $R=2+d$, the next sum adds $\mu(d+3)$. Lemma~\ref{lem:mu-step} gives
+\begin{equation*}
+\mu(d+3)=\frac{2}{d+2}-\frac{2}{d+3}=\frac{2}{2+d}-\frac{2}{2+(d+1)}.
+\end{equation*}
+Adding this step to $1-2/(2+d)$ cancels the middle term and leaves $1-2/(2+d+1)$. The tail is the complement of this partial sum.
+\end{proof}
+
+\begin{corollary}
+\label{cor:windows}
+If $R\le N$, then
+\begin{equation*}
+\sum_{n=R+1}^{N}\rho(n)=\frac{1}{R+1}-\frac{1}{N+1}.
+\end{equation*}
+If $2\le R\le N$, then
+\begin{equation*}
+\sum_{n=R+1}^{N}\mu(n)=\frac{2}{R}-\frac{2}{N}.
+\end{equation*}
+\end{corollary}
+
+\begin{proof}
+Split the partial sum up to $N$ into the partial sum up to $R$ and the stated window. For $\rho$, Theorem~\ref{thm:rho-partial} and Lemma~\ref{lem:rho-closed} give
+\begin{equation*}
+\frac{N}{N+1}-\frac{R}{R+1}
+=\left(1-\frac{1}{N+1}\right)-\left(1-\frac{1}{R+1}\right)
+=\frac{1}{R+1}-\frac{1}{N+1}.
+\end{equation*}
+For $\mu$, Theorem~\ref{thm:mu-partial} gives
+\begin{equation*}
+\left(1-\frac{2}{N}\right)-\left(1-\frac{2}{R}\right)=\frac{2}{R}-\frac{2}{N}.
+\end{equation*}
+\end{proof}
+
+\section{The factor between $2$ and $4$}
+
+\begin{lemma}
+\label{lem:scale}
+If $q\neq 0$ and $y\neq 0$, then $(px)/(qy)=(p/q)(x/y)$ for all rational $p,q,x,y$.
+\end{lemma}
+
+\begin{proof}
+The product $qy$ is nonzero. Multiplying the right-hand side by $qy$ returns $px$, because $q^{-1}q=1$ and $y^{-1}y=1$ and $\Q$ is commutative. Canceling the nonzero denominator $qy$ gives the identity.
+\end{proof}
+
+\begin{theorem}
+\label{thm:ratio}
+For every integer $n\ge 3$,
+\begin{equation*}
+\frac{\mu(n)}{\rho(n)}=\frac{2(n+1)}{n-1},
+\end{equation*}
+and this scalar satisfies
+\begin{equation*}
+2\le\frac{2(n+1)}{n-1}\le 4.
+\end{equation*}
+\end{theorem}
+
+\begin{proof}
+Here $n-1\ge 2$, so $n$, $n-1$, and $n+1$ are nonzero, and $\rho(n)>0$. Clearing the positive denominator $n(n-1)$ gives
+\begin{equation*}
+\mu(n)\,(n-1)=\frac{2}{n}.
+\end{equation*}
+Clearing $n(n+1)$ likewise gives
+\begin{equation*}
+\rho(n)\cdot 2(n+1)=\frac{2}{n}.
+\end{equation*}
+Thus $\mu(n)(n-1)=\rho(n)\cdot 2(n+1)$. Dividing by the nonzero quantities $\rho(n)$ and $n-1$ yields the ratio. Since $n-1>0$, the inequalities $2(n-1)\le 2(n+1)$ and $2(n+1)\le 4(n-1)$ are equivalent to the stated scalar bounds. The second one is $6\le 2n$, hence $n\ge 3$.
+\end{proof}
+
+\begin{theorem}
+\label{thm:compare}
+For every integer $n\ge 3$,
+\begin{equation*}
+2\rho(n)\le\mu(n)\le 4\rho(n).
+\end{equation*}
+Equality holds on the right at $n=3$. The upper bound fails at $n=2$, where $4\rho(2)<\mu(2)$.
+\end{theorem}
+
+\begin{proof}
+Theorem~\ref{thm:ratio} supplies $2\le\mu(n)/\rho(n)\le 4$. Multiply through by the positive number $\rho(n)$. At $n=3$, $\rho(3)=1/12$ and $\mu(3)=1/3$, so $\mu(3)=4\rho(3)$. At $n=2$, $\rho(2)=1/6$ and $\mu(2)=1$, so $4\rho(2)=2/3<1$.
+\end{proof}
+
+\begin{corollary}
+\label{cor:finite}
+Let $S$ be a finite set of integers, all at least $3$. Then
+\begin{equation*}
+2\sum_{n\in S}\rho(n)\le\sum_{n\in S}\mu(n)\le 4\sum_{n\in S}\rho(n).
+\end{equation*}
+\end{corollary}
+
+\begin{proof}
+Apply Theorem~\ref{thm:compare} at each element of $S$ and sum the inequalities. Multiplication by $2$ or by $4$ passes inside a finite sum.
+\end{proof}
+
+\begin{theorem}
+\label{thm:source-totals}
+The infinite source totals are
+\begin{equation*}
+\sum_{n=1}^{\infty}\rho(n)=1,\qquad
+\sum_{n=3}^{\infty}\rho(n)=\frac13,\qquad
+\sum_{n=3}^{\infty}\mu(n)=1.
+\end{equation*}
+\end{theorem}
+
+\begin{proof}
+The partial sums are nonnegative and bounded above by $1$, by Theorems~\ref{thm:rho-partial} and~\ref{thm:mu-partial}. Hence the series converge. The reciprocal tails $1/(R+1)$ and $2/R$ tend to zero, so those theorems give the first and third totals. Corollary~\ref{cor:windows} with $R=2$ gives the second total as the limit of $1/3-1/(N+1)$.
+\end{proof}
+
+\begin{corollary}
+\label{cor:infinite}
+For every possibly infinite set $S\subseteq\{3,4,\ldots\}$, both masses converge and
+\begin{equation*}
+2\sum_{n\in S}\rho(n)\le\sum_{n\in S}\mu(n)
+\le4\sum_{n\in S}\rho(n).
+\end{equation*}
+If $S$ has a member, both masses are strictly positive.
+\end{corollary}
+
+\begin{proof}
+Insert a zero term at every label outside $S$. Each restricted series is nonnegative and termwise at most its full series from Theorem~\ref{thm:source-totals}, so it converges by comparison. Apply the termwise inequalities to the labels in $S\cap\{3,\ldots,N\}$ and pass to the limits of these convergent partial sums. If $n\in S$, the $\rho$-mass is at least $\rho(n)>0$. The lower comparison then implies that the $\mu$-mass is positive as well.
+\end{proof}
+
+\section{Quotients}
+
+\begin{theorem}
+\label{thm:quotient}
+Let $c_{\rho},u_{\rho},c_{\mu},u_{\mu}$ be rational numbers with $c_{\rho}\ge 0$, $u_{\rho}>0$,
+\begin{equation*}
+2c_{\rho}\le c_{\mu}\le 4c_{\rho},
+\qquad
+2u_{\rho}\le u_{\mu}\le 4u_{\rho}.
+\end{equation*}
+Then $u_{\mu}>0$ and
+\begin{equation*}
+\frac{c_{\rho}/u_{\rho}}{2}
+\le
+\frac{c_{\mu}}{u_{\mu}}
+\le
+2\cdot\frac{c_{\rho}}{u_{\rho}}.
+\end{equation*}
+In particular, if $C$ and $U$ are finite sets of integers at least $3$ and $\sum_{n\in U}\rho(n)>0$, the same factor-$2$ comparison holds for the $\rho$-masses and $\mu$-masses of $C$ and of $U$.
+\end{theorem}
+
+\begin{proof}
+Positivity of $u_{\mu}$ follows from $u_{\mu}\ge 2u_{\rho}>0$. Lemma~\ref{lem:scale} gives
+\begin{equation*}
+\frac{4c_{\rho}}{2u_{\rho}}=2\cdot\frac{c_{\rho}}{u_{\rho}},
+\qquad
+\frac{2c_{\rho}}{4u_{\rho}}=\frac{c_{\rho}/u_{\rho}}{2}.
+\end{equation*}
+For the upper bound, $c_{\mu}\le 4c_{\rho}$ and $u_{\mu}>0$ give $c_{\mu}/u_{\mu}\le(4c_{\rho})/u_{\mu}$. The inequality $2u_{\rho}\le u_{\mu}$ reverses the positive denominator, so $(4c_{\rho})/u_{\mu}\le(4c_{\rho})/(2u_{\rho})$. For the lower bound, $2c_{\rho}\le c_{\mu}$ gives $(2c_{\rho})/u_{\mu}\le c_{\mu}/u_{\mu}$, while $u_{\mu}\le 4u_{\rho}$ gives $(2c_{\rho})/(4u_{\rho})\le(2c_{\rho})/u_{\mu}$. The finite-set statement is Corollary~\ref{cor:finite} applied separately to $C$ and to $U$, together with nonnegativity of every $\rho$-value on $C$. The argument does not use disjointness of $C$ and $U$.
+\end{proof}
+
+\begin{corollary}
+\label{cor:infinite-quotient}
+Let $C,U\subseteq\{3,4,\ldots\}$ be possibly infinite sets, and write $c_\rho,u_\rho,c_\mu,u_\mu$ for their respective masses. If $u_\rho>0$, then
+\begin{equation*}
+\frac{c_\rho/u_\rho}{2}\le\frac{c_\mu}{u_\mu}
+\le2\frac{c_\rho}{u_\rho}.
+\end{equation*}
+\end{corollary}
+
+\begin{proof}
+Corollary~\ref{cor:infinite} provides finite real masses satisfying the two factor intervals. It also gives $c_\rho\ge0$ and $u_\mu>0$. The division comparisons in the proof of Theorem~\ref{thm:quotient} hold equally for these real masses: the numerators are nonnegative and the denominators are positive. They give the displayed inequalities. No disjointness assumption is used.
+\end{proof}
+
+No hypothesis of this section asserts that an orbit meets a target. The quotients compare masses on the same label sets.
+
+\section{Signed sums}
+
+\begin{theorem}
+\label{thm:signed}
+The comparison does not pass to signed sums. With weights $+1$ at $3$ and $-1$ at $4$,
+\begin{equation*}
+4\bigl(\rho(3)-\rho(4)\bigr)<\mu(3)-\mu(4).
+\end{equation*}
+With the signs swapped,
+\begin{equation*}
+\mu(4)-\mu(3)<2\bigl(\rho(4)-\rho(3)\bigr).
+\end{equation*}
+\end{theorem}
+
+\begin{proof}
+Compute $\rho(3)=1/12$, $\rho(4)=1/20$, $\mu(3)=1/3$, and $\mu(4)=1/6$. Then
+\begin{equation*}
+\rho(3)-\rho(4)=\frac{1}{30},
+\qquad
+4\bigl(\rho(3)-\rho(4)\bigr)=\frac{2}{15},
+\qquad
+\mu(3)-\mu(4)=\frac{1}{6}.
+\end{equation*}
+Since $2\cdot 6<15$, one has $2/15<1/6$. That is the first strict inequality. For the swapped signs, $\rho(4)-\rho(3)=-1/30$ and $\mu(4)-\mu(3)=-1/6$, so $2(\rho(4)-\rho(3))=-1/15$. Cross-multiplication gives $-1\cdot 15<-1\cdot 6$, that is $-15<-6$, so $-1/6<-1/15$.
+\end{proof}
+
+\begin{remark}
+\label{rem:not}
+The comparison $2\rho\le\mu\le 4\rho$ concerns positive weights on integers at least $3$. It is not an equality of the two laws, not a comparison at $n=2$, and not a termwise bound for signed linear combinations. A finite numerical check of the cross-multiplied inequalities is evidence on that grid only. The quotient theorem does not assert capture of any orbit.
+\end{remark}
+
+\section{Finite arithmetic certificate}
+
+The finite certificate checks the five ratio and comparison statements at every integer $3\le n\le4096$, the $\rho$ telescope at every integer $1\le n\le4096$, and the $\mu$ telescope at every integer $2\le n\le4096$. Its 24 rational witnesses include all partial sums through $8$ with the empty cases, two windows, the endpoints $2$ and $3$, both signed counterexamples, a finite mass comparison on $\{3,4,5\}$, and the quotient comparison for $C=\{3\}$ and $U=\{4,5\}$. Thus its check count is
+\begin{equation*}
+5(4096-3+1)+4096+(4096-1)+24=28685.
+\end{equation*}
+
+Every machine-integer predicate rejects inputs outside its stated range. The largest products have the form $2n(n+1)(n-1)$, and for $n\le4096$ they are less than $2^{38}$, hence fit in an unsigned 64-bit integer. The rational helper is restricted to the bounded witnesses. A $\rho$ window in $\{1,\ldots,8\}$ equals $1/a-1/(b+1)$, with denominator dividing $a(b+1)\le72$, and a $\mu$ window equals $2/(a-1)-2/b$, with denominator dividing $(a-1)b\le56$. The endpoint, signed, mass, and quotient witnesses have smaller reduced numerators and denominators. The conservative bound $840$ for every stored numerator magnitude and denominator therefore bounds a sum numerator by $2\cdot840^2<2^{21}$ and a product or cross-product by $840^2<2^{20}$. Cancellation only reduces these bounds.
+
+The reference tests calculate the seven observed grid truth values directly with exact rational arithmetic, including the failed upper bound at $n=2$. They also compare every bounded window and the rational operations against exact fractions and reject constant upper-bound predicates. These tests do not replace the universal proofs above.
+
+\end{document}

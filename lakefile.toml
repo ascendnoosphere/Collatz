@@ -79,6 +79,8 @@ defaultTargets = [
   "RecursiveClose",
   "NoCrossing",
   "ParentRise",
+  "RhoComparison",
+  "RhoMass",
 ]
 
 [[require]]
@@ -425,3 +427,11 @@ srcDir = "QCD.NoCrossing.001/lean"
 [[lean_lib]]
 name = "ParentRise"
 srcDir = "QCD.ParentRise.001/lean"
+
+[[lean_lib]]
+name = "RhoComparison"
+srcDir = "QCD.RhoComparison.001/lean"
+
+[[lean_lib]]
+name = "RhoMass"
+srcDir = "QCD.RhoComparison.001/lean"
