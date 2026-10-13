@@ -26,6 +26,8 @@ standalone Go and Lean commands may additionally need
 | `bash Scripts/CheckIgnoredPdfs.sh` and `bash Scripts/CheckIgnoredTexTemps.sh` | Passed after each TeX build; generated PDFs remain ignored and document-specific temporary files are cleaned |
 | `bash Scripts/CheckMarkdown.sh` | Passed all 87 locally present mathematical pages; lexical math, local links, heading anchors and PNG assets |
 | Markdown checker and regression tests in the staged-index checkout | Passed all 75 committed pages and the ten negative controls |
+| Authenticated GitHub GFM API rendering of all 75 committed Markdown pages | GitHub recognized 4,907 math expressions |
+| Chromium with MathJax 3.2.2, compiling those decoded expressions to SVG | All 4,907 compiled with zero math errors |
 | `bash Scripts/TestMarkdown.sh` | Passed an accepted fixture and ten negative controls for the Markdown checker |
 | `git diff --check` | Passed before the final review barrier |
 
@@ -115,6 +117,28 @@ validation or a claim that every live GitHub page has been browser-tested.
 - Go 1.24.4, Linux/amd64; default checks use `CGO_ENABLED=0`.
 - pdfTeX 1.40.29, TeX Live 2026/VoidLinux; latexmk 4.87; BibTeX 0.99e.
 - Git 2.55.0; Python 3.14.7 for Markdown and inventory metadata checks.
+
+## Post-push GitHub and MathJax checks
+
+The checked batch was pushed to `origin/master` at commit `f9ca216` after the
+separate formatting (`4d97f59`) and Markdown (`0cefb89`) commits. The remote
+branch hash matched the local commit. The repository is private; an anonymous
+page fetch returned GitHub's not-found page. Visibility was not changed.
+
+Using the existing authenticated GitHub CLI, every one of the 75 committed
+Markdown pages was rendered by GitHub's GFM API. Its output recognized 4,907
+`math-renderer` expressions. Chromium 154.0.8037.57 then compiled all of them
+with MathJax 3.2.2's full TeX-to-SVG component: **4,907 checked, zero errors**.
+The audit decoded GitHub's extra HTML-entity layer inside math payloads; an
+initial harness without that decoding reported 265 spurious `Misplaced &`
+errors, all attributable to entity encoding rather than source mathematics.
+
+This strengthens the lexical checks with real GitHub Markdown processing and
+executed math typesetting. It is not a screenshot audit of every equation,
+a claim about GitHub's exact deployed MathJax version, or a logged-in live
+GitHub-browser layout check. Image readability has the separate direct
+inspection and plotting contracts recorded above. No credentials, generated
+HTML, browser profiles, PDFs or temporary TeX files were committed.
 
 ## Independent review and migration checkpoint
 
