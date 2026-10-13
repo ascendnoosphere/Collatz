@@ -4,46 +4,46 @@
 
 The raw map of the library sends
 
-$$
+```math
 n\longmapsto \begin{cases} n/d, & d\mid n,\\ qn+c, & d\nmid n,\end{cases}
 \qquad q,c,n,d\in\mathbb{Z},\ d\ne0,
-$$
+```
 
-and a state is *trapped* when no iterate of it is divisible by $d$. On a
+and a state is *trapped* when no iterate of it is divisible by $`d`$. On a
 trapped orbit the divisor never acts, the orbit follows the single affine
-recursion $n\mapsto qn+c$, and the multiplier alone decides its future. This
-family proves that classification over $\mathbb{Z}$, so negative states,
+recursion $`n\mapsto qn+c`$, and the multiplier alone decides its future. This
+family proves that classification over $`\mathbb{Z}`$, so negative states,
 negative divisors and alternating signs are covered: the offset sum is a
-geometric series, the $j$-th state is $q^{j}n+c\,(1+q+\dots+q^{j-1})$, a
+geometric series, the $`j`$-th state is $`q^{j}n+c\,(1+q+\dots+q^{j-1})`$, a
 zero multiplier reaches the constant offset, a unit multiplier translates or
 stays fixed, the negative unit multiplier runs the reflection pair
-$n\mapsto c-n$, an expanding multiplier is fixed exactly on the affine
+$`n\mapsto c-n`$, an expanding multiplier is fixed exactly on the affine
 fixed-point equation and otherwise escapes every bound in absolute value.
 Independently, the family identifies divisibility with a walk on
-$\mathbb{Z}/m\mathbb{Z}$, $m=|d|$: a raw orbit is trapped exactly when the
-residue walk $r\mapsto qr+c \bmod m$ avoids the zero class at every time. That
+$`\mathbb{Z}/m\mathbb{Z}`$, $`m=|d|`$: a raw orbit is trapped exactly when the
+residue walk $`r\mapsto qr+c \bmod m`$ avoids the zero class at every time. That
 converts the infinite divisibility question into avoidance of the origin by a
 deterministic finite walk, and it is the premise used by every companion family
 whose hypotheses ask for a division-free orbit.
 
 | # | Statement | Carried by |
 | --- | --- | --- |
-| .1 | The offset sum $T_j(q)=q^0+\dots+q^{j-1}$ satisfies the shifted geometric series $(q-1)T_j(q)=q^{j}-1$. | `TrapSum`, `TrapSumMulSubOne` |
-| .2 | One-step recursion: $T_{j+1}(q)=q\,T_j(q)+1$. | `TrapSumRec` |
-| .3 | Two-step extension: $T_{j+2}(q)=T_j(q)+q^{j}+q^{j+1}$. | `TrapSumAddTwo` |
-| .4 | Degenerate multipliers: $T_{j+1}(0)=1$, $T_j(1)=j$, $T_{2j}(-1)=0$ and $T_{2j+1}(-1)=1$. | `TrapSumZero`, `TrapSumOne`, `TrapSumNegOneEven`, `TrapSumNegOneOdd` |
-| .5 | A state the divisor does not divide executes the affine branch exactly: $T(n)=qn+c$. | `RawStepAffine` |
+| .1 | The offset sum $`T_j(q)=q^0+\dots+q^{j-1}`$ satisfies the shifted geometric series $`(q-1)T_j(q)=q^{j}-1`$. | `TrapSum`, `TrapSumMulSubOne` |
+| .2 | One-step recursion: $`T_{j+1}(q)=q\,T_j(q)+1`$. | `TrapSumRec` |
+| .3 | Two-step extension: $`T_{j+2}(q)=T_j(q)+q^{j}+q^{j+1}`$. | `TrapSumAddTwo` |
+| .4 | Degenerate multipliers: $`T_{j+1}(0)=1`$, $`T_j(1)=j`$, $`T_{2j}(-1)=0`$ and $`T_{2j+1}(-1)=1`$. | `TrapSumZero`, `TrapSumOne`, `TrapSumNegOneEven`, `TrapSumNegOneOdd` |
+| .5 | A state the divisor does not divide executes the affine branch exactly: $`T(n)=qn+c`$. | `RawStepAffine` |
 | .6 | Trapping is preserved: if no iterate divides, the successor of a state does not divide either. | `NeverDividesShift` |
-| .7 | **Affine itinerary.** On a trapped orbit the $j$-th state is $q^{j}n+c\,T_j(q)$. | `NeverDividesIterateAffine` |
-| .8 | A zero multiplier reaches the constant offset: for $j\ge1$ the $j$-th state is $c$. | `TrapZeroConstant` |
-| .9 | With a zero multiplier the offset $c$ is a fixed point, and therefore trapped. | `TrapZeroFixed` |
-| .10 | A unit multiplier translates: the $j$-th state is $n+jc$. | `TrapOneTranslation` |
-| .11 | On a trapped orbit a unit multiplier with nonzero offset escapes: for every target $R$ some state exceeds $R$ in absolute value. | `TrapExistsNatAbove`, `TrapOneUnbounded` |
-| .12 | The negative unit multiplier returns after an even number of steps and reflects after an odd number: $T^{2j}(n)=n$ and $T^{2j+1}(n)=c-n$. | `TrapNegOneEven`, `TrapNegOneOdd` |
-| .13 | The reflection is a genuine two-cycle whenever $n\ne c/2$: $T(n)=c-n$ and $T(c-n)=n$. | `TrapNegOneTwoCycle` |
-| .14 | **Fixed point.** A state the divisor does not divide is fixed exactly when $(q-1)n+c=0$. | `TrapFixedIff` |
-| .15 | **Expanding multiplier.** On a trapped orbit, if $\lvert q\rvert\ge2$ and $(q-1)n+c\ne0$, the orbit escapes: for every target $R$ some state exceeds $R$ in absolute value. | `TrapExpandingEscape` |
-| .16 | **Residue walk.** The affine branch modulo $m=\lvert d\rvert$ is $r\mapsto qr+c$, and along a trapped prefix the residue walk is the cast of the raw orbit. | `ResidueStepZ`, `CastIterateOfPrefix` |
+| .7 | **Affine itinerary.** On a trapped orbit the $`j`$-th state is $`q^{j}n+c\,T_j(q)`$. | `NeverDividesIterateAffine` |
+| .8 | A zero multiplier reaches the constant offset: for $`j\ge1`$ the $`j`$-th state is $`c`$. | `TrapZeroConstant` |
+| .9 | With a zero multiplier the offset $`c`$ is a fixed point, and therefore trapped. | `TrapZeroFixed` |
+| .10 | A unit multiplier translates: the $`j`$-th state is $`n+jc`$. | `TrapOneTranslation` |
+| .11 | On a trapped orbit a unit multiplier with nonzero offset escapes: for every target $`R`$ some state exceeds $`R`$ in absolute value. | `TrapExistsNatAbove`, `TrapOneUnbounded` |
+| .12 | The negative unit multiplier returns after an even number of steps and reflects after an odd number: $`T^{2j}(n)=n`$ and $`T^{2j+1}(n)=c-n`$. | `TrapNegOneEven`, `TrapNegOneOdd` |
+| .13 | The reflection is a genuine two-cycle whenever $`n\ne c/2`$: $`T(n)=c-n`$ and $`T(c-n)=n`$. | `TrapNegOneTwoCycle` |
+| .14 | **Fixed point.** A state the divisor does not divide is fixed exactly when $`(q-1)n+c=0`$. | `TrapFixedIff` |
+| .15 | **Expanding multiplier.** On a trapped orbit, if $`\lvert q\rvert\ge2`$ and $`(q-1)n+c\ne0`$, the orbit escapes: for every target $`R`$ some state exceeds $`R`$ in absolute value. | `TrapExpandingEscape` |
+| .16 | **Residue walk.** The affine branch modulo $`m=\lvert d\rvert`$ is $`r\mapsto qr+c`$, and along a trapped prefix the residue walk is the cast of the raw orbit. | `ResidueStepZ`, `CastIterateOfPrefix` |
 | .17 | Along a trapped orbit the cast identity holds at every time. | `NeverDividesCastIterate` |
 | .18 | **Dichotomy.** A raw orbit is trapped exactly when its residue walk avoids the zero class at every time. | `ResidueAvoidsZeroIffNeverDivides` |
 
@@ -56,20 +56,20 @@ arbitrary nonzero divisor.
 **Replacement obligations.** (i) Prove the closed form of the affine itinerary
 on a trapped orbit, including the offset sum and its recursion. (ii) Prove the
 orbit description for each multiplier case: zero reaches the constant offset
-and the offset is a fixed point; one translates, with the fixed case $c=0$;
+and the offset is a fixed point; one translates, with the fixed case $`c=0`$;
 negative one is the reflection pair; an expanding multiplier is fixed exactly
 on the affine fixed-point equation and otherwise escapes. (iii) Prove that
 escaping means exceeding every real, hence every integer, bound in absolute
-value. (iv) Identify the affine branch modulo $|d|$ as a walk on
-$\mathbb{Z}/m\mathbb{Z}$, compare it with the orbit cast along a trapped
+value. (iv) Identify the affine branch modulo $`|d|`$ as a walk on
+$`\mathbb{Z}/m\mathbb{Z}`$, compare it with the orbit cast along a trapped
 prefix, and prove the dichotomy with the zero class.
 
 **Recovery.** Every statement is about the original signed raw map `RawStep`
 and its iterates at the raw clock. No state space is changed, no clock is
 compressed, and no state is removed: the only global hypothesis is the trapping
 premise, and the individual classification theorems add only their case
-condition, namely $c\ne0$ for the unit case and $|q|\ge2$ together with
-$(q-1)n+c\ne0$ for the expanding case. The
+condition, namely $`c\ne0`$ for the unit case and $`|q|\ge2`$ together with
+$`(q-1)n+c\ne0`$ for the expanding case. The
 dichotomy is an equivalence, so it transfers in both directions: a trapped
 orbit yields an avoiding residue walk, and an avoiding residue walk yields a
 trapped orbit.
@@ -78,14 +78,14 @@ trapped orbit.
 one-parameter affine recursion whose coefficient is the multiplier, so the
 infinite family of maps is decided by four multiplier cases, and the
 divisibility predicate of a signed map becomes a deterministic finite walk on
-the residue set $\mathbb{Z}/m\mathbb{Z}$ of size at most $|d|$. The escape
+the residue set $`\mathbb{Z}/m\mathbb{Z}`$ of size at most $`|d|`$. The escape
 statements assume no trajectory bound: they are proved from the closed form and
 the Archimedean property of the integers, with the integer division step
 supplying the exact quotient in the divisible case.
 
 **Preservation conditions.** The multiplier cases are exhaustive over
-$\mathbb{Z}$: $q=0$, $q=1$, $q=-1$ and $|q|\ge2$. The units of
-$\mathbb{Z}$ are exactly $\pm1$, which is why the degenerate cases are
+$`\mathbb{Z}`$: $`q=0`$, $`q=1`$, $`q=-1`$ and $`|q|\ge2`$. The units of
+$`\mathbb{Z}`$ are exactly $`\pm1`$, which is why the degenerate cases are
 these two and why they are proved separately from the expanding case. All
 statements are one-sided: nothing is claimed about an orbit that divides at
 some time, and the certificate skips a walk that divides inside the checked
@@ -93,27 +93,27 @@ prefix instead of asserting the classification on it.
 
 ## Controls
 
-- The map is not the classical one. With $q=2$ and $c=1$ the affine branch
-  is $2n+1$, so the orbit of $9$ with divisor $3$ is
-  $9,3,1,3,1,\dots$ and not $9,3,1,4,\dots$; the certificate checks the
-  orbit and the inequality $T(9)\ne 2\cdot9+1$. The division branch fires
-  at the first state, so $9$ is not trapped.
-- With $q=0$, $c=1$ and $d=3$ the seed $2$ is trapped and the walk
-  becomes $2,1,1,\dots$: the constant offset $1$ is reached after one step
-  and stays. With $c=0$ every orbit reaches $0$ and then divides, so no
+- The map is not the classical one. With $`q=2`$ and $`c=1`$ the affine branch
+  is $`2n+1`$, so the orbit of $`9`$ with divisor $`3`$ is
+  $`9,3,1,3,1,\dots`$ and not $`9,3,1,4,\dots`$; the certificate checks the
+  orbit and the inequality $`T(9)\ne 2\cdot9+1`$. The division branch fires
+  at the first state, so $`9`$ is not trapped.
+- With $`q=0`$, $`c=1`$ and $`d=3`$ the seed $`2`$ is trapped and the walk
+  becomes $`2,1,1,\dots`$: the constant offset $`1`$ is reached after one step
+  and stays. With $`c=0`$ every orbit reaches $`0`$ and then divides, so no
   trapped zero-multiplier instance exists with a zero offset.
-- With $q=1$, $c=0$ and $d=5$ the state $-4$ is fixed, and with $q=1$
-  and $c\ne0$ the orbit translates without bound, so no fixed point exists
-  beyond $c=0$.
-- With $q=-1$ and $c=0$, $d=7$ and $n=5$ the orbit is the reflection
-  pair $5,-5,5,-5,\dots$; at $n=0$ the pair degenerates to the fixed point
-  $0$.
-- With $q=2$, $c=-4$ and $d=3$ the state $4$ lies on the affine
-  fixed-point equation $(q-1)n+c=0$ and the trapped orbit is constant, while
-  $n=25$ is trapped and escapes; the certificate walks the fixed case and the
+- With $`q=1`$, $`c=0`$ and $`d=5`$ the state $`-4`$ is fixed, and with $`q=1`$
+  and $`c\ne0`$ the orbit translates without bound, so no fixed point exists
+  beyond $`c=0`$.
+- With $`q=-1`$ and $`c=0`$, $`d=7`$ and $`n=5`$ the orbit is the reflection
+  pair $`5,-5,5,-5,\dots`$; at $`n=0`$ the pair degenerates to the fixed point
+  $`0`$.
+- With $`q=2`$, $`c=-4`$ and $`d=3`$ the state $`4`$ lies on the affine
+  fixed-point equation $`(q-1)n+c=0`$ and the trapped orbit is constant, while
+  $`n=25`$ is trapped and escapes; the certificate walks the fixed case and the
   test walks the escaping one.
-- With $d=1$ every state is divisible, so the trapping premise is empty and
-  the orbit is constant; the certificate walks the seed $9$ and records the
+- With $`d=1`$ every state is divisible, so the trapping premise is empty and
+  the orbit is constant; the certificate walks the seed $`9`$ and records the
   skips, so the classification is never asserted on a walk that divides.
 
 ## Formal dependencies
@@ -135,12 +135,12 @@ for the classical target.
 ## Go certificate contract
 
 `go/SignedTraps.go` checks finite instances of the statements over the grid
-$|q|\le6$ and $0\le j\le24$ for the offset sums, $|q|\le4$,
-$|c|\le4$ and the six signed divisors $\pm2,\pm3,\pm5$ with the ten signed
-seeds $-13,-7,-3,-1,0,1,2,6,11,25$ over $24$ steps for the walks, and the
-moduli $2,\dots,12$ for the residue map. The signed arithmetic is exact
-`int64`: the largest offset sum is below $6^{24}<2^{63}$, and the orbit
-sweep stays below $4^{24}\cdot30<2^{59}$; the test file re-checks both
+$`|q|\le6`$ and $`0\le j\le24`$ for the offset sums, $`|q|\le4`$,
+$`|c|\le4`$ and the six signed divisors $`\pm2,\pm3,\pm5`$ with the ten signed
+seeds $`-13,-7,-3,-1,0,1,2,6,11,25`$ over $`24`$ steps for the walks, and the
+moduli $`2,\dots,12`$ for the residue map. The signed arithmetic is exact
+`int64`: the largest offset sum is below $`6^{24}<2^{63}`$, and the orbit
+sweep stays below $`4^{24}\cdot30<2^{59}`$; the test file re-checks both
 bounds.
 
 | Slice | Checks | Content |

@@ -11,24 +11,24 @@ independent proof certificates.
 
 | Object | Domain and retained structure | Executed gain | Unproved transfer |
 |---|---|---|---|
-| Raw lattice map | $\mathbb Z[i]$, $\mathbb Z[\omega]$, or a specified quadratic order; exact element divisibility, division precedence, raw clock | Coordinate division, all-seed off-axis $(3,c,2)$ escape for odd real $c$, and homogeneous Gaussian Bézout escape | No norm-only replacement of element/ideal dependence |
-| Four-residue quotient | $r=(x\bmod2)+(y\bmod2)\theta$ and $J_\pm(z)=(3z\pm r)/2$ on nonzero residue; $z/2$ on zero residue | Integral numerator recovery and explicit nonreal cycles/fixed points | Not the raw fixed-offset map and not division by $1+i$ |
-| Finite affine model | A declared finite quadratic quotient ring, map $z\mapsto\theta z+1$ | Exhaustive finite graph and cochain ranks | Raw division does not descend to this quotient |
-| Ordinary cohomology | Finite marked orbit graph, incidence coboundary, explicit coefficient field | A real submodule quotient $H^1$ of a cycle is formally isomorphic to its coefficient field | Unmarked $H^1$ does not remember the cycle length or branch legality |
-| Twisted transport | Ordered edges $u_{j+1}=\lambda_j u_j+a_j$, with nonzero multipliers for local systems | Closing equation $(1-P)u_0=B$ and potential reconstruction | Solving over a field does not produce an integral, admissible lattice orbit |
-| Polynomial Julia model | One of four explicitly declared holomorphic polynomials | Exact finite node values, different cycle multipliers, and radius-$8$ escape proofs | No canonical extension of QCD, no Julia-to-integer implication |
+| Raw lattice map | $`\mathbb Z[i]`$, $`\mathbb Z[\omega]`$, or a specified quadratic order; exact element divisibility, division precedence, raw clock | Coordinate division, all-seed off-axis $`(3,c,2)`$ escape for odd real $`c`$, and homogeneous Gaussian Bézout escape | No norm-only replacement of element/ideal dependence |
+| Four-residue quotient | $`r=(x\bmod2)+(y\bmod2)\theta`$ and $`J_\pm(z)=(3z\pm r)/2`$ on nonzero residue; $`z/2`$ on zero residue | Integral numerator recovery and explicit nonreal cycles/fixed points | Not the raw fixed-offset map and not division by $`1+i`$ |
+| Finite affine model | A declared finite quadratic quotient ring, map $`z\mapsto\theta z+1`$ | Exhaustive finite graph and cochain ranks | Raw division does not descend to this quotient |
+| Ordinary cohomology | Finite marked orbit graph, incidence coboundary, explicit coefficient field | A real submodule quotient $`H^1`$ of a cycle is formally isomorphic to its coefficient field | Unmarked $`H^1`$ does not remember the cycle length or branch legality |
+| Twisted transport | Ordered edges $`u_{j+1}=\lambda_j u_j+a_j`$, with nonzero multipliers for local systems | Closing equation $`(1-P)u_0=B`$ and potential reconstruction | Solving over a field does not produce an integral, admissible lattice orbit |
+| Polynomial Julia model | One of four explicitly declared holomorphic polynomials | Exact finite node values, different cycle multipliers, and radius-$`8`$ escape proofs | No canonical extension of QCD, no Julia-to-integer implication |
 
-For a field $K$ and $d\ne0$, $d\mid z$ holds for every $z\in K$ because
-$z=d(z/d)$. Thus a literal raw field extension is just $z\mapsto z/d$.
+For a field $`K`$ and $`d\ne0`$, $`d\mid z`$ holds for every $`z\in K`$ because
+$`z=d(z/d)`$. Thus a literal raw field extension is just $`z\mapsto z/d`$.
 Finite fields are useful here as **specified affine models and coefficient
 fields**, not as an undisclosed substitute for a lattice division guard.
 
 ## Canonical destination evidence
 
 - [Gaussian dynamics](../QCD.GaussianDynamics.001/README.md): full Lean source
-  read and compiled. The explicit identity $-q+(1+i)d=1$ for $q=2+i,d=2-i$
+  read and compiled. The explicit identity $`-q+(1+i)d=1`$ for $`q=2+i,d=2-i`$
   proves homogeneous escape despite equal norms. The residue homomorphism to
-  $\mathbb F_5$ proves there is no common positive power.
+  $`\mathbb F_5`$ proves there is no common positive power.
 - [Complex lattice descent](../QCD.ComplexLattice.001/README.md): full written
   proof and checked Lean. `ScalarTwoDivides`, `ScalarTwoQuotient`,
   `ScalarTwoUnique` and `CoordinatesIter` prove exact guards, unique quotient
@@ -92,10 +92,10 @@ explicit new constructions with their own tests.
 ### A nonzero determinant cannot support the alleged kernel
 
 At `archive/historical-notes/collatz_homological_no_go.md:14-55`, a square
-integer matrix $M$ with nonzero determinant is simultaneously claimed to
-have an injected all-ones kernel. This is false: $M$ is invertible over
-$\mathbb Q$, so its integral kernel is zero. Already the note's
-$q=3,D=2,a=(1,1)$ example sends the all-ones vector to $(-1,-1)$.
+integer matrix $`M`$ with nonzero determinant is simultaneously claimed to
+have an injected all-ones kernel. This is false: $`M`$ is invertible over
+$`\mathbb Q`$, so its integral kernel is zero. Already the note's
+$`q=3,D=2,a=(1,1)`$ example sends the all-ones vector to $`(-1,-1)`$.
 Rational diagonal coordinate changes are not automatically unimodular
 integral changes, and therefore do not prove the asserted Smith form.
 
@@ -108,17 +108,16 @@ and twisted cochain calculations do not rely on this route.
 
 At `archive/historical-notes/collatz_homological_no_go.md:79-83`, the alleged
 continuum of periodic points conflicts with the stated binary-shift model.
-For each period $n$, the shift has only $2^n$ fixed codes. The union over
-positive integers $n$ is countable. Density and cardinality are different
+For each period $`n`$, the shift has only $`2^n`$ fixed codes. The union over
+positive integers $`n`$ is countable. Density and cardinality are different
 properties; neither a 2-adic set nor interleaved binary display coordinates
 make a complex Julia set.
 
 ### Homomorphism existence is not generator-preserving surjectivity
 
 At `archive/historical-notes/collatz_homological_no_go.md:117-130`, zero
-homomorphisms are overlooked and the printed statement that $1$ does not
-divide $5$ is false. A homomorphism $\mathbb Z/1\mathbb Z\to
-\mathbb Z/5\mathbb Z$ exists, but cannot be surjective or preserve a
+homomorphisms are overlooked and the printed statement that $`1`$ does not
+divide $`5`$ is false. A homomorphism $`\mathbb Z/1\mathbb Z\to \mathbb Z/5\mathbb Z`$ exists, but cannot be surjective or preserve a
 nonzero marked generator.
 
 **Disposition:** an example can refute a particular marked bonding-map
@@ -135,14 +134,14 @@ finite checks; the additional prose failures above remain explicit.
 ### Gaussian alphabets and divisors cannot be silently exchanged
 
 At `synthesis/L2/text/SYN-L2-013-transfer-protocols.tex:574-616`, an arbitrary
-Gaussian divisor is announced, but formulas specialize to $1+i$ and then
-invoke a four-class parity product map. The quotient by $1+i$ has two
-classes; the quotient by $2$ has four. The corresponding guards, branch
+Gaussian divisor is announced, but formulas specialize to $`1+i`$ and then
+invoke a four-class parity product map. The quotient by $`1+i`$ has two
+classes; the quotient by $`2`$ has four. The corresponding guards, branch
 formulas and cycle denominators are different.
 
 **Disposition:** proposed sweeps, norm bounds and trichotomies are not
-executed theorems. The destination explicitly separates raw $d=2$, raw
-$d=1+i$, and the four-residue Joseph quotient. Units and equal norms do not
+executed theorems. The destination explicitly separates raw $`d=2`$, raw
+$`d=1+i`$, and the four-residue Joseph quotient. Units and equal norms do not
 justify a parameter transport without offset, target and clock recovery.
 
 ### Finite branch closure is not raw branch legality
@@ -160,16 +159,16 @@ transport/cohomology model.
 The 7,495 depth-18 surviving cylinders in the extracted arithmetic-fractal
 text are a bounded 2-adic display, not a complex Julia set or a Euclidean
 dimension certificate. The historical binomial-tail claim that the tail is
-its first term times $1+o(1)$ is also too strong: at a fixed threshold
-$\alpha>1/2$, the ratio of the next term to the first tends to
-$(1-\alpha)/\alpha>0$. This refutes that asymptotic without refuting its
+its first term times $`1+o(1)`$ is also too strong: at a fixed threshold
+$`\alpha>1/2`$, the ratio of the next term to the first tends to
+$`(1-\alpha)/\alpha>0`$. This refutes that asymptotic without refuting its
 weaker entropy-scale bound.
 
 The source's entire-extension derivative-freedom calculation was read, but
 is not imported as a formally verified general theorem here. The atlas
 instead executes four exact finite-node polynomial countermodels: the same
-selected cycle values have multipliers $-5/4$ versus $0$, or $1475/54$
-versus $0$. Thus those finite values do not determine complex stability.
+selected cycle values have multipliers $`-5/4`$ versus $`0`$, or $`1475/54`$
+versus $`0`$. Thus those finite values do not determine complex stability.
 The stronger integer-preserving entire-extension statement remains an
 explicit formalization item in the broader migration.
 
@@ -183,7 +182,7 @@ No global originality claim is made from this bounded search.
   Integers_, May 2000 preprint.**
   [Original PDF](https://monks.scranton.edu/files/pubs/kucinski.pdf).
   Metadata, the four-residue map definition and principal statements were
-  checked. The Joseph convention matches $J_+$ here. Its reported cycle
+  checked. The Joseph convention matches $`J_+`$ here. Its reported cycle
   enumeration is not imported as a complete cycle theorem or independently
   replayed certificate.
 - **[Kionke17] Steffen Kionke, _A Geometric Approach to Divergent Points of
@@ -213,7 +212,7 @@ entries for the three cited primary sources are in
 
 **Closed obligations:** exact scalar-two guard, off-axis raw escape for odd
 real offsets, explicit integral quotient cycles, ordinary cycle quotient,
-finite functional-graph dimensions, actual twisted $H^0,H^1$ calculations,
+finite functional-graph dimensions, actual twisted $`H^0,H^1`$ calculations,
 ordered field closing equation, two explicit quadratic Galois groups and
 same-clock affine conjugacy, finite-node multiplier countermodels and
 mathematical exterior escape radii.

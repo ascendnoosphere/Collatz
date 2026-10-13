@@ -16,6 +16,8 @@ printf '%s\n' \
   '[first](#named-heading) [second](#named-heading-1)' \
   '[linked](Other.md#linked-heading)' \
   '$n=\lvert x\rvert$' \
+  '$`\{0,1\}`$ and $`\# A`$' \
+  '``$` deliberately literal math example`$``' \
   '$$' \
   '\begin{cases}x,&x=0,\\(x+1),&x\ne0.\end{cases}' \
   '$$' \
@@ -55,4 +57,9 @@ ExpectFailure '![missing](Missing.png)' 'missing local target'
 printf 'not a PNG\n' > "$workspace/Invalid.png"
 ExpectFailure '![invalid](Invalid.png)' 'invalid PNG preview'
 ExpectFailure $'```math\n\\frac{1}{2\n```' 'unclosed brace in math'
-printf 'Markdown checker regression tests passed: accepted fixture and ten negative controls\n'
+ExpectFailure '$`\frac{1}{2`$' 'unclosed brace in math'
+ExpectFailure '$`\[x\]`$' 'legacy math delimiter'
+ExpectFailure '$`\xmapsto{x}`$' 'unsupported arrow macro'
+ExpectFailure '| $`|x|`$ |' 'unescaped table pipe'
+ExpectFailure $'```math\nx\n```text' 'unclosed Markdown code fence'
+printf 'Markdown checker regression tests passed: accepted fixture and fifteen negative controls\n'

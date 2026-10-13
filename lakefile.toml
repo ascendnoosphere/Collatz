@@ -35,6 +35,8 @@ defaultTargets = [
   "RelationsCycles",
   "RepunitDivisor",
   "ResidueAccess",
+  "ResidueCylinders",
+  "ResidueDensity",
   "SignedTraps",
   "SignedCore",
   "AncestralJoin",
@@ -262,6 +264,14 @@ srcDir = "QCD.Repunit.001/lean"
 [[lean_lib]]
 name = "ResidueAccess"
 srcDir = "QCD.ResidueAccess.001/lean"
+
+[[lean_lib]]
+name = "ResidueCylinders"
+srcDir = "QCD.ResidueLeakage.001/lean"
+
+[[lean_lib]]
+name = "ResidueDensity"
+srcDir = "QCD.ResidueLeakage.001/lean"
 
 [[lean_lib]]
 name = "SignedTraps"

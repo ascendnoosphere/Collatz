@@ -46,7 +46,7 @@ are linked below. This audit does not replace semantic review.
 |---|---|---|
 | [GaussianDynamics](../QCD.GaussianDynamics.001/lean/GaussianDynamics.lean) | Exact Gaussian divisibility, finite division-prefix budget, Bézout avoidance, homogeneous full-sequence escape, and the equal-norm split-prime counterexample | All-offset Gaussian classification |
 | [QuadraticArithmetic](../QCD.QuadraticArithmetic.001/lean/QuadraticArithmetic.lean) and [DyadicArithmetic](../QCD.QuadraticArithmetic.001/lean/DyadicArithmetic.lean) | Integral coordinate arithmetic and the stated dyadic formal identities | Every classification in the existing written quadratic study being formalized |
-| [ComplexLattice](../QCD.ComplexLattice.001/lean/ComplexLattice.lean) | Actual integral quadratic ring, scalar-two guard and unique exact quotient, all-clock coordinate recovery, finite dyadic descent, both tail coordinates, injective complex embedding, full-sequence complex-norm escape for nonreal raw $(3,c,2)$ seeds with odd real $c$, and explicit residue-quotient cycles | Real-axis convergence or transfer of raw escape to a quotient convention |
+| [ComplexLattice](../QCD.ComplexLattice.001/lean/ComplexLattice.lean) | Actual integral quadratic ring, scalar-two guard and unique exact quotient, all-clock coordinate recovery, finite dyadic descent, both tail coordinates, injective complex embedding, full-sequence complex-norm escape for nonreal raw $`(3,c,2)`$ seeds with odd real $`c`$, and explicit residue-quotient cycles | Real-axis convergence or transfer of raw escape to a quotient convention |
 | [ComplexCohomology](../QCD.ComplexCohomology.001/lean/ComplexCohomology.lean) | Ordinary period test and actual quotient isomorphism, ordered affine transport, common-potential reconstruction, and literal field-guard collapse | Lattice integrality or branch legality following from a field closing equation |
 | [ComplexGraph](../QCD.ComplexCohomology.001/lean/ComplexGraph.lean) | Actual weak components, kernel isomorphism, and functional-graph incidence and cohomology dimensions over every field | An unmarked dimension distinguishing different cycle lengths |
 | [ComplexLocalSystem](../QCD.ComplexCohomology.001/lean/ComplexLocalSystem.lean) | Actual twisted coboundary subspaces and quotient, neutral weighted-period isomorphism, homogeneous-potential isomorphism, and nonneutral zero dimensions | A useful universal local-to-global arithmetic criterion |
@@ -60,9 +60,9 @@ reported explicitly rather than described as axiom-free verification.
 ## Bounded computational contract
 
 The atlas enumerates thirteen declared lattice families, each on all
-$97^2=9,409$ coefficient seeds in $[-48,48]^2$: **122,317 seeds** altogether.
+$`97^2=9,409`$ coefficient seeds in $`[-48,48]^2`$: **122,317 seeds** altogether.
 The raw/residue convention is part of every family record. The horizon is
-256 ticks and the coordinate fence is $2^{26}$.
+256 ticks and the coordinate fence is $`2^{26}`$.
 
 - A repeated **exact integer state** proves the recorded finite cycle.
 - A checked odd transverse tail proves escape only for the specified **raw**
@@ -84,11 +84,11 @@ inverses, roots and Frobenius laws; polynomial node checks; and a reused
 workspace allocation check. Polynomial angular samples are floating-point
 negative controls, not substitutes for the Lean exterior-growth proof.
 
-Six polynomial views each contain $256^2$ samples: **393,216 floating-point
+Six polynomial views each contain $`256^2`$ samples: **393,216 floating-point
 samples**, each with a 128-tick horizon and radius-8 exit test. There are four
 polynomials, not six: two additional views resolve the otherwise invisible
-plus-cycle basin near $1$, without changing any coefficient. Their declared
-box is $[0.994,1.006]+i[-0.006,0.006]$. A fixed-mesh visibility test requires
+plus-cycle basin near $`1`$, without changing any coefficient. Their declared
+box is $`[0.994,1.006]+i[-0.006,0.006]`$. A fixed-mesh visibility test requires
 zero survivors for the repelling zoom and a nonempty dark region for the
 critical zoom. Dark pixels mean only that this test did not exit within the
 budget. Numerical rounding, finite resolution and finite time prevent a
@@ -97,7 +97,7 @@ Julia-membership certificate.
 ## Visible assets and Markdown
 
 The complex atlas generates nineteen vector PDFs and nineteen 300-dpi,
-$1500\times1500$ PNG previews. The existing quadratic study generates seven
+$`1500\times1500`$ PNG previews. The existing quadratic study generates seven
 vector PDFs and matching PNGs. Thus the linked galleries contain **26
 GitHub-visible PNG previews**, while PDFs remain ignored. Plots use Latin
 Modern outline glyphs, explicit font sizes and the same font metrics for
@@ -133,12 +133,43 @@ The audit decoded GitHub's extra HTML-entity layer inside math payloads; an
 initial harness without that decoding reported 265 spurious `Misplaced &`
 errors, all attributable to entity encoding rather than source mathematics.
 
-This strengthens the lexical checks with real GitHub Markdown processing and
-executed math typesetting. It is not a screenshot audit of every equation,
-a claim about GitHub's exact deployed MathJax version, or a logged-in live
-GitHub-browser layout check. Image readability has the separate direct
-inspection and plotting contracts recorded above. No credentials, generated
-HTML, browser profiles, PDFs or temporary TeX files were committed.
+That run established GitHub recognition and local compilation, but did not compare
+rendered TeX with source TeX. A valid expression can compile after GitHub has silently
+removed a backslash; zero MathJax errors therefore did **not** prove payload fidelity.
+It was not a screenshot audit, a claim about GitHub's deployed MathJax version, or a
+logged-in live-page layout check. Image readability has the separate inspection and
+plotting contracts above. No credentials, generated HTML, browser profiles, PDFs or
+TeX temporary files were committed.
+
+## Subsequent source-to-GitHub payload repair
+
+A later authentic API probe exposed punctuation loss in ordinary dollar-delimited
+math. Maintained pages now use GitHub's protected inline form and `math` fences.
+The repository-wide initial delimiter conversion preserved all ordered TeX payloads
+and non-math projections. A second pass joined 25 physical row breaks in 24 formulas,
+retaining the TeX row terminators, and moved one formula out of a nested list that
+GitHub had parsed as ordinary code. This changed only two non-math indentation spaces.
+
+The separate [payload checker](../Scripts/CheckGitHubMath.sh) compares source with
+actual GFM output in count, order, display mode, and TeX. Fixed transport decoding is
+mode-specific: one HTML DOM layer for both modes, and exactly one additional entity
+layer for inline math. Literal-entity fixtures reject both under- and over-decoding.
+The [payload regression suite](../Scripts/TestGitHubMath.sh) passed 13 accepted
+fixtures and 18 payload negative controls, plus three accepted evidence cases and
+eight cache-alias negative controls; the static suite passed its 15 negative controls.
+
+The repaired publication scope contains **79 pages and 5,377 expressions**, including
+the new residue-leakage family and intervening source-catalogue pages. Every payload
+matched the source exactly after fixed transport decoding. Chromium 154.0.8037.57
+compiled these exact inputs with MathJax 3.2.2: **5,377 checked, zero errors**.
+All 24 row-layout pairs produced byte-identical SVGs with font caching disabled;
+only the monotonically assigned context-menu counter differed in their containers.
+The [residue-leakage verification ledger](../QCD.ResidueLeakage.001/Verification.md)
+records the precise commands, conversion scope, safety repairs, and review dispositions.
+
+These checks correct the missing fidelity obligation in the earlier 4,907-expression
+run. They do not establish mathematical truth, verify the deployed GitHub MathJax
+version, or substitute for a logged-in live-page visual audit.
 
 ## Independent review and migration checkpoint
 
@@ -151,7 +182,7 @@ The two original final-gate lanes timed out while waiting for readiness with
 protocol after the readiness barrier. The independent semantic reviews
 returned **OK with notes**, with no P0/P1 findings. They found two P2 issues:
 the neutral twisted-dimension test did not require dimension one, and the
-README attributed the fourth seed-$3$ failure value to a theorem checking
+README attributed the fourth seed-$`3`$ failure value to a theorem checking
 only the first three. The test now independently multiplies the edge
 coefficients and checks both dimensions; the Lean theorem now checks all
 four values. The code reviewer also identified the unresolved visual scale

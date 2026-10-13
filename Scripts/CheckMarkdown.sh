@@ -28,9 +28,27 @@ def Escaped(text, index):
         index -= 1
     return count % 2 == 1
 
-# Remove code spans before interpreting dollar signs or local-link examples.
+# Protected math keeps its TeX payload; ordinary inline code remains a literal example.
 def WithoutCode(line):
-    return re.sub(r"(`+).*?\1", "", line)
+    output = []
+    index = 0
+    while index < len(line):
+        if line.startswith("$`", index) and not Escaped(line, index):
+            closing = line.find("`$", index + 2)
+            if closing >= 0:
+                output.append("$" + line[index + 2:closing] + "$")
+                index = closing + 2
+                continue
+        if line[index] == "`" and not Escaped(line, index):
+            marker = re.match(r"`+", line[index:])[0]
+            closing = re.search(r"(?<!`)" + re.escape(marker) + r"(?!`)",
+                                line[index + len(marker):])
+            if closing:
+                index += len(marker) + closing.end()
+                continue
+        output.append(line[index])
+        index += 1
+    return "".join(output)
 
 # Retain math fences but ignore executable examples and their literal syntax.
 def Visible(path, strip_code=True):
@@ -42,7 +60,8 @@ def Visible(path, strip_code=True):
     for number, line in enumerate(lines, 1):
         match = re.match(r"^\s*(`{3,}|~{3,})(.*)$", line)
         if fence is not None:
-            if match and match[1][0] == fence[0] and len(match[1]) >= fence[1]:
+            if (match and match[1][0] == fence[0] and len(match[1]) >= fence[1]
+                    and not match[2].strip()):
                 if math_fence:
                     visible.append((number, "$$"))
                 fence = None

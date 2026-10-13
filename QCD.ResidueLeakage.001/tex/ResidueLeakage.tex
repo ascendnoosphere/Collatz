@@ -1,0 +1,440 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For the positive-divisor, division-first raw map
+\(T(n)=n/D\) when \(D\mid n\), and \(T(n)=qn+c\) otherwise,
+assume \(q\ge2\), \(c\ge1\), \(D\ge2\), and \(\gcd(q,D)=1\).
+Let \(m\) be the least positive return time of zero under the affine
+residue permutation \(r\mapsto qr+c\bmod D\).
+We prove that seeds with at least \(h\) actual raw division events
+occupy exactly \(m^h\) classes modulo \(D^h\).
+If \(m<D\), the seeds with infinitely many divisions have ordinary natural
+density zero; the complementary density-one set has an exact affine tail
+and escapes in the full raw clock.
+At \(m=D\), every seed divides infinitely often.
+The exceptional set need not be empty, and the return order need not divide \(D\).
+All guard, lifting, raw-clock, density, and boundary statements have matching
+Lean proofs. A separate exact Go census checks finite instances.
+\end{abstract}
+
+\section{Scope and provenance}
+
+This is the positive scalar-divisor case of the residue-leakage claim in
+the read-only historical corpus, Theorem 9.34 of
+\texttt{FINALEE.MD}, lines 2019--2023 \cite{Corpus26}.
+No negative divisor is replaced by its absolute value.
+The original library admits signed parameters and signed states; here we
+take the invariant class of positive states with \(D>0\).
+Casting the natural-number states to integers commutes with every raw
+step and every raw iterate. This is proved in
+\texttt{RawCast} and \texttt{IterateCast}; it is not inferred from residue agreement.
+
+The proof does not use an iid guard model, a distribution on one orbit,
+a logarithmic average, or countable additivity of natural density.
+Natural density here is the limit of initial-interval counts.
+The finite computation below is supplementary evidence, not the
+finite-to-infinite argument.
+
+For \(j\ge0\), write
+\[
+G_j(q)=\sum_{i=0}^{j-1}q^i,\qquad G_0(q)=0.
+\]
+Define \(F(r)=qr+c\bmod D\) on \(\Z/D\Z\).
+The prior residue family proves
+\(F^j(0)\equiv cG_j(q)\pmod D\), the least-return criterion,
+distinctness below the first return, and \(m\le D\).
+The new proof \texttt{AccessExists} supplies existence for every unit \(q\bmod D\):
+\(F\) is a permutation of a finite set, so zero is periodic.
+Taking its least positive return gives a cycle of length \(1\le m\le D\).
+In particular, an additional return-existence hypothesis is not being imposed.
+
+\begin{definition}
+The accessible set is
+\[
+A=\{F^j(0):0\le j<m\}.
+\]
+For \(h\ge0\), let \(S_h\) be the set of nonnegative integer seeds
+whose raw orbit has at least \(h\) division events.
+An event at raw time \(t\) is a division when \(D\mid T^t(n)\);
+it includes an immediate division and consecutive divisions.
+Let \(I=\bigcap_{h\ge0}S_h\).
+\end{definition}
+
+\section{A complete, bounded first-division search}
+
+\begin{lemma}\label{LemmaSearch}
+Starting from \(n\), the first division exists if and only if
+\(n\bmod D\in A\). When it exists, it follows \(k\) affine events
+for a unique first delay \(0\le k<m\), and the endpoint is
+\[
+H(n)=\frac{q^kn+cG_k(q)}{D}.
+\]
+All earlier affine states are not divisible by \(D\).
+When the search through delays \(0,\ldots,m-1\) fails,
+the same raw orbit never divides.
+\end{lemma}
+\begin{proof}
+The affine state after \(k\) events is \(q^kn+cG_k(q)\), with residue
+\(F^k(n\bmod D)\).
+Since \(F\) is bijective and \(A\) is the cycle of zero,
+a residue can reach zero if and only if it belongs to that cycle.
+If \(n\bmod D=F^j(0)\), its first visit to zero occurs within one cycle.
+This includes \(j=0\), for which the raw division is immediate.
+Conversely, if \(F^k(n\bmod D)=0\), applying the inverse permutation \(k\) times
+shows that \(n\bmod D\) belongs to the same cycle.
+Thus a successful first visit has \(k<m\).
+Choosing the first such \(k\) ensures every earlier raw step is the affine branch,
+so the displayed endpoint is an integer and the raw time consumed is \(k+1\).
+If no such \(k<m\) exists, no later affine visit to zero exists either.
+Every subsequent raw event is then affine.
+These are \texttt{HitAccessible}, \texttt{EventualAccessible},
+\texttt{HitEventual}, \texttt{HitRawWitness}, and
+\texttt{HitNoneNoDivisions}.
+\end{proof}
+
+\section{Jointly legal cylinders and source-digit lifting}
+
+\begin{lemma}\label{LemmaShift}
+Suppose \(h\) legal first-division blocks from \(n\) end at \(E\),
+with numerator multiplier \(P=q^{k_1+\cdots+k_h}\).
+For every \(u\ge0\), the source \(n+D^hu\) has precisely the same
+first \(h\) block delays and endpoint \(E+Pu\).
+Its multiplier is still \(P\), and \(\gcd(P,D)=1\).
+Success or failure through depth \(h\) depends only on \(n\bmod D^h\).
+\end{lemma}
+\begin{proof}
+For one block, adding \(Du\) preserves each division guard because
+\[
+q^k(n+Du)+cG_k(q)=q^kn+cG_k(q)+Dq^ku.
+\]
+The first divisible affine state therefore has the same delay.
+Exact division changes the endpoint by \(q^ku\).
+For \(h\) blocks, start with the shift \(D^hu\), apply the one-block identity,
+and induct through the subsequent blocks; one factor of \(D\) is removed
+per legal division, and every affine multiplier is a power of \(q\).
+The final shift is \(Pu\).
+All factors of \(P\) are units modulo \(D\), proving coprimality.
+The same induction handles unsuccessful searches as well.
+Writing \(n=r+D^h u\), \(0\le r<D^h\), proves the last assertion.
+These identities are proved in \texttt{HitShift}, \texttt{RunShift},
+\texttt{RunCoprime}, and \texttt{SurvivesMod}.
+\end{proof}
+
+\begin{theorem}\label{TheoremCylinders}
+For every \(h\ge0\), \(S_h\) consists of exactly \(m^h\) residue
+classes modulo \(D^h\).
+Each legal depth-\(h\) source class has exactly \(m\) legal source-digit
+lifts modulo \(D^{h+1}\).
+The cylinder test is equivalent to having at least \(h\) actual raw division events.
+\end{theorem}
+\begin{proof}
+At depth zero, every seed is legal and there is one class modulo one.
+Fix a legal canonical representative \(r<D^h\), with endpoint \(E\) and
+unit multiplier \(P\).
+Its possible children are \(r+D^ht\), \(0\le t<D\).
+By Lemma~\ref{LemmaShift}, the endpoint before the next block is \(E+Pt\).
+The map
+\[
+t\longmapsto E+Pt\bmod D
+\]
+is a bijection of the residue set because \(\gcd(P,D)=1\).
+Exactly the \(m\) residues in \(A\) permit the next division,
+so this one common parent has exactly \(m\) legal children.
+Children of distinct parents are disjoint: reducing a child modulo \(D^h\)
+recovers its unique parent. Every legal depth-\(h+1\) source has this parent
+and its unique high digit, so no cases are omitted.
+The number of legal classes therefore satisfies
+\(a_0=1\) and \(a_{h+1}=ma_h\), giving \(a_h=m^h\).
+The Lean proof is \texttt{ChildrenCard}, \texttt{ChildrenDisjoint},
+\texttt{ClassesSucc}, and \texttt{ClassesCard}.
+
+Each successful block consumes its first delay plus one raw step
+and contains exactly one actual division.
+Composition recovers the original raw endpoint with exactly \(h\)
+divisions; these are \texttt{HitRawCount} and \texttt{RunRaw}.
+Conversely, a finite raw orbit with at least \(h\) divisions has a first
+division whenever \(h>0\).
+Lemma~\ref{LemmaSearch} recognizes that division within the complete bounded search.
+Remove that block and induct on the remaining required division count.
+This proves \texttt{RawCountSurvives} and the equivalence
+\texttt{SurvivesRawCount}.
+A returned block delay satisfies \(k<m\), as proved in \texttt{HitDelayBound}.
+Hence a legal depth-\(h\) prefix has a raw witness time \(h\le t\le mh\),
+with exactly \(h\) divisions and the same endpoint; this is \texttt{RunRawBudget}.
+Division counts cannot decrease when the raw clock is extended.
+The already proved converse therefore gives the exact finite-window equivalence
+\[
+n\in S_h\quad\Longleftrightarrow\quad
+\text{at least \(h\) divisions occur within the first \(mh\) raw events}.
+\]
+This is \texttt{SurvivesRawWindow}; it justifies the independent accepted/rejected
+raw-clock tests without an empirical search cap.
+Finally \texttt{InfiniteSurvives} identifies the same infinite raw predicate
+with survival at all finite depths.
+\end{proof}
+
+\section{Interval counts and the natural-density limit}
+
+For integers \(X\ge0\) and \(L\ge1\), put
+\[
+B(X,L)=
+\begin{cases}
+0,&X=0,\\
+\lfloor(X-1)/L\rfloor+1,&X>0.
+\end{cases}
+\]
+This is \(\lceil X/L\rceil\), with its empty-interval value retained.
+
+\begin{theorem}\label{TheoremDensity}
+For every \(h\ge0\) and \(X\ge0\),
+\[
+\#(I\cap[0,X))\le \#(S_h\cap[0,X))
+ \le \min\{X,m^hB(X,D^h)\}.
+\]
+For \(X>0\),
+\[
+\frac{\#(I\cap[0,X))}{X}
+ \le \left(\frac mD\right)^h+\frac{m^h}{X}.
+\]
+If \(m<D\), then \(I\) has ordinary natural density zero.
+Its complement has ordinary natural density one.
+\end{theorem}
+\begin{proof}
+Write each \(n<X\) uniquely as \(n=r+D^h a\),
+where \(0\le r<D^h\).
+When \(n\in S_h\), \(r\) is one of the \(m^h\) legal canonical representatives.
+Also \(0\le a<B(X,D^h)\): for \(X>0\), \(n\le X-1\);
+for \(X=0\) there are no seeds to pack.
+The injection \(n\mapsto(r,a)\) gives the ceiling estimate,
+and the interval itself gives the bound by \(X\).
+The inclusion \(I\subseteq S_h\) gives the first inequality.
+These are \texttt{PrefixBelowCeilingBound} and
+\texttt{InfiniteBelowCeilingBound}.
+Since \(B(X,D^h)\le X/D^h+1\), division by \(X>0\)
+gives the displayed boundary-term estimate
+\texttt{InfiniteDensityBound}.
+
+Fix the parameters and \(\varepsilon>0\).
+First choose a finite depth \(h\) so that \((m/D)^h<\varepsilon/2\).
+This is possible because \(0<m/D<1\).
+Then choose an integer \(N>2m^h/\varepsilon\), \(N>0\).
+For every integer \(X\ge N\), the boundary term is below \(\varepsilon/2\).
+Thus the density ratio is below \(\varepsilon\) on the entire remaining sequence.
+This is \texttt{ResidueDensityZero}; no exchange of an infinite intersection
+with a density operation is used.
+The exact partition of every finite interval into \(I\) and its complement
+gives \texttt{FiniteDensityOne}.
+\end{proof}
+
+\begin{corollary}
+Whenever \(X\le D^h\), \(\#(I\cap[0,X))\le m^h\).
+In particular, the certificate can be selected by integer power comparisons,
+without numerical logarithms.
+\end{corollary}
+\begin{proof}
+For \(X=0\) the count is zero.
+For \(0<X\le D^h\), \(B(X,D^h)=1\).
+Apply Theorem~\ref{TheoremDensity}.
+This is \texttt{InfiniteBelowScaleBound}.
+\end{proof}
+
+\begin{corollary}\label{CorollaryPositive}
+For every integer \(X\ge0\) and \(h\ge0\), the original positive interval obeys
+\[
+\#(I\cap[1,X])\le \min\{X,m^hB(X,D^h)\}.
+\]
+For \(X\ge1\), let \(\alpha=\log m/\log D\). Then
+\[
+\#(I\cap[1,X])\le mX^{\alpha}.
+\]
+When \(m<D\), the infinitely-dividing positive seeds have ordinary natural density
+zero, and the finitely-dividing positive seeds have ordinary natural density one.
+\end{corollary}
+\begin{proof}
+For a positive source \(n\), use its unique positive block representative
+\[
+r=(n-1)\bmod D^h+1,\qquad a=\lfloor(n-1)/D^h\rfloor,
+\qquad n=r+D^ha.
+\]
+This retains the residue-zero right endpoint \(r=D^h\) instead of the excluded zero seed.
+The finite guard test for \(r\) is equivalent to that for \(n\) by the exact source shift.
+The map from \([1,D^h]\) to residues modulo \(D^h\) is bijective:
+its sole zero-residue representative is \(D^h\), and all other representatives
+are their residues themselves.
+At most \(m^h\) positive representatives are legal.
+For \(1\le n\le X\), \(a<B(X,D^h)\).
+The injective packing \(n\mapsto(r,a)\) gives the ceiling estimate,
+while \([1,X]\) itself gives the minimum by \(X\).
+These are \texttt{PositivePrefixBelow\allowbreak{}ScaleBound},
+\texttt{PositivePrefixBelow\allowbreak{}CeilingBound}, and
+\texttt{PositiveInfiniteBelowMinBound}.
+In particular, \(X\le D^h\) gives a positive survivor count at most \(m^h\),
+including equality at the right boundary.
+
+Choose the least nonnegative \(h\) such that \(X\le D^h\).
+Existence follows from the elementary induction \(k+1\le D^k\) for \(D\ge2\),
+proved in \texttt{PositiveScaleExists}.
+If \(h=0\), then \(X=1\); the count is at most one and \(1\le m\).
+Otherwise \(h=k+1\) and minimality gives \(D^k<X\le D^{k+1}\).
+Because \(m\ge1\), \(\alpha\ge0\).
+The real-power identity \((D^k)^{\alpha}=m^k\) follows by taking logarithms;
+\(\log D>0\) and no zero denominator is introduced.
+Consequently
+\[
+\#(I\cap[1,X])\le m^{k+1}=m\,(D^k)^{\alpha}\le mX^{\alpha}.
+\]
+This includes \(m=1\), for which \(\alpha=0\).
+The identities and comparison are \texttt{ResiduePowerIdentity} and
+\texttt{PositiveInfinitePowerBound}; the executable certificate uses only
+integer scales, not rounded logarithms.
+
+Finally \(I\cap[1,X]\subseteq I\cap[0,X+1)\).
+For \(X\ge1\), the normalization factor \((X+1)/X\) is at most two.
+Apply the already proved density-zero contract with tolerance \(\varepsilon/2\)
+to \(X+1\). The result is below \(\varepsilon\) for every sufficiently large \(X\).
+The positive finite and infinite counts sum to exactly \(X\), proving density one.
+These are \texttt{PositiveResidueDensityZero}, \texttt{PositivePartition},
+and \texttt{PositiveFiniteDensityOne}.
+\end{proof}
+
+\section{Recovery of every escaping raw tail}
+
+\begin{theorem}\label{TheoremTail}
+If \(n\notin I\), there is one raw time \(t_0\) after which no division occurs.
+For every \(j\ge0\),
+\[
+T^{t_0+j}(n)=q^jT^{t_0}(n)+cG_j(q).
+\]
+For \(c\ge1\) and \(q\ge2\), this same full raw sequence tends to \(+\infty\).
+Consequently the positive seeds that eventually stop dividing and then escape
+have ordinary natural density one when \(m<D\).
+Every eventually periodic positive seed belongs to \(I\).
+\end{theorem}
+\begin{proof}
+The raw division count is finite for \(n\notin I\).
+Equivalently, some complete finite-depth block search fails.
+Recover the actual endpoint of every successful preceding block.
+The failed block has no eventual division by Lemma~\ref{LemmaSearch},
+so its endpoint begins one division-free raw tail.
+This is \texttt{RunNoneTail} and \texttt{FiniteDivisionsTail}.
+Every later raw event is affine. Induction gives the exact displayed formula,
+using \(G_{j+1}(q)=qG_j(q)+1\); this is
+\texttt{DivisionFreeAffine} and \texttt{FiniteDivisionsFormula}.
+
+The affine state increases by at least one each step:
+\(qx+c\ge x+1\) for \(x\ge0\).
+Hence it eventually exceeds every fixed bound at every later raw clock,
+as proved in \texttt{AffineGrowth}, \texttt{DivisionFreeEscape}, and
+\texttt{ResidueEscape}.
+For positive initial states, division by \(D\) when legal preserves positivity,
+and the affine branch preserves positivity; see \texttt{IteratePositive}.
+The complementary density-one conclusion follows from
+Theorem~\ref{TheoremDensity}, not from an average orbit drift.
+An eventually periodic orbit is bounded, whereas every seed outside \(I\) escapes.
+Therefore every eventually periodic positive seed lies in \(I\).
+The formal statements \texttt{BoundedInfinite} and \texttt{PeriodicInfinite}
+retain the actual raw clock and a strictly positive period.
+\end{proof}
+
+\section{Sharp boundary and separating examples}
+
+\begin{theorem}\label{TheoremBoundary}
+If \(m=D\), every nonnegative seed belongs to \(I\).
+This does not decide whether those infinitely-dividing orbits are bounded or escaping.
+\end{theorem}
+\begin{proof}
+Theorem~\ref{TheoremCylinders} gives \(D^h\) legal classes modulo \(D^h\),
+so the legal set is the entire residue range at every depth.
+By the raw-event equivalence, every seed has arbitrarily many actual divisions.
+These are \texttt{FullAccessClasses} and \texttt{FullAccessInfinite}.
+\end{proof}
+
+For \((q,c,D)=(2,1,3)\), the zero residue cycle is
+\(0\mapsto1\mapsto0\); thus \(m=2<D=3\).
+Yet the raw cycle \(1\mapsto3\mapsto1\) belongs to \(I\).
+In fact the depth-\(h\) block from \(1\) returns to \(1\) with multiplier \(2^h\).
+These are \texttt{TernaryPeriod}, \texttt{TernaryCycleRun},
+and \texttt{TernaryCycleInfinite}.
+A zero-density exceptional set can therefore be nonempty, and an atomic
+source supported on this cycle assigns it full mass.
+The survival fraction is not a capture probability.
+
+The same example refutes the source's stronger assertion
+\emph{order divides \(D\)}: \(m=2\) does not divide \(D=3\).
+The valid cardinal bound is \(m\le D\).
+The formal common-witness counterexample is
+\texttt{PeriodNeedNotDivideModulus}.
+For classical \((3,1,2)\), \(m=D=2\); see \texttt{ClassicalPeriod}.
+The density-one finite-division theorem does not apply to that map,
+and the full-access result does not prove classical convergence or divergence.
+
+\section{Reproducible finite evidence and formal correspondence}
+
+The source files are:
+\begin{itemize}
+\item \path{QCD.ResidueLeakage.001/lean/ResidueCylinders.lean};
+\item \path{QCD.ResidueLeakage.001/lean/ResidueDensity.lean};
+\item \path{QCD.ResidueLeakage.001/go/ResidueCylinders.go}.
+\end{itemize}
+The default Go census uses \(2\le q\le8\), \(2\le D\le9\),
+\(0\le c\le3\), \(\gcd(q,D)=1\), and recorded depths \(0\le h\le4\).
+Each record also checks all high-digit children at depth \(h+1\), including
+independent raw-clock rejection checks over the complete \(mh\) or \(m(h+1)\) window.
+The executed run produced 132 models, 660 records, 75,490 legal parent classes,
+898,742 parent/child raw-clock checks, and 589,658 source-digit lift checks.
+The zero-offset cases test the broader finite algebraic lemmas;
+the positive-offset escape theorem retains \(c\ge1\).
+
+Eight focused tests include immediate and consecutive divisions,
+the nondividing residue \(2\bmod3\), strict and critical censuses,
+a 256-bit shifted source, finite-interval boundaries, invalid parameters and
+budgets, zero hot-loop allocations, and deterministic parallel assembly.
+The finite report does not compute membership of an infinite predicate.
+The universal recovery and limit statements are proved in Lean,
+not extrapolated from this census.
+
+The source coverage is limited to the positive-divisor density-one half
+of Theorem 9.34, its finite cylinder and survivor estimates, and the explicit
+return-order counterexample.
+The conditional mean-slope and pressure statements in that source paragraph,
+other source results, negative divisors, and the broader corpus-to-result
+crosswalk are not declared complete by this family.
+
+\bibliographystyle{amsalpha}
+\bibliography{References}
+\end{document}
