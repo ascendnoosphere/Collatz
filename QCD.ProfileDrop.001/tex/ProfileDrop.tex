@@ -1,0 +1,853 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{pdftitle={Generalized Collatz Library}}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library: Division-Free Escape and Zero-Avoiding Residue Cycles}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Let \(q,c,d\in\Z\) satisfy \(|q|\ge 2\) and \(|d|\ge 2\). Write \(A(n)=qn+c\) and \(z(n)=(q-1)n+c\). Until division by \(d\), the displacement is multiplied by \(q\), while the residue follows a finite affine map modulo \(|d|\). Some positive seed has a division-free raw orbit whose absolute values tend to infinity if and only if that residue map has a cycle avoiding \(0\). The converse cycle extraction needs only the first \(|d|\) states. If no such cycle exists, every integer seed has a divisible state at an index smaller than \(|d|\).
+\end{abstract}
+
+The corresponding Lean sources and finite arithmetic checks are
+\cite{LibraryProfile26,LibraryPrimePower26,LibraryProfileChecks26}.
+The prime-power argument uses the signed lifting-the-exponent statements
+in \cite{MathlibMultiplicity26} with their hypotheses displayed below.
+
+\section{Definitions}
+
+\begin{definition}
+The affine branch and its displacement are
+\[
+  A(n)=qn+c,
+  \qquad
+  z(n)=(q-1)n+c.
+\]
+Their iterates are \(A^{0}(n)=n\) and \(A^{j+1}(n)=A(A^{j}(n))\).
+\end{definition}
+
+\begin{definition}
+For an integer \(m\ge 1\), write \(n\bmod m\) for the unique integer \(r\) with \(0\le r<m\) and \(m\mid n-r\). The residue map on those representatives is
+\[
+  f(r)=(qr+c)\bmod m.
+\]
+\end{definition}
+
+\begin{definition}
+The raw step divides by \(d\) when \(d\) divides the current state, and otherwise applies \(A\). A raw orbit is division-free when no state is divisible by \(d\).
+\end{definition}
+
+\begin{definition}
+A zero-avoiding cycle of length \(p\ge 1\) modulo \(m\) is a list \(s_0,\ldots,s_{p-1}\) in \(\{1,\ldots,m-1\}\) such that \(f(s_k)=s_{k+1}\) for \(k<p-1\) and \(f(s_{p-1})=s_0\).
+\end{definition}
+
+\section{The two coordinates}
+
+\begin{lemma}[DisplacementAffine]
+For every \(n\in\Z\),
+\[
+  z(A(n))=qz(n).
+\]
+\end{lemma}
+
+\begin{proof}
+Expand
+\[
+  z(A(n))=(q-1)(qn+c)+c
+  =(q-1)qn+(q-1)c+c
+  =q\bigl((q-1)n+c\bigr)
+  =qz(n).
+\]
+\end{proof}
+
+\begin{lemma}[ResidueAffine]
+Let \(m\ge 1\) and let \(r=n\bmod m\). Then
+\[
+  A(n)\bmod m=f(r).
+\]
+\end{lemma}
+
+\begin{proof}
+Write \(n=mt+r\) with \(t\in\Z\) and \(0\le r<m\). Then
+\[
+  A(n)=q(mt+r)+c=(qr+c)+m(qt),
+\]
+so \(A(n)\) and \(qr+c\) have the same remainder modulo \(m\). That remainder is \(f(r)\).
+\end{proof}
+
+\begin{theorem}[MergedProfileStep]
+Let \(m\ge 1\). One application of \(A\) multiplies displacement by \(q\) and replaces the residue modulo \(m\) by its image under \(f\).
+\end{theorem}
+
+\begin{proof}
+The two identities are the preceding lemmas.
+\end{proof}
+
+\begin{lemma}[DisplacementIterated]
+For every \(j\in\N\),
+\[
+  z(A^{j}(n))=q^{j}z(n).
+\]
+\end{lemma}
+
+\begin{proof}
+The case \(j=0\) is \(z(n)=z(n)\). If the identity holds at \(j\), the one-step identity at the state \(A^{j}(n)\) gives
+\[
+  z(A^{j+1}(n))=qz(A^{j}(n))=q\cdot q^{j}z(n)=q^{j+1}z(n).
+\]
+\end{proof}
+
+\begin{lemma}[DisplacementClosedForm]
+For every \(j\in\N\),
+\[
+  (q-1)A^{j}(n)=q^{j}z(n)-c.
+\]
+\end{lemma}
+
+\begin{proof}
+The iterated identity says \((q-1)A^{j}(n)+c=q^{j}z(n)\). Subtract \(c\).
+\end{proof}
+
+\begin{lemma}
+Let \(m\ge 1\) and \(r=n\bmod m\). Then
+\[
+  A^{j}(n)\bmod m=f^{j}(r).
+\]
+\end{lemma}
+
+\begin{proof}
+The case \(j=0\) is the definition of \(r\). The inductive step is the one-step residue identity.
+\end{proof}
+
+\section{Magnitude}
+
+\begin{lemma}[NatLtTwoPowSucc]
+Every natural number \(n\) satisfies \(n<2^{n+1}\).
+\end{lemma}
+
+\begin{proof}
+The bound \(0<2^{1}\) starts the induction. If \(n<2^{n+1}\), then \(n+1\le 2^{n+1}\), hence
+\[
+  2(n+1)\le 2\cdot 2^{n+1}=2^{n+2}.
+\]
+Also \(n+1<2(n+1)\). Therefore \(n+1<2^{n+2}\).
+\end{proof}
+
+\begin{theorem}[AffineNatAbsEventually]
+Assume \(|q|\ge 2\) and \(z(n)\ne 0\). For every \(N\in\N\) there exists \(J\) such that
+\[
+  j\ge J\quad\text{implies}\quad |A^{j}(n)|>N.
+\]
+\end{theorem}
+
+\begin{proof}
+The hypothesis \(|q|\ge 2\) forces \(q\ne 1\), so \(D=|q-1|\) is positive. Write \(Z=|z(n)|\), \(C=|c|\), and \(B=C+ND\). The preceding lemma gives \(B<2^{B+1}\). Fix \(j\ge B+1\). Then \(B<2^{j}\). Since \(|q|\ge 2\) and \(Z\ge 1\),
+\[
+  |q^{j}z(n)|=|q|^{j}Z\ge 2^{j}>B.
+\]
+The triangle inequality yields
+\[
+  |q^{j}z(n)|\le |q^{j}z(n)-c|+C,
+\]
+and the closed form identifies \(|q^{j}z(n)-c|\) with \(D|A^{j}(n)|\). Hence
+\[
+  ND=B-C<|q^{j}z(n)|-C\le D|A^{j}(n)|.
+\]
+Cancel the positive factor \(D\) to obtain \(|A^{j}(n)|>N\).
+\end{proof}
+
+\section{Lifting a cycle}
+
+\begin{lemma}[PositiveDisplacementLift]
+Assume \(|q|\ge 2\), \(m\ge 2\), and \(0\le r<m\). Some positive integer \(n\) satisfies
+\[
+  n\bmod m=r
+  \quad\text{and}\quad
+  z(n)\ne 0.
+\]
+\end{lemma}
+
+\begin{proof}
+The two candidates \(n_1=r+m\) and \(n_2=r+2m\) are positive and both reduce to \(r\) modulo \(m\). Their displacements differ by \((q-1)m\). This difference is nonzero because \(q\ne 1\) and \(m\ne 0\). Therefore at least one displacement is nonzero.
+\end{proof}
+
+\begin{lemma}[SuccMod]
+Let \(p\ge 1\). Then
+\[
+  (j+1)\bmod p=
+  \begin{cases}
+    0 & \text{if }(j\bmod p)+1=p,\\
+    (j\bmod p)+1 & \text{otherwise.}
+  \end{cases}
+\]
+\end{lemma}
+
+\begin{proof}
+Write \(j=pt+\rho\) with \(0\le\rho<p\). If \(\rho+1=p\), then \(j+1=p(t+1)\), so the remainder is \(0\). Otherwise \(0\le\rho+1<p\), and
+\[
+  j+1=tp+(\rho+1)
+\]
+displays the remainder \(\rho+1\).
+\end{proof}
+
+\begin{lemma}[CycleFromRepeat]
+Let \(u:\N\to\N\), let \(i<j\), and suppose that for every \(k\) with \(i\le k<j\),
+\[
+  0<u(k)<m,\qquad u(k+1)=f(u(k)).
+\]
+If \(u(i)=u(j)\), the list
+\[
+  u(i),u(i+1),\ldots,u(j-1)
+\]
+is a zero-avoiding cycle.
+\end{lemma}
+
+\begin{proof}
+Set \(p=j-i\ge 1\) and \(s_k=u(i+k)\) for \(0\le k<p\). Each \(s_k\) lies in \(\{1,\ldots,m-1\}\). For \(k+1<p\), the orbit rule gives \(f(s_k)=s_{k+1}\). At \(k=p-1\),
+\[
+  f(s_{p-1})=u(i+p)=u(j)=u(i)=s_0.
+\]
+\end{proof}
+
+\begin{lemma}[CycleResidue]
+If \(s_0,\ldots,s_{p-1}\) is a zero-avoiding cycle, then \(f^{j}(s_0)=s_{j\bmod p}\).
+\end{lemma}
+
+\begin{proof}
+The case \(j=0\) is immediate. If \(f^{j}(s_0)=s_{\rho}\) with \(\rho=j\bmod p\), the cycle rule and the successor formula for remainders send the next iterate to \(s_{(j+1)\bmod p}\).
+\end{proof}
+
+\section{The cycle criterion}
+
+\begin{lemma}[RawFollowsAffine]
+Let \(n\in\Z\). If \(d\nmid A^j(n)\) for every \(j\in\N\), then the \(j\)th raw state is \(A^j(n)\) for every \(j\).
+\end{lemma}
+
+\begin{proof}
+The zeroth states are both \(n\). Suppose the states agree at index \(j\). By hypothesis their common value is not divisible by \(d\), so the next raw step applies \(A\), exactly as affine iteration does. Induction gives agreement at every index.
+\end{proof}
+
+\begin{theorem}[ZeroAvoidingCycleEscape]
+Assume \(|q|\ge 2\) and \(|d|\ge 2\). A zero-avoiding cycle modulo \(|d|\) produces a positive seed whose raw orbit never divides by \(d\) and whose absolute values tend to infinity.
+\end{theorem}
+
+\begin{proof}
+Let \(m=|d|\) and let \(s_0\) be the first cycle state. Choose a positive lift \(n\) with \(n\bmod m=s_0\) and \(z(n)\ne 0\). The residue of \(A^{j}(n)\) is \(f^{j}(s_0)\), which equals a cycle state and is therefore nonzero. Hence \(d\) does not divide \(A^{j}(n)\). The preceding lemma shows that the raw orbit agrees with the affine orbit at every index. For every \(N\in\N\), the magnitude theorem supplies \(J\) such that every raw state at an index \(j\ge J\) has absolute value greater than \(N\).
+\end{proof}
+
+\begin{theorem}[FiniteDivisionFreeGivesCycle]
+Let \(d\in\Z\) satisfy \(|d|\ge 2\), and set \(m=|d|\). For arbitrary \(q,c,n\in\Z\), if the raw states at all indices \(0\le k<m\) are not divisible by \(d\), then \(f\) has a zero-avoiding cycle.
+\end{theorem}
+
+\begin{proof}
+Let \(u(k)\) be the residue of the \(k\)th raw state modulo \(m\). The first \(m\) values lie in \(\{1,\ldots,m-1\}\). If those values were pairwise distinct, this set of \(m-1\) integers would contain \(m\) distinct elements, which is impossible. Hence there are indices \(i<j<m\) with \(u(i)=u(j)\). At every index \(i\le k<j\), division is unavailable, so the raw step is affine and \(u(k+1)=f(u(k))\). The interval version of the repeated-residue lemma gives a zero-avoiding cycle.
+\end{proof}
+
+\begin{corollary}[NoCycleForcesDivision]
+Let \(q,c,d,n\in\Z\) with \(|d|\ge 2\). If \(f\) has no zero-avoiding cycle, then some raw state at an index \(j<|d|\) is divisible by \(d\).
+\end{corollary}
+
+\begin{proof}
+If none of those states were divisible, the finite-window theorem would produce a zero-avoiding cycle, contrary to the hypothesis. The index \(0\) denotes the seed; division at index \(j\) means that the transition from state \(j\) to state \(j+1\) uses division.
+\end{proof}
+
+\begin{theorem}[DivisionFreeGivesCycle]
+Assume \(|d|\ge 2\). If some integer seed has a raw orbit on which \(d\) never divides, then \(f\) modulo \(|d|\) has a zero-avoiding cycle.
+\end{theorem}
+
+\begin{proof}
+The orbit avoids division in particular at its first \(|d|\) states. Apply the finite-window theorem.
+\end{proof}
+
+\begin{theorem}[CycleIffNonzeroResiduePath]
+Let \(m\ge2\). For \(q,c\in\Z\), a zero-avoiding cycle exists if and only if some residue \(0\le r<m\) satisfies
+\[
+  f^j(r)\ne0\qquad\text{for every }j\in\N.
+\]
+Equivalently, not every residue eventually reaches zero.
+\end{theorem}
+
+\begin{proof}
+A state on a nonzero cycle stays on that cycle at every iterate. Conversely, suppose \(r\) never reaches zero. Regard \(r\) as an integer seed and use divisor \(m\). Affine iteration preserves its residue path, so \(m\) never divides any affine state. The raw orbit therefore agrees with the affine orbit at every index. Its first \(m\) states avoid division, and the finite-window theorem supplies a nonzero cycle. The final equivalence is the classical negation of the statement that every residue has some zero iterate.
+\end{proof}
+
+\begin{theorem}[ProfileDrop]
+Assume \(|q|\ge 2\) and \(|d|\ge 2\). The following are equivalent.
+\begin{enumerate}
+  \item There exists a positive integer \(n\) whose raw orbit is never divisible by \(d\) and whose absolute values tend to infinity.
+  \item The residue map \(f(r)=(qr+c)\bmod |d|\) has a cycle contained in \(\{1,\ldots,|d|-1\}\).
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+If the positive orbit exists, the previous theorem extracts the cycle; unboundedness is not required for that extraction. Conversely, a zero-avoiding cycle lifts to a positive division-free orbit whose absolute values tend to infinity by ZeroAvoidingCycleEscape.
+\end{proof}
+
+\section{Local residue obstructions}
+
+All results in this section permit signed integers \(q,c\).
+An escape conclusion additionally retains \(|q|\ge2\) and \(|d|\ge2\).
+A local modulus is not a substitute for the full signed quotient: it is
+used only to rule out divisibility by \(d\).
+
+\begin{lemma}[Residue arithmetic]
+For \(m\ge1\), equality of the residues of \(x,y\in\Z\) is equivalent to
+\(m\mid x-y\). A representative \(0\le r<m\) reduces to itself.
+The corresponding formal results are \texttt{ResidueEqOfDvdDifference},
+\texttt{ResidueEqualityDivides}, and \texttt{ResidueRepresentative}.
+\end{lemma}
+
+\begin{proof}
+Write \(x=ma+r\) and \(y=mb+s\), with \(0\le r,s<m\).
+If \(r=s\), then \(x-y=m(a-b)\). Conversely, if \(m\mid x-y\),
+then \(m\mid r-s\); since \(-m<r-s<m\), this forces \(r=s\).
+Taking \(x=r\) gives the representative statement.
+The formal forward implication also permits \(m=0\): then
+\(0\mid x-y\) means \(x=y\), so their formal residues are equal.
+The remaining basic formal statements are
+\texttt{ResidueCast}, \texttt{ResidueLt}, \texttt{ResidueZeroIff}, and
+\texttt{NatAbsDividesIff}. They say respectively that the natural
+representative casts to the integer remainder, that it is less than
+positive \(m\), that it is zero exactly when \(m\mid x\), and that
+\(|d|\mid x\) is equivalent to \(d\mid x\). The first three follow
+from the same Euclidean division formula. For the last, \(d=0\)
+is immediate; otherwise \(|d|\) is either \(d\) or \(-d\), which
+have the same multiples.
+\end{proof}
+
+\begin{lemma}[Affine differences]
+For \(x,y\in\Z\) and \(j\in\N\),
+\[
+ A^j(x)-A^j(y)=q^j(x-y),\qquad
+ A^{j+1}(0)-A^j(0)=q^j c.
+\]
+These are \texttt{AffineIterDifference} and
+\texttt{AffineIterZeroIncrement}.
+\end{lemma}
+
+\begin{proof}
+At \(j=0\), the identities are \(x-y=x-y\) and
+\(A(0)-0=c\). Applying \(A\) to two states multiplies their
+difference by \(q\), because the two offsets cancel. Thus each
+identity at \(j\) implies the corresponding identity at \(j+1\).
+\end{proof}
+
+\begin{theorem}[LocalCycleEscape]
+Let \(m\ge2\), \(m\mid d\), \(|q|\ge2\), and \(|d|\ge2\).
+A zero-avoiding cycle modulo \(m\) produces a positive seed whose
+raw orbit never divides by \(d\) and whose absolute values tend
+to infinity.
+\end{theorem}
+
+\begin{proof}
+Choose a positive lift of a cycle state modulo \(m\) with nonzero
+ displacement, using the two candidates already proved. Every affine
+state then has a nonzero residue modulo \(m\). If \(d\) divided
+one of these states, \(m\mid d\) would force \(m\) to divide it,
+a contradiction. Hence the raw orbit is the affine orbit, and the
+proved full-sequence magnitude estimate applies. This is the same
+seed and the same orbit for both nondivisibility and growth.
+\end{proof}
+
+\begin{lemma}[Nilpotent collapse and its fixed residue]
+Let \(m\ge1\) and suppose \(m\mid q^k\). Put
+\(s=A^k(0)\bmod m\). Then for every \(0\le r<m\),
+\[
+ f^k(r)=s,\qquad f(s)=s.
+\]
+These are \texttt{NilpotentResidueCollapse} and
+\texttt{NilpotentResidueFixed}.
+\end{lemma}
+
+\begin{proof}
+The affine difference identity gives
+\(A^k(r)-A^k(0)=q^k r\), divisible by \(m\). This proves
+collapse after reduction modulo \(m\). The increment identity gives
+\(A^{k+1}(0)-A^k(0)=q^k c\), also divisible by \(m\).
+Residue compatibility now gives \(f(s)=s\).
+\end{proof}
+
+\begin{lemma}[Fixed and divisible iterates]
+If \(f(r)=r\), then \(f^j(r)=r\) for every \(j\in\N\).
+If \(m\mid c\), then \(m\mid A^j(0)\) for every \(j\in\N\).
+These are \texttt{FixedResidueIter} and \texttt{AffineZeroDivisible}.
+\end{lemma}
+
+\begin{proof}
+For the first assertion, start at \(r\) and use \(f(r)=r\)
+at each inductive step. For the second, \(A^0(0)=0\) is divisible.
+If \(m\mid A^j(0)\), then both \(qA^j(0)\) and \(c\) are
+ divisible, so their sum \(A^{j+1}(0)\) is divisible.
+\end{proof}
+
+\begin{theorem}[Nilpotent zero access]
+Suppose \(m\ge1\) and \(m\mid q^k\). Every residue modulo \(m\)
+eventually reaches zero if and only if \(m\mid c\).
+For \(m\ge2\), a zero-avoiding cycle exists if and only if
+\(m\nmid c\).
+\end{theorem}
+
+The zero-access equivalence is \texttt{NilpotentAllReachZeroIff}.
+
+The cycle equivalence is \texttt{NilpotentCycleIff}.
+
+\begin{proof}
+If \(m\mid c\), then the common residue at time \(k\) is zero
+by the divisible-iterate lemma, so every residue reaches zero then.
+Conversely, the common residue \(s\) is fixed. If every residue
+reaches zero, \(s\) must equal zero. Since \(f(s)=s\), this implies
+\(f(0)=0\), or \(c\equiv0\pmod m\).
+
+For the cycle assertion, a cycle cannot avoid zero when every residue
+reaches zero. If \(m\nmid c\), the same fixed residue \(s\)
+cannot be zero: otherwise \(f(0)=0\) would make \(c\) divisible.
+Thus \(s\) itself is a nonzero fixed cycle. This constructs the
+witness instead of combining unrelated local paths.
+\end{proof}
+
+\begin{corollary}[PowerDivisorAllReachZeroIff]
+Let \(p\ge1\), \(a\in\N\), and \(p\mid q\). Every residue
+modulo \(p^a\) eventually reaches zero if and only if \(p^a\mid c\).
+Primality of \(p\) is not required.
+\end{corollary}
+
+\begin{proof}
+Write \(q=pt\). Then \(q^a=p^a t^a\), so use the nilpotent
+theorem with \(m=p^a\) and \(k=a\). If \(a=0\), or \(p=1\),
+the modulus is \(1\), both assertions hold, and no nonzero residue
+cycle is asserted.
+\end{proof}
+
+\begin{corollary}[NilpotentLocalEscape]
+Assume \(m\ge2\), \(m\mid d\), \(m\mid q^k\), and \(m\nmid c\),
+with \(|q|\ge2\) and \(|d|\ge2\). A positive seed has a
+division-free raw orbit whose absolute values tend to infinity.
+\end{corollary}
+
+\begin{proof}
+The nilpotent theorem supplies a nonzero fixed cycle modulo \(m\).
+Apply \texttt{LocalCycleEscape} to that cycle.
+\end{proof}
+
+\begin{theorem}[UnitDivisibleOffsetCycle]
+Let \(m\ge2\), \(\gcd(|q|,m)=1\), and \(m\mid c\).
+There is a zero-avoiding cycle modulo \(m\).
+\end{theorem}
+
+\begin{proof}
+The affine difference identity and divisible-iterate lemma give
+\(A^j(1)\equiv q^j\pmod m\). If this residue were zero, then
+\(m\mid |q|^j\). But \(\gcd(|q|^j,m)=1\), forcing \(m=1\),
+contrary to the assumption. Thus the residue path of \(1\) never
+reaches zero, and \texttt{CycleIffNonzeroResiduePath} extracts a cycle.
+\end{proof}
+
+\begin{corollary}[Unit-offset local escape]
+In addition to the preceding assumptions, let \(m\mid d\),
+\(|q|\ge2\), and \(|d|\ge2\). A positive seed has a
+division-free raw orbit with absolute values tending to infinity.
+\end{corollary}
+
+\begin{proof}
+Apply \texttt{LocalCycleEscape} to the preceding cycle.
+\end{proof}
+
+\begin{theorem}[ModFourCycle]
+If \(4\mid q+1\) and \(2\nmid c\), then modulo \(4\) the residue
+\(2\) belongs to a zero-avoiding two-cycle.
+\end{theorem}
+
+\begin{proof}
+Set \(b=f(2)\). Since \(2q+c\) is odd, \(b\) is either \(1\)
+or \(3\), in particular nonzero and distinct from \(2\).
+Direct expansion gives
+\[
+ A^2(2)-2=(q+1)\bigl(2(q-1)+c\bigr).
+\]
+This is divisible by \(4\), so \(f(b)=2\).
+The two states \(2,b\) therefore form the claimed cycle.
+\end{proof}
+
+\begin{corollary}[ModFourLocalEscape]
+If also \(4\mid d\), \(|q|\ge2\), and \(|d|\ge2\),
+the preceding modulo-four obstruction yields positive division-free
+raw escape for the full signed divisor \(d\).
+\end{corollary}
+
+\begin{proof}
+Use the displayed two-cycle in \texttt{LocalCycleEscape} with \(m=4\).
+\end{proof}
+
+\begin{theorem}[CoprimeDifferenceCycle]
+Let \(m\ge2\), \(\gcd(|q-1|,m)=1\), and \(m\nmid c\).
+There is a nonzero fixed residue modulo \(m\).
+\end{theorem}
+
+\begin{proof}
+Choose Bezout coefficients \(a,b\in\Z\) such that
+\(1=(q-1)a+mb\), and put \(x=-ca\). Then
+\[
+ z(x)=c\bigl(1-(q-1)a\bigr)=mcb.
+\]
+Since \(A(x)-x=z(x)\), the residue \(s=x\bmod m\) is fixed.
+If \(s=0\), then \(m\mid x\), hence \(m\mid(q-1)x\).
+Subtracting this term from \(z(x)\) gives \(m\mid c\),
+a contradiction. Thus \(s\ne0\) is the required fixed residue.
+\end{proof}
+
+\begin{corollary}[CoprimeDifferenceLocalEscape]
+If additionally \(m\mid d\), \(|q|\ge2\), and \(|d|\ge2\),
+the preceding fixed residue recovers a positive division-free raw orbit
+whose absolute values tend to infinity.
+\end{corollary}
+
+\begin{proof}
+Apply \texttt{LocalCycleEscape} to its one-state cycle.
+\end{proof}
+
+\section{Geometric sums without a singular quotient}
+
+Define \(S_q(0)=0\) and \(S_q(n+1)=S_q(n)+q^n\).
+This is the signed integer polynomial \texttt{TrapSum}; it is never
+replaced by a quotient that would be undefined at \(q=1\).
+
+\begin{lemma}[Geometric-sum identities]
+For \(q\in\Z\) and \(m,n\in\N\),
+\begin{align*}
+ S_q(n)&=\sum_{i=0}^{n-1}q^i, &
+ (q-1)S_q(n)&=q^n-1,\\
+ S_q(m+n)&=S_q(m)+q^mS_q(n), &
+ S_q(mn)&=S_q(m)S_{q^m}(n).
+\end{align*}
+Also \(S_1(n)=n\).
+\end{lemma}
+
+The formal identities are \texttt{TrapSumEqSum}, \texttt{TrapSumAdd},
+and \texttt{TrapSumMul}. The two imported identities are
+\texttt{TrapSumMulSubOne} and \texttt{TrapSumOne}.
+
+\begin{proof}
+The finite-sum formula follows by induction from the defining recurrence.
+Multiplication by \(q-1\) telescopes:
+\(\sum_{i<n}(q^{i+1}-q^i)=q^n-1\).
+Splitting the index interval at \(m\) gives the addition identity.
+For multiplication, split the interval of length \(mn\) into \(n\)
+blocks of length \(m\). Block \(j\) sums to \(q^{mj}S_q(m)\),
+so the total is \(S_q(m)\sum_{j<n}(q^m)^j\).
+At \(q=1\), each of the \(n\) summands is \(1\).
+All formulas include zero indices by the empty-sum convention.
+\end{proof}
+
+\begin{lemma}[Affine polynomial and displacement]
+For all \(q,c,x\in\Z\) and \(n\in\N\),
+\[
+ A^n(x)=q^nx+cS_q(n),\qquad
+ A^n(x)-x=S_q(n)z(x).
+\]
+These are \texttt{AffineIterPolynomial} and
+\texttt{AffineIterDisplacement}.
+\end{lemma}
+
+\begin{proof}
+The first formula at \(n=0\) is \(x=x\).
+For the inductive step use \(S_q(n+1)=qS_q(n)+1\), which follows
+by shifting the sum indices. Substituting the inductive expression
+into \(qA^n(x)+c\) then gives the formula at \(n+1\).
+Subtracting \(x\) and using \(q^n-1=(q-1)S_q(n)\) proves
+ the second formula. Neither argument assumes \(q\ne1\).
+\end{proof}
+
+\section{Exact prime-power returns}
+
+For a prime \(p\), write \(\nu_p(t)\) for the multiplicity of \(p\)
+in an integer \(t\), with \(\nu_p(0)=\infty\).
+Thus \(p^a\mid t\) exactly when \(a\le\nu_p(t)\).
+Multiplicities add under products, including zero products with
+\(\infty+b=\infty\). Natural numbers and their integer casts have
+the same multiplicities.
+
+\begin{lemma}[PrimeUnitOfSuccessorDivisibility]
+If \(p\) is prime and \(p\mid q-1\), then \(p\nmid q\).
+\end{lemma}
+
+\begin{proof}
+Divisibility of both \(q\) and \(q-1\) would give \(p\mid1\),
+contrary to \(p\ge2\).
+\end{proof}
+
+\begin{lemma}[One-block lifting]
+For an odd prime \(p\) with \(p\mid q-1\),
+\[
+ \nu_p(S_q(p))=1.
+\]
+If \(4\mid q-1\), then \(\nu_2(S_q(2))=1\).
+\end{lemma}
+
+The formal names are \texttt{TrapSumOddPrimeLift} and
+\texttt{TrapSumTwoLift}.
+
+\begin{proof}
+In the odd-prime case write \(q=1+pt\). For \(0\le i<p\),
+\(q^i\equiv1+ipt\pmod{p^2}\). Hence
+\[
+ S_q(p)\equiv p+pt\frac{p(p-1)}2\equiv p\pmod{p^2},
+\]
+because \((p-1)/2\) is an integer. This proves exactly one
+factor of \(p\), including \(q=1\).
+For the binary case, write \(q=1+4t\). Then
+\(S_q(2)=q+1=2(1+2t)\), with the last factor odd.
+The odd-prime formal proof invokes the equivalent geometric-block
+statement in \cite{MathlibMultiplicity26}; its unit assumption holds
+by the preceding lemma.
+\end{proof}
+
+\begin{theorem}[Power-index lifting]
+In the odd-prime case,
+\[
+ \nu_p(S_q(p^a))=a\qquad(a\in\N).
+\]
+Under \(4\mid q-1\), \(\nu_2(S_q(2^a))=a\).
+\end{theorem}
+
+The formal names are \texttt{TrapSumOddPrimePower} and
+\texttt{TrapSumTwoPower}.
+
+\begin{proof}
+At \(a=0\), \(S_q(1)=1\) has multiplicity zero.
+For the odd-prime step, the block factorization is
+\[
+ S_q(p^{a+1})=S_q(p^a)S_{q^{p^a}}(p).
+\]
+The identity \(q^{p^a}-1=(q-1)S_q(p^a)\) shows that the new
+multiplier still equals \(1\) modulo \(p\). The last factor
+therefore has multiplicity one by one-block lifting, so
+multiplicities add to \(a+1\). For the binary step use the same
+factorization with \(p=2\); divisibility of \(q-1\) by \(4\)
+persists for \(q^{2^a}-1\), so the binary one-block result applies.
+This also proves finiteness of every displayed multiplicity.
+\end{proof}
+
+\begin{theorem}[All-index multiplicities]
+For an odd prime \(p\) with \(p\mid q-1\),
+\[
+ \nu_p(S_q(n))=\nu_p(n)\qquad(n\in\N).
+\]
+If \(4\mid q-1\), then \(\nu_2(S_q(n))=\nu_2(n)\).
+\end{theorem}
+
+The odd-prime identity is \texttt{TrapSumOddPrimeMultiplicity}.
+
+The binary identity is \texttt{TrapSumTwoMultiplicity}.
+
+\begin{proof}
+At \(q=1\), use \(S_1(n)=n\); this branch avoids any cancellation
+of the infinite multiplicity of \(q-1=0\).
+For \(q\ne1\), \(\nu_p(q-1)\) is finite. The signed
+lifting-the-exponent theorem in \cite{MathlibMultiplicity26}, with
+\(x=q\), \(y=1\), says in the odd-prime case that
+\[
+ \nu_p(q^n-1)=\nu_p(q-1)+\nu_p(n).
+\]
+Its hypotheses are exactly that \(p\) is an odd prime,
+\(p\mid q-1\), and \(p\nmid q\); the last has just been proved.
+The binary variant asserts the same identity under
+\(4\mid q-1\) and \(2\nmid q\), again satisfied here.
+On the other hand \(q^n-1=(q-1)S_q(n)\), so product
+multiplicity gives the same left side as
+\(\nu_p(q-1)+\nu_p(S_q(n))\).
+Cancel only the finite common term \(\nu_p(q-1)\).
+This cancellation is valid also when \(n=0\): both remaining
+terms then equal \(\infty\), since \(S_q(0)=0\).
+The natural-to-integer cast does not change \(\nu_p(n)\).
+The binary hypothesis cannot be weakened to \(2\mid q-1\):
+\(q=3,n=2\) gives \(S_3(2)=4\), of multiplicity \(2\),
+whereas \(\nu_2(2)=1\).
+\end{proof}
+
+\begin{theorem}[PrimePowerReturnDivisibility]
+Let \(p\) be prime, \(p\mid q-1\), and \(p\nmid c\).
+Suppose \(\nu_p(S_q(n))=\nu_p(n)\) for every \(n\in\N\).
+Then for every \(a,n\in\N\) and every signed start \(x\in\Z\),
+\[
+ p^a\mid A^n(x)-x\quad\Longleftrightarrow\quad p^a\mid n.
+\]
+\end{theorem}
+
+\begin{proof}
+Since \(z(x)=(q-1)x+c\equiv c\pmod p\), this displacement
+is a unit modulo \(p\), for the same start \(x\).
+The displacement formula and product multiplicity give
+\[
+ \nu_p(A^n(x)-x)=\nu_p(S_q(n))+\nu_p(z(x))=\nu_p(n).
+\]
+Comparing both sides with \(a\) gives the equivalence.
+At \(n=0\) both divisibility statements hold; at \(a=0\)
+both have divisor \(1\). No affine growth assumption is used.
+\end{proof}
+
+\begin{lemma}[AffineIterAdd]
+For all \(i,j\in\N\) and \(x\in\Z\),
+\(A^{i+j}(x)=A^j(A^i(x))\).
+\end{lemma}
+
+\begin{proof}
+At \(j=0\) the expressions both equal \(A^i(x)\).
+Applying \(A\) to the equality at \(j\) proves it at \(j+1\).
+\end{proof}
+
+\begin{theorem}[AffineZeroAccessOfExactReturns]
+Let \(m\ge1\). Suppose for every \(y\in\Z\) and \(n\in\N\),
+\[
+ m\mid A^n(y)-y\quad\Longleftrightarrow\quad m\mid n.
+\]
+Then for every \(x\in\Z\), some \(0\le j<m\) satisfies
+\(m\mid A^j(x)\).
+\end{theorem}
+
+\begin{proof}
+Consider the \(m\) residues of \(A^i(x)\) for \(0\le i<m\).
+If residues at indices \(i\le j<m\) agree, residue arithmetic
+and chronological composition give
+\[
+ m\mid A^{j-i}(A^i(x))-A^i(x).
+\]
+The exact-return hypothesis applies to the actual intermediate
+start \(A^i(x)\), so \(m\mid j-i\). Since \(0\le j-i<m\),
+we have \(j=i\). The \(m\) residues are thus distinct and
+exhaust the set of \(m\) possible representatives. One of them
+is zero. For \(m=1\), the single index is \(j=0\), which
+indeed works. The hypothesis quantifies over every intermediate
+start; a pointwise claim only at the original \(x\) would not
+justify this argument.
+\end{proof}
+
+\begin{corollary}[OddPrimePowerZeroAccess]
+If \(p\) is an odd prime, \(p\mid q-1\), and \(p\nmid c\),
+then for every \(a\in\N\) and every \(x\in\Z\),
+\[
+ \exists j<p^a\quad p^a\mid A^j(x).
+\]
+\end{corollary}
+
+\begin{proof}
+All-index multiplicity gives exact returns for \(m=p^a\) at every
+signed start, by the proved return-divisibility theorem.
+Finite exhaustion then supplies the same affine orbit's zero
+visit before \(p^a\).
+\end{proof}
+
+\begin{corollary}[TwoPowerZeroAccess]
+If \(4\mid q-1\) and \(2\nmid c\), then for every \(a\in\N\)
+and every \(x\in\Z\), some \(j<2^a\) satisfies \(2^a\mid A^j(x)\).
+\end{corollary}
+
+\begin{proof}
+Divisibility by \(4\) implies divisibility by \(2\), and the
+binary all-index multiplicity theorem gives the required
+geometric-sum identity. Apply exact returns and finite exhaustion
+with \(m=2^a\). The case \(a=0\) has modulus \(1\) and \(j=0\).
+\end{proof}
+
+These results certify an affine divisible-state clock. They do not
+assert post-division capture. The nilpotent, unit, and binary
+obstructions above use one actual local witness to produce full raw
+escape; the prime-power zero-access results do not yet assert a
+same-time Chinese-remainder assembly over arbitrary composite moduli.
+
+\section{Computed examples}
+
+For \((q,c,m)=(2,1,3)\), the residue \(2\) is fixed by \(f\). The lift \(n=5\) has displacement \(6\), and
+\[
+  A^j(5)=6\cdot2^j-1\equiv2\pmod3.
+\]
+Thus division by either \(3\) or \(-3\) never occurs, and the magnitude tends to infinity.
+
+For \((q,c,m)=(2,0,3)\), the nonzero residues form the two-cycle \(1\mapsto2\mapsto1\). The lift \(4\) satisfies \(A^j(4)=4\cdot2^j\), with those two residues alternating. In contrast, for \((q,c,m)=(2,0,2)\), the only nonzero residue maps to zero. An even seed is already divisible by \(2\), and an odd seed becomes divisible after one affine step.
+
+For \((q,c,m)=(-3,2,5)\), the residue \(3\) is fixed. Its lift \(8\) satisfies
+\[
+  A^j(8)=\frac{15(-3)^j+1}{2}\equiv3\pmod5.
+\]
+The signs alternate, but the magnitudes tend to infinity. Division by either sign of \(5\) is absent.
+
+The fixed-point exception is visible at \((q,c,m)=(2,-3,2)\). The residue \(1\) is fixed, but its first lift \(3\) has zero displacement and \(A(3)=3\). The second lift \(5\) has displacement \(2\) and
+\[
+  A^j(5)=3+2^{j+1},
+\]
+which stays odd and tends to infinity. The cycle alone must therefore be paired with a nonzero-displacement lift.
+
+\section{Finite arithmetic certificate}
+
+The computational rectangle is
+\[
+  q\in\{-5,-4,-3,-2,2,3,4,5\},\qquad -5\le c\le5,\qquad 2\le m\le6,
+\]
+with seed identities checked at every \(-8\le n\le8\). There are \(440\) parameter triples \((q,c,m)\). Of these, \(312\) have a zero-avoiding residue cycle. This is a count in the stated rectangle, not a density assertion about unbounded parameter ranges.
+
+For each residue, the cycle search inspects at most \(m\) states. There are only \(m-1\) nonzero residues, so a path either meets \(0\) or repeats a nonzero state within that budget. A repeated state is on a cycle: if its two occurrences have indices \(i<j\), determinism repeats the intervening block forever. A separate return test checks that the reported state closes a nonzero cycle of length at most \(m-1\). When no cycle exists, every residue reaches zero within the same finite budget.
+
+For each reported cycle, the positive lift is one of \(r+m\) and \(r+2m\), and is at most \(17\). Its first eight affine steps obey
+\[
+  |A^j(n)|\le17\cdot5^j+5\frac{5^j-1}{4}\le7{,}128{,}905
+  \qquad (0\le j\le8).
+\]
+Thus the displacement magnitude is at most
+\[
+  6\cdot7{,}128{,}905+5=42{,}773{,}435<2^{26}.
+\]
+The certificate arithmetic fits in signed \(64\)-bit integers. Its arithmetic primitives reject operands outside \([-42{,}773{,}435,42{,}773{,}435]\), multipliers and offsets outside the stated rectangle, and unsupported moduli. Even on that larger primitive operand range, affine and displacement values have magnitude below \(2^{28}\). Seed-identity inputs are separately restricted to \([-8,8]\).
+
+Nonzero displacement is an integer of magnitude at least one. At the eighth affine step the normal form gives
+\[
+  |A^8(n)|\ge\frac{|q|^8|z(n)|-|c|}{|q-1|}
+  \ge\frac{2^8-5}{6}>17\ge n.
+\]
+The terminal growth check therefore has a uniform mathematical justification on the rectangle.
+
+There are \(23{,}286\) recorded comparisons. The total is
+\[
+  1+2(8\cdot11\cdot17)+(8\cdot11\cdot5\cdot17)+440+205+39\cdot312.
+\]
+The first comparison rejects an equality predicate that accepts unequal values. The next terms count two displacement identities per seed, residue identities, cycle versus zero-reaching decisions, signed-divisor comparisons, and the cycle witness, lift, and nine visited-state comparisons for each successful parameter triple. A predicate accepting every comparison fails the first test while leaving the same rows visited.
+
+The integer reference uses arbitrary precision. Its graph algorithm deletes \(0\) and its predecessors rather than scanning a visited bitmask. Every deleted state reaches zero, since each deletion extends a previously certified path to zero. Conversely, a path first reaching zero has no repeated state before that hit, so its length is at most \(m-1\). After \(m\) deletion rounds, all zero-reaching states have therefore been removed. The surviving set is forward invariant and avoids zero. If nonempty, it contains a nonzero cycle by the finite repetition argument; a nonzero cycle can never be deleted. Thus the reference has surviving states exactly when a zero-avoiding cycle exists. These checks concern the finite rectangle; the theorems above supply the general mathematical argument.
+
+\begin{remark}
+The criterion and the first-divisible-state bound concern behavior before the first division. They do not classify an orbit after division, nor do they replace the residue map by a product of unrelated local cycle counts.
+\end{remark}
+
+\bibliographystyle{amsalpha}
+\bibliography{ProfileDrop}
+
+\end{document}

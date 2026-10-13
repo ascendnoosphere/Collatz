@@ -81,6 +81,8 @@ defaultTargets = [
   "ParentRise",
   "RhoComparison",
   "RhoMass",
+  "ProfileDrop",
+  "ProfilePrimePower",
 ]
 
 [[require]]
@@ -435,3 +437,11 @@ srcDir = "QCD.RhoComparison.001/lean"
 [[lean_lib]]
 name = "RhoMass"
 srcDir = "QCD.RhoComparison.001/lean"
+
+[[lean_lib]]
+name = "ProfileDrop"
+srcDir = "QCD.ProfileDrop.001/lean"
+
+[[lean_lib]]
+name = "ProfilePrimePower"
+srcDir = "QCD.ProfileDrop.001/lean"

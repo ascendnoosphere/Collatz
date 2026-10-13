@@ -429,6 +429,25 @@ Separately, the affine branch modulo $|d|$ is the walk
 $r\mapsto qr+c$, and a seed is trapped exactly when that walk avoids the zero
 class at every time. The certificate checks 125708 signed cases.
 
+### Division-free escape and zero-avoiding cycles
+
+[QCD.ProfileDrop.001](QCD.ProfileDrop.001/README.md) gives a finite criterion
+for $q,c,d\in\mathbb Z$ with $|q|\ge2$ and $|d|\ge2$. Some positive seed
+has a division-free raw orbit whose absolute values tend to infinity if and
+only if the affine residue map
+$$
+r\longmapsto qr+c\pmod{|d|}
+$$
+has a cycle avoiding zero. A cycle residue has a positive lift with nonzero
+affine displacement. Conversely, the first $|d|$ division-free states suffice
+to extract a cycle. If no such cycle exists, every signed seed has a divisible
+state at some index $j<|d|$; the following transition performs division.
+
+For an odd prime $p$ with $p\mid q-1$ and $p\nmid c$, the affine orbit
+from every signed start has a state divisible by $p^a$ before index $p^a$.
+The binary analogue requires $4\mid q-1$ and odd $c$. These are affine
+zero-access statements, not post-division capture theorems.
+
 ### Signed core bound
 
 [QCD.SignedCore.001](QCD.SignedCore.001/README.md) proves the integer
