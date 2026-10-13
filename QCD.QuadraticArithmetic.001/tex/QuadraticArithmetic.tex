@@ -1,0 +1,656 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\newcommand{\OrderNorm}{\operatorname{N}}
+\newcommand{\RawMap}{T}
+\newcommand{\OddPart}{\operatorname{odd}}
+
+\title{Exact Division, Unit Phases, and Escape in Quadratic Orders}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Exact division in an imaginary quadratic order is decided by two integer
+congruences. A unimodular triangular basis gives precisely the norm of the
+divisor many residue classes. These certificates retain the division guard,
+including in orders without elementwise unique factorization.
+For the family \(q=2\), \(c=0\), \(d=1+\sqrt{-D}\), every nonzero trajectory
+is eventually periodic with primitive period twelve when \(D=1\) or \(D=3\);
+for every other positive integer \(D\), every nonzero trajectory escapes
+along the full raw sequence. First-division densities and an odd-offset
+dyadic family are also determined explicitly.
+\end{abstract}
+
+\section{The order and the exact branch}
+
+The coordinate lemmas have Lean proofs in \cite{LibraryCoordinates26};
+the dyadic guard and restricted block lemmas are in \cite{LibraryDyadic26}.
+The finite arithmetic checks are implemented in \cite{LibraryQuadraticChecks26}.
+The trajectory classifications proved below are not yet formalized in those Lean files.
+
+Let \(\tau,\nu\in\Z\), assume \(\tau^2<4\nu\), and set
+\[
+w=\frac{\tau+i\sqrt{4\nu-\tau^2}}2,\qquad
+R=\Z[w]\subset\C.
+\]
+The coordinates \(x+yw\), \(x,y\in\Z\), are unique. The relation is
+\(w^2=\tau w-\nu\). Conjugation gives
+\[
+\OrderNorm(x+yw)=|x+yw|^2=x^2+\tau xy+\nu y^2.
+\]
+For \(q,c,d\in R\), with \(d\ne0\), define
+\[
+\RawMap_{q,c,d}(z)=
+\begin{cases}
+z/d,&d\mid z\text{ in }R,\\
+qz+c,&d\nmid z\text{ in }R.
+\end{cases}
+\]
+Division denotes the unique exact quotient in \(R\). Its test is not
+replaced by divisibility in \(\C\). The zero state is fixed.
+Replacing \(d\) by a unit associate preserves its ideal but can change
+the quotient and the raw trajectory. Enlarging the order can change even
+the guard: in \(\Z[\sqrt{-3}]\), \(1+\sqrt{-3}\nmid2\), whereas in the
+Eisenstein order, with \(\omega=(-1+\sqrt{-3})/2\), its quotient is
+\((1-\sqrt{-3})/2=-\omega\). Thus the larger-order map need not restrict
+to the original raw map.
+
+\begin{lemma}[Positive and multiplicative norm]
+For \(z\ne0\), \(\OrderNorm(z)\) is a positive integer. For all \(z,u\in R\),
+\(\OrderNorm(zu)=\OrderNorm(z)\OrderNorm(u)\).
+\end{lemma}
+\begin{proof}
+The identity
+\[
+4\OrderNorm(x+yw)=(2x+\tau y)^2+(4\nu-\tau^2)y^2
+\]
+is positive when \(y\ne0\); when \(y=0\) and \(x\ne0\), the norm is \(x^2>0\).
+The coefficient product is
+\[
+(x+yw)(s+tw)=(xs-\nu yt)+(xt+ys+\tau yt)w.
+\]
+Substitution in the norm form and expansion proves multiplicativity.
+Equivalently, conjugation multiplies and
+\((zu)\overline{zu}=(z\bar z)(u\bar u)\).
+\end{proof}
+
+\section{Integral division and a finite quotient}
+
+\begin{theorem}[Adjugate division certificate]
+Let \(d=s+tw\ne0\) and \(n=\OrderNorm(d)\). Then
+\[
+d\mid x+yw
+\iff
+n\mid (s+\tau t)x+\nu ty
+\quad\text{and}\quad
+n\mid -tx+sy.
+\]
+When these conditions hold, the exact quotient is
+\[
+\frac{x+yw}{d}
+=\frac{(s+\tau t)x+\nu ty}{n}
++\frac{-tx+sy}{n}\,w.
+\]
+\end{theorem}
+\begin{proof}
+Multiplication by \(d\) has matrix
+\[
+M_d=\begin{pmatrix}s&-\nu t\\t&s+\tau t\end{pmatrix},
+\qquad
+\det M_d=n>0.
+\]
+Its adjugate is
+\(\left(\begin{smallmatrix}s+\tau t&\nu t\\-t&s\end{smallmatrix}\right)\).
+The rational solution of \(M_d(u,v)^{\mathsf T}=(x,y)^{\mathsf T}\) is
+unique and has the displayed coordinates. It is integral precisely
+under the two stated congruences. Multiplying the adjugate by \(M_d\)
+also proves uniqueness among integral quotients.
+\end{proof}
+
+\begin{theorem}[Triangular representatives]
+Let \(g=\gcd(s,t)>0\), and choose \(u,v\in\Z\) with \(su+tv=g\).
+Put
+\[
+L=n/g,\qquad h=sv-(\tau s+\nu t)u.
+\]
+Then \(dR\) has additive basis \((L,0),(h,g)\). Each residue class has
+exactly one representative \(x_0+y_0w\) with
+\(0\le x_0<L\) and \(0\le y_0<g\). Consequently,
+\[
+|R/dR|=Lg=n.
+\]
+\end{theorem}
+\begin{proof}
+The Euclidean algorithm on \(|s|,|t|\) terminates because each nonzero
+remainder is smaller than the preceding positive divisor. Its
+coefficient recurrence, with the signs of \(s,t\) restored, supplies
+the stated identity. Since \(g\mid s,t\), the matrix
+\[
+U=\begin{pmatrix}(s+\tau t)/g&v-\tau u\\-t/g&u\end{pmatrix}
+\]
+is integral and has determinant \((su+tv)/g=1\). Direct multiplication gives
+\[
+M_dU=\begin{pmatrix}L&h\\0&g\end{pmatrix}.
+\]
+The integral inverse of \(U\) proves equality of the generated lattices.
+For an arbitrary point, set
+\[
+y_0=y\bmod g,\qquad k=(y-y_0)/g,\qquad
+x_0=(x-kh)\bmod L.
+\]
+Its difference from \((x_0,y_0)\) is an integral combination of the two
+basis vectors. If two canonical representatives differ by such a
+combination, their vertical difference is a multiple of \(g\) of
+absolute value less than \(g\), hence zero. Their horizontal difference
+is then a multiple of \(L\) of absolute value less than \(L\), hence zero.
+This proves both exhaustion and uniqueness, including \(s=0\), \(t=0\),
+and the one-element quotient when \(d\) is a unit.
+\end{proof}
+
+\section{The guard in a nonfactorial order}
+
+In \(R_5=\Z[w]\), \(w^2=-5\), set \(q=2\), \(d=1+w\).
+The equality \((1+w)(1-w)=6\) gives \(d\mid6\), whereas
+\(3/d=(1-w)/2\notin R_5\). Thus
+\[
+d\mid q\cdot3,\qquad d\nmid3.
+\]
+Every common divisor \(a\) of \(2\) and \(d\) has norm dividing both
+\(4\) and \(6\). A nonunit would therefore have norm two, but
+\(x^2+5y^2=2\) has no integral solution. Hence absence of a common
+nonunit element divisor does not justify guard cancellation.
+
+The map \(x+yw\mapsto x+y\bmod2\) is a ring homomorphism to \(\Z/2\Z\).
+It sends \(2,d\) to zero and \(1\) to one, proving that no identity
+\(a\cdot2+bd=1\) exists. By contrast, a supplied identity
+\(aq+bd=1\) proves
+\[
+d\mid qz\ \Longrightarrow\
+d\mid a(qz)+b(dz)=z.
+\]
+This is the exact sufficient cancellation hypothesis.
+
+\section{A finite certificate for division-free escape}
+
+\begin{theorem}[Affine residue certificate]
+Assume \(\OrderNorm(q),\OrderNorm(d)\ge2\).
+There exists a division-free escaping raw trajectory if and only if
+\[
+F:R/dR\longrightarrow R/dR,\qquad [z]\longmapsto[qz+c]
+\]
+has a directed cycle avoiding the zero class.
+If it has no such cycle, every raw seed reaches a divisible state at
+some index \(j<\OrderNorm(d)\).
+\end{theorem}
+\begin{proof}
+The affine map descends because its difference on \(z+d\ell,z\) is
+\(qd\ell\). A division-free trajectory supplies an infinite path among
+the finitely many nonzero classes, hence a repeated vertex and a cycle.
+For recovery from a cycle, lift a vertex to \(r+d\) and \(r+2d\).
+Both affine paths retain the same zero-avoiding residue itinerary.
+Writing \(\delta(z)=(q-1)z+c\), their displacements differ by
+\((q-1)d\ne0\). At least one displacement has modulus at least
+\(|q-1||d|/2\). For that lift,
+\[
+\RawMap^j(z)=q^j\frac{\delta(z)}{q-1}-\frac c{q-1},\qquad
+|\RawMap^j(z)|\ge\frac{|d|}{2}|q|^j-\frac{|c|}{|q-1|}
+\longrightarrow\infty.
+\]
+Every step is affine because the same residue cycle avoids zero.
+Finally, if the first \(\OrderNorm(d)\) states were nondivisible,
+two of their classes would coincide among only
+\(\OrderNorm(d)-1\) nonzero classes. Their intervening affine path
+would give a zero-avoiding cycle. Before the first division, the raw
+and affine paths are identical.
+\end{proof}
+
+\section{Finite division budgets}
+
+For a prime \(p\) and a positive integer \(n\), write
+\(v_p(n)=\max\{a\in\N:p^a\mid n\}\).
+
+\begin{theorem}[Norm-prime budget]
+Assume \(c=0\), \(\OrderNorm(q),\OrderNorm(d)\ge2\). Let \(p\) be a rational
+prime with \(p\mid\OrderNorm(d)\) and \(p\nmid\OrderNorm(q)\).
+For a nonzero seed \(z\), set
+\[
+e=v_p(\OrderNorm(d)),\quad
+V=\left\lfloor\frac{v_p(\OrderNorm(z))}{e}\right\rfloor,\quad
+M=\OrderNorm(d).
+\]
+There are at most \(V\) division instructions. No division occurs at
+a time index at least \(K_0=M(V+1)\), and for \(j\ge K_0\),
+\[
+\OrderNorm(\RawMap^j(z))\ge\OrderNorm(q)^{j-K_0}\ge2^{j-K_0}.
+\]
+\end{theorem}
+\begin{proof}
+No nonzero state becomes zero. At an affine instruction the norm
+valuation is unchanged; at a division it decreases by exactly \(e\).
+Thus it is \(v_p(\OrderNorm(z))-eB_j\), where \(B_j\) counts divisions
+before time \(j\), and nonnegativity gives \(B_j\le V\).
+From any state, either its next division is executed within \(M\)
+ticks, or the first \(M\) states are nondivisible. In the latter case
+their repeated affine residue supplies an indefinitely zero-avoiding
+path, so no later division occurs. Successive divisions therefore
+consume at most \(M\) ticks each. After at most \(V\) such blocks,
+one further block proves that the tail is entirely affine.
+The norm at time \(K_0\) is a positive integer; norm multiplicativity
+then proves the bound. The assumption \(c=0\) is essential to the
+valuation identity.
+\end{proof}
+
+\section{\texorpdfstring{The uniform \(D\)-family}{The uniform D-family}}
+
+Set \(D\ge1\), \(w=\sqrt{-D}\), \(R_D=\Z[w]\),
+\(q=2\), \(d=1+w\). Put \(M=D+1=2^e m\), with \(m\) odd.
+The quotient is explicitly
+\[
+R_D/(1+w)\cong\Z/M\Z,\qquad [x+yw]\longmapsto[x-y].
+\]
+Indeed, \(dR_D\) has basis \((M,0),(1,1)\), and substitution \(w=-1\)
+respects \(w^2=-D\) modulo \(M\).
+
+\begin{theorem}[First division and its density]
+For \(c=0\) and an initial integer \(n\ne0\), a first division exists
+if and only if \(m\mid n\). If it exists, its state index is
+\[
+a=\max\{0,e-v_2(|n|)\}.
+\]
+The positive-integer density of seeds reaching a first division is
+\(1/m\). Every other positive seed follows \(2^j n\) and escapes.
+\end{theorem}
+\begin{proof}
+Before the first division the states are \(2^j n\).
+The guard is \(M\mid2^j n\), equivalent to \(m\mid n\) and
+\(e\le j+v_2(|n|)\). This gives the existence and least index.
+The number of multiples of \(m\) among \(1,\ldots,X\) is
+\(\lfloor X/m\rfloor\); division by \(X\) proves the density.
+The zero seed divides at index zero and is fixed.
+\end{proof}
+
+\begin{lemma}[Positive-power dependence]
+The equation
+\[
+2^a=(1+w)^b,\qquad a,b\ge1,
+\]
+has an integral solution if and only if \(D\in\{1,3\}\).
+\end{lemma}
+\begin{proof}
+Suppose equality holds. Conjugating and dividing gives
+\(u^b=1\), where \(u=(1+w)/(1-w)\), and
+\[
+t=u+u^{-1}=\frac{2(1-D)}{1+D}\in\Q.
+\]
+Define integral polynomials \(P_0=2,P_1=X\) and
+\(P_{j+1}=XP_j-P_{j-1}\). Induction gives
+\(P_j(t)=u^j+u^{-j}\), and \(P_j\) is monic of degree \(j\) for \(j\ge1\).
+Thus \(P_b(t)-2=0\) is a monic integral equation.
+A rational root of a monic integral polynomial is integral: writing
+it in lowest terms and clearing denominators forces its denominator
+to divide its numerator. Hence \(t\in\Z\).
+For \(D\ge1\), \(-2<t\le0\), so \(t=-1\) or \(t=0\).
+These equations give \(D=3\) or \(D=1\), respectively.
+Conversely, when \(D=1\), \(d^8=16=2^4\); when \(D=3\),
+\(d^6=64=2^6\), by expansion using \(w^2=-D\).
+\end{proof}
+
+\begin{theorem}[Dyadic counts and escape exponent]
+Let \(D=2^e-1\), \(e\ge3\), \(q=2,c=0,d=1+w\), and let
+\(z\ne0\). Put \(V=v_2(\OrderNorm(z))\). If \(B_j\) counts divisions
+in the first \(j\) raw ticks, then
+\[
+B_j\le\left\lfloor\frac{j+V}{e}\right\rfloor,
+\qquad
+\OrderNorm(\RawMap^j(z))\ge
+\OrderNorm(z)\,2^{((e-2)j-(e+2)V)/e}.
+\]
+After at most \(L=5V+7e+1\) ticks, the instruction word is periodic
+with primitive period \(e\), containing \(e-1\) affine instructions
+and one division. The arithmetic states still escape. In particular,
+\[
+\lim_{j\to\infty}\frac{B_j}{j}=\frac1e,
+\qquad
+\lim_{j\to\infty}\frac{\log|\RawMap^j(z)|}{j}
+=\frac{e-2}{2e}\log2>0.
+\]
+\end{theorem}
+\begin{proof}
+Construct a square root in \(\Z_2=\varprojlim_k\Z/2^k\Z\) rather than
+change the original order or its guard. Set
+\[
+u_0=1,\qquad u_{n+1}=1+2^{e-2}u_n^2.
+\]
+Every \(u_n\) is odd. The first difference is divisible by
+\(2^{e-2}\); subsequent differences satisfy
+\[
+u_{n+1}-u_n=2^{e-2}(u_n-u_{n-1})(u_n+u_{n-1}).
+\]
+Since the last factor is even, the stabilized precision increases
+by at least \(e-1\) bits per iteration. The residues therefore define
+a unique limit \(u\in\Z_2\), with
+\(u=1+2^{e-2}u^2\) and \(u\) odd. For
+\[
+r=-1+2^{e-1}u
+\]
+we obtain
+\[
+r^2=1-2^e=-D,\quad v_2(1+r)=e-1,\quad v_2(1-r)=1.
+\]
+Here a nonzero \(2\)-adic integer has a finite valuation: factor out
+its first nonzero binary digit. Odd factors multiply to odd factors,
+which proves additivity of valuation under nonzero products.
+
+The two ring homomorphisms
+\[
+\Phi_+(x+yw)=x+yr,\qquad \Phi_-(x+yw)=x-yr
+\]
+send \(d\) to elements of valuations \(e-1\) and one. Neither sends
+a nonzero order element to zero: their product is the positive
+integer \(x^2+Dy^2\), and integer embedding in \(\Z_2\) is injective.
+Let \(h_j,\ell_j\) be the respective valuations of the actual raw
+state. Their sum initially is \(V\), so \(h_0,\ell_0\le V\).
+Each legal affine step adds one to both valuations. Each legal
+division subtracts \(e-1\) from \(h_j\) and one from \(\ell_j\).
+Consequently,
+\[
+h_j=h_0+j-eB_j\ge0,\qquad
+\ell_j=\ell_0+j-2B_j\ge0.
+\]
+The first identity proves the count bound. The norm identity
+\[
+\OrderNorm(\RawMap^j(z))=\OrderNorm(z)2^{2j-(e+2)B_j}
+\]
+then proves the quantitative growth bound. These computations use the
+same global instruction at both homomorphisms.
+
+The valuation pair also determines that instruction exactly:
+\[
+\begin{gathered}
+\text{division}\quad\Longleftrightarrow\\
+\bigl(h_j=e-1\text{ and }\ell_j=1\bigr)
+\quad\text{or}\quad
+\bigl(h_j\ge e\text{ and }\ell_j\ge2\bigr).
+\end{gathered}
+\]
+To prove this, the rational quotient has coordinates
+\((x+Dy)/2^e\) and \((y-x)/2^e\). They are dyadic rationals.
+Its two images are \(\Phi_+(z)/(1+r)\) and
+\(\Phi_-(z)/(1-r)\). Integral coordinates require these images
+to be integral with equal parity. Conversely, integral images of
+equal parity give integral \(2\)-adic coordinates by taking their
+sum divided by two and their difference divided by \(2r\);
+\(r\) is odd. A dyadic rational integral at two is an integer, so
+this condition recovers the exact quotient in \(R_D\).
+The two images have equal parity precisely when they are both odd
+or both even, giving the displayed criterion.
+
+Set \(K=2V+3e\). The count bound gives, for every \(j\ge K\),
+\[
+\ell_j\ge\frac{(e-2)j-2V}{e}\ge3.
+\]
+The division criterion is now simply \(h_j\ge e\). On this tail,
+\(h_j\) increases by one below \(e\) and decreases by \(e-1\)
+at or above \(e\). Since \(h_K\le V+K\), finitely many consecutive
+decreases, and at most one increase from zero, put it in the cycle
+\[
+1\longrightarrow2\longrightarrow\cdots\longrightarrow e
+\longrightarrow1.
+\]
+This occurs by \(2K+V+1\le L\). It has exactly one division per
+\(e\) ticks, and that single distinguished instruction proves the
+primitive word period \(e\). Hence \(B_j/j\to1/e\).
+Substitution in the norm identity proves the stated logarithmic limit.
+Indeed, every tail block of \(e\) ticks satisfies the stronger identity
+\[
+\RawMap^{j+e}(z)=\frac{2^{e-1}}d\RawMap^j(z),\qquad
+\OrderNorm(\RawMap^{j+e}(z))=2^{e-2}\OrderNorm(\RawMap^j(z)).
+\]
+Although the scalar \(2^{e-1}/d=(1-w)/2\) need not belong to the order,
+the displayed outputs do: they are obtained by the same legal raw word.
+\end{proof}
+
+\begin{corollary}[Odd-norm seeds]
+Under the preceding dyadic hypotheses, if \(\OrderNorm(z)\) is odd,
+then \(B_0=0\) and
+\[
+B_j=\left\lfloor\frac{j-1}{e}\right\rfloor\qquad(j\ge1).
+\]
+\end{corollary}
+\begin{proof}
+Initially \(h_0=\ell_0=0\). The first tick is affine.
+The next \(e-1\) ticks are affine, followed by a division from
+\((h,\ell)=(e,e)\) to \((1,e-1)\).
+Since \(e-1\ge2\), the subsequent instruction word repeats
+\(e-1\) affine ticks and one division. Counting these ticks gives the formula.
+\end{proof}
+
+\begin{theorem}[Complete homogeneous classification]
+For \(q=2,c=0,d=1+\sqrt{-D}\):
+\begin{enumerate}
+\item if \(D=1\) or \(D=3\), every nonzero seed is eventually periodic
+with primitive period twelve;
+\item for every other \(D\ge1\), every nonzero seed escapes along the
+full raw sequence.
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+A legal homogeneous word with \(A\) affine instructions and \(B\)
+divisions taking \(x\) to \(y\) satisfies \(d^B y=2^A x\), by induction
+on the actual guarded word. A nonempty return at a nonzero state
+would therefore give \(d^B=2^A\). Neither count can be zero, since
+norms would force the other count zero. For \(D\notin\{1,3\}\) the
+preceding lemma excludes every return and every collision.
+A disk contains only finitely many points of \(R_D\), because
+\(|x|\le R\) and \(|y|\le R/\sqrt D\). The injective orbit visits
+each disk only finitely often, proving full-sequence escape.
+The preceding quantitative theorem gives a stronger conclusion for
+the dyadic cases \(e\ge3\); the norm-prime budget gives an eventual
+doubling tail whenever \(D+1\) has an odd prime factor.
+
+Repeated exact divisions terminate for every nonzero seed, since
+each decreases the positive integral norm by the factor \(M>1\).
+Let \(t\) be the resulting \(d\)-free state.
+
+For \(D=1\), \(2=-i d^2\). Each affine tick raises the \(d\)-power
+from zero to two and multiplies the phase by \(-i\); the next two
+ticks divide. The three norm levels are distinct, and the phase
+has exact order four. Thus the resulting cycle has primitive period
+\(3\cdot4=12\).
+
+For \(D=3\), write \(t=x+yw\). If \(x-y\) is odd, the following list
+is one legal twelve-tick cycle, with the final point equal to the first:
+\[
+\begin{gathered}
+t,\ 2t,\ 4t,\ (1-w)t,\ 2(1-w)t,\ -(1+w)t,\\
+-t,\ -2t,\ -4t,\ -(1-w)t,\ -2(1-w)t,\ (1+w)t,\ t.
+\end{gathered}
+\]
+The six division inputs are
+\(4t,2(1-w)t,-(1+w)t,-4t,-2(1-w)t,(1+w)t\).
+Their coordinate differences are, respectively,
+\(4(x-y),4(x+y),4y,-4(x-y),-4(x+y),-4y\).
+The other inputs have differences
+\(x-y,2(x-y),2(x+y),-(x-y),-2(x-y),-2(x+y)\),
+none divisible by four since \(x-y\) and \(x+y\) are odd.
+The displayed transitions now follow from \(d(1-w)=4\).
+
+If \(x-y\equiv2\pmod4\) and \(x,y\) are even, put \(u=t/2\).
+Then \(u\) has odd coordinate difference and \(t=2u\) lies on its cycle.
+If \(x,y\) are odd, put \(u=-dt/4\).
+Both coordinates of \(dt\) are divisible by four, and the coordinate
+difference of \(u\) is \(y\), which is odd. Since \(d\bar d=4\),
+\(t=-\bar d u\), again a point of the cycle.
+These cases exhaust all \(d\)-free states.
+
+Finally any nonempty return for \(D=3\) has \(A=B\) by norms, and
+\((d/2)^B=1\). The element \(d/2\) has exact order six
+(\((d/2)^3=-1\)). Thus \(B\) is a positive multiple of six and the
+return time \(A+B\) is a positive multiple of twelve.
+The constructed twelve-tick return is primitive.
+\end{proof}
+
+\begin{corollary}[Nondyadic divisions]
+Suppose \(D+1\) is not a power of two. Every nonzero homogeneous seed
+has only finitely many divisions and then doubles at every raw tick.
+\end{corollary}
+\begin{proof}
+The odd part of \(D+1\) exceeds one. A least divisor greater than one
+is a prime \(p\); otherwise its proper factors contradict minimality.
+Thus \(p\mid D+1=\OrderNorm(d)\) and \(p\nmid4=\OrderNorm(q)\).
+The norm-prime budget applies to every nonzero seed.
+\end{proof}
+
+\section{Dyadic offsets and occupation}
+
+\begin{theorem}[Odd-offset dyadic classification]
+Let \(D=2^e-1\), \(e\ge1\), \(q=2\), \(d=1+\sqrt{-D}\), and
+\(c=c_x+c_yw\in R_D\) with \(c_x-c_y\) odd.
+The zero seed is fixed. A nonzero seed is eventually fixed if and
+only if it belongs to
+\[
+\{-d^r c:r\in\N\}.
+\]
+Every such seed reaches the fixed point \(-c\).
+Every other seed escapes along the full raw sequence.
+\end{theorem}
+\begin{proof}
+A finite division prefix ends at a \(d\)-free point \(t\), with
+\(z=d^r t\). After one affine tick, the coordinate difference is
+\(2(t_x-t_y)+(c_x-c_y)\), which is odd. Every subsequent affine
+difference is odd, so no division can occur. The initial point
+is already \(d\)-free. Consequently, for every \(j\ge0\),
+\[
+\RawMap^j(t)=2^j(t+c)-c.
+\]
+If \(t=-c\), this is fixed; \(d\nmid c\) follows from its odd
+coordinate difference. Otherwise
+\[
+|\RawMap^j(t)|\ge2^j|t+c|-|c|\longrightarrow\infty.
+\]
+The division-prefix identity proves both directions of the exact
+exceptional-seed description. No independent branch law is used.
+\end{proof}
+
+\begin{corollary}[A division-frequency restriction]
+For \(D=2^e-1\), \(e\ge3\), \(c=0\), and any nonzero seed, let
+\(B_j\) count divisions in the first \(j\) ticks. Then
+\[
+B_j\ge\left\lfloor\frac{j}{e+1}\right\rfloor,\qquad
+2j-(e+2)B_j\longrightarrow\infty.
+\]
+In particular,
+\[
+\frac1{e+1}\le\liminf_{j\to\infty}\frac{B_j}{j}
+\le\limsup_{j\to\infty}\frac{B_j}{j}=\frac1e.
+\]
+\end{corollary}
+\begin{proof}
+Modulo \(d\), each affine tick doubles the coordinate difference.
+After \(e\) such ticks it is zero modulo \(2^e\). Therefore every
+block of \(e+1\) raw ticks contains a division.
+Norm multiplicativity gives
+\[
+\OrderNorm(\RawMap^j(z))
+=2^{\,2j-(e+2)B_j}\OrderNorm(z).
+\]
+Since \(D\notin\{1,3\}\), this norm tends to infinity by the homogeneous
+classification. The exponent must tend to infinity. The lower count bound gives the first inequality. The dyadic valuation
+theorem proves the stronger exact frequency limit \(1/e\).
+\end{proof}
+
+\begin{remark}
+For \(D=7\), the norm relation \(4^3=8^2\) does not yield an element
+return: \(d^2=-6+2\sqrt{-7}\ne8\). Every nonzero trajectory escapes,
+yet divisions occur in every block of four ticks.
+Thus a scalar norm balance alone does not classify critical cycles.
+\end{remark}
+
+\section{Exact finite figures}
+
+The bounded arithmetic certificate checks \(372704\) entries.
+The coordinate grid uses five orders, divisor coefficients in
+\([-4,4]\), and seed coefficients in \([-6,6]\).
+First-division checks use \(1\le D\le64\) and \(-256\le n\le256\).
+The dyadic valuation checks cover \(672\) nonzero seeds for
+\(e=3,4,5,6\). Independent integer-matrix references check
+\(128\) dyadic instructions per seed on the smaller grid \([-4,4]\).
+The infinite conclusions follow from the proofs, not these tests.
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\linewidth]{../other/DyadicWordCounts.pdf}
+\caption{Exact division counts for the seed one and
+\(D=7,15,31,63\), through \(128\) raw ticks. For \(j\ge1\) these
+are \(\lfloor(j-1)/e\rfloor\), not sampled frequencies from an
+independent branch law. Each instruction word eventually has period
+\(e\), while each arithmetic trajectory has positive escape exponent.}
+\end{figure}
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\linewidth]{../other/FirstDivisionDensity.pdf}
+\caption{The proved first-division density \(1/\OddPart(D+1)\), sampled at
+integer \(1\le D\le64\). Density one occurs at
+\(D=1,3,7,15,31,63\), although only \(D=1,3\) have homogeneous cycles.
+Connecting segments represent discrete samples, not a continuous
+parameter law.}
+\end{figure}
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\linewidth]{../other/FirstDivisionSurface.pdf}
+\caption{The exact integer-grid first-division mesh for
+\(1\le D,n\le12\), projected by
+\(\xi=D+n/2\), \(\eta=n/2+2h\).
+Here \(h=a+1\) for a first divisible state at index \(a\), and \(h=0\)
+when division never occurs. Projection can hide or superimpose points;
+no continuous surface theorem is inferred.}
+\end{figure}
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\linewidth]{../other/EqualNormDynamics.pdf}
+\caption{Gaussian homogeneous trajectories with \(q=2+i\), starting at
+one. Taking \(d=q\) gives the exact two-cycle \(1,q,1\).
+Taking \(d=2-i\) gives a division-free trajectory: modulo \(d\),
+\(i=2\) and \(q=4\) in \(\Z/5\Z\), so powers of \(q\) never vanish.
+In both cases \(\OrderNorm(q)=\OrderNorm(d)=5\).
+The finite height traces display an exact guard distinction that norms
+alone cannot recover.}
+\end{figure}
+
+\clearpage
+\bibliographystyle{amsalpha}
+\bibliography{QuadraticArithmetic}
+\end{document}

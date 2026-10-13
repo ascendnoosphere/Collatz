@@ -1,0 +1,176 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For every odd real integral offset, every nonreal raw \((3,c,2)\) seed in a quadratic coordinate order escapes along its full sequence. The proof removes a finite dyadic rank of the transverse coefficient and then reconstructs an exact affine tail. Gaussian and Eisenstein embeddings give distinct pictures of the same scalar coordinate law. A separately defined residue-wise quotient rule has explicit nonreal cycles, showing that its arithmetic and clock cannot be conflated with raw branching. The raw escape proof, coordinate guards, and quotient counterexamples have matching checked Lean proofs.
+\end{abstract}
+
+\section{Chosen rings and embeddings}
+
+Fix integers \(\tau,\nu\) with \(4\nu>\tau^2\). Put
+\[
+\theta=\frac{\tau+i\sqrt{4\nu-\tau^2}}2,
+\qquad R=\Z[\theta],\qquad \theta^2=\tau\theta-\nu.
+\]
+Every element of \(R\) is uniquely \(x+y\theta\) with \(x,y\in\Z\). Existence follows by reducing powers with the monic relation. For uniqueness, if \(x+y\theta=0\), its imaginary part is \(y\operatorname{Im}\theta=0\); since \(\operatorname{Im}\theta>0\), this forces \(y=0\), then \(x=0\). Thus \(1,\theta\) is an integral coordinate basis for this order. This does not assert that it is the maximal order of every quadratic field.
+
+The Gaussian case is \((\tau,\nu)=(0,1)\), \(\theta=i\). The Eisenstein case is \((\tau,\nu)=(-1,1)\), \(\theta=\omega=e^{2\pi i/3}\). The latter embedding is
+\[
+x+y\omega=(x-y/2)+i\sqrt3y/2.
+\]
+In particular, a coefficient-pair plot \((x,y)\) is not its physical complex-plane embedding.
+
+% The scalar guard is proved from uniqueness of the integral coordinates.
+\begin{lemma}[TwoGuard]
+For \(z=x+y\theta\in R\), \(2\mid z\) in \(R\) if and only if \(2\mid x\) and \(2\mid y\) in \(\Z\). Its integral quotient is then \(x/2+(y/2)\theta\).
+\end{lemma}
+\begin{proof}
+If \(z=2(a+b\theta)\), uniqueness of coordinates gives \(x=2a\), \(y=2b\). Conversely, if \(x=2a\), \(y=2b\), then \(z=2(a+b\theta)\). The displayed quotient is the same element by integer divisibility. The companion formal proof also specializes the general quadratic multiplication-coordinate predicate, so the guard is independent of \(\tau,\nu\).
+\end{proof}
+
+Division by \(2\) in \(\Z[i]\) is not division by \(1+i\). Indeed
+\[
+\frac{x+iy}{1+i}=\frac{x+y}{2}+i\frac{y-x}{2}
+\]
+is integral exactly when \(x\equiv y\pmod2\), a different guard.
+
+For odd \(c\in\Z\), define the raw map
+\[
+T_c(x+y\theta)=\begin{cases}
+(x/2)+(y/2)\theta,&2\mid x\text{ and }2\mid y,\\
+(3x+c)+(3y)\theta,&\text{otherwise}.
+\end{cases}
+\]
+Division has precedence, including at zero. The offset is real; complex offsets are not covered by the argument below.
+
+\subsection{Recovery in an actual integral quadratic algebra}
+
+% The branch test and quotient are proved in a ring, not assumed from a pair notation.
+The formal ring is \(\mathbb Z[\theta]\) with \(\theta^2=\tau\theta-\nu\), implemented by Mathlib's free quadratic algebra over \(\mathbb Z\). The Gaussian case is \((\tau,\nu)=(0,1)\); the Eisenstein case is \((-1,1)\). Writing \(z=x+y\theta\), multiplication by the scalar \(2\) gives \(2x+2y\theta\). Hence \(2\mid z\) as an actual ring element if and only if \(2\mid x\) and \(2\mid y\). In that case \(x/2+(y/2)\theta\) is an integral quotient and reconstructs \(z\) after multiplication by \(2\). It is the unique quotient: equality of two scalar-two products implies \(2x=2x'\) and \(2y=2y'\), and both equalities cancel over \(\mathbb Z\).
+
+The affine tick \(3z+c\), for real integer \(c\), has coordinates \(3x+c,3y\). These identities prove exact one-tick intertwining of the actual ring map with the coordinate map. Induction on the raw clock proves the same intertwining at every time, so the escape theorem below reconstructs the same original ring orbit rather than a formal pair surrogate. Lean checks the guard and quotient as \texttt{ScalarTwoDivides} and \texttt{ScalarTwoQuotient}, with uniqueness in \texttt{ScalarTwoUnique}. The all-time recovery is \texttt{CoordinatesIter}; the recovered escape is \texttt{QuadraticOffAxisEscape}.
+
+The explicit root \(\theta=(\tau+i\sqrt{4\nu-\tau^2})/2\) satisfies the defining quadratic relation: its square has real part \((\tau^2-(4\nu-\tau^2))/4=\tau^2/2-\nu\) and imaginary part \(\tau\sqrt{4\nu-\tau^2}/2\), equal to those of \(\tau\theta-\nu\). Its imaginary part is strictly positive by \(\tau^2<4\nu\). Thus the quadratic universal property gives an actual algebra map \(\iota:R\to\C\), \(\iota(x+y\theta)=x+y\theta\). Equality of two image imaginary parts cancels this positive factor and recovers \(y\); equality of their real parts then recovers \(x\), so the map is injective. Lean checks these obligations as \texttt{ImaginaryGeneratorRoot}, \texttt{ImaginaryGeneratorPositive} and \texttt{ImaginaryEmbeddingInjective}. No complex interpretation is silently asserted for a real or degenerate quadratic algebra.
+
+\section{Finite dyadic descent}
+
+For a nonzero integer \(y\), let \(r\) be the largest natural exponent for which \(2^r\mid y\), and write \(y=2^r u\) with \(u\) odd. Such an exponent exists because \(2^r\le|y|\) whenever \(2^r\mid y\ne0\); the finitely many possible exponents have a largest member. Maximality makes the remaining integer quotient odd. The sign of \(u\) is arbitrary.
+
+% Every unresolved block strictly removes one factor of two in at most two raw ticks.
+\begin{lemma}[FiniteOddEntry]
+If \(y=2^r u\) with \(u\) odd and \(c\) odd, some raw iterate \(T_c^t(x+y\theta)\) has odd second coefficient, with \(t\le2r\).
+\end{lemma}
+\begin{proof}
+Induct on \(r\). For \(r=0\), the initial second coefficient is already odd, so take \(t=0\). If \(r>0\), the second coefficient is even. If \(x\) is even, the next raw tick divides both coordinates and replaces \(y\) by \(2^{r-1}u\). The induction hypothesis costs at most \(2(r-1)\) more ticks, for total at most \(2r-1\).
+
+If \(x\) is odd, the current guard fails. Its affine successor has even first coefficient \(3x+c\), since both summands are odd, and second coefficient \(3y=2^r(3u)\). The next guard succeeds and division gives second coefficient \(2^{r-1}(3u)\), whose odd part remains odd. Apply induction from this state; the total is at most \(2+2(r-1)=2r\). Every block uses the original raw guards and original clock. These two cases are exhaustive.
+\end{proof}
+
+% The solved odd transverse tail reconstructs every later arithmetic state.
+\begin{lemma}[OddTailImag and coordinate recovery]
+If the second coefficient of a state is odd, all its later ticks are affine. If that state is \(x_t+y_t\theta\), then for every \(j\ge0\),
+\[
+y_{t+j}=3^j y_t,
+\qquad x_{t+j}=3^j x_t+c\sum_{k=0}^{j-1}3^k.
+\]
+\end{lemma}
+\begin{proof}
+An odd second coefficient prevents the division guard, regardless of the first coefficient. Multiplication by \(3\) preserves oddness. Induction therefore forces every later tick to use the affine branch. The second-coordinate formula follows immediately. For the first coordinate, the empty sum gives the initial value. If the formula holds for \(j\), the next affine tick multiplies the existing terms by \(3\) and adds \(c\), giving exactly the sum \(1+3+\cdots+3^j\). This proves the displayed reconstruction at the original raw time.
+\end{proof}
+
+% The positive embedding factor transfers transverse integer growth to complex escape.
+\begin{theorem}[OffAxisEscape]
+For every odd integer \(c\) and every \(x+y\theta\in R\) with \(y\ne0\),
+\[
+\forall M\in\R\ \exists K\in\N\ \forall j\ge K:
+\quad |T_c^j(x+y\theta)|>M.
+\]
+In particular, every finite raw cycle in \(R\) lies on the real axis.
+\end{theorem}
+\begin{proof}
+The dyadic decomposition and finite-entry lemma give \(t\le2r\) and an odd \(y_t\). Thus \(|y_t|\ge1\). For every \(j\ge0\),
+\[
+|T_c^{t+j}(x+y\theta)|
+\ge |\operatorname{Im}(T_c^{t+j}(x+y\theta))|
+=\operatorname{Im}\theta\,3^j|y_t|
+\ge\operatorname{Im}\theta\,3^j.
+\]
+The factor \(\operatorname{Im}\theta\) is fixed and positive. Powers of \(3\) exceed every prescribed positive bound, giving a threshold for all later ticks, not merely a subsequence. The finitely many earlier ticks do not affect full-sequence escape. A finite cycle is bounded, so it cannot contain a nonzero second coefficient. On \(y=0\), the map is exactly the signed integer raw \((3,c,2)\) rule; that axis is not resolved by this theorem.
+\end{proof}
+
+The Lean theorem \texttt{ComplexOffAxisEscape} checks the displayed real-bound complex-norm statement, not only a coefficient-height surrogate. Its supporting \texttt{ImaginaryEmbeddingNorm} proves \(\operatorname{Im}\theta\,|y|\le\|\iota(x+y\theta)\|\). Given any real bound \(M\), choose a natural \(N>M/\operatorname{Im}\theta\). The checked integer-height escape eventually exceeds \(N\) at every raw tick; multiplication by the fixed positive factor and the norm inequality prove the same full-sequence complex conclusion. \texttt{OddTailReal} and \texttt{OddTailImag} check both tail coordinate formulas.
+
+\section{Residue-wise quotient variants}
+
+For the representatives \(\epsilon_x=x\bmod2\), \(\epsilon_y=y\bmod2\), taking values in \(\{0,1\}\) also for negative inputs, set
+\[
+r(z)=\epsilon_x+\epsilon_y\theta,
+\qquad
+J_\pm(z)=\begin{cases}
+z/2,&r(z)=0,\\(3z\pm r(z))/2,&r(z)\ne0.
+\end{cases}
+\]
+Both numerator coordinates are even because \(3x\pm\epsilon_x\equiv x\pm x\equiv0\pmod2\), and similarly for \(y\). Thus both maps preserve the chosen order. The Gaussian plus map is Joseph's four-residue convention as printed by Kucinski~\cite{Kucinski00}; the Eisenstein and minus variants here are separately defined and are not attributed to that paper.
+
+% Nonreal quotient cycles are counterexamples to conflating the two conventions.
+\begin{lemma}[Nonreal quotient cycles and fixed points]
+In every coordinate order above,
+\[
+1+\theta\xrightarrow{J_+}2+2\theta\xrightarrow{J_+}1+\theta,
+\qquad J_+(-1-\theta)=-1-\theta,
+\qquad J_-(1+\theta)=1+\theta.
+\]
+\end{lemma}
+\begin{proof}
+At \(1+\theta\), the residue is \(1+\theta\), so the plus quotient is \(4(1+\theta)/2=2+2\theta\). Both coordinates of that successor are even, so it divides back to \(1+\theta\). These two states differ and are nonreal because \(\operatorname{Im}\theta>0\). At \(-1-\theta\), both residues are \(1\), and the plus numerator is \(-3-3\theta+1+\theta=-2-2\theta\). At \(1+\theta\), the minus numerator is \(2+2\theta\). Dividing proves both fixed-point identities. Each calculation is also checked in Lean.
+\end{proof}
+
+These examples refute a transfer of raw off-axis escape to the residue quotient rule. A \(J\) tick has its own clock. No semiconjugacy or raw-time equivalence is claimed.
+
+\section{Reduction contract and verification scope}
+
+The original obligation is nonreal raw \((3,c,2)\) behavior with odd real \(c\). The replacement obligations are finite descent of \(v_2(|y|)\) and the explicit odd affine tail. Every unresolved block decreases this well-founded rank by one, takes at most two raw ticks, and preserves the same seed's legal itinerary. The base rank is solved directly. Recovery supplies every later state. The total descent budget is \(2r\); it is not a uniform bound independent of the seed. Even offsets, nonreal offsets, rotated multipliers, and other divisors are outside this reduction.
+
+\texttt{ComplexLattice.lean} checks the coordinate guard, dyadic decomposition, entry budget, transverse tail, and full-sequence height escape, as well as the quotient counterexamples and raw residue non-descent. The Go atlas independently checks exact quotient arithmetic using rational matrix elimination, signed dyadic ranks through \(r=10\) for \(c=\pm1\), and quotient variants on a finite signed grid. The theorem is established by the arguments and formal proofs, not inferred from those finite tests.
+
+The visual atlas uses the actual Gaussian and Eisenstein embeddings, labels coordinate-fence exits separately from proved escape, and records every reached finite cycle with its representative and primitive period. It does not exhaust infinite lattice cycles. Kucinski's four-residue definition and principal statements were checked in the May 2000 preprint; its Maple census was not reproduced and its complete proof was not independently audited.
+
+\bibliographystyle{amsalpha}
+\bibliography{ComplexLattice}
+
+\end{document}

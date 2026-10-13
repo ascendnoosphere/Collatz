@@ -83,6 +83,15 @@ defaultTargets = [
   "RhoMass",
   "ProfileDrop",
   "ProfilePrimePower",
+  "GaussianDynamics",
+  "QuadraticArithmetic",
+  "DyadicArithmetic",
+  "ComplexCohomology",
+  "ComplexGraph",
+  "ComplexLocalSystem",
+  "ComplexLattice",
+  "ComplexPolynomials",
+  "ComplexFields",
 ]
 
 [[require]]
@@ -445,3 +454,39 @@ srcDir = "QCD.ProfileDrop.001/lean"
 [[lean_lib]]
 name = "ProfilePrimePower"
 srcDir = "QCD.ProfileDrop.001/lean"
+
+[[lean_lib]]
+name = "GaussianDynamics"
+srcDir = "QCD.GaussianDynamics.001/lean"
+
+[[lean_lib]]
+name = "QuadraticArithmetic"
+srcDir = "QCD.QuadraticArithmetic.001/lean"
+
+[[lean_lib]]
+name = "DyadicArithmetic"
+srcDir = "QCD.QuadraticArithmetic.001/lean"
+
+[[lean_lib]]
+name = "ComplexCohomology"
+srcDir = "QCD.ComplexCohomology.001/lean"
+
+[[lean_lib]]
+name = "ComplexGraph"
+srcDir = "QCD.ComplexCohomology.001/lean"
+
+[[lean_lib]]
+name = "ComplexLocalSystem"
+srcDir = "QCD.ComplexCohomology.001/lean"
+
+[[lean_lib]]
+name = "ComplexLattice"
+srcDir = "QCD.ComplexLattice.001/lean"
+
+[[lean_lib]]
+name = "ComplexPolynomials"
+srcDir = "QCD.ComplexAtlas.001/lean"
+
+[[lean_lib]]
+name = "ComplexFields"
+srcDir = "QCD.ComplexAtlas.001/lean"

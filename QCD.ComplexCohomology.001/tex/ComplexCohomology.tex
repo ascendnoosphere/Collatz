@@ -1,0 +1,182 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We compute ordinary cycle cohomology and the closing obstruction for an ordered affine word over an arbitrary coefficient field. The ordinary period gives an explicit quotient isomorphism; twisted transport gives a scalar reconstruction equation. These are finite graph calculations, not an ambient-plane or Galois cohomology theory for all Collatz maps. State-ring divisibility, cochain coefficients, and lattice word admissibility remain separate data. Exact computations on four finite quadratic rings supply characteristic-sensitive controls. The companion Lean file checks the ordinary finite-cochain quotient isomorphism, transport identities, exactness criteria, and field-guard collapse.
+\end{abstract}
+
+\section{Domains and the earliest field obstruction}
+
+A lattice raw map on an integral domain \(R\), with \(d\ne0\), uses
+\[
+T(z)=\begin{cases}z/d,&d\mid z\text{ in }R,\\qz+c,&d\nmid z\text{ in }R.\end{cases}
+\]
+The first quotient is the unique integral quotient in \(R\). This definition must not be silently moved to its fraction field.
+
+% This separates coefficient fields from the ring used by the dynamical guard.
+\begin{lemma}[FieldGuard and FieldBranchCollapse]
+If \(K\) is a field and \(d\in K\setminus\{0\}\), then \(d\mid z\) for every \(z\in K\). The literal raw rule on \(K\) is therefore \(T(z)=z/d\), independently of \(q,c\).
+\end{lemma}
+\begin{proof}
+The field identity \(d(z/d)=z\) supplies a divisibility witness. Thus the guard is true for every input and the affine alternative is never selected. This applies in finite fields and in \(\C\), as well as in number fields.
+\end{proof}
+
+Even a lattice raw rule need not descend to residue classes. For raw \((3,c,2)\), the equal input classes \(0\equiv2\pmod2\) have outputs \(0\) and \(1\), which are not equal modulo \(2\). A finite-ring affine permutation is a different object, not a quotient of raw halving.
+
+\section{Ordinary finite-cycle cohomology}
+
+Let \(A\) be an abelian group, written additively. Fix \(n\ge1\) and orient a cycle with vertices \(0,\ldots,n-1\) and an edge from \(j\) to \(j+1\), indices taken modulo \(n\). A one-edge self-loop is allowed. Define
+\[
+C^0=A^n,\qquad C^1=A^n,\qquad
+(\delta f)_j=f_{j+1}-f_j.
+\]
+There are no two-cells. Thus \(H^0=\ker\delta\) and \(H^1=C^1/\operatorname{im}\delta\). Put \(\Pi(a)=\sum_{j=0}^{n-1}a_j\).
+
+% Prefix sums recover one potential that simultaneously satisfies all edges.
+\begin{theorem}[The cycle-period quotient]
+A cochain \(a\) is a coboundary exactly when \(\Pi(a)=0\). The period induces an isomorphism \(H^1\cong A\). Furthermore \(H^0\cong A\), identified by constant potentials. Over a field \(K\) these are linear isomorphisms, in every characteristic.
+\end{theorem}
+\begin{proof}
+For a cyclic potential, the sum of differences is
+\[
+\sum_{j=0}^{n-1}(f_{j+1}-f_j)=f_n-f_0=0.
+\]
+Conversely, given \(\Pi(a)=0\), choose \(f_0=0\) and \(f_j=\sum_{k<j}a_k\) for \(1\le j\le n\). For every edge, \(f_{j+1}-f_j=a_j\); the period condition gives \(f_n=f_0\). Hence \(\ker\Pi=\operatorname{im}\delta\). For any \(u\in A\), put \(a_0=u\) and all other entries equal to zero. This realizes period \(u\), including when \(n=1\), so \(\Pi\) is surjective. It therefore induces a bijective homomorphism of the stated quotient. Equivalently, \([a]=[b]\) exactly when \(\Pi(a-b)=0\), or \(\Pi(a)=\Pi(b)\).
+
+If \(\delta f=0\), every adjacent value agrees; following the cycle shows that \(f\) is constant. Conversely every constant potential has zero difference. In a coefficient field all maps used above are linear. No division by \(n\) occurs, so no characteristic restriction is hidden. For \(n=0\), period surjectivity onto a nontrivial coefficient group is not asserted.
+\end{proof}
+
+In Lean, finite edge cochains are \texttt{Fin n} functions. The theorem \texttt{Exact\allowbreak Cochains\allowbreak Iff} identifies genuine endpoint-closing coboundaries with the kernel of \texttt{Finite\allowbreak Period\allowbreak Map}. The quotient isomorphism is checked by \texttt{First\allowbreak Cohomology\allowbreak Equiv}. Its action on concrete classes is checked by \texttt{First\allowbreak Cohomology\allowbreak Period}.
+
+% Counting components uses one directed cycle per finite functional component.
+\begin{corollary}[Finite functional graphs]
+Let a function act on \(N\) vertices, with one directed edge from each vertex to its successor, and let \(k\) be the number of weak components. Over any field,
+\[
+\dim H^0=k,\qquad \operatorname{rank}\delta=N-k,\qquad \dim H^1=k.
+\]
+\end{corollary}
+\begin{proof}
+Iteration from each vertex repeats because the graph is finite, giving a directed cycle. Endpoints of an edge have the same eventual cycle. Thus every weak component has exactly one directed cycle; all other vertices feed that cycle through trees. A zero-difference potential agrees across every edge in either direction, and therefore is constant on each weak component. Its kernel has dimension \(k\). Rank--nullity gives rank \(N-k\). There are exactly \(N\) edges, including self-loops, so the dimension of the cokernel is \(N-(N-k)=k\). Tree edges add no independent periods. In \texttt{ComplexGraph.\allowbreak lean}, \texttt{Component\allowbreak Kernel\allowbreak Equiv} identifies the actual incidence kernel with functions on the generated weak-component quotient. The three dimension formulas are checked as \texttt{Graph\allowbreak H0\allowbreak Dimension}, \texttt{Graph\allowbreak Incidence\allowbreak Rank}, and \texttt{Graph\allowbreak H1\allowbreak Dimension}. The finite-ring instances below are also tested independently in Go.
+\end{proof}
+
+Ordinary unmarked cohomology forgets cycle length: a two-cycle and a three-cycle both give \(H^1\cong A\). It cannot by itself recover coordinates, branch guards, raw periods, or reachability from a seed. Those require retained marks.
+
+\section{Twisted cochains and ordered affine reconstruction}
+
+Let \(K\) be any field. Prescribe edge multipliers \(\lambda_j\) and offsets \(a_j\), with
+\[
+u_{j+1}=\lambda_j u_j+a_j,\qquad 0\le j<n.
+\]
+For a rank-one local system require \(\lambda_j\ne0\) on every edge. Define
+\[
+P=\prod_{j=0}^{n-1}\lambda_j,\qquad
+B=\sum_{j=0}^{n-1}\left(\prod_{k=j+1}^{n-1}\lambda_k\right)a_j.
+\]
+Empty products are \(1\). The order of the edge offsets is retained.
+
+% Ordered transport removes n unknown values without assuming admissibility.
+\begin{theorem}[Ordered affine closing equation]
+For every initial value, \(u_n=Pu_0+B\). The transported potential closes exactly when
+\[
+(1-P)u_0=B.
+\]
+If \(P\ne1\), its unique initial value is \(B/(1-P)\). If \(P=1\), it closes exactly when \(B=0\), and in that case every initial value closes.
+\end{theorem}
+\begin{proof}
+For zero edges, \(P=1\), \(B=0\), and the identity holds. Suppose the identity holds after \(j\) edges with quantities \(P_j,B_j\). The next transport gives
+\[
+u_{j+1}=\lambda_j(P_j u_0+B_j)+a_j
+=(\lambda_jP_j)u_0+(\lambda_jB_j+a_j).
+\]
+These are precisely the product and ordered offset for \(j+1\) edges; induction proves the formula. The condition \(u_n=u_0\) rearranges to the displayed scalar equation. When \(1-P\ne0\), field division yields a unique solution. When \(P=1\), the equation reads \(0=B\); it imposes no condition on \(u_0\). The transport identity also permits zero multipliers, but such data are not called a local system.
+\end{proof}
+
+Define \((\delta_\lambda f)_j=f_{j+1}-\lambda_j f_j\) with \(f_n=f_0\). The identity above supplies the full cohomological test.
+
+% The same recurrence constructs a common potential for every cochain edge.
+\begin{theorem}[TwistedExactIff]
+Assume \(n\ge1\) and every \(\lambda_j\ne0\). If \(P\ne1\), every edge cochain is exact and \(H^0_\lambda=H^1_\lambda=0\). If \(P=1\), exactness is equivalent to \(B=0\), and \(H^0_\lambda\cong H^1_\lambda\cong K\).
+\end{theorem}
+\begin{proof}
+A potential with prescribed twisted differences is exactly a solution of the transport recurrence, so exactness is equivalent to one closing initial value. For \(P\ne1\), the preceding theorem constructs it for every cochain. For zero offset, the only closing initial value is zero, and transport then makes all values zero, proving both claims.
+
+For \(P=1\), the recurrence closes exactly when \(B=0\). The map \(a\mapsto B\) is linear and is onto: a cochain supported on the last edge with value \(u\) has \(B=u\). Its kernel is exactly the twisted coboundaries, giving the quotient isomorphism. With zero offsets, every initial value closes and uniquely determines every other value by transport, giving the kernel isomorphism. The companion \texttt{ComplexLocalSystem.\allowbreak lean} defines actual finite coboundaries through one common periodic potential. It proves the image is the weighted-period kernel in the neutral case and the whole edge space in the nonneutral case. \texttt{Neutral\allowbreak H1\allowbreak Equiv} packages the weighted-period quotient isomorphism; \texttt{Neutral\allowbreak H0\allowbreak Equiv} evaluates and reconstructs the homogeneous potential. The nonneutral zero-dimension alternatives are also checked, rather than inferred from numerical rank tests.
+\end{proof}
+
+\section{Returning to the lattice: obligations not erased}
+
+For a raw word with \(a\) affine ticks and \(b\) division ticks, computed in the fraction field of the state ring,
+\[
+P=q^a/d^b,\qquad B=cU/d^b.
+\]
+The quantity \(U\) records the chronological offsets. If \(d^b\ne q^a\), the only candidate seed is
+\[
+z_0=\frac{cU}{d^b-q^a}.
+\]
+Recovery requires that this same candidate belong to the state ring, every reconstructed division be integral, and every selected affine tick satisfy \(d\nmid z_j\). When \(d^b=q^a\), one additionally needs \(cU=0\); the same guards still apply. Thus affine reconstruction is a certified finite-word field calculation, not a cycle classification without guards.
+
+For the raw minus cycle \(1\to2\to1\), the data are \((\lambda_0,\lambda_1)=(3,1/2)\), \((a_0,a_1)=(-1,0)\), hence \(P=3/2\), \(B=-1/2\), and \(z_0=1\). Over \(\mathbb F_3\), the multiplier \(3\) vanishes: reduction is no longer an invertible local system. Over \(\mathbb F_2\), the denominator \(2\) cannot be inverted. Characteristic reduction must check all multipliers and denominators.
+
+\section{Finite quadratic state rings}
+
+For the test permutation \(z\mapsto\theta z+1\), with \(\theta=i\) or \(\omega\), the exact finite census is
+\begin{center}
+\begin{tabular}{lrrl}
+\toprule
+State ring & States & \(\dim H^1\) & Cycle lengths \\
+\midrule
+\(\Z[i]/(2)\) & 4 & 1 & 4 \\
+\(\Z[i]/(3)\cong\mathbb F_9\) & 9 & 3 & 1, 4, 4 \\
+\(\Z[\omega]/(2)\cong\mathbb F_4\) & 4 & 2 & 1, 3 \\
+\(\Z[\omega]/(3)\) & 9 & 3 & 3, 3, 3 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Incidence ranks are respectively \(3,6,2,6\) over each of the independent cochain fields \(\mathbb F_2,\mathbb F_3,\mathbb F_5\). These state rings are not the cochain fields.
+
+Over \(\mathbb F_2\), \(X^2+1=(X+1)^2\) has a nonzero nilpotent class, whereas \(X^2+X+1\) has no root and is irreducible. Over \(\mathbb F_3\), \(X^2+1\) has no root, whereas \(X^2+X+1=(X-1)^2\). This proves the two field and two ramified nonfield identifications. The units \(i\) and \(\omega\) have inverses \(-i\) and \(\omega^2\), so all four affine maps are permutations. Exact rank tests and independent cycle enumeration verify the census; it is not an infinite raw-dynamics result.
+
+\section{Status and source audit}
+
+The original finite closing obligation had \(n\) unknown vertex values; the replacement computes \(P,B\) and solves one scalar equation. Reconstruction costs \(n\) ordered transport steps. Orientation, edge order, coefficients, and closing endpoints are preserved. The calculation does not remove the enumeration or admissibility of lattice words, or prove universal capture.
+
+A weighted square matrix with nonzero determinant has zero kernel, not an automatic all-ones kernel. Already on a one-edge cycle with \(\lambda=2\) over \(\Q\), \(\delta_\lambda=[-1]\) has zero kernel and cokernel. Zero group homomorphisms always exist; only added mark-preserving or surjectivity requirements can exclude bonding maps. These counterexamples repair the unsupported historical no-go route. The exact source locations and reading scope are recorded in the companion source audit. No imported universal cohomological obstruction is asserted.
+
+The companion file \texttt{ComplexCohomology.\allowbreak lean} checks the ordinary quotient isomorphism and core transport claims; \texttt{ComplexGraph.\allowbreak lean} and \texttt{ComplexLocalSystem.\allowbreak lean} check the functional-graph dimensions and actual twisted quotients. Go exhausts all nonzero-multiplier local-system words of lengths one through three over \(\mathbb F_2,\mathbb F_3,\mathbb F_5\) against direct potential enumeration. Finite tests validate these implementations; the proofs establish the stated field calculations. Infinite lattice dynamics and any Julia-to-arithmetic correspondence remain separate obligations.
+
+\end{document}

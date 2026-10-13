@@ -14,6 +14,46 @@ $$
 The divisor retains its sign. Division has precedence, including at zero.
 The classical raw map is $F_{3,1,2}$.
 
+## Complex rings, cohomology, and visual atlas
+
+The [complex atlas](QCD.ComplexAtlas.001/README.md) studies **13 lattice families**
+over Gaussian and Eisenstein integers, four finite quadratic rings, and four
+explicit polynomial countermodels. It includes 19 GitHub-visible PNG panels,
+exact marked-cycle data, reproduction commands, and a
+[source audit](QCD.ComplexAtlas.001/ResearchAudit.md).
+
+| Result or model | Status and actual gain | What remains separate |
+|---|---|---|
+| [Off-axis raw $(3,c,2)$ escape](QCD.ComplexLattice.001/README.md), odd real integral $c$ | **Checked theorem:** every nonreal lattice seed escapes; at most $2v_2(y)$ ticks to an odd transverse coefficient | Integer-axis dynamics and other parameters |
+| [Gaussian split-prime escape](QCD.GaussianDynamics.001/README.md), $(q,c,d)=(2+i,0,2-i)$ | **Checked theorem:** every nonzero Gaussian seed escapes although multiplier and divisor have equal norm | Offsets and noncoprime ring parameters |
+| [Ordinary and twisted cohomology](QCD.ComplexCohomology.001/README.md) | **Checked:** ordinary cycle quotient, all finite functional-graph dimensions, actual twisted quotients, and the scalar closing equation $(1-P)u=B$ | Branch admissibility, integer reconstruction, and universal capture |
+| [Quadratic Galois fields](QCD.ComplexAtlas.001/README.md#actual-quadratic-galois-fields-with-ramified-negative-controls) | **Checked:** actual $\mathbb F_9,\mathbb F_4$ field structures, exhaustive two-element Galois groups, and same-clock affine conjugacy | Ramified nonfields and raw lattice guards remain distinct |
+| [Quadratic-order arithmetic](QCD.QuadraticArithmetic.001/README.md) | Exact lattice division and ideal quotients; bounded computational checks in five orders | Existing trajectory classifications have the formalization scope stated there |
+| [Residue-wise complex quotient maps](QCD.ComplexLattice.001/README.md#a-different-complex-family-really-does-have-nonreal-cycles) | **Checked construction:** nonreal fixed points and cycles, unlike the raw scalar map | Global classification of quotient-map basins |
+| [Polynomial Julia countermodels](QCD.ComplexAtlas.001/README.md#julia-portraits-same-lattice-cycle-different-complex-stability) | **Checked:** equal finite cycle values can have different multipliers; radius $8$ certifies exterior escape | No canonical Julia set or Julia-to-lattice transfer is asserted |
+
+![Exact Gaussian raw minus atlas](QCD.ComplexAtlas.001/other/GaussianMinus.png)
+
+In the raw $(3,-1,2)$ map, navy marks **proved nonreal escape**, not a
+fractal recurrent basin. A residue-wise quotient uses a different guard and
+branch formula, and does have nonreal cycles:
+
+![Gaussian residue-wise minus atlas](QCD.ComplexAtlas.001/other/GaussianJosephMinus.png)
+
+The continuous portraits below come from specified holomorphic polynomials,
+not from the discontinuous lattice rule. Their selected cycle values agree,
+but their stability differs. Finite-time floating-point pixels are not an
+exact Julia-membership certificate.
+
+![Repelling minus-cycle polynomial portrait](QCD.ComplexAtlas.001/other/MinusQuadratic.png)
+![Superattracting minus-cycle polynomial portrait](QCD.ComplexAtlas.001/other/MinusCritical.png)
+
+**Field warning:** in any field, every nonzero $d$ divides every $z$.
+Consequently the literal raw field extension is only $z\mapsto z/d$.
+The finite-field examples instead study specified affine maps and their
+functional-graph cohomology. The [verification ledger](QCD.ComplexAtlas.001/Verification.md)
+records exact checks and their limits.
+
 ## Foundations
 
 [Definitions and theorems](Foundations.Main.StartHere/README.md) ·
@@ -395,19 +435,20 @@ $1\mapsto4\mapsto1$. The bounded certificate checks 98311 cases.
 
 ### Accessible residues of a divisor slice
 
-[QCD.ResidueAccess.001](QCD.ResidueAccess.001/README.md) classifies the residue
-orbit of zero under the affine map $F(r)=qr+c\bmod D$ attached to the
-divisor slice of the raw map $T(n)=n/D$ for $D\mid n$ and $T(n)=qn+c$
+[QCD.ResidueAccess.001](QCD.ResidueAccess.001/README.md) uses $q\ge2$, $c\ge1$,
+and $D\ge2$ to classify the residue orbit of zero under the affine map
+$F(r)=qr+c\bmod D$ attached to the divisor slice of the raw map $T(n)=n/D$ for $D\mid n$ and $T(n)=qn+c$
 otherwise. With the repunit sums $G_j(q)=1+q+\cdots+q^{j-1}$, the orbit
 value satisfies $F^j(0)\equiv c\,G_j(q)\pmod D$, so the orbit returns to
 $0$ exactly when $D\mid c\,G_j(q)$. Dividing out the common factor
 $\gcd(c,D(q-1))$ turns that condition into a divisibility by the access
 modulus $M=D(q-1)/\gcd(c,D(q-1))$: the orbit returns at time $j$ exactly
-when $M\mid q^{j}-1$. Consequently the return time $m$ is the least
-positive exponent with $M\mid q^{m}-1$, the orbit is periodic with period
-$m$, it revisits $0$ exactly at the multiples of $m$, its first $m$
-values are pairwise distinct, and $m\le D$; every accessible residue is
-reached at a unique index below $m$. Modulo a prime $p$ with $p\nmid c$ and $\gcd(p,q)=1$
+when $M\mid q^{j}-1$. **If a positive return exists** (in particular when
+$\gcd(q,D)=1$), let $m$ be the least such exponent. Then the orbit is
+periodic with period $m$, revisits $0$ exactly at multiples of $m$, has
+pairwise distinct first $m$ values, and satisfies $m\le D$; every accessible
+residue is reached at a unique index below $m$. Without return, the walk can
+enter a cycle avoiding $0$: for $(q,c,D)=(2,1,2)$ it is $0\to1\to1$. Modulo a prime $p$ with $p\nmid c$ and $\gcd(p,q)=1$
 the classification closes: the return time is the multiplicative order of
 $q$ modulo $p$ when $q\not\equiv1\pmod p$, and it equals the full
 period $p$ when $q\equiv1\pmod p$, in which case the orbit exhausts the
@@ -464,10 +505,12 @@ comparisons on the documented grid.
 
 [QCD.AncestralJoin.001](QCD.AncestralJoin.001/README.md) starts from
 $z=2^{a}3^{b}u-1$ with $a\ge 1$, $b\ge 1$, and $u$ odd, under the
-congruence $z\equiv 2^{a}-1\pmod{2^{a+2}}$. Then $3$ divides $2z-1$,
-the $b$-fold inverse-odd image is $2^{a+b}u-1$, and one exact halving
-gives $2^{a+b-1}u-1$. The same hypotheses force
-$u\equiv(-1)^{b}\pmod 4$, so $2^{a+b}$ does not divide that half.
+congruence $z\equiv 2^{a}-1\pmod{2^{a+2}}$. With
+$I(y)=(2y-1)/3$ and the **shifted halving** $H(y)=(y+1)/2-1$,
+the $b$-fold inverse-odd image is $I^b(z)=2^{a+b}u-1$ and
+$H(I^b(z))=2^{a+b-1}u-1$. This is not raw division of the odd value by $2$.
+The hypotheses force $u\equiv(-1)^b\pmod4$; therefore $2^{a+b}$ does not
+divide $H(I^b(z))+1=2^{a+b-1}u$.
 
 ### Inverse-odd root and valuation
 
@@ -484,11 +527,11 @@ $k$ is strictly smaller than the valuation.
 
 ### Equal halves
 
-[QCD.EqualHalves.001](QCD.EqualHalves.001/README.md) splits a binary word
-into two blocks of lengths $h$ and $r$ when the odd-letter count of the
-second block is $r$ and $q$ is odd. The sum and difference of the two
-block numerators factor through $2^{h}+q^{r}$ and $2^{h}-q^{r}$, and
-those two moduli are coprime. The factors can separate: for $q=3$, $h=6$,
+[QCD.EqualHalves.001](QCD.EqualHalves.001/README.md) uses binary words $U,V$
+of **common length $h$ and common odd-letter count $r$**, with odd $q$ and
+$Q=2^h-q^r>0$. Put $M=2^h+q^r$. These moduli are coprime, and the
+concatenated numerator has denominator closure exactly when both
+$M\mid A(U)-A(V)$ and $Q\mid A(U)+A(V)$. The factors can separate: for $q=3$, $h=6$,
 and $r=2$ the sum modulus divides the numerator difference, while the
 difference modulus does not divide the numerator sum.
 

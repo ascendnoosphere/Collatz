@@ -1,0 +1,146 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library\\Exact Gaussian Division and Homogeneous Escape}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Ring domain and exact division}
+
+Work in \(R=\Z[i]\), with \(N(x+iy)=x^2+y^2\). For \(d\ne0\), define the division-precedence raw map
+\[
+T(z)=
+\begin{cases}
+z/d,&d\mid z\text{ in }R,\\
+qz+c,&d\nmid z\text{ in }R.
+\end{cases}
+\]
+The quotient is used only on the exact division branch. This is not divisibility in the field \(\C\).
+
+% The adjugate test retains both integral coordinates of the quotient.
+\begin{theorem}[Exact Gaussian division]
+For \(d=s+it\ne0\) and \(z=x+iy\),
+\[
+d\mid z\quad\Longleftrightarrow\quad
+(s^2+t^2)\mid sx+ty\ \text{ and }\ (s^2+t^2)\mid sy-tx.
+\]
+\end{theorem}
+\begin{proof}
+Multiplication by \(s+it\) has matrix
+\[
+\begin{pmatrix}s&-t\\t&s\end{pmatrix},
+\qquad \det=s^2+t^2>0.
+\]
+Inverting it gives
+\[
+\frac{z}{d}=\frac{sx+ty}{s^2+t^2}
++i\,\frac{sy-tx}{s^2+t^2}.
+\]
+If \(z=dw\) with \(w\in R\), the two displayed coefficients are integers. Conversely, the two divisibilities make those coefficients integers; multiplication of the resulting Gaussian integer by \(d\) gives \(z\). This proves necessity and sufficiency, and is checked by \texttt{DvdCoordinates}.
+\end{proof}
+
+\section{The well-founded division prefix}
+
+% A positive integral squared norm decreases at every unresolved prefix step.
+\begin{theorem}[Division prefix and integral budget]
+Suppose \(N(d)\ge2\) and \(z\ne0\). For arbitrary \(q,c\in R\), there are \(r\in\N\) and \(t\in R\) satisfying
+\[
+d\nmid t,\qquad T^r(z)=t,\qquad z=d^rt,\qquad 2^r\le N(z).
+\]
+Before raw time \(r\), every transition is division.
+\end{theorem}
+\begin{proof}
+Norm is multiplicative:
+\[
+N(uv)=N(u)N(v).
+\]
+This follows either by multiplying \(u\bar u\,v\bar v\), or by expanding both real and imaginary coordinates. If \(d\mid w\) with \(w\ne0\), exact division gives \(w=d(w/d)\). Its quotient cannot be zero. Consequently
+\[
+N(w)=N(d)N(w/d)\ge2N(w/d)>N(w/d)>0.
+\]
+Strong induction on the positive integer \(N(w)\) proves termination. At a nondivisible \(w\), use \(r=0,t=w\). At a divisible \(w\), invoke the induction hypothesis on \(w/d\), prepend its one division tick, and multiply its factorization by \(d\). This reconstructs both \(T^r(z)=t\) and \(z=d^rt\).
+
+The final \(t\) is nonzero, since \(d\mid0\). Therefore
+\[
+N(z)=N(d)^rN(t)\ge2^r.
+\]
+The Lean proofs are \texttt{DivisionPrefix} and \texttt{DivisionPrefixBudget}. This is an exact finite prefix budget, not a floating logarithmic estimate or a claim of polynomial running time in bit length.
+\end{proof}
+
+\section{A sufficient avoidance invariant}
+
+% One common Bezout witness rules out every future division in the same orbit.
+\begin{theorem}[Homogeneous escape]
+Assume \(c=0\), \(N(q),N(d)\ge2\), and supply \(a,b\in R\) with \(aq+bd=1\). Every nonzero raw seed escapes in full sequence. With the division prefix above,
+\[
+T^{r+j}(z)=q^jt,\qquad
+N(T^{r+j}(z))=N(q)^jN(t)\ge2^j.
+\]
+\end{theorem}
+\begin{proof}
+Suppose \(d\nmid u\). If \(d\mid qu\), then
+\[
+u=(aq+bd)u=a(qu)+b(du)
+\]
+would be divisible by \(d\), a contradiction. This single identity proves that multiplication by \(q\) preserves avoidance. Induction gives \(d\nmid q^jt\) for every \(j\). Hence every raw tail step is the homogeneous affine branch, proving the state formula by induction at the original clock. Multiplicativity gives the exact norm formula.
+
+For any \(B\in\N\), choose \(K=r+B+1\). If \(k\ge K\), write \(k=r+j\) with \(j\ge B+1\). The elementary induction \(j<2^j\) gives
+\[
+B<j<2^j\le N(T^k(z)).
+\]
+Thus every sufficiently late state, not just a subsequence, exceeds the bound. This is \texttt{CoprimeHomogeneousEscape}. The required identity is not replaced by an assertion about common element divisors in an arbitrary quadratic order.
+\end{proof}
+
+\section{Equal norms do not imply a common base}
+
+% Conjugate split primes separate by an explicit residue homomorphism.
+\begin{corollary}[Conjugate split primes]
+Let \(q=2+i\), \(d=2-i\), and \(c=0\). Then \(N(q)=N(d)=5\), but every nonzero raw seed escapes, and \(q^a\ne d^b\) for all positive integers \(a,b\).
+\end{corollary}
+\begin{proof}
+Direct multiplication gives
+\[
+-q+(1+i)d=1.
+\]
+The preceding theorem applies. Zero is separately fixed by division precedence.
+
+The map \(R\to\mathbb F_5\) sending \(i\mapsto2\) is a ring homomorphism because \(2^2+1=0\) modulo \(5\). It sends \(q\mapsto4\), a unit, and \(d\mapsto0\). Any positive power of \(d\) maps to zero, whereas every power of \(q\) maps to a unit. Their equality is impossible. Lean checks these facts as \texttt{EqualNormSplitEscape}, \texttt{SplitResidue}, and \texttt{EqualNormNoCommonPower}.
+\end{proof}
+
+\section{Reduction contract and scope}
+
+The original obligation is the full tail of each nonzero homogeneous Gaussian orbit under the specified norm and common-witness hypotheses. The replacement removes a finite division prefix, proves one guard-avoidance invariant, and computes a geometric-power tail. Positive integral height is a well-founded decreasing resource on every unresolved prefix child; the budget \(2^r\le N(z)\) bounds its length. Recovery retains the same Gaussian seed, exact ring guard, and every original raw tick.
+
+No additive-offset classification, noncoprime case, unit-divisor case, or universal integer Collatz convergence follows. Equal norms do not identify ideals or elements. A lattice census is an illustration, not the finite-to-infinite proof. The companion complex atlas separately records the source conventions, cohomology calculations, and the missing Julia-to-arithmetic bridge.
+
+\end{document}

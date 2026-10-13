@@ -1,0 +1,2239 @@
+{
+  "Lattices": [
+    {
+      "Family": {
+        "Name": "GaussianPlus",
+        "Ring": {
+          "Name": "Gaussian",
+          "Tau": 0,
+          "Nu": 1
+        },
+        "Q": {
+          "Re": 3,
+          "Im": 0
+        },
+        "C": {
+          "Re": 1,
+          "Im": 0
+        },
+        "D": {
+          "Re": 2,
+          "Im": 0
+        },
+        "Convention": "raw"
+      },
+      "Radius": 48,
+      "Ticks": 256,
+      "Counts": {
+        "exact cycle": 97,
+        "proved off-axis escape": 9312
+      },
+      "Cycles": [
+        {
+          "Representative": {
+            "Re": -272,
+            "Im": 0
+          },
+          "Period": 18,
+          "Seeds": 12
+        },
+        {
+          "Representative": {
+            "Re": -20,
+            "Im": 0
+          },
+          "Period": 5,
+          "Seeds": 17
+        },
+        {
+          "Representative": {
+            "Re": -2,
+            "Im": 0
+          },
+          "Period": 2,
+          "Seeds": 19
+        },
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": 0
+          },
+          "Period": 1,
+          "Seeds": 1
+        },
+        {
+          "Representative": {
+            "Re": 1,
+            "Im": 0
+          },
+          "Period": 3,
+          "Seeds": 48
+        }
+      ]
+    },
+    {
+      "Family": {
+        "Name": "GaussianMinus",
+        "Ring": {
+          "Name": "Gaussian",
+          "Tau": 0,
+          "Nu": 1
+        },
+        "Q": {
+          "Re": 3,
+          "Im": 0
+        },
+        "C": {
+          "Re": -1,
+          "Im": 0
+        },
+        "D": {
+          "Re": 2,
+          "Im": 0
+        },
+        "Convention": "raw"
+      },
+      "Radius": 48,
+      "Ticks": 256,
+      "Counts": {
+        "exact cycle": 97,
+        "proved off-axis escape": 9312
+      },
+      "Cycles": [
+        {
+          "Representative": {
+            "Re": -4,
+            "Im": 0
+          },
+          "Period": 3,
+          "Seeds": 48
+        },
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": 0
+          },
+          "Period": 1,
+          "Seeds": 1
+        },
+        {
+          "Representative": {
+            "Re": 1,
+            "Im": 0
+          },
+          "Period": 2,
+          "Seeds": 19
+        },
+        {
+          "Representative": {
+            "Re": 5,
+            "Im": 0
+          },
+          "Period": 5,
+          "Seeds": 17
+        },
+        {
+          "Representative": {
+            "Re": 17,
+            "Im": 0
+          },
+          "Period": 18,
+          "Seeds": 12
+        }
+      ]
+    },
+    {
+      "Family": {
+        "Name": "EisensteinPlus",
+        "Ring": {
+          "Name": "Eisenstein",
+          "Tau": -1,
+          "Nu": 1
+        },
+        "Q": {
+          "Re": 3,
+          "Im": 0
+        },
+        "C": {
+          "Re": 1,
+          "Im": 0
+        },
+        "D": {
+          "Re": 2,
+          "Im": 0
+        },
+        "Convention": "raw"
+      },
+      "Radius": 48,
+      "Ticks": 256,
+      "Counts": {
+        "exact cycle": 97,
+        "proved off-axis escape": 9312
+      },
+      "Cycles": [
+        {
+          "Representative": {
+            "Re": -272,
+            "Im": 0
+          },
+          "Period": 18,
+          "Seeds": 12
+        },
+        {
+          "Representative": {
+            "Re": -20,
+            "Im": 0
+          },
+          "Period": 5,
+          "Seeds": 17
+        },
+        {
+          "Representative": {
+            "Re": -2,
+            "Im": 0
+          },
+          "Period": 2,
+          "Seeds": 19
+        },
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": 0
+          },
+          "Period": 1,
+          "Seeds": 1
+        },
+        {
+          "Representative": {
+            "Re": 1,
+            "Im": 0
+          },
+          "Period": 3,
+          "Seeds": 48
+        }
+      ]
+    },
+    {
+      "Family": {
+        "Name": "EisensteinMinus",
+        "Ring": {
+          "Name": "Eisenstein",
+          "Tau": -1,
+          "Nu": 1
+        },
+        "Q": {
+          "Re": 3,
+          "Im": 0
+        },
+        "C": {
+          "Re": -1,
+          "Im": 0
+        },
+        "D": {
+          "Re": 2,
+          "Im": 0
+        },
+        "Convention": "raw"
+      },
+      "Radius": 48,
+      "Ticks": 256,
+      "Counts": {
+        "exact cycle": 97,
+        "proved off-axis escape": 9312
+      },
+      "Cycles": [
+        {
+          "Representative": {
+            "Re": -4,
+            "Im": 0
+          },
+          "Period": 3,
+          "Seeds": 48
+        },
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": 0
+          },
+          "Period": 1,
+          "Seeds": 1
+        },
+        {
+          "Representative": {
+            "Re": 1,
+            "Im": 0
+          },
+          "Period": 2,
+          "Seeds": 19
+        },
+        {
+          "Representative": {
+            "Re": 5,
+            "Im": 0
+          },
+          "Period": 5,
+          "Seeds": 17
+        },
+        {
+          "Representative": {
+            "Re": 17,
+            "Im": 0
+          },
+          "Period": 18,
+          "Seeds": 12
+        }
+      ]
+    },
+    {
+      "Family": {
+        "Name": "GaussianRamified",
+        "Ring": {
+          "Name": "Gaussian",
+          "Tau": 0,
+          "Nu": 1
+        },
+        "Q": {
+          "Re": 2,
+          "Im": 0
+        },
+        "C": {
+          "Re": 1,
+          "Im": 0
+        },
+        "D": {
+          "Re": 1,
+          "Im": 1
+        },
+        "Convention": "raw"
+      },
+      "Radius": 48,
+      "Ticks": 256,
+      "Counts": {
+        "coordinate exit": 9396,
+        "exact cycle": 13
+      },
+      "Cycles": [
+        {
+          "Representative": {
+            "Re": -1,
+            "Im": 0
+          },
+          "Period": 1,
+          "Seeds": 12
+        },
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": 0
+          },
+          "Period": 1,
+          "Seeds": 1
+        }
+      ]
+    },
+    {
+      "Family": {
+        "Name": "GaussianRotated",
+        "Ring": {
+          "Name": "Gaussian",
+          "Tau": 0,
+          "Nu": 1
+        },
+        "Q": {
+          "Re": 0,
+          "Im": 2
+        },
+        "C": {
+          "Re": 1,
+          "Im": 1
+        },
+        "D": {
+          "Re": 2,
+          "Im": 0
+        },
+        "Convention": "raw"
+      },
+      "Radius": 48,
+      "Ticks": 256,
+      "Counts": {
+        "coordinate exit": 9408,
+        "exact cycle": 1
+      },
+      "Cycles": [
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": 0
+          },
+          "Period": 1,
+          "Seeds": 1
+        }
+      ]
+    },
+    {
+      "Family": {
+        "Name": "EisensteinRotated",
+        "Ring": {
+          "Name": "Eisenstein",
+          "Tau": -1,
+          "Nu": 1
+        },
+        "Q": {
+          "Re": 0,
+          "Im": 2
+        },
+        "C": {
+          "Re": 1,
+          "Im": 0
+        },
+        "D": {
+          "Re": 2,
+          "Im": 0
+        },
+        "Convention": "raw"
+      },
+      "Radius": 48,
+      "Ticks": 256,
+      "Counts": {
+        "coordinate exit": 9408,
+        "exact cycle": 1
+      },
+      "Cycles": [
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": 0
+          },
+          "Period": 1,
+          "Seeds": 1
+        }
+      ]
+    },
+    {
+      "Family": {
+        "Name": "EisensteinRamified",
+        "Ring": {
+          "Name": "Eisenstein",
+          "Tau": -1,
+          "Nu": 1
+        },
+        "Q": {
+          "Re": 1,
+          "Im": -1
+        },
+        "C": {
+          "Re": 1,
+          "Im": 0
+        },
+        "D": {
+          "Re": 1,
+          "Im": -1
+        },
+        "Convention": "raw"
+      },
+      "Radius": 48,
+      "Ticks": 256,
+      "Counts": {
+        "coordinate exit": 9401,
+        "exact cycle": 8
+      },
+      "Cycles": [
+        {
+          "Representative": {
+            "Re": -1,
+            "Im": -1
+          },
+          "Period": 1,
+          "Seeds": 7
+        },
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": 0
+          },
+          "Period": 1,
+          "Seeds": 1
+        }
+      ]
+    },
+    {
+      "Family": {
+        "Name": "GaussianSplit",
+        "Ring": {
+          "Name": "Gaussian",
+          "Tau": 0,
+          "Nu": 1
+        },
+        "Q": {
+          "Re": 2,
+          "Im": 1
+        },
+        "C": {
+          "Re": 0,
+          "Im": 0
+        },
+        "D": {
+          "Re": 2,
+          "Im": -1
+        },
+        "Convention": "raw"
+      },
+      "Radius": 48,
+      "Ticks": 256,
+      "Counts": {
+        "coordinate exit": 9408,
+        "exact cycle": 1
+      },
+      "Cycles": [
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": 0
+          },
+          "Period": 1,
+          "Seeds": 1
+        }
+      ]
+    },
+    {
+      "Family": {
+        "Name": "GaussianJosephPlus",
+        "Ring": {
+          "Name": "Gaussian",
+          "Tau": 0,
+          "Nu": 1
+        },
+        "Q": {
+          "Re": 3,
+          "Im": 0
+        },
+        "C": {
+          "Re": 1,
+          "Im": 0
+        },
+        "D": {
+          "Re": 2,
+          "Im": 0
+        },
+        "Convention": "residue"
+      },
+      "Radius": 48,
+      "Ticks": 256,
+      "Counts": {
+        "coordinate exit": 8510,
+        "exact cycle": 745,
+        "unresolved prefix": 154
+      },
+      "Cycles": [
+        {
+          "Representative": {
+            "Re": -2256,
+            "Im": -2080
+          },
+          "Period": 19,
+          "Seeds": 1
+        },
+        {
+          "Representative": {
+            "Re": -2080,
+            "Im": -2256
+          },
+          "Period": 19,
+          "Seeds": 1
+        },
+        {
+          "Representative": {
+            "Re": -2080,
+            "Im": -684
+          },
+          "Period": 19,
+          "Seeds": 2
+        },
+        {
+          "Representative": {
+            "Re": -892,
+            "Im": -640
+          },
+          "Period": 19,
+          "Seeds": 15
+        },
+        {
+          "Representative": {
+            "Re": -684,
+            "Im": -2080
+          },
+          "Period": 19,
+          "Seeds": 2
+        },
+        {
+          "Representative": {
+            "Re": -652,
+            "Im": -456
+          },
+          "Period": 19,
+          "Seeds": 2
+        },
+        {
+          "Representative": {
+            "Re": -640,
+            "Im": -892
+          },
+          "Period": 19,
+          "Seeds": 15
+        },
+        {
+          "Representative": {
+            "Re": -616,
+            "Im": -492
+          },
+          "Period": 19,
+          "Seeds": 15
+        },
+        {
+          "Representative": {
+            "Re": -492,
+            "Im": -616
+          },
+          "Period": 19,
+          "Seeds": 15
+        },
+        {
+          "Representative": {
+            "Re": -456,
+            "Im": -652
+          },
+          "Period": 19,
+          "Seeds": 2
+        },
+        {
+          "Representative": {
+            "Re": -136,
+            "Im": -136
+          },
+          "Period": 11,
+          "Seeds": 12
+        },
+        {
+          "Representative": {
+            "Re": -136,
+            "Im": 0
+          },
+          "Period": 11,
+          "Seeds": 12
+        },
+        {
+          "Representative": {
+            "Re": -76,
+            "Im": -60
+          },
+          "Period": 11,
+          "Seeds": 51
+        },
+        {
+          "Representative": {
+            "Re": -60,
+            "Im": -76
+          },
+          "Period": 11,
+          "Seeds": 51
+        },
+        {
+          "Representative": {
+            "Re": -10,
+            "Im": -10
+          },
+          "Period": 3,
+          "Seeds": 17
+        },
+        {
+          "Representative": {
+            "Re": -10,
+            "Im": -6
+          },
+          "Period": 3,
+          "Seeds": 17
+        },
+        {
+          "Representative": {
+            "Re": -10,
+            "Im": -4
+          },
+          "Period": 3,
+          "Seeds": 11
+        },
+        {
+          "Representative": {
+            "Re": -10,
+            "Im": 0
+          },
+          "Period": 3,
+          "Seeds": 17
+        },
+        {
+          "Representative": {
+            "Re": -6,
+            "Im": -10
+          },
+          "Period": 3,
+          "Seeds": 17
+        },
+        {
+          "Representative": {
+            "Re": -6,
+            "Im": -4
+          },
+          "Period": 3,
+          "Seeds": 23
+        },
+        {
+          "Representative": {
+            "Re": -4,
+            "Im": -10
+          },
+          "Period": 3,
+          "Seeds": 11
+        },
+        {
+          "Representative": {
+            "Re": -4,
+            "Im": -6
+          },
+          "Period": 3,
+          "Seeds": 23
+        },
+        {
+          "Representative": {
+            "Re": -1,
+            "Im": -1
+          },
+          "Period": 1,
+          "Seeds": 19
+        },
+        {
+          "Representative": {
+            "Re": -1,
+            "Im": 0
+          },
+          "Period": 1,
+          "Seeds": 19
+        },
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": -136
+          },
+          "Period": 11,
+          "Seeds": 12
+        },
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": -10
+          },
+          "Period": 3,
+          "Seeds": 17
+        },
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": -1
+          },
+          "Period": 1,
+          "Seeds": 19
+        },
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": 0
+          },
+          "Period": 1,
+          "Seeds": 1
+        },
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": 1
+          },
+          "Period": 2,
+          "Seeds": 48
+        },
+        {
+          "Representative": {
+            "Re": 1,
+            "Im": 0
+          },
+          "Period": 2,
+          "Seeds": 48
+        },
+        {
+          "Representative": {
+            "Re": 1,
+            "Im": 1
+          },
+          "Period": 2,
+          "Seeds": 48
+        },
+        {
+          "Representative": {
+            "Re": 2,
+            "Im": 3
+          },
+          "Period": 5,
+          "Seeds": 36
+        },
+        {
+          "Representative": {
+            "Re": 3,
+            "Im": 2
+          },
+          "Period": 5,
+          "Seeds": 36
+        },
+        {
+          "Representative": {
+            "Re": 4,
+            "Im": 15
+          },
+          "Period": 8,
+          "Seeds": 12
+        },
+        {
+          "Representative": {
+            "Re": 9,
+            "Im": 10
+          },
+          "Period": 8,
+          "Seeds": 13
+        },
+        {
+          "Representative": {
+            "Re": 9,
+            "Im": 19
+          },
+          "Period": 8,
+          "Seeds": 6
+        },
+        {
+          "Representative": {
+            "Re": 10,
+            "Im": 9
+          },
+          "Period": 8,
+          "Seeds": 13
+        },
+        {
+          "Representative": {
+            "Re": 10,
+            "Im": 15
+          },
+          "Period": 8,
+          "Seeds": 10
+        },
+        {
+          "Representative": {
+            "Re": 13,
+            "Im": 15
+          },
+          "Period": 8,
+          "Seeds": 13
+        },
+        {
+          "Representative": {
+            "Re": 15,
+            "Im": 4
+          },
+          "Period": 8,
+          "Seeds": 12
+        },
+        {
+          "Representative": {
+            "Re": 15,
+            "Im": 10
+          },
+          "Period": 8,
+          "Seeds": 10
+        },
+        {
+          "Representative": {
+            "Re": 15,
+            "Im": 13
+          },
+          "Period": 8,
+          "Seeds": 13
+        },
+        {
+          "Representative": {
+            "Re": 19,
+            "Im": 9
+          },
+          "Period": 8,
+          "Seeds": 6
+        },
+        {
+          "Representative": {
+            "Re": 42,
+            "Im": 59
+          },
+          "Period": 46,
+          "Seeds": 1
+        },
+        {
+          "Representative": {
+            "Re": 59,
+            "Im": 42
+          },
+          "Period": 46,
+          "Seeds": 1
+        }
+      ]
+    },
+    {
+      "Family": {
+        "Name": "GaussianJosephMinus",
+        "Ring": {
+          "Name": "Gaussian",
+          "Tau": 0,
+          "Nu": 1
+        },
+        "Q": {
+          "Re": 3,
+          "Im": 0
+        },
+        "C": {
+          "Re": -1,
+          "Im": 0
+        },
+        "D": {
+          "Re": 2,
+          "Im": 0
+        },
+        "Convention": "residue"
+      },
+      "Radius": 48,
+      "Ticks": 256,
+      "Counts": {
+        "coordinate exit": 8510,
+        "exact cycle": 745,
+        "unresolved prefix": 154
+      },
+      "Cycles": [
+        {
+          "Representative": {
+            "Re": -6560,
+            "Im": -4676
+          },
+          "Period": 46,
+          "Seeds": 1
+        },
+        {
+          "Representative": {
+            "Re": -4676,
+            "Im": -6560
+          },
+          "Period": 46,
+          "Seeds": 1
+        },
+        {
+          "Representative": {
+            "Re": -120,
+            "Im": -80
+          },
+          "Period": 8,
+          "Seeds": 10
+        },
+        {
+          "Representative": {
+            "Re": -120,
+            "Im": -32
+          },
+          "Period": 8,
+          "Seeds": 12
+        },
+        {
+          "Representative": {
+            "Re": -80,
+            "Im": -120
+          },
+          "Period": 8,
+          "Seeds": 10
+        },
+        {
+          "Representative": {
+            "Re": -80,
+            "Im": -72
+          },
+          "Period": 8,
+          "Seeds": 13
+        },
+        {
+          "Representative": {
+            "Re": -80,
+            "Im": -68
+          },
+          "Period": 8,
+          "Seeds": 13
+        },
+        {
+          "Representative": {
+            "Re": -72,
+            "Im": -80
+          },
+          "Period": 8,
+          "Seeds": 13
+        },
+        {
+          "Representative": {
+            "Re": -68,
+            "Im": -80
+          },
+          "Period": 8,
+          "Seeds": 13
+        },
+        {
+          "Representative": {
+            "Re": -66,
+            "Im": -32
+          },
+          "Period": 8,
+          "Seeds": 6
+        },
+        {
+          "Representative": {
+            "Re": -32,
+            "Im": -120
+          },
+          "Period": 8,
+          "Seeds": 12
+        },
+        {
+          "Representative": {
+            "Re": -32,
+            "Im": -66
+          },
+          "Period": 8,
+          "Seeds": 6
+        },
+        {
+          "Representative": {
+            "Re": -12,
+            "Im": -8
+          },
+          "Period": 5,
+          "Seeds": 36
+        },
+        {
+          "Representative": {
+            "Re": -8,
+            "Im": -12
+          },
+          "Period": 5,
+          "Seeds": 36
+        },
+        {
+          "Representative": {
+            "Re": -2,
+            "Im": -2
+          },
+          "Period": 2,
+          "Seeds": 48
+        },
+        {
+          "Representative": {
+            "Re": -2,
+            "Im": 0
+          },
+          "Period": 2,
+          "Seeds": 48
+        },
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": -2
+          },
+          "Period": 2,
+          "Seeds": 48
+        },
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": 0
+          },
+          "Period": 1,
+          "Seeds": 1
+        },
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": 1
+          },
+          "Period": 1,
+          "Seeds": 19
+        },
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": 5
+          },
+          "Period": 3,
+          "Seeds": 17
+        },
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": 17
+          },
+          "Period": 11,
+          "Seeds": 12
+        },
+        {
+          "Representative": {
+            "Re": 1,
+            "Im": 0
+          },
+          "Period": 1,
+          "Seeds": 19
+        },
+        {
+          "Representative": {
+            "Re": 1,
+            "Im": 1
+          },
+          "Period": 1,
+          "Seeds": 19
+        },
+        {
+          "Representative": {
+            "Re": 2,
+            "Im": 3
+          },
+          "Period": 3,
+          "Seeds": 23
+        },
+        {
+          "Representative": {
+            "Re": 2,
+            "Im": 5
+          },
+          "Period": 3,
+          "Seeds": 11
+        },
+        {
+          "Representative": {
+            "Re": 3,
+            "Im": 2
+          },
+          "Period": 3,
+          "Seeds": 23
+        },
+        {
+          "Representative": {
+            "Re": 3,
+            "Im": 5
+          },
+          "Period": 3,
+          "Seeds": 17
+        },
+        {
+          "Representative": {
+            "Re": 5,
+            "Im": 0
+          },
+          "Period": 3,
+          "Seeds": 17
+        },
+        {
+          "Representative": {
+            "Re": 5,
+            "Im": 2
+          },
+          "Period": 3,
+          "Seeds": 11
+        },
+        {
+          "Representative": {
+            "Re": 5,
+            "Im": 3
+          },
+          "Period": 3,
+          "Seeds": 17
+        },
+        {
+          "Representative": {
+            "Re": 5,
+            "Im": 5
+          },
+          "Period": 3,
+          "Seeds": 17
+        },
+        {
+          "Representative": {
+            "Re": 11,
+            "Im": 14
+          },
+          "Period": 11,
+          "Seeds": 51
+        },
+        {
+          "Representative": {
+            "Re": 14,
+            "Im": 11
+          },
+          "Period": 11,
+          "Seeds": 51
+        },
+        {
+          "Representative": {
+            "Re": 17,
+            "Im": 0
+          },
+          "Period": 11,
+          "Seeds": 12
+        },
+        {
+          "Representative": {
+            "Re": 17,
+            "Im": 17
+          },
+          "Period": 11,
+          "Seeds": 12
+        },
+        {
+          "Representative": {
+            "Re": 24,
+            "Im": 73
+          },
+          "Period": 19,
+          "Seeds": 2
+        },
+        {
+          "Representative": {
+            "Re": 73,
+            "Im": 24
+          },
+          "Period": 19,
+          "Seeds": 2
+        },
+        {
+          "Representative": {
+            "Re": 73,
+            "Im": 79
+          },
+          "Period": 19,
+          "Seeds": 1
+        },
+        {
+          "Representative": {
+            "Re": 79,
+            "Im": 73
+          },
+          "Period": 19,
+          "Seeds": 1
+        },
+        {
+          "Representative": {
+            "Re": 81,
+            "Im": 115
+          },
+          "Period": 19,
+          "Seeds": 2
+        },
+        {
+          "Representative": {
+            "Re": 87,
+            "Im": 109
+          },
+          "Period": 19,
+          "Seeds": 15
+        },
+        {
+          "Representative": {
+            "Re": 90,
+            "Im": 125
+          },
+          "Period": 19,
+          "Seeds": 15
+        },
+        {
+          "Representative": {
+            "Re": 109,
+            "Im": 87
+          },
+          "Period": 19,
+          "Seeds": 15
+        },
+        {
+          "Representative": {
+            "Re": 115,
+            "Im": 81
+          },
+          "Period": 19,
+          "Seeds": 2
+        },
+        {
+          "Representative": {
+            "Re": 125,
+            "Im": 90
+          },
+          "Period": 19,
+          "Seeds": 15
+        }
+      ]
+    },
+    {
+      "Family": {
+        "Name": "EisensteinResiduePlus",
+        "Ring": {
+          "Name": "Eisenstein",
+          "Tau": -1,
+          "Nu": 1
+        },
+        "Q": {
+          "Re": 3,
+          "Im": 0
+        },
+        "C": {
+          "Re": 1,
+          "Im": 0
+        },
+        "D": {
+          "Re": 2,
+          "Im": 0
+        },
+        "Convention": "residue"
+      },
+      "Radius": 48,
+      "Ticks": 256,
+      "Counts": {
+        "coordinate exit": 8510,
+        "exact cycle": 745,
+        "unresolved prefix": 154
+      },
+      "Cycles": [
+        {
+          "Representative": {
+            "Re": -2256,
+            "Im": -2080
+          },
+          "Period": 19,
+          "Seeds": 1
+        },
+        {
+          "Representative": {
+            "Re": -2080,
+            "Im": -2256
+          },
+          "Period": 19,
+          "Seeds": 1
+        },
+        {
+          "Representative": {
+            "Re": -2080,
+            "Im": -684
+          },
+          "Period": 19,
+          "Seeds": 2
+        },
+        {
+          "Representative": {
+            "Re": -892,
+            "Im": -640
+          },
+          "Period": 19,
+          "Seeds": 15
+        },
+        {
+          "Representative": {
+            "Re": -684,
+            "Im": -2080
+          },
+          "Period": 19,
+          "Seeds": 2
+        },
+        {
+          "Representative": {
+            "Re": -652,
+            "Im": -456
+          },
+          "Period": 19,
+          "Seeds": 2
+        },
+        {
+          "Representative": {
+            "Re": -640,
+            "Im": -892
+          },
+          "Period": 19,
+          "Seeds": 15
+        },
+        {
+          "Representative": {
+            "Re": -616,
+            "Im": -492
+          },
+          "Period": 19,
+          "Seeds": 15
+        },
+        {
+          "Representative": {
+            "Re": -492,
+            "Im": -616
+          },
+          "Period": 19,
+          "Seeds": 15
+        },
+        {
+          "Representative": {
+            "Re": -456,
+            "Im": -652
+          },
+          "Period": 19,
+          "Seeds": 2
+        },
+        {
+          "Representative": {
+            "Re": -136,
+            "Im": -136
+          },
+          "Period": 11,
+          "Seeds": 12
+        },
+        {
+          "Representative": {
+            "Re": -136,
+            "Im": 0
+          },
+          "Period": 11,
+          "Seeds": 12
+        },
+        {
+          "Representative": {
+            "Re": -76,
+            "Im": -60
+          },
+          "Period": 11,
+          "Seeds": 51
+        },
+        {
+          "Representative": {
+            "Re": -60,
+            "Im": -76
+          },
+          "Period": 11,
+          "Seeds": 51
+        },
+        {
+          "Representative": {
+            "Re": -10,
+            "Im": -10
+          },
+          "Period": 3,
+          "Seeds": 17
+        },
+        {
+          "Representative": {
+            "Re": -10,
+            "Im": -6
+          },
+          "Period": 3,
+          "Seeds": 17
+        },
+        {
+          "Representative": {
+            "Re": -10,
+            "Im": -4
+          },
+          "Period": 3,
+          "Seeds": 11
+        },
+        {
+          "Representative": {
+            "Re": -10,
+            "Im": 0
+          },
+          "Period": 3,
+          "Seeds": 17
+        },
+        {
+          "Representative": {
+            "Re": -6,
+            "Im": -10
+          },
+          "Period": 3,
+          "Seeds": 17
+        },
+        {
+          "Representative": {
+            "Re": -6,
+            "Im": -4
+          },
+          "Period": 3,
+          "Seeds": 23
+        },
+        {
+          "Representative": {
+            "Re": -4,
+            "Im": -10
+          },
+          "Period": 3,
+          "Seeds": 11
+        },
+        {
+          "Representative": {
+            "Re": -4,
+            "Im": -6
+          },
+          "Period": 3,
+          "Seeds": 23
+        },
+        {
+          "Representative": {
+            "Re": -1,
+            "Im": -1
+          },
+          "Period": 1,
+          "Seeds": 19
+        },
+        {
+          "Representative": {
+            "Re": -1,
+            "Im": 0
+          },
+          "Period": 1,
+          "Seeds": 19
+        },
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": -136
+          },
+          "Period": 11,
+          "Seeds": 12
+        },
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": -10
+          },
+          "Period": 3,
+          "Seeds": 17
+        },
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": -1
+          },
+          "Period": 1,
+          "Seeds": 19
+        },
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": 0
+          },
+          "Period": 1,
+          "Seeds": 1
+        },
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": 1
+          },
+          "Period": 2,
+          "Seeds": 48
+        },
+        {
+          "Representative": {
+            "Re": 1,
+            "Im": 0
+          },
+          "Period": 2,
+          "Seeds": 48
+        },
+        {
+          "Representative": {
+            "Re": 1,
+            "Im": 1
+          },
+          "Period": 2,
+          "Seeds": 48
+        },
+        {
+          "Representative": {
+            "Re": 2,
+            "Im": 3
+          },
+          "Period": 5,
+          "Seeds": 36
+        },
+        {
+          "Representative": {
+            "Re": 3,
+            "Im": 2
+          },
+          "Period": 5,
+          "Seeds": 36
+        },
+        {
+          "Representative": {
+            "Re": 4,
+            "Im": 15
+          },
+          "Period": 8,
+          "Seeds": 12
+        },
+        {
+          "Representative": {
+            "Re": 9,
+            "Im": 10
+          },
+          "Period": 8,
+          "Seeds": 13
+        },
+        {
+          "Representative": {
+            "Re": 9,
+            "Im": 19
+          },
+          "Period": 8,
+          "Seeds": 6
+        },
+        {
+          "Representative": {
+            "Re": 10,
+            "Im": 9
+          },
+          "Period": 8,
+          "Seeds": 13
+        },
+        {
+          "Representative": {
+            "Re": 10,
+            "Im": 15
+          },
+          "Period": 8,
+          "Seeds": 10
+        },
+        {
+          "Representative": {
+            "Re": 13,
+            "Im": 15
+          },
+          "Period": 8,
+          "Seeds": 13
+        },
+        {
+          "Representative": {
+            "Re": 15,
+            "Im": 4
+          },
+          "Period": 8,
+          "Seeds": 12
+        },
+        {
+          "Representative": {
+            "Re": 15,
+            "Im": 10
+          },
+          "Period": 8,
+          "Seeds": 10
+        },
+        {
+          "Representative": {
+            "Re": 15,
+            "Im": 13
+          },
+          "Period": 8,
+          "Seeds": 13
+        },
+        {
+          "Representative": {
+            "Re": 19,
+            "Im": 9
+          },
+          "Period": 8,
+          "Seeds": 6
+        },
+        {
+          "Representative": {
+            "Re": 42,
+            "Im": 59
+          },
+          "Period": 46,
+          "Seeds": 1
+        },
+        {
+          "Representative": {
+            "Re": 59,
+            "Im": 42
+          },
+          "Period": 46,
+          "Seeds": 1
+        }
+      ]
+    },
+    {
+      "Family": {
+        "Name": "EisensteinResidueMinus",
+        "Ring": {
+          "Name": "Eisenstein",
+          "Tau": -1,
+          "Nu": 1
+        },
+        "Q": {
+          "Re": 3,
+          "Im": 0
+        },
+        "C": {
+          "Re": -1,
+          "Im": 0
+        },
+        "D": {
+          "Re": 2,
+          "Im": 0
+        },
+        "Convention": "residue"
+      },
+      "Radius": 48,
+      "Ticks": 256,
+      "Counts": {
+        "coordinate exit": 8510,
+        "exact cycle": 745,
+        "unresolved prefix": 154
+      },
+      "Cycles": [
+        {
+          "Representative": {
+            "Re": -6560,
+            "Im": -4676
+          },
+          "Period": 46,
+          "Seeds": 1
+        },
+        {
+          "Representative": {
+            "Re": -4676,
+            "Im": -6560
+          },
+          "Period": 46,
+          "Seeds": 1
+        },
+        {
+          "Representative": {
+            "Re": -120,
+            "Im": -80
+          },
+          "Period": 8,
+          "Seeds": 10
+        },
+        {
+          "Representative": {
+            "Re": -120,
+            "Im": -32
+          },
+          "Period": 8,
+          "Seeds": 12
+        },
+        {
+          "Representative": {
+            "Re": -80,
+            "Im": -120
+          },
+          "Period": 8,
+          "Seeds": 10
+        },
+        {
+          "Representative": {
+            "Re": -80,
+            "Im": -72
+          },
+          "Period": 8,
+          "Seeds": 13
+        },
+        {
+          "Representative": {
+            "Re": -80,
+            "Im": -68
+          },
+          "Period": 8,
+          "Seeds": 13
+        },
+        {
+          "Representative": {
+            "Re": -72,
+            "Im": -80
+          },
+          "Period": 8,
+          "Seeds": 13
+        },
+        {
+          "Representative": {
+            "Re": -68,
+            "Im": -80
+          },
+          "Period": 8,
+          "Seeds": 13
+        },
+        {
+          "Representative": {
+            "Re": -66,
+            "Im": -32
+          },
+          "Period": 8,
+          "Seeds": 6
+        },
+        {
+          "Representative": {
+            "Re": -32,
+            "Im": -120
+          },
+          "Period": 8,
+          "Seeds": 12
+        },
+        {
+          "Representative": {
+            "Re": -32,
+            "Im": -66
+          },
+          "Period": 8,
+          "Seeds": 6
+        },
+        {
+          "Representative": {
+            "Re": -12,
+            "Im": -8
+          },
+          "Period": 5,
+          "Seeds": 36
+        },
+        {
+          "Representative": {
+            "Re": -8,
+            "Im": -12
+          },
+          "Period": 5,
+          "Seeds": 36
+        },
+        {
+          "Representative": {
+            "Re": -2,
+            "Im": -2
+          },
+          "Period": 2,
+          "Seeds": 48
+        },
+        {
+          "Representative": {
+            "Re": -2,
+            "Im": 0
+          },
+          "Period": 2,
+          "Seeds": 48
+        },
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": -2
+          },
+          "Period": 2,
+          "Seeds": 48
+        },
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": 0
+          },
+          "Period": 1,
+          "Seeds": 1
+        },
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": 1
+          },
+          "Period": 1,
+          "Seeds": 19
+        },
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": 5
+          },
+          "Period": 3,
+          "Seeds": 17
+        },
+        {
+          "Representative": {
+            "Re": 0,
+            "Im": 17
+          },
+          "Period": 11,
+          "Seeds": 12
+        },
+        {
+          "Representative": {
+            "Re": 1,
+            "Im": 0
+          },
+          "Period": 1,
+          "Seeds": 19
+        },
+        {
+          "Representative": {
+            "Re": 1,
+            "Im": 1
+          },
+          "Period": 1,
+          "Seeds": 19
+        },
+        {
+          "Representative": {
+            "Re": 2,
+            "Im": 3
+          },
+          "Period": 3,
+          "Seeds": 23
+        },
+        {
+          "Representative": {
+            "Re": 2,
+            "Im": 5
+          },
+          "Period": 3,
+          "Seeds": 11
+        },
+        {
+          "Representative": {
+            "Re": 3,
+            "Im": 2
+          },
+          "Period": 3,
+          "Seeds": 23
+        },
+        {
+          "Representative": {
+            "Re": 3,
+            "Im": 5
+          },
+          "Period": 3,
+          "Seeds": 17
+        },
+        {
+          "Representative": {
+            "Re": 5,
+            "Im": 0
+          },
+          "Period": 3,
+          "Seeds": 17
+        },
+        {
+          "Representative": {
+            "Re": 5,
+            "Im": 2
+          },
+          "Period": 3,
+          "Seeds": 11
+        },
+        {
+          "Representative": {
+            "Re": 5,
+            "Im": 3
+          },
+          "Period": 3,
+          "Seeds": 17
+        },
+        {
+          "Representative": {
+            "Re": 5,
+            "Im": 5
+          },
+          "Period": 3,
+          "Seeds": 17
+        },
+        {
+          "Representative": {
+            "Re": 11,
+            "Im": 14
+          },
+          "Period": 11,
+          "Seeds": 51
+        },
+        {
+          "Representative": {
+            "Re": 14,
+            "Im": 11
+          },
+          "Period": 11,
+          "Seeds": 51
+        },
+        {
+          "Representative": {
+            "Re": 17,
+            "Im": 0
+          },
+          "Period": 11,
+          "Seeds": 12
+        },
+        {
+          "Representative": {
+            "Re": 17,
+            "Im": 17
+          },
+          "Period": 11,
+          "Seeds": 12
+        },
+        {
+          "Representative": {
+            "Re": 24,
+            "Im": 73
+          },
+          "Period": 19,
+          "Seeds": 2
+        },
+        {
+          "Representative": {
+            "Re": 73,
+            "Im": 24
+          },
+          "Period": 19,
+          "Seeds": 2
+        },
+        {
+          "Representative": {
+            "Re": 73,
+            "Im": 79
+          },
+          "Period": 19,
+          "Seeds": 1
+        },
+        {
+          "Representative": {
+            "Re": 79,
+            "Im": 73
+          },
+          "Period": 19,
+          "Seeds": 1
+        },
+        {
+          "Representative": {
+            "Re": 81,
+            "Im": 115
+          },
+          "Period": 19,
+          "Seeds": 2
+        },
+        {
+          "Representative": {
+            "Re": 87,
+            "Im": 109
+          },
+          "Period": 19,
+          "Seeds": 15
+        },
+        {
+          "Representative": {
+            "Re": 90,
+            "Im": 125
+          },
+          "Period": 19,
+          "Seeds": 15
+        },
+        {
+          "Representative": {
+            "Re": 109,
+            "Im": 87
+          },
+          "Period": 19,
+          "Seeds": 15
+        },
+        {
+          "Representative": {
+            "Re": 115,
+            "Im": 81
+          },
+          "Period": 19,
+          "Seeds": 2
+        },
+        {
+          "Representative": {
+            "Re": 125,
+            "Im": 90
+          },
+          "Period": 19,
+          "Seeds": 15
+        }
+      ]
+    }
+  ],
+  "FiniteRings": [
+    {
+      "Name": "Gaussian mod 2: ramified, not a field",
+      "Modulus": 2,
+      "States": 4,
+      "Components": 1,
+      "FrobeniusImages": 2,
+      "FrobeniusFixed": 2,
+      "DefiningRoots": 2,
+      "InvertibleNonzeroElements": 2,
+      "CycleLengths": [
+        4
+      ],
+      "Ranks": {
+        "2": 3,
+        "3": 3,
+        "5": 3
+      }
+    },
+    {
+      "Name": "Gaussian mod 3: GF(9)",
+      "Modulus": 3,
+      "States": 9,
+      "Components": 3,
+      "FrobeniusImages": 9,
+      "FrobeniusFixed": 3,
+      "DefiningRoots": 2,
+      "InvertibleNonzeroElements": 8,
+      "CycleLengths": [
+        1,
+        4,
+        4
+      ],
+      "Ranks": {
+        "2": 6,
+        "3": 6,
+        "5": 6
+      }
+    },
+    {
+      "Name": "Eisenstein mod 2: GF(4)",
+      "Modulus": 2,
+      "States": 4,
+      "Components": 2,
+      "FrobeniusImages": 4,
+      "FrobeniusFixed": 2,
+      "DefiningRoots": 2,
+      "InvertibleNonzeroElements": 3,
+      "CycleLengths": [
+        1,
+        3
+      ],
+      "Ranks": {
+        "2": 2,
+        "3": 2,
+        "5": 2
+      }
+    },
+    {
+      "Name": "Eisenstein mod 3: ramified, not a field",
+      "Modulus": 3,
+      "States": 9,
+      "Components": 3,
+      "FrobeniusImages": 3,
+      "FrobeniusFixed": 3,
+      "DefiningRoots": 3,
+      "InvertibleNonzeroElements": 6,
+      "CycleLengths": [
+        3,
+        3,
+        3
+      ],
+      "Ranks": {
+        "2": 6,
+        "3": 6,
+        "5": 6
+      }
+    }
+  ],
+  "PolynomialViews": [
+    {
+      "Name": "MinusQuadratic",
+      "Coefficients": [
+        -1.5,
+        3.5,
+        0
+      ],
+      "MinX": -2,
+      "MaxX": 4,
+      "MinY": -3,
+      "MaxY": 3
+    },
+    {
+      "Name": "MinusCritical",
+      "Coefficients": [
+        0.5,
+        -3,
+        4.5,
+        0
+      ],
+      "MinX": -2,
+      "MaxX": 5,
+      "MinY": -3.5,
+      "MaxY": 3.5
+    },
+    {
+      "Name": "PlusCubic",
+      "Coefficients": [
+        1.1666666666666667,
+        -7,
+        9.833333333333334,
+        0
+      ],
+      "MinX": -2,
+      "MaxX": 6,
+      "MinY": -4,
+      "MaxY": 4
+    },
+    {
+      "Name": "PlusCritical",
+      "Coefficients": [
+        0.2222222222222222,
+        -0.3888888888888889,
+        -3.888888888888889,
+        8.055555555555555,
+        0
+      ],
+      "MinX": -2,
+      "MaxX": 6,
+      "MinY": -4,
+      "MaxY": 4
+    },
+    {
+      "Name": "PlusCubicZoom",
+      "Coefficients": [
+        1.1666666666666667,
+        -7,
+        9.833333333333334,
+        0
+      ],
+      "MinX": 0.994,
+      "MaxX": 1.006,
+      "MinY": -0.006,
+      "MaxY": 0.006
+    },
+    {
+      "Name": "PlusCriticalZoom",
+      "Coefficients": [
+        0.2222222222222222,
+        -0.3888888888888889,
+        -3.888888888888889,
+        8.055555555555555,
+        0
+      ],
+      "MinX": 0.994,
+      "MaxX": 1.006,
+      "MinY": -0.006,
+      "MaxY": 0.006
+    }
+  ],
+  "PolynomialSurvivors": {
+    "MinusCritical": 1910,
+    "MinusQuadratic": 302,
+    "PlusCritical": 0,
+    "PlusCriticalZoom": 17560,
+    "PlusCubic": 0,
+    "PlusCubicZoom": 0
+  },
+  "PolynomialSamples": 65536,
+  "PolynomialTicks": 128,
+  "TotalPolynomialSamples": 393216,
+  "PolynomialEscapeRadius": 8
+}
