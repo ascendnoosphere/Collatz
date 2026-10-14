@@ -28,7 +28,7 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{The three-letter determinant divides the numerator}
+\title{Three-Affine Closure and Exact Odd Recovery}
 \author{}
 \date{\today}
 
@@ -36,7 +36,7 @@
 \maketitle
 
 \begin{abstract}
-For positive integers \(a,b,c,q\) and integers \(x,y,z\) linked by one pass of the three affine letters \(2^{a}y=qx+1\), \(2^{b}z=qy+1\), and \(2^{c}x=qz+1\), the determinant \(\Delta=2^{a+b+c}-q^{3}\) divides the closure numerator \(B=q^{2}+q2^{a}+2^{a+b}\). The third odd state is the same quotient formed from the rotated numerator \(q^{2}+q2^{c}+2^{c+a}\). The argument is the elimination identity alone.
+For positive integers \(a,b,c,q\) and integers \(x,y,z\) linked by one pass of the three affine letters \(2^{a}y=qx+1\), \(2^{b}z=qy+1\), and \(2^{c}x=qz+1\), the determinant \(\Delta=2^{a+b+c}-q^{3}\) divides the closure numerator \(B=q^{2}+q2^{a}+2^{a+b}\). The third odd state is the same quotient formed from the rotated numerator \(q^{2}+q2^{c}+2^{c+a}\). For positive odd states, we also prove the converse: a legal closure exists exactly when the multiplier is odd, the determinant is positive, and the determinant divides the closure numerator. Rotated numerators reconstruct all phases and their exact powers of two.
 \end{abstract}
 
 \section{Closure numerator}
@@ -146,9 +146,75 @@ The coefficient is again \(\Delta\), and the numerator is \(q^{2}+q\,2^{c}+2^{c+
 Lemma \ref{lem:numerator-seven} gives \(B\ge 7\). If \(\Delta=0\), then \(B=\Delta x=0\), contradicting \(B\ge 7\). Hence \(\Delta\neq 0\), and dividing \(\Delta z=T\) by \(\Delta\) yields \(z=T/\Delta\). The same lower bound gives \(T\ge 7\).
 \end{proof}
 
-\begin{remark}
-\label{rem:not-claimed}
-Divisibility is necessary for an integer solution of the three equations. It is not a legal cycle: positivity of the states, oddness, exact powers of two, and a minimum state are further conditions. The identity does not classify \(x^{2}+7=2^{n}\), does not classify \(x^{2}+D=2^{n}\), and does not bound \(x^{3}+D=2^{n}\). It does not force a unique odd multiplier, does not empty the range \(K>7\), and does not prove \(2\rho\le\mu\le 4\rho\).
-\end{remark}
+\section{Positive odd closure}
+
+Put \(U=q^2+q2^b+2^{b+c}\) and \(V=q^2+q2^c+2^{c+a}\).
+Expanding both sides gives
+\[
+qB+\Delta=2^aU,\qquad
+qU+\Delta=2^bV,\qquad
+qV+\Delta=2^cB.
+\]
+For example,
+\[
+qB+\Delta=q^2 2^a+q2^{a+b}+2^{a+b+c}
+=2^a(q^2+q2^b+2^{b+c}).
+\]
+The remaining two identities follow by cyclic permutation.
+
+% Rotated divisibility recovers all three positive odd phases, not just the first.
+\begin{theorem}
+Let \(a,b,c,q\) be positive integers. Positive odd integers \(x,y,z\)
+satisfying the three equations exist if and only if
+\[
+q\text{ is odd},\qquad \Delta>0,\qquad \Delta\mid B.
+\]
+When they exist, the ordered triple is uniquely
+\[
+(x,y,z)=(B/\Delta,U/\Delta,V/\Delta).
+\]
+\end{theorem}
+
+\begin{proof}
+For necessity, \(2^a y\) is even and \(x\) is odd. Thus \(qx+1\)
+can be even only when \(q\) is odd. The elimination identity gives
+\(\Delta x=B\). Since \(x>0\) and \(B>0\), it follows that
+\(\Delta>0\) and \(\Delta\mid B\).
+
+For sufficiency, an odd \(q\) makes \(\Delta\) odd and nonzero.
+Hence \(\gcd(\Delta,2^a)=\gcd(\Delta,2^b)=1\).
+The first transport identity and \(\Delta\mid B\) give
+\(\Delta\mid 2^aU\), so \(\Delta\mid U\).
+The second identity then gives \(\Delta\mid V\).
+Define \(x=B/\Delta\), \(y=U/\Delta\), and \(z=V/\Delta\).
+All numerators are positive. Each numerator is odd because its first
+term is odd and its other two terms are even. Dividing by a positive odd
+divisor gives positive odd integer quotients.
+Dividing the three transport identities by \(\Delta\) now proves all
+three required equations. Their odd quotient states give
+\(v_2(qx+1)=a\), \(v_2(qy+1)=b\), and \(v_2(qz+1)=c\).
+Elimination at each phase forces the displayed quotients, proving uniqueness.
+\end{proof}
+
+Each recovered odd-return edge consists of one affine raw tick followed
+by exactly its prescribed number of divisions. The three-edge return
+therefore has raw length \(K+3\) and shortcut length \(K\).
+These return lengths need not be primitive periods.
+
+For \(q=5\) and \((a,b,c)=(1,1,5)\), one obtains
+\[
+\Delta=3,\quad (B,U,V)=(39,99,249),\quad (x,y,z)=(13,33,83).
+\]
+The odd-return cycle is \(13\to33\to83\to13\).
+The parity condition cannot be omitted: for \(q=2\) and
+\((a,b,c)=(1,2,1)\), one has \(\Delta=8\mid B=16\), but the first
+equation forces \(y=5/2\).
+
+The theorem is an exact criterion for each fixed positive parameter
+word. It does not impose a uniform upper bound on \(K\), and does not
+classify every parameter word that passes the arithmetic tests.
+The elimination identities are formalized in \texttt{ThreeAffineClosure.lean};
+the positive odd criterion and rotated recovery are formalized in
+\texttt{ThreeAffineLegal.lean}.
 
 \end{document}

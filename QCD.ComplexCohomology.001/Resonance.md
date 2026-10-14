@@ -10,7 +10,7 @@ fixed-class bijection.
 [Independent finite certificate](go/CycleResonance.go) ·
 [Negative controls](go/CycleResonance_test.go) ·
 [Detailed proofs](tex/CycleResonance.tex) ·
-[Cycle-source dispositions](CycleSourceAudit.md)
+[Integral cycle arithmetic](CycleArithmetic.md)
 
 ## Keep states, coefficients, and clocks separate
 

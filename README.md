@@ -1,108 +1,115 @@
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 # Generalized Collatz Library
 
-## Raw map
+This library studies exact dynamics of the division-first maps
+$`F_{q,c,d}`$, their integral lattice extensions, and the algebra of legal
+branch words. Each theorem specifies its domain, parameters and clock.
 
-For $`q,c,d\in\mathbb Z`$ with $`|d|\ge2`$, define
+For $`q,c,d\in\mathbb Z`$ with $`|d|\ge2`$,
+
 ```math
-F_{q,c,d}(n)=
-\begin{cases}
-n/d,&d\mid n,\\ qn+c,&d\nmid n.
-\end{cases}
+F_{q,c,d}(n)=\begin{cases}n/d,&d\mid n,\\ qn+c,&d\nmid n.\end{cases}
 ```
-The divisor retains its sign. Division has precedence, including at zero.
-The classical raw map is $`F_{3,1,2}`$.
 
-## Major results
+The divisor keeps its sign. Division takes precedence, including at zero.
+The classical raw map is $`F_{3,1,2}`$: an odd step is $`3n+1`$, not
+$`(3n+1)/2`$. Shortcut, odd-return and first-division maps have different clocks.
 
-These are the strongest proved classifications and behavior transports in the
-maintained library, not claims of a general Collatz solution. Each link gives
-the hypotheses, recovery argument, formal scope and remaining obligation.
+## Principal results
 
-| Result | Exact scope and structural insight |
+| Theorem | Parameters and conclusion |
 |---|---|
-| [Scalar off-axis escape](QCD.ComplexLattice.001/README.md#general-scalar-escape-by-arithmetic-independence) | On every specified imaginary quadratic order, arbitrary real integer offset and independent $`\lvert q\rvert,\lvert d\rvert\ge2`$ force every nonreal raw seed to escape in full sequence. The proof permits infinitely many divisions and leaves the integer axis unchanged. |
-| [Homogeneous classification](QCD.Homogeneous.001/README.md) · [dependent case](QCD.Homogeneous.002/README.md) | For $`c=0`$, $`q,D\ge2`$ and positive seeds, independent powers give escape; a primitive dependence $`q=t^u,D=t^v`$ gives eventual raw period $`u+v`$. Unit and signed cases have separate hypotheses. |
-| [Positive additive classification](QCD.Additive.003/README.md) | For $`q=1,c\ge1,D\ge2`$, every positive seed is eventually periodic or reaches an exact escaping affine tail. All positive seeds are eventually periodic exactly when $`\gcd(c,D)=1`$. |
-| [High-offset common-base escape](QCD.CommonBase.001/README.md) | A quantitative super-offset threshold proves full-sequence escape for every nonzero signed seed in the stated common-base family, not just a numerical census. |
-| [Residue leakage](QCD.ResidueLeakage.001/README.md) | For the stated coprime positive family with affine zero-return period $`m<D`$, exact cylinders give density-one raw escape. The full-period boundary $`m=D`$ is excluded. |
-| [Clock-correct compression](QCD.TimeCompression.002/README.md) · [offset absorption](QCD.Scaling.002/README.md) | Admissible transformations recover the same states, primitive cycles and behavior with their exact same or variable clocks. A rational affine identity alone does not suffice. |
-| [Marked cycle resonance](QCD.ComplexCohomology.001/Resonance.md) | A legal raw period-18 cycle has defect $`3^7-2^{11}=139`$. The actual twisted quotient acquires a one-dimensional characteristic-139 class, with checked Frobenius-fixed/sign reconstruction. It does not induce a raw finite-field map. |
+| [Signed homogeneous lattice classification](QCD.ComplexLattice.001/README.md#complete-homogeneous-scalar-classification) | For $`c=0`$ and $`\lvert q\rvert,\lvert d\rvert\ge2`$, every nonzero seed in a specified imaginary quadratic coordinate order escapes in full complex norm when the magnitudes are multiplicatively independent, and is eventually periodic when they are dependent. This includes the integer axis. |
+| [Scalar escape with arbitrary real offset](QCD.ComplexLattice.001/README.md#general-scalar-escape-by-arithmetic-independence) | For every integer $`c`$ and independent $`\lvert q\rvert,\lvert d\rvert\ge2`$, every nonreal seed escapes. Infinitely many divisions are allowed. For odd $`c`$ in $`(3,c,2)`$, an explicit division-free tail begins within $`2v_2(\lvert y\rvert)`$ raw ticks. |
+| [Positive additive classification](QCD.Additive.003/README.md) | For $`q=1,c\ge1,D\ge2`$, every positive seed is eventually periodic or enters an exact escaping affine tail. All positive seeds are eventually periodic if and only if $`\gcd(c,D)=1`$. [All primitive cycles](QCD.Additive.002/README.md) are recovered from complete finite modular orbits with their raw periods. |
+| [Dependent positive homogeneous periods](QCD.Homogeneous.002/README.md) | If $`q=t^u,D=t^v`$, $`t\ge2`$, $`u,v>0`$ and $`\gcd(u,v)=1`$, every positive seed is eventually periodic with primitive raw period $`u+v`$. |
+| [Common-base high-offset escape](QCD.CommonBase.001/README.md) | Explicit offset thresholds give full-sequence escape for every nonzero signed seed in the stated common-base families. Gcd rebasing and both exponent orderings retain exact branch and clock recovery. |
+| [Strict residue leakage](QCD.ResidueLeakage.001/README.md#strict-leakage) | For $`q\ge2,c\ge1,D\ge2,\gcd(q,D)=1`$, let $`m`$ be the least positive return time of zero under $`r\mapsto qr+c\bmod D`$. If $`m<D`$, exactly $`m^h`$ classes modulo $`D^h`$ have at least $`h`$ divisions; density-one seeds eventually stop dividing and escape. |
+| [Full-cycle negative drift](QCD.ResidueLeakage.001/README.md#full-cycle-boundary-and-negative-drift) | At $`m=D`$, marked delays have an exact uniform product law. Negative drift occurs exactly for $`q=3,D=2`$ and positive odd $`c`$; these maps have density-one strict descent. For $`(3,1,2)`$, an explicit power-saving exceptional-set bound is proved. This is a stopping-time theorem, not universal capture. |
+| [Prime-square nonunit leakage](QCD.ResidueLeakage.001/README.md#prime-square-nonunit-family) | For a prime $`p`$ and positive $`p`$-units $`Q,C`$, the raw family $`(q,c,D)=(pQ,pC,p^2)`$ has density-one full-sequence escape. The surviving unit-return weight is $`p/(p^2-1)<1`$, even though $`\gcd(q,D)\mid c`$. |
+| [Even two-affine closure](QCD.TwoAffineEven.001/README.md) | Positive equations $`qn+1=2^a y`$, $`qy+1=2^b n`$ with $`a+b=2t`$ force $`a=b=t`$, $`q=2^t-1`$, $`n=y=1`$. Unequal-component closures therefore require odd total division length. |
+| [Legal three-affine criterion](QCD.ThreeAffineClosure.001/README.md) | For positive $`a,b,c,q`$, a positive odd three-letter closure exists exactly when $`q`$ is odd, $`\Delta=2^{a+b+c}-q^3>0`$, and $`\Delta\mid q^2+q2^a+2^{a+b}`$. Rotated quotients recover all phases and exact valuations. |
+| [Clock-correct transformations](QCD.TimeCompression.002/README.md) · [supported offset absorption](QCD.Scaling.002/README.md) | Scaling and compression transfer states, capture, primitive cycles and behavior with proved same-clock or accumulated-clock formulas. |
+| [Marked cycle resonance](QCD.ComplexCohomology.001/Resonance.md) | The legal raw minus cycle of period $`18`$ has defect $`3^7-2^{11}=139`$. Its twisted quotient is one-dimensional in characteristic $`139`$, with a genuine Frobenius action and fixed/sign reconstruction. Coefficient reduction does not create a raw finite-field map. |
 
-[Every requested Profile/PairProfile item](QCD.ProfileDrop.001/SchemaAudit.md)
-and the [repository audit ledger](Library.SourceCatalogue.001/RepositoryAudit.md)
-record what was inspected, what was repaired and what remains unproved.
+The density theorems at full access and in the prime-square family have detailed
+written proofs. Their Lean companions establish the finite weighted bounds,
+invariant layer and legal block recovery; they do not yet state the complete
+infinite density theorems. The other links distinguish written results from
+their precise formal interfaces.
 
-## Complex rings, cohomology, and visual atlas
+## One branch-word algebra, several dynamical mechanisms
 
-The [complex atlas](QCD.ComplexAtlas.001/README.md) studies **19 declared lattice families**
-(thirteen baseline families and six scalar controls) over Gaussian and
-Eisenstein integers, four finite quadratic rings, and four explicit polynomial
-countermodels. It includes 25 GitHub-visible PNG panels,
-exact marked-cycle data, reproduction commands, and a
-[source audit](QCD.ComplexAtlas.001/ResearchAudit.md).
+A legal word carries ordered affine data $`(P,Q,B)`$:
 
-| Result or model | Status and actual gain | What remains separate |
-|---|---|---|
-| [Independent scalar escape](QCD.ComplexLattice.001/README.md#general-scalar-escape-by-arithmetic-independence), arbitrary real integral $`c`$ | **Checked theorem:** every nonreal lattice seed escapes when $`\lvert q\rvert,\lvert d\rvert\ge2`$ are multiplicatively independent; actual ring and complex-norm recovery | Integer-axis dynamics, dependent magnitudes, nonscalar parameters |
-| [Quantitative raw $`(3,c,2)`$ descent](QCD.ComplexLattice.001/README.md#decreasing-dyadic-rank-and-exact-recovery), odd real integral $`c`$ | **Checked theorem:** at most $`2v_2(y)`$ ticks to an odd transverse coefficient and then an explicit affine tail | The general scalar theorem need not have a last division |
-| [Gaussian split-prime escape](QCD.GaussianDynamics.001/README.md), $`(q,c,d)=(2+i,0,2-i)`$ | **Checked theorem:** every nonzero Gaussian seed escapes although multiplier and divisor have equal norm | Offsets and noncoprime ring parameters |
-| [Ordinary and twisted cohomology](QCD.ComplexCohomology.001/README.md) | **Checked:** ordinary cycle quotient, all finite functional-graph dimensions, actual twisted quotients, and the scalar closing equation $`(1-P)u=B`$ | Branch admissibility, integer reconstruction, and universal capture |
-| [Quadratic Galois fields](QCD.ComplexAtlas.001/README.md#actual-quadratic-galois-fields-with-ramified-negative-controls) | **Checked:** actual $`\mathbb F_9,\mathbb F_4`$ field structures, exhaustive two-element Galois groups, and same-clock affine conjugacy | Ramified nonfields and raw lattice guards remain distinct |
-| [Marked minus-cycle resonance](QCD.ComplexCohomology.001/Resonance.md) | **Checked:** exact raw period $`18`$; coefficient defect $`139`$; genuine Frobenius action on the actual twisted quotient over $`\mathbb F_{139^2}`$, with $`139`$ fixed classes and unique fixed/sign recovery | No descent of the parity-guarded raw map modulo $`139`$; no Julia or infinite-graph transfer |
-| [Quadratic-order arithmetic](QCD.QuadraticArithmetic.001/README.md) | Exact lattice division and ideal quotients; bounded computational checks in five orders | Existing trajectory classifications have the formalization scope stated there |
-| [Residue-wise complex quotient maps](QCD.ComplexLattice.001/README.md#a-different-complex-family-really-does-have-nonreal-cycles) | **Checked construction:** nonreal fixed points and cycles, unlike the raw scalar map | Global classification of quotient-map basins |
-| [Polynomial Julia countermodels](QCD.ComplexAtlas.001/README.md#julia-portraits-same-lattice-cycle-different-complex-stability) | **Checked:** equal finite cycle values can have different multipliers; radius $`8`$ certifies exterior escape | No canonical Julia set or Julia-to-lattice transfer is asserted |
+```math
+Q\,F^n(x)=Px+B,\qquad P=q^a,\quad Q=d^b,\quad a+b=n.
+```
 
-![Exact Gaussian raw minus atlas](QCD.ComplexAtlas.001/other/GaussianMinus.png)
+An affine tick sends $`(P,Q,B)`$ to $`(qP,Q,qB+cQ)`$; a division tick sends it
+to $`(P,dQ,B)`$. Thus the full offset and every clock are retained.
+Closure requires $`(Q-P)x=B`$, but the scalar equation alone does not supply
+the intermediate guards.
 
-In the raw $`(3,-1,2)`$ map, navy marks **proved nonreal escape**, not a
-fractal recurrent basin. A residue-wise quotient uses a different guard and
-branch formula, and does have nonreal cycles:
+The [affine cocycle](QCD.ComplexCohomology.001/DynamicalCocycle.md) connects
+cycle torsion, homogeneous content, additive cores and residue drift.
+It has different useful specializations, not a claim that one unmarked scalar
+classifies every orbit. [Arithmetic profiles](QCD.ProfileDrop.001/ArithmeticProfiles.md)
+describe the domains and roles of integer and pair observables. In particular,
+division loses one digit of residue precision; no fixed positive $`d`$-adic
+precision recovers every raw successor.
 
-![Gaussian residue-wise minus atlas](QCD.ComplexAtlas.001/other/GaussianJosephMinus.png)
+## Complex lattices, fields and continuous models
 
-The continuous portraits below come from specified holomorphic polynomials,
-not from the discontinuous lattice rule. Their selected cycle values agree,
-but their stability differs. Finite-time floating-point pixels are not an
-exact Julia-membership certificate.
+For $`\theta^2=\tau\theta-\nu`$ with $`\tau,\nu\in\mathbb Z`$ and
+$`4\nu>\tau^2`$, use $`R=\mathbb Z+\mathbb Z\theta`$ and
 
-![Repelling minus-cycle polynomial portrait](QCD.ComplexAtlas.001/other/MinusQuadratic.png)
-![Superattracting minus-cycle polynomial portrait](QCD.ComplexAtlas.001/other/MinusCritical.png)
+```math
+\theta=\frac{\tau+i\sqrt{4\nu-\tau^2}}2.
+```
 
-**Field warning:** in any field, every nonzero $`d`$ divides every $`z`$.
-Consequently the literal raw field extension is only $`z\mapsto z/d`$.
-The finite-field examples instead study specified affine maps and their
-functional-graph cohomology. The [verification ledger](QCD.ComplexAtlas.001/Verification.md)
-records exact checks and their limits.
+Gaussian integers have $`(\tau,\nu)=(0,1)`$; Eisenstein integers have
+$`(-1,1)`$. Scalar divisibility means divisibility of **both** integral
+coordinates. Nonscalar divisors use the order's multiplication table and
+are treated by [quadratic arithmetic](QCD.QuadraticArithmetic.001/README.md).
 
-The [marked minus-cycle extension](QCD.ComplexCohomology.001/Resonance.md)
-adds three finite pictures with exact reconstruction, rather than relabelling
-a residue texture as a Julia set:
+Three distinct constructions appear in the [complex dynamics](QCD.ComplexDynamics.001/README.md):
 
-![Actual quotient coordinates and Frobenius-fixed classes](QCD.ComplexCohomology.001/other/Galois139.png)
+- **Raw lattice maps** retain element divisibility and division precedence.
+  [Gaussian split-prime escape](QCD.GaussianDynamics.001/README.md) shows that
+  equal multiplier/divisor norms need not imply periodicity.
+- **Residue-wise quotient maps** use $`(3z\pm r(z))/2`$ on nonzero residues.
+  They have nonreal cycles and are not fixed-offset raw maps.
+- **Holomorphic polynomial models** preserve selected cycle values but can
+  have different multipliers and basins. Their continuous portraits are
+  not invariants of the lattice rule.
 
-Its ordinary complex-coefficient twisted cohomology vanishes; characteristic
-$`139`$ produces a genuine one-dimensional quotient. The **actual offsets still
-represent zero**; a marked unit edge detects its nonzero classes.
+| Raw Gaussian homogeneous dynamics | Dependent homogeneous cycle |
+|---|---|
+| ![Independent common-support scalar escape](QCD.ComplexDynamics.001/other/GaussianCommonSupport.svg) | ![Dependent scalar dynamics with a marked five-cycle](QCD.ComplexDynamics.001/other/GaussianDependentScalar.svg) |
 
-## Source provenance and migration coverage
+| Repelling minus-cycle polynomial | Superattracting minus-cycle polynomial |
+|---|---|
+| ![Finite escape-time view of the repelling model](QCD.ComplexDynamics.001/other/MinusQuadratic.svg) | ![Finite escape-time view of the critical model](QCD.ComplexDynamics.001/other/MinusCritical.svg) |
 
-The [public source catalogue](Library.SourceCatalogue.001/README.md) accounts for
-2,195 included current files, retains historical hashes and duplicate identities,
-and checks 1,627 current ZIP payloads. Its
-[reconciliation ledger](Library.SourceCatalogue.001/other/Reconciliation.json)
-records exclusions and exact snapshot differences. The 1,491 current 7z file
-entries are header-only; unavailable external archives remain metadata-only.
+The SVG panels contain vector geometry and outlined labels. Polynomial colors
+record finite binary64 escape times; dark means survival for the declared
+horizon, not certified Julia membership. Legends and optional annotations
+identify the quantity shown.
 
-**Byte provenance is not mathematical review.** The exhaustive source-to-result
-crosswalk, reading coverage, and remaining supported-result migration are still
-open. A pending assignment is not an exclusion or a claim that a source contains
-no result. The new [seven-row cycle-lattice crosswalk](QCD.ComplexCohomology.001/CycleSourceAudit.md)
-and [38-row analytic/fractal crosswalk](QCD.ComplexAtlas.001/CanonicalClaims.md)
-preserve supported results, correct false bridges, and retain explicit open migration obligations.
-[Reproduction and verification](Library.SourceCatalogue.001/README.md#reproduction-and-input-contract)
-state the scanner's finite scope and safety limits.
+In a field, every nonzero $`d`$ divides every $`z`$. A literal raw field
+extension is therefore only $`z\mapsto z/d`$. The finite-field examples
+instead study specified affine maps, actual quadratic Galois groups, and
+[ordinary or twisted cochains](QCD.ComplexCohomology.001/README.md). Their
+coefficient arithmetic is kept separate from integral branch recovery.
+
+[Cycle-lattice arithmetic](QCD.ComplexCohomology.001/CycleArithmetic.md) gives
+the integral cyclic cokernel and offset conductor.
+[Analytic extensions](QCD.ComplexDynamics.001/AnalyticClaims.md) explain why
+integer-wide interpolation still does not determine complex stability.
+[Related literature](QCD.ComplexDynamics.001/Literature.md) identifies the
+different map conventions; the [source index](Library.SourceCatalogue.001/README.md)
+locates the independent local corpus.
 
 ## Foundations
 
@@ -662,29 +669,33 @@ first-division maps also have their own definitions and clocks.
 
 ## Build
 
-`make` and `make lean` build the **96 registered default targets**, not every
-Lean file that happens to exist in the working tree. Twelve preserved untracked
-research folders are unregistered and excluded from that claim. The
-[coverage ledger](Library.SourceCatalogue.001/RepositoryAudit.md) also marks the
-large uncompiled historical appendix in the signed-return source. The `tex`
-profile uses pdfLaTeX and BibTeX with `amsalpha`; the `go` profile uses `CGO_ENABLED=0`.
-
-Markdown mathematics uses GitHub's code-protected inline form and `math` fences so
-Markdown preprocessing cannot consume TeX punctuation. Run the offline checks with:
+Run from the repository root:
 
 ```sh
+make lean
+make tex TEXFILE=QCD.ResidueLeakage.001/tex/ResidueBoundary.tex
+make go GOFILE=QCD.ComplexDynamics.001/go/ComplexDynamics.go
+```
+
+The default profile is Lean. Lake builds the registered targets and their
+dependencies. TeX uses pdfLaTeX and BibTeX with `amsalpha` and removes the
+document's temporary files. Go uses `CGO_ENABLED=0`.
+
+After typesetting, check ignored generated artifacts and Markdown mathematics:
+
+```sh
+bash Scripts/CheckIgnoredPdfs.sh
+bash Scripts/CheckIgnoredTexTemps.sh
 bash Scripts/CheckMarkdown.sh
 bash Scripts/TestMarkdown.sh
 bash Scripts/TestGitHubMath.sh
 ```
 
-With an authenticated `gh` CLI, `bash Scripts/CheckGitHubMath.sh` renders maintained
-tracked pages through GitHub's GFM API and checks exact math payload, order, and mode.
-It is a transport check, not a mathematical proof or a live-browser layout audit.
-The [verification ledger](QCD.ResidueLeakage.001/Verification.md#github-math-transport-and-local-typesetting)
-separately records actual local MathJax execution and the conversion checks.
+`bash Scripts/CheckGitHubMath.sh` additionally checks tracked pages through
+GitHub's GFM API when an authenticated `gh` CLI is available.
+Markdown math uses code-protected inline expressions and `math` fences.
 
-[Homomorphism theorem examples](Templates/lean/HomomorphismTheorems.lean) ·
+[Lean example](Templates/lean/HomomorphismTheorems.lean) ·
 [TeX example](Templates/tex/Template.tex) ·
 [Go example](Templates/go/HomomorphismTheorems.go)
 

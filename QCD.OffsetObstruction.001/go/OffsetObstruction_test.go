@@ -131,7 +131,7 @@ func TestHalvingAndGrowth(t *testing.T) {
 	}
 }
 
-// TestScalingIdentity compares the scaled dynamics against big-integer arithmetic.
+// TestScalingIdentity compares exact machine-word scaling with an independent big-integer orbit.
 func TestScalingIdentity(t *testing.T) {
 	for a := uint64(1); a <= 10; a++ {
 		power := Pow3(a)
@@ -141,8 +141,14 @@ func TestScalingIdentity(t *testing.T) {
 				if scaled != power*plain {
 					t.Fatalf("scaling mismatch a=%d n=%d k=%d", a, n, k)
 				}
+				wantScaled := referenceStep(power, scaled)
+				wantPlain := referenceStep(1, plain)
 				scaled = Step(power, scaled)
 				plain = Step(1, plain)
+				if wantScaled.BitLen() > 64 || wantPlain.BitLen() > 64 ||
+					scaled != wantScaled.Uint64() || plain != wantPlain.Uint64() {
+					t.Fatalf("reference mismatch a=%d n=%d k=%d", a, n, k)
+				}
 			}
 			if !ScalingHolds(a, n, 6) {
 				t.Fatalf("scaling claim failed at a=%d n=%d", a, n)
@@ -179,6 +185,28 @@ func TestWarmedOrbitAllocation(t *testing.T) {
 	})
 	if allocs != 0 {
 		t.Fatalf("warmed orbit allocated %v times per run", allocs)
+	}
+}
+
+// TestWordBoundaries exercises exact comparisons at and beyond the machine-word boundary.
+func TestWordBoundaries(t *testing.T) {
+	max := ^uint64(0)
+	if !Reaches(max-1, 1, 1, 1) {
+		t.Fatal("overflowing mathematical successor was not above the bound")
+	}
+	if got := MultiplesBelow(2, max); got != uint64(1)<<63 {
+		t.Fatalf("ceiling division wrapped: got %d", got)
+	}
+	for _, m := range []uint64{1, 2, 3, max - 1, max} {
+		if !DensityHolds(m, max) {
+			t.Fatalf("full-width density comparison failed for m=%d", m)
+		}
+	}
+	if _, ok := StepChecked(max-1, 1); ok {
+		t.Fatal("overflowing offset step was accepted")
+	}
+	if ScalingHolds(41, 1, 0) || ScalingHolds(40, max, 1) {
+		t.Fatal("unrepresentable scaling was accepted")
 	}
 }
 

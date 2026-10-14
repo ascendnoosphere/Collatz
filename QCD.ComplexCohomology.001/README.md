@@ -10,19 +10,19 @@ with specified coefficients, **not** a claim to have constructed a Galois,
 [Cycle and transport proofs](lean/ComplexCohomology.lean) ·
 [Functional-graph proofs](lean/ComplexGraph.lean) ·
 [Local-system quotients](lean/ComplexLocalSystem.lean) ·
-[Detailed proofs and audit](tex/ComplexCohomology.tex) ·
-[Exact finite-field checks](../QCD.ComplexAtlas.001/go/ComplexAtlas_test.go) ·
-[Visual atlas](../QCD.ComplexAtlas.001/README.md)
+[Detailed proofs](tex/ComplexCohomology.tex) ·
+[Exact finite-field checks](../QCD.ComplexDynamics.001/go/ComplexDynamics_test.go) ·
+[Visual survey](../QCD.ComplexDynamics.001/README.md)
 
-## New marked-cycle extension: coefficient 139, not a new raw guard
+## Marked-cycle resonance in characteristic 139
 
 [Resonance and three finite figures](Resonance.md) ·
 [Lean quotient and Galois proofs](lean/CycleResonance.lean) ·
 [Exact Go certificate](go/CycleResonance.go) ·
 [Independent tests](go/CycleResonance_test.go) ·
 [Detailed TeX proof](tex/CycleResonance.tex) ·
-[Source cycle-lattice crosswalk](CycleSourceAudit.md) ·
-[Verification](ResonanceVerification.md)
+[Integral cycle arithmetic](CycleArithmetic.md) ·
+[Affine cocycles and residue drift](DynamicalCocycle.md)
 
 The original guarded $`(3,-1,2)`$ map has the marked raw period-$`18`$ cycle
 starting at $`17`$. Its ordered multiplier is $`3^7/2^{11}`$ and its integer
@@ -188,10 +188,10 @@ Over $`\mathbb F_2`$, $`X^2+1=(X+1)^2`$ has a nonzero nilpotent in the Gaussian
 quotient; $`X^2+X+1`$ is irreducible, giving the Eisenstein field $`\mathbb F_4`$.
 Over $`\mathbb F_3`$, these roles reverse: $`X^2+1`$ is irreducible, while
 $`X^2+X+1=(X-1)^2`$. The actual Frobenius automorphisms and complete two-element Galois groups
-are now checked in [ComplexFields.lean](../QCD.ComplexAtlas.001/lean/ComplexFields.lean).
+are now checked in [ComplexFields.lean](../QCD.ComplexDynamics.001/lean/ComplexFields.lean).
 Conjugation transports affine orbits with both parameters and the same clock;
 it does not convert the affine permutations into raw Collatz maps. The
-[census](../QCD.ComplexAtlas.001/README.md#actual-quadratic-galois-fields-with-ramified-negative-controls)
+[census](../QCD.ComplexDynamics.001/README.md#actual-quadratic-galois-fields-with-ramified-negative-controls)
 tests matrix ranks, inverses, roots, Frobenius laws and the two ramified controls.
 
 ## Reduction status and limits
@@ -215,12 +215,12 @@ at most one periodic seed. There are finitely many words at each length;
 these periodic points are therefore countable, not a continuum merely because
 the ambient $`2`$-adic space is uncountable. This countability argument requires
 nonneutral holonomy: an identity map has an entire continuum of fixed points.
-Historical source locations and dispositions are recorded in
-[ResearchAudit.md](../QCD.ComplexAtlas.001/ResearchAudit.md).
+[CycleArithmetic.md](CycleArithmetic.md) gives the integral kernel,
+cokernel and mark-preserving reduction calculations.
 
 ```bash
 make lean
-CGO_ENABLED=0 go test ./QCD.ComplexAtlas.001/go
+CGO_ENABLED=0 go test ./QCD.ComplexDynamics.001/go
 make tex TEXFILE=QCD.ComplexCohomology.001/tex/ComplexCohomology.tex
 bash Scripts/CheckIgnoredPdfs.sh
 bash Scripts/CheckIgnoredTexTemps.sh

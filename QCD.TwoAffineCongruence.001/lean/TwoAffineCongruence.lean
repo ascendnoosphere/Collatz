@@ -7,7 +7,7 @@ Elementary arithmetic of the two-affine denominator `2 ^ K - q ^ 2`.
 Integrality of `(q + 2 ^ a) / Δ` is the congruence `2 ^ a ≡ -q` modulo `Δ`.
 Oddness of `Δ` makes `Δ` coprime to `q`, so the same congruence at exponent
 `K - a` is integral as well. The partner quotient is odd when `a < K`.
-The two quotients agree only for the unit seed `K = 2a`, `q = 2 ^ a - 1`,
+When `Δ > 0`, the two quotients agree only for the unit seed `K = 2a`, `q = 2 ^ a - 1`,
 and value `1`. In particular they disagree whenever `K` is odd.
 -/
 

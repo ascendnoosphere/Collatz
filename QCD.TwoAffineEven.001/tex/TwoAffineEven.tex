@@ -28,7 +28,7 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{Equal components force the unit state}
+\title{Positive Two-Affine Closures of Even Length}
 \author{}
 \date{\today}
 
@@ -36,10 +36,10 @@
 \maketitle
 
 \begin{abstract}
-If a two-affine word has equal positive components, the two letters agree, the length is even, and the only solution in the positive integers is the unit state. Components of size at least three are therefore impossible. The identity does not exclude unequal components.
+Every positive two-affine closure of even shortcut length has equal letters and unit components. The proof orders the letters and combines the closure determinant with its difference-of-squares factorization. The unit family is realized for every positive half length; in particular no unequal positive components occur at even length.
 \end{abstract}
 
-\section{Equal components}
+\section{Two-affine closure}
 
 Fix a positive integer multiplier \(q\) and positive integers \(a\) and \(b\). A two-affine word on components \(n\) and \(y\) is the pair of equations
 \begin{equation}
@@ -150,16 +150,42 @@ If \(K\) is odd and \(n > 0\), there is no solution of \(q n + 1 = 2^{a} n = 2^{
 Lemma~\ref{lem:letters} forces \(a = b\), so \(K = a + a\) is even by Lemma~\ref{lem:even-length}. An odd length cannot be even.
 \end{proof}
 
-\begin{remark}
-The lower bound \(3\) is essential.
+\section{All even lengths}
 
-Theorem~\ref{thm:unit} gives a solution for every positive half length:
-the doubled fixed point of \(1\), with odd multiplier \(2^{t}-1\).
-Nothing proved here excludes a solution with \(n \ne y\).
-A minimum-three statement for every even length, including unequal components,
-is not the cofactor identity above.
-A separate positivity estimate for unequal components is not this identity,
-and neither is a comparison of the shape \(2\rho \le \mu \le 4\rho\).
-\end{remark}
+\begin{theorem}[Complete even-length classification]
+\label{thm:even-complete}
+Let \(q,a,b,n,y\) be positive integers satisfying \eqref{eq:two-affine}.
+If \(a+b=2t\), then
+\[
+a=b=t,\qquad q=2^t-1,\qquad n=y=1.
+\]
+Conversely these values give a closure for every \(t\ge1\).
+\end{theorem}
+
+\begin{proof}
+Interchange \((a,n)\) with \((b,y)\), if needed, so that \(a\le b\).
+Then \(a\le t\).
+Eliminating \(y\) gives
+\[
+\delta n=q+2^a,\qquad \delta=2^{2t}-q^2.
+\]
+The right side is positive and \(n>0\), so \(\delta>0\).
+Put \(A=2^t\). Then \(q<A\), hence \(A-q\ge1\), and
+\(\delta=(A-q)(A+q)\ge A+q\).
+Since \(n\ge1\) and \(2^a\le A\),
+\[
+\delta\le\delta n=q+2^a\le q+A\le\delta.
+\]
+Every inequality is equality.
+Thus \(n=1\), \(2^a=A\), and \(A-q=1\).
+Injectivity of powers of two gives \(a=t\); then \(b=t\) and \(q=A-1\).
+The first closure equation now gives \(Ay=A\), so \(y=1\).
+Undoing the interchange gives the same conclusion.
+The converse is direct substitution, and \(t\ge1\) makes \(q\) positive.
+
+The active declarations \texttt{EvenClosureClassification} and
+\texttt{UnitClosure} in \texttt{TwoAffineClassification.lean} formalize both directions.
+The length \(a+b\) counts shortcut instructions; the repeated unit block is not asserted to be a primitive two-component cycle.
+\end{proof}
 
 \end{document}

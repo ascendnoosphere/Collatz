@@ -87,7 +87,7 @@ GitHub-visible 300-dpi PNG, at 1800×1200 pixels for 6in×4in or 1500×1500 for
 5in×5in. The label renderer accepts only the ten expressions used in these
 figures; it is not a general TeX parser.
 
-## Visual arithmetic atlas
+## Visual arithmetic survey
 
 | First-division density on integer seeds | Finite surface, not a continuous basin |
 |---|---|

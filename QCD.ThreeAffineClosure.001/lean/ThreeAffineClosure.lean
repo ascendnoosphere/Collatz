@@ -1,10 +1,10 @@
 -- SPDX-License-Identifier: CC-BY-4.0
 -- Copyright (c) 2026 ascendnoosphere
 
-set_option autoImplicit false
+import Mathlib.Data.Int.Notation
+import Mathlib.Data.Nat.Notation
 
-notation "ℕ" => Nat
-notation "ℤ" => Int
+set_option autoImplicit false
 
 namespace GeneralizedCollatz
 

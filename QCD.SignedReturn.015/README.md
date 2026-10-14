@@ -53,7 +53,7 @@ The subsequent large block beginning with `ZeroOffset` is an explicitly
 Names such as its second `UniformReturnBound` do not declare checked theorems
 and do not replace the active `UniformReturnBound` listed above.
 A build is not proof verification of that commented material. The appendix
-is retained for provenance, not offered as a second formal implementation.
+is historical material, not a second formal implementation.
 
 ## What is not claimed
 

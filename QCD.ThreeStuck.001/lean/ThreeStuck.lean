@@ -5,8 +5,9 @@ import Mathlib.Data.Nat.MaxPowDiv
 /-!
 Inverse odd steps and the factor of `3` in the successor.
 
-The inverse odd step is `InverseOdd z = (2 * z - 1) / 3`. It is exact precisely
-when `3` divides `z + 1`. Each exact step lowers `padicValNat 3 (· + 1)` by
+The inverse odd step is `InverseOdd z = (2 * z - 1) / 3`.
+It is exact whenever `3` divides `z + 1`.
+Each exact step lowers `padicValNat 3 (· + 1)` by
 one. A sequence shorter than that valuation therefore still meets a factor of
 `3`, and a sequence of that exact length meets none.
 -/

@@ -1,23 +1,25 @@
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
-# QCD.ComplexLattice.001 — Raw complex lattices and off-axis escape
+# Scalar dynamics on imaginary quadratic lattices
 
-**Closed obligation:** for every real integer offset $`c`$, every nonreal
-seed of the raw scalar map escapes on each imaginary quadratic coordinate
-order below whenever $`|q|,|d|\ge2`$ are multiplicatively independent.
-Signs of both coefficients are retained. The conclusion is full-sequence
-escape, not just an unbounded subsequence. The real axis retains its original
+For zero offset and signed scalar magnitudes at least two, all nonzero
+lattice states are classified: independent magnitudes give full-sequence
+complex-norm escape; dependent magnitudes give eventual periodicity.
+For arbitrary integer offsets, independence still proves escape of every
+nonreal state. The integer axis for nonzero offsets retains the corresponding
 signed integer problem.
 
-The older raw $`(3,c,2)`$ theorem with odd $`c`$ also gives a quantitative
-entry time into a division-free tail. That stronger clock estimate is kept
-separate from the new theorem, which allows infinitely many divisions.
+For raw $`(3,c,2)`$ with odd $`c`$, a complementary dyadic argument gives
+an explicit entry time into a division-free tail. The general independence
+argument allows infinitely many divisions and does not supply that clock bound.
 
+[Homogeneous Lean classification](lean/HomogeneousLattice.lean) ·
+[Homogeneous detailed proof](tex/HomogeneousLattice.tex) ·
 [General scalar Lean proof](lean/ScalarEscape.lean) ·
 [General scalar detailed proof](tex/ScalarEscape.tex) ·
 [Dyadic Lean proofs](lean/ComplexLattice.lean) ·
 [Dyadic detailed proof](tex/ComplexLattice.tex) ·
 [Exact arithmetic foundations](../QCD.QuadraticArithmetic.001/README.md) ·
-[Visual atlas and Go checks](../QCD.ComplexAtlas.001/README.md)
+[Visual survey and Go checks](../QCD.ComplexDynamics.001/README.md)
 
 ## Rings, not interchangeable fields
 
@@ -69,6 +71,48 @@ no lattice states. Its exact imaginary-part formula and
 `ImaginaryEmbeddingNorm` retain the fixed transverse scale.
 `ComplexOffAxisEscape` then proves the displayed full-sequence statement
 in the actual complex norm, with every real bound quantified.
+
+## Complete homogeneous scalar classification
+
+Set $`c=0`$, $`|q|,|d|\ge2`$, and $`z_0=x_0+y_0\theta\ne0`$.
+Then exactly one of the following parameter cases applies:
+
+1. If $`|q|`$ and $`|d|`$ are multiplicatively independent,
+   $`|T^n(z_0)|\to\infty`$ along the full raw sequence.
+2. If $`|q|^a=|d|^b`$ for some positive $`a,b`$, the orbit is eventually
+   periodic and at every raw time satisfies
+
+```math
+|x_n|\le|q||d||x_0|,\qquad
+|y_n|\le|q||d||y_0|.
+```
+
+Zero is fixed. Both coefficient signs are retained, and the theorem includes
+nonzero integer-axis seeds.
+
+The reconstruction invariant is the content
+$`g_n=\gcd(|x_n|,|y_n|)>0`$. Bézout's identity proves that
+$`d\mid x_n`$ and $`d\mid y_n`$ exactly when $`|d|\mid g_n`$.
+Consequently $`g_n`$ follows the positive homogeneous map with parameters
+$`|q|,|d|`$. Exact multiplication and division also preserve
+
+```math
+g_0|x_n|=g_n|x_0|,\qquad g_0|y_n|=g_n|y_0|.
+```
+
+Independence gives content escape. A nonzero transverse coordinate recovers
+complex-norm escape through its fixed imaginary scale; if the transverse
+coordinate is zero, height is the absolute integer coordinate.
+Dependence gives $`g_n\le|q||d|g_0`$, and the proportionality identities give
+the two coordinate bounds. The orbit then lies in a finite box of integral
+pairs. A repeated pair and determinism yield a full periodic tail.
+Same-clock coordinate recovery transfers that tail to actual ring elements.
+
+[HomogeneousLattice.lean](lean/HomogeneousLattice.lean) proves the guard,
+content recursion, proportions, bounds, finite-state argument and both ring
+conclusions. It does not assert a primitive-period formula for signed
+dependent lattice states. The [positive scalar formula](../QCD.Homogeneous.002/README.md)
+has its own stronger period statement and parameter hypotheses.
 
 ## General scalar escape by arithmetic independence
 
@@ -124,7 +168,7 @@ last-visit bound.
 \qquad4^3=8^2.
 ```
 
-The new Lean file proves actual scalar divisibility and unique quotient,
+`ScalarEscape.lean` proves actual scalar divisibility and unique quotient,
 all-clock coordinate recovery, transverse injectivity and escape, both
 controls, and the complex-norm statement. Its namespace is
 `GeneralizedCollatz.ScalarEscape`; the quantitative dyadic module retains
@@ -203,13 +247,13 @@ These nonreal cycles demonstrate why the raw escape theorem cannot be
 transferred to a residue-wise quotient convention. One $`J`$ tick has its
 own clock; no conjugacy with a fixed-offset raw map is asserted.
 
-![Gaussian raw minus: off-axis escape and signed real cycles](../QCD.ComplexAtlas.001/other/GaussianMinus.png)
+![Gaussian raw minus: off-axis escape and signed real cycles](../QCD.ComplexDynamics.001/other/GaussianMinus.svg)
 
 Navy cells have a proved escaping tail. Other colors mark exact cycles
 found in the stated finite seed window. These are lattice cells, not a
 continuous orbit on $`\mathbb C`$ or a Julia set.
 
-## Verification and remaining obligations
+## Proof interfaces and computation
 
 `TwoGuard`, `FiniteOddEntry`, `DyadicDecomposition`, `OddTailImag`,
 `OddTailReal`, `OddTailHeight` and `OffAxisEscape` prove the raw descent,
@@ -220,27 +264,26 @@ check the competing quotient convention. `ResidueNonDescent` gives
 $`0\equiv2\pmod2`$ but different raw successor residues: a raw map does
 not automatically descend to a finite ring.
 
-The atlas tests signed quotient arithmetic independently with `big.Rat`,
+The survey tests signed quotient arithmetic independently with `big.Rat`,
 replays dyadic ranks through $`r=10`$ for $`c=\pm1`$, checks the raw-versus-quotient
 negative control, and renders both lattice embeddings. These are finite
 implementation checks; universality comes from the written and Lean proofs.
 
 ```bash
 make lean
-CGO_ENABLED=0 go test ./QCD.ComplexAtlas.001/go
+CGO_ENABLED=0 go test ./QCD.ComplexDynamics.001/go
 make tex TEXFILE=QCD.ComplexLattice.001/tex/ComplexLattice.tex
 bash Scripts/CheckIgnoredPdfs.sh
 bash Scripts/CheckIgnoredTexTemps.sh
 ```
 
-Open: real-axis all-seed behavior, other complex parameter families, and
-infinite basin geometry for $`J_\pm`$. A finite atlas is not an exhaustive cycle
+Open: nonzero-offset real-axis all-seed behavior, other complex parameter families, and
+infinite basin geometry for $`J_\pm`$. A finite survey is not an exhaustive cycle
 classification for the infinite lattice.
 
 ## Source scope
 
 [Kucinski00] Gina I. Kucinski, *Cycles for the $`3x+1`$ map on the Gaussian
 integers*, May 2000, [author-hosted preprint](https://monks.scranton.edu/files/pubs/kucinski.pdf).
-The four-residue definition and main statements were checked; its Maple
-cycle census was not reproduced. The complete proof was not independently
-audited. Its reported bounds concern $`J_+`$, not $`T`$.
+Its Gaussian convention and reported cycle bounds concern $`J_+`$, not $`T`$;
+those bounds are not assumed in the raw escape proofs.

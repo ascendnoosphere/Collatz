@@ -59,7 +59,7 @@ In particular \(A_{0}(n)=n\) and \(A_{j+1}(n)=2A_{j}(n)+1\). Thus \(A_{1}(n)=2n+
 A natural number \(j\) is a first hit of a seed \(n\in\Z\) when \(3\mid A_{j}(n)\) and \(3\nmid A_{i}(n)\) for every natural number \(i<j\). The return of that hit is \(S(S^{j}(n))\).
 \end{definition}
 
-Division by a positive integer is the truncating quotient of \(\Z\), so \(3\cdot(a/3)+a\bmod 3=a\). The remainder \(a\bmod 3\) lies in \(\{0,1,2\}\).
+Division by a positive integer is the Euclidean quotient of \(\Z\), equivalently the floor quotient, so \(3\cdot(a/3)+a\bmod 3=a\). The remainder \(a\bmod 3\) lies in \(\{0,1,2\}\).
 
 \begin{lemma}
 \label{lem:prefix}
@@ -455,7 +455,7 @@ At each term before the target, the first division time is unique, so the next t
 
 \begin{theorem}
 \label{thm:chainlength}
-Let \(s(0),\ldots,s(m)\) be the return chain from \(n\) to \(1\), and let \(L(i)\) be the first division time of \(s(i)\). If \(k\) is the first time the raw orbit of \(n\) equals \(1\), then
+Let \(s(0),\ldots,s(m)\) be the minimal return chain from \(n\) to \(1\), and let \(L(i)\) be the first division time of \(s(i)\). If \(k\) is the first time the raw orbit of \(n\) equals \(1\), then
 \[
 \sum_{i<m}(L(i)+1)=k.
 \]
@@ -569,7 +569,7 @@ The minimal return chain to the target has \(m\) steps, and the sum of its block
 
 \begin{theorem}
 \label{thm:mixed}
-Suppose the raw orbit of \(n\) under the parameters \((2,1,3)\) meets \(1\), or meets \(-1\), and let \(k\) be the first such time. Then there are nonnegative integers \(a_{0}\) and \(a_{1}\) such that \(a_{0}+2a_{1}=k\) and
+Suppose the raw orbit of \(n\) under the parameters \((2,1,3)\) meets \(1\), or meets \(-1\), and let \(k\) be the first such time. Let \(a_0\) and \(a_1\) count the first-hit times \(0\) and \(1\), respectively, in the minimal return chain to that target. These nonnegative integers satisfy \(a_0+2a_1=k\) and
 \[
 3^{a_{0}}4^{a_{1}}\le 3^{a_{1}}|n|.
 \]
@@ -583,7 +583,7 @@ The seed \(4\) has orbit \(4,9,3,1\). One block has length two and one has lengt
 
 \begin{theorem}
 \label{thm:mixedunique}
-The integers \(a_{0}\) and \(a_{1}\) in Theorem~\ref{thm:mixed} are unique. Two minimal return chains from the same seed to the same target have the same length, the same terms, and the same first-hit time at each term, so they have the same number of length-one blocks and the same number of length-two blocks.
+The canonical first-hit counts \(a_{0}\) and \(a_{1}\) in Theorem~\ref{thm:mixed} are unique; the two numerical constraints alone do not determine them. Two minimal return chains from the same seed to the same target have the same length, the same terms, and the same first-hit time at each term, so they have the same number of length-one blocks and the same number of length-two blocks.
 \end{theorem}
 
 \begin{proof}
@@ -634,11 +634,11 @@ The same count holds for the negative seed. One division sends \(3m\) to \(m\), 
 
 \begin{theorem}
 \label{thm:mixedfour}
-The raw orbit of \(4\) is \(4,9,3,1\). The first visit to \(1\) is at time \(3\). The return chain is \(4\mapsto 3\mapsto 1\), with block lengths \(1\) and \(0\). Thus \(a_{0}=1\) and \(a_{1}=1\), and both sides of the count form equal \(12\).
+The raw orbit of \(4\) is \(4,9,3,1\). The first visit to \(1\) is at time \(3\). The return chain is \(4\mapsto 3\mapsto 1\), with first-hit times \(1\) and \(0\), hence raw block lengths \(2\) and \(1\). Thus \(a_0=a_1=1\), and both sides of the uncancelled mixed bound equal \(12\).
 \end{theorem}
 
 \begin{proof}
-The seed \(4\) has remainder \(1\), so its first hit is at time \(1\) and the affine state is \(2\cdot 4+1=9\). The quotient is \(9/3=3\). The seed \(3\) is divisible at once, and its quotient is \(1\). The two earlier states are \(4\) and \(9\), neither of which is \(1\), so time \(3\) is the first visit. One block has length two and one has length one. Both sides of the count form are \(3\cdot 4=12\).
+The seed \(4\) has remainder \(1\), so its first hit is at time \(1\) and the affine state is \(2\cdot 4+1=9\). The quotient is \(9/3=3\). The seed \(3\) is divisible at once, and its quotient is \(1\). The two earlier states are \(4\) and \(9\), neither of which is \(1\), so time \(3\) is the first visit. One block has length two and one has length one. Both sides of the uncancelled mixed bound are \(3\cdot4=12\); its cleared form is \(4=4\).
 \end{proof}
 
 \begin{theorem}
@@ -688,7 +688,7 @@ If \(a_{0}<a_{1}\), canceling the positive factor \(3^{a_{0}}\) gives \(4^{a_{1}
 
 \begin{theorem}
 \label{thm:forcefour}
-Suppose a chain of exact returns satisfies
+Suppose a chain of exact returns satisfies \(\lvert s(t)\rvert\ge2\) for every \(t<i\), and
 \[
 3^{a_{0}}4^{a_{1}}|s(i)|=3^{a_{1}}|n|
 \]
@@ -696,12 +696,12 @@ at index \(i\), where \(a_{0}\) and \(a_{1}\) count the blocks before \(i\). The
 \end{theorem}
 
 \begin{proof}
-Induct on \(i\). The claim is vacuous at \(i=0\). At \(i=r+1\), a length-one block multiplies both sides by the same factor \(3\), so the equality at \(r+1\) is the equality at \(r\). A length-two block replaces the left side by the factor \(4|s(r+1)|\). Equality at both ends forces \(4|s(r+1)|=3|s(r)|\), and the only seed of absolute value at least \(2\) with a time-one hit meeting that factor is \(4\). Every earlier length-two block is supplied by the inductive hypothesis.
+Write \(A_r,B_r\) for the two first-hit counts before index \(r\), and set \(P_r=3^{A_r}(4/3)^{B_r}|s(r)|\). A time-zero hit divides by \(3\), so \(P_{r+1}=P_r\). At a time-one hit, \(x=s(r)\equiv1\pmod3\) and \(s(r+1)=(2x+1)/3\). If \(x>0\), the proper-term guard forces \(x\ge4\), so \(4|2x+1|=8x+4\le9x\). If \(x<0\), writing \(u=-x\ge2\) gives \(4|2x+1|=8u-4<9u\). Thus \(P_{r+1}\le P_r\) throughout the prefix. The assumed equality is \(P_i=P_0\), so every intervening inequality is equality. At a time-one hit it gives \(4|2x+1|=9|x|\). The negative case is impossible, while the positive case gives \(8x+4=9x\), hence \(x=4\).
 \end{proof}
 
 \begin{theorem}
 \label{thm:hitforcefour}
-If a chain of exact returns ends at \(1\) or at \(-1\) and its count form is an equality, then every length-two block begins at \(4\).
+If a minimal chain of exact returns ends at \(1\) or at \(-1\) and its count form is an equality, then every length-two block begins at \(4\).
 \end{theorem}
 
 \begin{proof}
@@ -710,7 +710,7 @@ The final term has absolute value \(1\), so the count equality is the product eq
 
 \begin{theorem}
 \label{thm:negpower}
-If a chain of exact returns ends at \(-1\) and its count form is an equality, then there is no length-two block, and \(|n|=3^{a_{0}}\).
+If a minimal chain of exact returns ends at \(-1\) and its count form is an equality, then there is no length-two block, and \(|n|=3^{a_{0}}\).
 \end{theorem}
 
 \begin{proof}
@@ -719,7 +719,7 @@ A length-two block would begin at \(4\). The raw orbit of \(4\) is \(4,9,3\), an
 
 \begin{theorem}
 \label{thm:oneshape}
-If a chain of exact returns ends at \(1\) and its count form is an equality, then either there is no length-two block and \(n=3^{a_{0}}\), or there is exactly one length-two block, \(a_{0}\ge 1\), and \(n=4\cdot 3^{a_{0}-1}\).
+If a minimal chain of exact returns ends at \(1\) and its count form is an equality, then either there is no length-two block and \(n=3^{a_{0}}\), or there is exactly one length-two block, \(a_{0}\ge 1\), and \(n=4\cdot 3^{a_{0}-1}\).
 \end{theorem}
 
 \begin{proof}
@@ -732,7 +732,7 @@ For every natural number \(t\), the seed \(4\cdot 3^{t}\) reaches \(1\) by the c
 \[
 4\cdot 3^{t},\; 4\cdot 3^{t-1},\; \ldots,\; 4,\; 3,\; 1.
 \]
-Every term before \(4\) divides at once, the term \(4\) has first hit at time one and returns to \(3\), and \(3\) returns at once to \(1\). Thus \(a_{0}=t+1\), \(a_{1}=1\), and both sides of the count form equal \(4\cdot 3^{t+1}\).
+Every term before \(4\) divides at once, the term \(4\) has first hit at time one and returns to \(3\), and \(3\) returns at once to \(1\). Thus \(a_{0}=t+1\), \(a_{1}=1\), and both sides of the uncancelled mixed bound equal \(4\cdot3^{t+1}\).
 \end{theorem}
 
 \begin{proof}

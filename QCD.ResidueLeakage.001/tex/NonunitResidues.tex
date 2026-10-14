@@ -1,0 +1,228 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Affine Escape from a Prime-Square Residue Layer}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For every prime \(p\) and positive integers \(Q,C\) not divisible by \(p\), consider the raw map with multiplier \(pQ\), offset \(pC\), and divisor \(p^2\). A residue layer of valuation one is invariant and division-free. The complement of its basin has natural density zero. The proof counts finite valuation words and controls the two truncation errors before passing to the density limit. In particular, density-one escape can hold when the common divisor of the multiplier and divisor divides the offset.
+\end{abstract}
+
+\section{The raw map and the invariant layer}
+
+Fix a prime \(p\), positive integers \(Q,C\), and assume \(p\nmid Q C\).
+All seeds in this article are positive integers. Define
+\[
+T(n)=
+\begin{cases}
+n/p^2,&p^2\mid n,\\
+pQn+pC,&p^2\nmid n.
+\end{cases}
+\]
+Every orbit remains positive. The division branch has precedence.
+Write \(v_p(n)\) for the exponent of \(p\) in a positive integer \(n\).
+
+\begin{lemma}[Invariant layer]
+\label{lem:layer}
+If \(v_p(n)=1\), then every raw step is affine and every later state has valuation one. The orbit tends to infinity along the full sequence.
+\end{lemma}
+
+\begin{proof}
+Since \(p^2\nmid n\), the next state is \(p(Qn+C)\).
+As \(p\mid n\) and \(p\nmid C\), the factor \(Qn+C\) is not divisible by \(p\).
+The new valuation is exactly one. This proves invariance by induction.
+In this layer the exact trajectory is
+\[
+T^j(n)=(pQ)^j n+pC\sum_{i=0}^{j-1}(pQ)^i.
+\]
+Here \(pQ\ge2\), so these positive states tend to infinity. No compressed-clock argument is needed after layer entry.
+\end{proof}
+
+Every seed has a unique form \(n=p^{2k}u\), with \(k\ge0\) and \(p^2\nmid u\).
+Indeed repeated division by \(p^2\) strictly decreases a positive integer.
+The first \(k\) raw steps recover \(u\). If \(p\mid u\), Lemma~\ref{lem:layer} applies immediately.
+It remains to study units \(p\nmid u\).
+
+\begin{lemma}[Unit return]
+\label{lem:return}
+Let \(p\nmid u\) and put \(v=v_p(Qu+C)\).
+If \(v\) is even, including \(v=0\), the next affine step followed by all forced divisions reaches the invariant layer.
+If \(v\) is odd, write \(v=2a+1\). The same block returns to the unit
+\[
+G(u)=\frac{Qu+C}{p^v}
+\]
+in exactly \(a+2\) raw steps.
+\end{lemma}
+
+\begin{proof}
+The affine image \(p(Qu+C)\) has valuation \(v+1\).
+Each legal division by \(p^2\) removes exactly two from that valuation.
+An odd value of \(v+1\) leaves valuation one; an even value leaves valuation zero.
+For \(v=2a+1\), there are \(a+1\) forced divisions after the single affine step.
+Their quotient is
+\[
+\frac{p(Qu+C)}{p^{2a+2}}=\frac{Qu+C}{p^{2a+1}},
+\]
+a unit. Positivity makes \(Qu+C\) nonzero, so \(v\) is finite.
+\end{proof}
+
+\section{The exact finite-word law}
+
+The relative density of a subset of units means its density among positive integers not divisible by \(p\).
+For a prescribed word \(\boldsymbol v=(v_1,\ldots,v_h)\) of positive valuations, put \(s=v_1+\cdots+v_h\).
+The successive unit quotients are required to have exactly these valuations; this word condition is not merely divisibility by \(p^s\).
+
+\begin{lemma}[Valuation cylinders]
+\label{lem:cylinder}
+The units having a prescribed finite valuation word \(\boldsymbol v\) form exactly \(p-1\) residue classes modulo \(p^{s+1}\).
+Their ordinary density is \((p-1)/p^{s+1}\), and their relative unit density is \(p^{-s}\).
+\end{lemma}
+
+\begin{proof}
+Work first in \(\Z_p\), defined as the inverse limit of \(\Z/p^j\Z\).
+Multiplication by \(Q\) is invertible at every finite level because \(p\nmid Q\), and these inverses are compatible.
+For \(v\ge1\), the inverse branch
+\[
+I_v(y)=\frac{p^v y-C}{Q}
+\]
+sends every \(p\)-adic unit to a unit: its residue modulo \(p\) is \(-C/Q\ne0\).
+It satisfies \(QI_v(y)+C=p^v y\), so the valuation is exactly \(v\).
+Conversely any unit with that valuation is obtained from this inverse branch.
+
+The composition of \(h\) inverse branches has the form
+\[
+I_{v_1}\circ\cdots\circ I_{v_h}(y)
+=\frac{p^s y-B}{Q^h}
+\]
+for an integer \(B\); this follows by induction, multiplying the previous numerator by \(Q\) and adding the next translated term.
+As \(y\) varies over the \(p-1\) nonzero residues modulo \(p\), the displayed expression gives \(p-1\) distinct source residues modulo \(p^{s+1}\).
+Varying the higher digits of \(y\) fills each of those classes because \(Q^h\) is a unit.
+
+Conversely every source in these classes has the specified valuations.
+In fact the inverse construction recovers every intermediate unit and the identities \(Q u_{i-1}+C=p^{v_i}u_i\).
+For positive integer sources those identities are exact integral divisions, so the \(p\)-adic cylinder condition recovers the arithmetic unit-quotient itinerary. For words consisting entirely of odd valuations, Lemma~\ref{lem:return} identifies those quotients with the actual finite raw unit-return itinerary.
+The density of a residue class modulo \(p^{s+1}\) is \(p^{-s-1}\).
+Divide the ordinary density by the density \((p-1)/p\) of the units to obtain \(p^{-s}\).
+\end{proof}
+
+Thus the positive valuations have weights \(p^{-v}\).
+For \(p>2\) they do not exhaust the unit law: valuation zero has the remaining weight \((p-2)/(p-1)\) and immediately enters the invariant layer.
+The total weight of the allowed odd valuations is
+\[
+\lambda=\sum_{a\ge0}p^{-(2a+1)}=\frac{p}{p^2-1}<1.
+\]
+
+\begin{lemma}[Finite truncation]
+\label{lem:truncation}
+Let \(U_h\) be the set of units whose first \(h\) blocks all return to units.
+Its upper relative density is at most \(\lambda^h\).
+\end{lemma}
+
+\begin{proof}
+Fix \(h\) and an integer \(V\ge1\).
+Words with all valuations odd and at most \(V\) form a finite disjoint union of the cylinders in Lemma~\ref{lem:cylinder}.
+Its relative density is
+\[
+\left(\sum_{\substack{1\le v\le V\\v\ {\rm odd}}}p^{-v}\right)^h
+\le\lambda^h.
+\]
+If a seed of \(U_h\) is omitted, let \(j<h\) be the first block whose valuation exceeds \(V\).
+The preceding \(j\) valuations are odd and at most \(V\), so there are only finitely many preceding words.
+For each such word the next condition is \(Qu_j+C\equiv0\pmod{p^{V+1}}\).
+Among units its relative density is \(p^{-V}/(p-1)\): it is one unit class modulo \(p^{V+1}\).
+The inverse branches multiply this density by the preceding word's weight.
+Summing those weights gives at most \(\lambda^j\le1\).
+The omitted set therefore lies in a finite union with upper relative density at most
+\[
+\sum_{j<h}\frac{p^{-V}}{p-1}\le h p^{-V}.
+\]
+Consequently \(\overline d_{\rm unit}(U_h)\le\lambda^h+h p^{-V}\).
+Let \(V\) tend to infinity with \(h\) fixed.
+This is a finite-cylinder counting argument; measure zero in \(\Z_p\) alone would not give an ordinary-density statement for integers.
+\end{proof}
+
+\section{Density-one escape}
+
+Let \(A_h\) be the positive seeds which, after stripping the initial whole \(p^2\)-power, begin with a unit and survive \(h\) unit returns.
+
+\begin{theorem}[Prime-square leakage]
+\label{thm:escape}
+For every \(h\ge0\),
+\[
+\overline d(A_h)\le \frac{p}{p+1}\lambda^h,
+\qquad \lambda=\frac{p}{p^2-1}.
+\]
+The seeds which never enter the valuation-one layer have natural density zero.
+The positive seeds whose raw orbits tend to infinity have natural density one.
+\end{theorem}
+
+\begin{proof}
+Fix an initial-factor cutoff \(K\).
+For \(0\le k<K\), multiplication of a subset of integers by \(p^{2k}\) divides its upper ordinary density by \(p^{2k}\):
+its counting function at \(X\) is the original counting function at \(\lfloor X/p^{2k}\rfloor\).
+Lemma~\ref{lem:truncation}, and the unit density \((p-1)/p\), bound the finite union by
+\[
+\frac{p-1}{p}\lambda^h\sum_{k=0}^{K-1}p^{-2k}.
+\]
+Every remaining seed is divisible by \(p^{2K}\); this tail has density \(p^{-2K}\).
+Let \(X\) tend to infinity first, then \(K\) tend to infinity. The geometric series gives
+\[
+\overline d(A_h)\le
+\frac{(p-1)/p}{1-p^{-2}}\lambda^h
+=\frac{p}{p+1}\lambda^h.
+\]
+
+A positive seed which never reaches the layer must survive every number \(h\) of unit returns.
+Initial stripping terminates, and each unit block is finite by Lemma~\ref{lem:return}.
+Its exceptional set is therefore contained in \(A_h\) for every \(h\).
+Since \(\lambda<1\), letting \(h\) tend to infinity proves upper density zero, and hence natural density zero.
+Every other seed reaches the layer at a finite raw time and escapes by Lemma~\ref{lem:layer}.
+The escaping set contains this density-one set and has density at most one, so its natural density is one.
+\end{proof}
+
+For \((q,c,D)=(6,2,4)\), take \(p=2,Q=3,C=1\).
+Here \(\gcd(q,D)=2\mid c\), so the common-divisor miss criterion does not apply.
+The new surviving weight is \(2/3\).
+The conclusion is not an all-seed escape theorem:
+for \((2,2,4)\), which satisfies the same hypotheses, \(1\mapsto4\mapsto1\) is a primitive raw two-cycle.
+The theorem leaves the zero-density unit-return exceptional set unclassified.
+
+\section{Formal companions}
+
+The active declarations \texttt{SquareLayerImageMiss}, \texttt{SquareLayerInvariant},
+\texttt{SquareLayerTail}, \texttt{SquareLayerEscape}, and \texttt{SquareUnitReturn}
+in \texttt{QCD.ResidueLeakage.001/lean/NonCoprime.lean} formalize the invariant layer, its full-clock escape, and prescribed odd-power block recovery with a unit endpoint.
+The cylinder counting, truncation, and natural-density theorem above are written proofs; these measure-theoretic statements are not asserted to be declarations in that file.
+
+\end{document}

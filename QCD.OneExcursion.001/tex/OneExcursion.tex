@@ -36,13 +36,13 @@
 \maketitle
 
 \begin{abstract}
-For an odd seed \(n=2^a u-1\), the single-even exit is \(y=(3^a u-1)/2\). The quarter and half parents of that exit lie strictly below \(n\) exactly when two explicit linear forms in \(u\) are positive. Those forms are positive only for \(a\le 2\) and \(a\le 3\) respectively, so both fail for every positive \(u\) once \(a\ge 4\). For \(a\ge 2\) the same exit obeys \(9(n+1)\le 8(y+1)\). Six such steps force the exit to be at least \(2n+1\), and then none of the four elementary cleared-parent inequalities is strict.
+For \(a\ge1\) and a positive odd integer \(u\), the seed \(n=2^a u-1\) is odd, and the single-even exit is \(y=(3^a u-1)/2\). The quarter and half parents of that exit lie strictly below \(n\) exactly when two explicit linear forms in \(u\) are positive. Those forms are positive only for \(a\le 2\) and \(a\le 3\) respectively, so both fail for every positive \(u\) once \(a\ge 4\). For \(a\ge 2\) the same exit obeys \(9(n+1)\le 8(y+1)\). Six such steps force the exit to be at least \(2n+1\), and then none of the four elementary cleared-parent inequalities is strict.
 \end{abstract}
 
 \section{Seed, shortcut, and coefficients}
 
 \begin{definition}
-The shortcut \(T\) sends an even positive integer to its half and an odd positive integer to \((3n+1)/2\). For \(a\in\N\) and a positive odd integer \(u\), write \(n=2^a u-1\). The run of \(a\) odd shortcuts is the sequence \(3^j 2^{a-j}u-1\) for \(0\le j\le a\).
+The shortcut \(T\) is defined on \(\N\): it sends an even integer to its half and an odd integer to \((3n+1)/2\); in particular \(T(0)=0\). For \(a\in\N\) and a positive odd integer \(u\), write \(n=2^a u-1\). This seed is odd when \(a\ge1\). For \(j<a\), the state \(3^j2^{a-j}u-1\) is odd, so the first \(a\) shortcuts give the states \(3^j2^{a-j}u-1\), \(0\le j\le a\). When \(a=0\), this assertion contains only the initial state and no odd step.
 \end{definition}
 
 \begin{definition}

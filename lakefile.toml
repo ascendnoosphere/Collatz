@@ -37,6 +37,8 @@ defaultTargets = [
   "ResidueAccess",
   "ResidueCylinders",
   "ResidueDensity",
+  "BoundaryDrift",
+  "NonCoprime",
   "SignedTraps",
   "SignedCore",
   "AncestralJoin",
@@ -73,11 +75,13 @@ defaultTargets = [
   "BurstGrowth",
   "TwoAffineCongruence",
   "TwoAffineEven",
+  "TwoAffineClassification",
   "OneExcursion",
   "FamilySplit",
   "LatticeEntry",
   "MirrorSign",
   "ThreeAffineClosure",
+  "ThreeAffineLegal",
   "RecursiveClose",
   "NoCrossing",
   "ParentRise",
@@ -95,6 +99,7 @@ defaultTargets = [
   "CycleResonance",
   "ComplexLattice",
   "ScalarEscape",
+  "HomogeneousLattice",
   "ComplexPolynomials",
   "ComplexFields",
 ]
@@ -277,6 +282,14 @@ name = "ResidueDensity"
 srcDir = "QCD.ResidueLeakage.001/lean"
 
 [[lean_lib]]
+name = "BoundaryDrift"
+srcDir = "QCD.ResidueLeakage.001/lean"
+
+[[lean_lib]]
+name = "NonCoprime"
+srcDir = "QCD.ResidueLeakage.001/lean"
+
+[[lean_lib]]
 name = "SignedTraps"
 srcDir = "QCD.SignedTraps.001/lean"
 
@@ -421,6 +434,10 @@ name = "TwoAffineEven"
 srcDir = "QCD.TwoAffineEven.001/lean"
 
 [[lean_lib]]
+name = "TwoAffineClassification"
+srcDir = "QCD.TwoAffineEven.001/lean"
+
+[[lean_lib]]
 name = "OneExcursion"
 srcDir = "QCD.OneExcursion.001/lean"
 
@@ -438,6 +455,10 @@ srcDir = "QCD.MirrorSign.001/lean"
 
 [[lean_lib]]
 name = "ThreeAffineClosure"
+srcDir = "QCD.ThreeAffineClosure.001/lean"
+
+[[lean_lib]]
+name = "ThreeAffineLegal"
 srcDir = "QCD.ThreeAffineClosure.001/lean"
 
 [[lean_lib]]
@@ -509,9 +530,13 @@ name = "ScalarEscape"
 srcDir = "QCD.ComplexLattice.001/lean"
 
 [[lean_lib]]
+name = "HomogeneousLattice"
+srcDir = "QCD.ComplexLattice.001/lean"
+
+[[lean_lib]]
 name = "ComplexPolynomials"
-srcDir = "QCD.ComplexAtlas.001/lean"
+srcDir = "QCD.ComplexDynamics.001/lean"
 
 [[lean_lib]]
 name = "ComplexFields"
-srcDir = "QCD.ComplexAtlas.001/lean"
+srcDir = "QCD.ComplexDynamics.001/lean"

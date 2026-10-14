@@ -9,12 +9,11 @@ A(n)=qn+c,\qquad z(n)=(q-1)n+c,\qquad f(r)=(qr+c)\bmod m.
 The raw map divides the current state by $`d`$ when $`d`$ divides it, and otherwise
 applies $`A`$. The zeroth raw state is the seed.
 
-## Profile/PairProfile schema and fixed precision
+## Arithmetic profiles and residue precision
 
-The [item-by-item schema audit](SchemaAudit.md) treats all **297 requested
-bullets**, with domains, exact uses, candidate bridges and underspecified
-observables kept separate. It is not a claim that those labels classify
-arbitrary raw orbits.
+The [integer and pair profiles](ArithmeticProfiles.md) specify domains and
+mathematical roles for arithmetic and representation observables.
+A static profile value is not an orbit invariant without a proved recovery rule.
 
 For every $`q,c\in\mathbb Z`$, $`d\ge2`$ and $`k\ge0`$, the inputs
 $`0,d^{k+1}`$ agree modulo $`d^{k+1}`$, but their raw successors
@@ -158,7 +157,7 @@ extrapolating the rectangle. Behavior after the first division is not classified
 - [Lean definitions and theorems](lean/ProfileDrop.lean).
 - [Restricted prime-power affine-return helpers](lean/ProfilePrimePower.lean).
 - [Fixed raw precision and exact division transfer](lean/ProfilePrecision.lean).
-- [Complete enumerated Profile/PairProfile crosswalk](SchemaAudit.md).
+- [Integer and pair observables](ArithmeticProfiles.md).
 - [Bounded arithmetic certificate](go/ProfileDrop.go).
 - [Exact-reference and boundary tests](go/ProfileDrop_test.go).
 

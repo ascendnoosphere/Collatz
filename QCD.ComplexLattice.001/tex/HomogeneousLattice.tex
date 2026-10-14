@@ -1,0 +1,160 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Homogeneous Scalar Dynamics on Quadratic Lattices}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For signed scalar coefficients of magnitude at least two and zero offset, the raw map on every specified imaginary quadratic coordinate order has a complete escape--periodicity dichotomy. Multiplicatively independent magnitudes force every nonzero seed to escape in complex norm. Dependent magnitudes give a finite coordinate box containing the entire orbit, hence eventual periodicity. The coordinate gcd is the exact positive homogeneous factor; its reconstruction retains the original division guard and every raw tick.
+\end{abstract}
+
+\section{Coordinates and content}
+
+Fix integers \(\tau,\nu\) with \(4\nu>\tau^2\), and let
+\[
+\theta=\frac{\tau+i\sqrt{4\nu-\tau^2}}2,\qquad R=\Z+\Z\theta.
+\]
+The relation \(\theta^2=\tau\theta-\nu\) makes \(R\) a ring.
+The coefficients \(x,y\) of \(z=x+y\theta\) are unique because \(\operatorname{Im}\theta>0\).
+For integers \(q,d\) with \(|q|,|d|\ge2\), scalar divisibility is
+\[
+d\mid_R (x+y\theta)\quad\Longleftrightarrow\quad d\mid x\ \hbox{and}\ d\mid y.
+\]
+Indeed multiplication by the real scalar \(d\) multiplies both coordinates, and uniqueness recovers each integer quotient.
+Thus the zero-offset raw map is exactly
+\[
+(x,y)\longmapsto
+\begin{cases}
+(x/d,y/d),&d\mid x,\ d\mid y,\\
+(qx,qy),&\text{otherwise}.
+\end{cases}
+\]
+
+For a nonzero pair \(w=(x,y)\), put \(g(w)=\gcd(|x|,|y|)>0\).
+B\'ezout's identity gives
+\[
+d\mid x,\ d\mid y\quad\Longleftrightarrow\quad |d|\mid g(w).
+\]
+Also \(g(qx,qy)=|q|g(w)\), and at a legal division
+\(g(x/d,y/d)=g(w)/|d|\).
+Consequently the content follows the positive scalar map
+\[
+g\longmapsto
+\begin{cases}
+g/|d|,&|d|\mid g,\\
+|q|g,&\text{otherwise}.
+\end{cases}
+\]
+The pair stays nonzero because both branch multipliers are nonzero.
+
+\begin{lemma}[Coordinate reconstruction]
+\label{lem:coordinates}
+If \(w_j=(x_j,y_j)\) and \(g_j=g(w_j)\), then for every \(j\ge0\),
+\[
+g_0|x_j|=g_j|x_0|,\qquad g_0|y_j|=g_j|y_0|.
+\]
+\end{lemma}
+
+\begin{proof}
+At an affine step, all three magnitudes \(g,|x|,|y|\) are multiplied by \(|q|\).
+At a division step, all are divided exactly by \(|d|\).
+Multiplying the proposed next identity by the nonzero integer \(|d|\) reduces it to the previous identity.
+Both identities hold at time zero, so induction proves them at every raw time.
+\end{proof}
+
+\section{The classification}
+
+\begin{theorem}[Scalar homogeneous dichotomy]
+\label{thm:dichotomy}
+Zero is fixed. For every nonzero seed \(z=x+y\theta\):
+\begin{enumerate}
+\item If \(|q|^a\ne|d|^b\) for all positive \(a,b\), then the full raw orbit tends to infinity in complex norm.
+\item If \(|q|^a=|d|^b\) for some positive \(a,b\), then the full raw orbit is eventually periodic. Every coordinate satisfies
+\[
+|x_j|\le |q||d||x|,\qquad |y_j|\le |q||d||y|.
+\]
+\end{enumerate}
+No restriction to nonreal seeds or to positive scalar coefficients is imposed.
+\end{theorem}
+
+\begin{proof}
+First recall the positive content classification. A nonempty content return gives
+\(|q|^A=|d|^E\), where \(A,E>0\) are its affine and division counts:
+a word using only one branch cannot return a positive magnitude.
+Under independence, a collision of two times would give such a return at the intervening positive state.
+Thus the content orbit is injective. Each bounded subset of \(\N\) is finite, so an injective sequence of natural numbers tends to infinity.
+
+If \(y\ne0\), Lemma~\ref{lem:coordinates} gives \(|y_j|\to\infty\), and
+\[
+|x_j+y_j\theta|\ge |\operatorname{Im}(x_j+y_j\theta)|
+=\operatorname{Im}(\theta)|y_j|\longrightarrow\infty.
+\]
+If \(y=0\), this coordinate remains zero and \(x\ne0\).
+The same lemma gives \(|x_j|\to\infty\), which is exactly complex-norm escape on the real axis.
+
+In the dependent case, write \(|q|=t^u,\ |d|=t^v\), with \(t\ge2\), \(u,v>0\), and \(\gcd(u,v)=1\).
+To obtain this form, take a dependence \(|q|^a=|d|^b\), let \(g=\gcd(a,b)\), and put \(u=b/g,\ v=a/g\).
+For every prime \(\ell\), equality of exponents gives \(v_\ell(|q|)=u e_\ell\) and \(v_\ell(|d|)=v e_\ell\), since \(\gcd(u,v)=1\).
+Then \(t=\prod_\ell\ell^{e_\ell}\) has the required properties and \(t\ge2\).
+Write \(g_0=rt^k\) with \(t\nmid r\).
+The residual \(r\) is fixed, and the exponent changes by
+\(k\mapsto k-v\) when \(k\ge v\), and \(k\mapsto k+u\) otherwise.
+Every exponent is less than \(\max(k+1,u+v)\):
+above \(u+v-1\) the division branch strictly decreases, and below this bound both branches stay below it.
+Therefore \(g_j\le t^{u+v}g_0=|q||d|g_0\).
+Insert this bound into Lemma~\ref{lem:coordinates} and cancel the positive \(g_0\).
+This gives the two asserted coordinate bounds.
+
+The actual signed pair orbit lies in a finite integral rectangle.
+Two states therefore coincide. Determinism makes every later state repeat at the same positive time difference, proving eventual periodicity of the raw pair.
+The unique coordinate embedding recovers the actual ring states and their identical clocks.
+\end{proof}
+
+When both scalars are positive, the content exponent cycle is addition by \(u\) modulo \(u+v\), with primitive period \(u+v\).
+For signed scalars the present theorem asserts eventual periodicity without a formula for its primitive period.
+For example, \(q=4,d=8\) gives the nonreal cycle
+\(\theta,4\theta,16\theta,2\theta,8\theta,\theta\).
+The dependent signed classification concerns the actual finite rectangle, not just periodicity of the content factor.
+
+\section{Formal correspondence}
+
+The active file \texttt{QCD.ComplexLattice.001/lean/HomogeneousLattice.lean}
+proves the content guard, its scalar recursion, the coordinate reconstruction identity, full-sequence height escape, and bounded dependent coordinates.
+Its final declarations \texttt{RingIndependentEscape} and
+\texttt{RingDependentEventuallyPeriodic} recover the actual quadratic ring and complex norm.
+The positive content classification is the one in
+\texttt{QCD.Homogeneous.001} and \texttt{QCD.Homogeneous.002}.
+These are same-clock scalar dynamical statements; they do not identify the multiplication tables of different quadratic orders.
+
+\end{document}

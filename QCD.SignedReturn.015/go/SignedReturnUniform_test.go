@@ -5,6 +5,24 @@ package main
 
 import "testing"
 
+// TestSignedProductBoundary rejects the exceptional signed multiplication in either order.
+func TestSignedProductBoundary(t *testing.T) {
+	const minInt64 = -1 << 63
+	if _, ok := mulOK(-1, minInt64); ok {
+		t.Fatal("-MinInt64 was accepted as an int64")
+	}
+	if _, ok := mulOK(minInt64, -1); ok {
+		t.Fatal("MinInt64 times -1 was accepted as an int64")
+	}
+	w := NewWorkspace()
+	if !w.Load(-1) {
+		t.Fatal("multiplier -1 did not load")
+	}
+	if _, ok := w.State(0, minInt64, 1); ok {
+		t.Fatal("an unrepresentable affine state was accepted")
+	}
+}
+
 // expectUnitHit is the independent multiplier-one criterion for |d|=2:
 // an even seed hits at time 0, and an odd seed hits at time 1 exactly
 // when the offset is odd. Replacing the scanned predicate by true would

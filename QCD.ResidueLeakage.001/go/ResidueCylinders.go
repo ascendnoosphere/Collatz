@@ -374,7 +374,99 @@ func WriteReport(path string, rows []Record) error {
 	return os.Rename(name, path)
 }
 
-// main regenerates the finite evidence from the repository root without source execution.
+// BoundaryRecord retains the exact marked-word law at a full affine residue cycle.
+type BoundaryRecord struct {
+	Parameters       Parameters `json:"parameters"`
+	Depth            uint64     `json:"depth"`
+	Words            uint64     `json:"words"`
+	DistinctWords    uint64     `json:"distinct_words"`
+	SumDelays        uint64     `json:"sum_delays"`
+	SumSquaredDelays uint64     `json:"sum_squared_delays"`
+	ContractingWords uint64     `json:"contracting_words"`
+}
+
+// BoundaryCensus checks every word and the first two moments without random sampling.
+func BoundaryCensus(p Parameters, h uint64, w *Workspace) (BoundaryRecord, error) {
+	m, err := AccessPeriod(p)
+	if err != nil || m != p.D || p.D > 16 {
+		return BoundaryRecord{}, fmt.Errorf("boundary census requires a full cycle with D<=16")
+	}
+	modulus, err := Power(p.D, h, MaxSeeds)
+	if err != nil {
+		return BoundaryRecord{}, err
+	}
+	w.Seed.SetUint64(modulus - 1)
+	if err := CheckBudget(p, m, h, &w.Seed); err != nil {
+		return BoundaryRecord{}, err
+	}
+	seen := make([]bool, modulus)
+	seen = seen[:len(seen)]
+	row := BoundaryRecord{Parameters: p, Depth: h, Words: modulus}
+	for seed := uint64(0); seed < modulus; seed++ {
+		w.State.SetUint64(seed)
+		w.Q.SetUint64(p.Q)
+		w.C.SetUint64(p.C)
+		w.D.SetUint64(p.D)
+		w.Multiplier.SetUint64(1)
+		w.Ticks, w.Divisions = 0, 0
+		code, total := uint64(0), uint64(0)
+		for j := uint64(0); j < h; j++ {
+			before := w.Ticks
+			if !w.Block(m) {
+				return BoundaryRecord{}, fmt.Errorf("full-cycle word rejected at seed %d", seed)
+			}
+			delay := w.Ticks - before - 1
+			if delay >= p.D {
+				return BoundaryRecord{}, fmt.Errorf("return delay exceeds alphabet")
+			}
+			code = p.D*code + delay
+			total += delay
+		}
+		if code >= modulus || seen[code] {
+			return BoundaryRecord{}, fmt.Errorf("marked word collision at seed %d", seed)
+		}
+		seen[code] = true
+		row.DistinctWords++
+		row.SumDelays += total
+		row.SumSquaredDelays += total * total
+		w.SavedUnit.SetUint64(modulus)
+		if w.Multiplier.Cmp(&w.SavedUnit) < 0 {
+			row.ContractingWords++
+		}
+	}
+	// These integer equalities are the uniform-digit mean and variance with denominators cleared.
+	meanOK := 2*row.SumDelays == modulus*h*(p.D-1)
+	varianceOK := 12*row.SumSquaredDelays ==
+		modulus*(3*h*h*(p.D-1)*(p.D-1)+h*(p.D*p.D-1))
+	if !meanOK || !varianceOK {
+		return BoundaryRecord{}, fmt.Errorf("uniform-digit moment identity failed")
+	}
+	return row, nil
+}
+
+// BoundaryExamples contrasts negative and positive drift using exact finite-word counts.
+func BoundaryExamples() error {
+	models := [...]Parameters{{Q: 3, C: 1, D: 2}, {Q: 5, C: 1, D: 2},
+		{Q: 4, C: 1, D: 3}, {Q: 5, C: 1, D: 4}, {Q: 7, C: 1, D: 6}}
+	var w Workspace
+	w.Initialize()
+	for _, p := range models {
+		h := uint64(6)
+		if p.D == 2 {
+			h = 12
+		}
+		row, err := BoundaryCensus(p, h, &w)
+		if err != nil {
+			return err
+		}
+		fmt.Printf("boundary q=%d c=%d D=%d depth=%d words=%d contracting=%d "+
+			"delay-sum=%d delay-square-sum=%d\n", p.Q, p.C, p.D, h,
+			row.Words, row.ContractingWords, row.SumDelays, row.SumSquaredDelays)
+	}
+	return nil
+}
+
+// main regenerates finite residue counts and marked boundary laws from the repository root.
 func main() {
 	models := Models()
 	rows, err := Execute(models, 5)
@@ -397,4 +489,8 @@ func main() {
 	}
 	fmt.Printf("models=%d records=%d legal-classes=%d raw-clocks=%d lifts=%d strict-rows=%d\n",
 		len(models), len(rows), classes, raw, lifts, strict)
+	if err := BoundaryExamples(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 }

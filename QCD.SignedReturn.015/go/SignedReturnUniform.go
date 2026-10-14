@@ -92,6 +92,10 @@ func mulOK(a, b int64) (int64, bool) {
 	if a == 0 || b == 0 {
 		return 0, true
 	}
+	const minInt64 = -1 << 63
+	if (a == -1 && b == minInt64) || (b == -1 && a == minInt64) {
+		return 0, false
+	}
 	prod := a * b
 	if prod/a != b {
 		return 0, false

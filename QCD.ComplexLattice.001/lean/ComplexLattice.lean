@@ -285,7 +285,7 @@ noncomputable def ImaginaryEmbedding (tau nu : ℤ) (h : tau ^ 2 < 4 * nu) :
   QuadraticAlgebra.lift ⟨ImaginaryGenerator tau nu, by
     simpa only [zsmul_eq_mul, Int.cast_neg, mul_one] using ImaginaryGeneratorRoot tau nu h⟩
 
-/-- The algebra embedding uses the same complex coordinates as the visual atlas. -/
+/-- The algebra embedding uses the same complex coordinates as the visual survey. -/
 theorem ImaginaryEmbeddingApply (tau nu : ℤ) (h : tau ^ 2 < 4 * nu)
     (z : LatticeRing tau nu) :
     ImaginaryEmbedding tau nu h z = (z.re : ℂ) + (z.im : ℂ) * ImaginaryGenerator tau nu := by

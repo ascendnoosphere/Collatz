@@ -8,8 +8,8 @@ common power or a neutral orbit.
 
 [Lean proofs](lean/GaussianDynamics.lean) ·
 [Detailed proofs](tex/GaussianDynamics.tex) ·
-[Related lattice atlas](../QCD.ComplexAtlas.001/README.md) ·
-[Source dispositions](../QCD.ComplexAtlas.001/ResearchAudit.md)
+[Related lattice survey](../QCD.ComplexDynamics.001/README.md) ·
+[Related literature](../QCD.ComplexDynamics.001/Literature.md)
 
 ## Domain and exact branch
 
@@ -95,10 +95,10 @@ $`5`$. It sends $`q\mapsto4`$, a unit, and $`d\mapsto0`$. Positive powers of
 $`d`$ map to zero, whereas powers of $`q`$ remain units. Equality is impossible.
 The formal results are `EqualNormSplitEscape` and `EqualNormNoCommonPower`.
 
-![Gaussian split-prime lattice census](../QCD.ComplexAtlas.001/other/GaussianSplit.png)
+![Gaussian split-prime lattice census](../QCD.ComplexDynamics.001/other/GaussianSplit.png)
 
 This bounded picture is not the proof: its coordinate exits are separately
-labelled in the atlas. The theorem above supplies the universal conclusion
+labelled in the survey. The theorem above supplies the universal conclusion
 for this particular homogeneous family.
 
 ## Reduction contract and remaining obligations

@@ -3,16 +3,29 @@ package main
 
 import (
 	"fmt"
+	"math/bits"
 	"os"
 	"sync"
 )
 
-// Step applies one positive offset step to a machine-word state.
-func Step(c, n uint64) uint64 {
+// StepChecked applies the integer step and reports whether its result fits in a word.
+func StepChecked(c, n uint64) (uint64, bool) {
 	if n%2 == 0 {
-		return n / 2
+		return n / 2, true
 	}
-	return 3*n + c
+	if n > (^uint64(0)-c)/3 {
+		return 0, false
+	}
+	return 3*n + c, true
+}
+
+// Step applies a representable step and rejects an overflowing orbit rather than wrapping it.
+func Step(c, n uint64) uint64 {
+	state, ok := StepChecked(c, n)
+	if !ok {
+		panic("offset step exceeds uint64")
+	}
+	return state
 }
 
 // Gcd returns the Euclidean greatest common divisor of two machine words.
@@ -25,6 +38,9 @@ func Gcd(a, b uint64) uint64 {
 
 // Pow3 returns three to the power a, valid for a at most forty.
 func Pow3(a uint64) uint64 {
+	if a > 40 {
+		panic("power of three exceeds uint64")
+	}
 	power := uint64(1)
 	for i := uint64(0); i < a; i++ {
 		power *= 3
@@ -103,7 +119,7 @@ func OrbitStratumPreserved(c, m, seed uint64, horizon int, ws *Workspace) bool {
 
 // CycleWitness reports whether c, 4c and 2c form the exact three-step cycle of an odd offset.
 func CycleWitness(c uint64) bool {
-	if c%2 == 0 {
+	if c%2 == 0 || c > ^uint64(0)/4 {
 		return false
 	}
 	return Step(c, c) == 4*c && Step(c, 4*c) == 2*c && Step(c, 2*c) == c
@@ -127,46 +143,66 @@ func MultiplesBelow(m, n uint64) uint64 {
 	if m == 0 {
 		return 0
 	}
-	return (n + m - 1) / m
+	count := n / m
+	if n%m != 0 {
+		count++
+	}
+	return count
 }
 
-// DensityHolds reports whether multiples of m below n satisfy m * count at most n + m.
+// DensityHolds compares the two integer quantities using full-width multiplication and addition.
 func DensityHolds(m, n uint64) bool {
-	return m*MultiplesBelow(m, n) <= n+m
+	leftHi, leftLo := bits.Mul64(m, MultiplesBelow(m, n))
+	rightLo, rightHi := bits.Add64(n, m, 0)
+	return leftHi < rightHi || (leftHi == rightHi && leftLo <= rightLo)
 }
 
 // HalvingPrefix returns the state reached from 2^v * u after exactly v halving steps.
 func HalvingPrefix(c, u uint64, v int, ws *Workspace) uint64 {
+	if v < 0 || v > 63 || u > ^uint64(0)>>uint(v) {
+		panic("halving prefix seed exceeds uint64")
+	}
 	states := ws.Orbit(c, u<<uint(v), v+1)
 	states = states[:len(states)]
 	return states[len(states)-1]
 }
 
-// Reaches reports whether the orbit of seed exceeds bound within the first budget steps. The
-// walk stops at the first state above the bound, so no state beyond it is computed and no
-// machine-word wrap can occur.
+// Reaches tests a finite threshold crossing without forming any state above the threshold.
 func Reaches(c, seed, bound uint64, budget int) bool {
 	state := seed
 	if state > bound {
 		return true
 	}
 	for i := 0; i < budget; i++ {
-		state = Step(c, state)
-		if state > bound {
+		if state%2 == 0 {
+			state /= 2
+			continue
+		}
+		if c > bound || state > (bound-c)/3 {
 			return true
 		}
+		state = 3*state + c
 	}
 	return false
 }
 
-// ScalingHolds reports whether the first k steps of the offset 3^a on 3^a * n equal 3^a times
-// the first k steps of the offset one on n.
+// ScalingHolds checks the scaling identity and rejects unrepresentable parameters or states.
 func ScalingHolds(a, n uint64, k int) bool {
+	if a > 40 || k < 0 {
+		return false
+	}
 	power := Pow3(a)
+	if n > ^uint64(0)/power {
+		return false
+	}
 	scaled, plain := power*n, n
 	for i := 0; i < k; i++ {
-		scaled = Step(power, scaled)
-		plain = Step(1, plain)
+		var scaledOK, plainOK bool
+		scaled, scaledOK = StepChecked(power, scaled)
+		plain, plainOK = StepChecked(1, plain)
+		if !scaledOK || !plainOK || plain > ^uint64(0)/power {
+			return false
+		}
 		if scaled != power*plain {
 			return false
 		}

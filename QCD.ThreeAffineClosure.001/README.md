@@ -1,45 +1,90 @@
-SPDX-License-Identifier: CC-BY-4.0
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
+# Three-affine closure and exact odd recovery
 
-# Three-affine closure
+Let $`a,b,c,q`$ be positive integers. Set
 
-Let $`a,b,c,q`$ be positive integers and let $`x,y,z`$ be integers satisfying
 ```math
-2^{a}y=qx+1,\qquad 2^{b}z=qy+1,\qquad 2^{c}x=qz+1.
+K=a+b+c,\qquad
+\Delta=2^K-q^3,\qquad
+B=q^2+q2^a+2^{a+b}.
 ```
-Set $`K=a+b+c`$, $`\Delta=2^{K}-q^{3}`$, $`B=q^{2}+q2^{a}+2^{a+b}`$, and $`T=q^{2}+q2^{c}+2^{c+a}`$. Then $`\Delta x=B`$, so $`\Delta`$ divides $`B`$. The third state is recorded by $`\Delta z=T`$ and $`z=T/\Delta`$. The determinant is not zero, and both numerators are at least $`7`$.
 
-The same elimination, read on an arbitrary ordered triple of letters, is
+There exist positive odd integers $`x,y,z`$ satisfying
+
 ```math
-\bigl(2^{e_{1}+e_{2}+e_{3}}-q^{3}\bigr)u=q^{2}+q2^{e_{3}}+2^{e_{3}+e_{2}}
+2^a y=qx+1,\qquad 2^b z=qy+1,\qquad 2^c x=qz+1
 ```
-whenever $`2^{e_{1}}u=qv+1`$, $`2^{e_{2}}v=qw+1`$, and $`2^{e_{3}}w=qu+1`$.
 
-## Reduction record
+**if and only if** $`q`$ is odd, $`\Delta>0`$, and $`\Delta\mid B`$.
 
-ORIGINAL OBLIGATION. An integer solution of the three affine equations exists only if $`\Delta`$ divides $`B`$, and the third odd state must be recovered from that solution.
+[Lean criterion and recovery](lean/ThreeAffineLegal.lean) ·
+[Elimination identity](lean/ThreeAffineClosure.lean) ·
+[Detailed proof](tex/ThreeAffineClosure.tex)
 
-REPLACEMENT OBLIGATIONS. Prove the ordered elimination identity above, specialize it to the word $`(a,b,c)`$ and to the rotated word $`(c,a,b)`$, and divide by the nonzero determinant.
+## Proof and reconstruction
 
-RECOVERY ARGUMENT. The specialization $`(e_{1},e_{2},e_{3},u,v,w)=(c,b,a,x,z,y)`$ returns $`\Delta x=B`$. The specialization $`(b,a,c,z,y,x)`$ returns $`\Delta z=T`$. Since $`B\ge 7`$, the relation $`B=\Delta x`$ forbids $`\Delta=0`$, and $`z=T/\Delta`$ is the third component. Every hypothesis of the two specializations is one of the three given equations.
+Write
 
-DIFFICULTY DECREASE. The obstruction was an unexpanded product of three affine letters. One subtraction identity removes that product. The remaining arithmetic is a finite expansion and a positivity bound of $`7`$, with no further word search.
+```math
+U=q^2+q2^b+2^{b+c},\qquad
+V=q^2+q2^c+2^{c+a}.
+```
 
-PRESERVATION CONDITIONS. The positive integers $`a,b,c,q`$, the integer states, the value of $`\Delta`$, and the two numerators are unchanged. No oddness, exact valuation, positivity of the states, or minimum state is added. Sufficiency is not claimed.
+Direct expansion gives the three transport identities
 
-## What is not claimed
+```math
+qB+\Delta=2^aU,\qquad
+qU+\Delta=2^bV,\qquad
+qV+\Delta=2^cB.
+```
 
-The divisibility criterion is necessary and is not sufficient for a legal cycle. The following are not proved:
+For necessity, an odd state and a positive division exponent force $`q`$
+odd. Eliminating the three states gives $`\Delta x=B`$.
+Since $`x>0`$ and $`B>0`$, the determinant is positive and divides $`B`$.
 
-- the classification of $`x^{2}+7=2^{n}`$;
-- the classification of $`x^{2}+D=2^{n}`$ for odd positive $`D`$;
-- any bound on the number of solutions of $`x^{3}+D=2^{n}`$;
-- uniqueness of an odd multiplier $`q`$;
-- emptiness of three-affine closure for $`K>7`$;
-- a finite scan as a substitute for the identity;
-- residue order, uniform contraction, and the classification of repunit divisors;
-- escape from a profile, a discriminator, or phase rigidity;
-- a parent chain, a family split, an excursion bound, or a cyclic gap;
-- a terminal-power subfamily or a marginal repair;
-- the comparison $`2\rho\le\mu\le 4\rho`$.
+Conversely, suppose the three arithmetic conditions hold.
+The determinant is odd, so it is coprime to each power of two.
+The first transport identity gives $`\Delta\mid U`$, and the second gives
+$`\Delta\mid V`$. Define
 
-A finite integer grid can only test the identity. It is not the theorem.
+```math
+x=B/\Delta,\qquad y=U/\Delta,\qquad z=V/\Delta.
+```
+
+These quotients are positive integers. Each numerator and the determinant
+is odd, so all three states are odd. Dividing the transport identities by
+$`\Delta`$ recovers the three equations. Oddness of the next state proves
+the exact valuations
+
+```math
+v_2(qx+1)=a,\qquad v_2(qy+1)=b,\qquad v_2(qz+1)=c.
+```
+
+Thus one fixed parameter word reduces to three explicit arithmetic tests
+and reconstructs a unique ordered triple. It does not require a search for
+three simultaneous state witnesses.
+
+## Clocks and examples
+
+The closed word has three odd-return ticks, $`K`$ shortcut ticks, and
+$`K+3`$ raw ticks. These are return lengths, not automatically primitive
+periods: a word can repeat a shorter cycle.
+
+For $`q=5`$ and $`(a,b,c)=(1,1,5)`$,
+
+```math
+\Delta=3,\quad (B,U,V)=(39,99,249),\quad (x,y,z)=(13,33,83).
+```
+
+The odd-return cycle is $`13\to33\to83\to13`$.
+
+Oddness of the multiplier is essential. With $`q=2`$ and
+$`(a,b,c)=(1,2,1)`$, the determinant $`8`$ divides $`B=16`$,
+but the first equation gives $`y=5/2`$. Determinant divisibility alone
+is not sufficient without the stated parity hypothesis.
+
+For arbitrary integer states, the elimination theorem still gives
+$`\Delta x=B`$ and the rotated identities without imposing positivity or
+oddness. The legal criterion is a separate stronger statement for the
+positive odd class. It supplies no uniform bound on $`K`$ or classification
+of all three-letter parameter words.

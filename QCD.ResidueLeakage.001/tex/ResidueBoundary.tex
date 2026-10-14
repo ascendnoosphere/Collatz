@@ -1,0 +1,435 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Division-Time Laws at the Full Residue-Cycle Boundary}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+When the affine residue cycle has length equal to the divisor, division never leaks away: every orbit has infinitely many divisions. The first-division return nevertheless has an exact uniform word law. We prove that its branch codes are the full one-sided shift, derive density-one strict descent when the mean logarithmic multiplier is negative, and give explicit classical bounds with constants \(243/256\) and \(65536/84375\). A separate common-divisor obstruction classifies a non-coprime family by an exact affine tail. All statements concern the division-first raw map.
+\end{abstract}
+
+\section{First-division returns}
+
+Fix integers \(q\ge2\), \(c\ge1\), and \(D\ge2\), and define
+\[
+T(n)=
+\begin{cases}
+n/D,&D\mid n,\\
+qn+c,&D\nmid n.
+\end{cases}
+\]
+Assume initially that \(\gcd(q,D)=1\). The affine permutation
+\(F(r)=qr+c\pmod D\) has a least positive return \(m\) of \(0\).
+This article treats \(m=D\), so its zero orbit contains every residue.
+For each state \(n\), let \(r(n)\) be the least nonnegative number of affine
+steps needed to reach a multiple of \(D\).
+Then \(0\le r(n)\le D-1\), and its first-division return is
+\[
+H(n)=\frac{q^{r(n)}n+cS_{r(n)}}{D},
+\qquad
+S_r=\sum_{j=0}^{r-1}q^j,\quad S_0=0.
+\]
+The raw time of this return is \(r(n)+1\), not \(r(n)\).
+Every positive seed stays positive, and every return exists.
+
+\begin{lemma}[Exact marked cylinders]
+\label{lem:cylinders}
+For every \(h\ge0\) and every word
+\(w=(r_0,\ldots,r_{h-1})\in\{0,\ldots,D-1\}^h\), the positive integers
+with that first-return word form exactly one residue class modulo \(D^h\).
+On that class,
+\[
+H^h(n)=A_w n+C_w,\qquad
+A_w=\frac{q^{R_w}}{D^h},\qquad R_w=\sum_{j<h}r_j,
+\]
+where \(C_w\ge0\). Every word occurs, and distinct words give distinct classes.
+\end{lemma}
+
+\begin{proof}
+A residue with first-hit time \(r\) is the unique inverse image \(F^{-r}(0)\).
+It has no earlier hit: otherwise the zero orbit would have a positive
+return smaller than \(D\). These \(D\) residues are distinct.
+
+Suppose a length-\(h\) word has representative \(a\), \(0\le a<D^h\),
+endpoint \(E=H^h(a)\), and numerator multiplier \(P=q^{R_w}\).
+For every \(t\ge0\), states \(a\) and \(a+D^h t\) have the same preceding
+word and
+\[
+H^h(a+D^h t)=E+Pt.
+\]
+To justify this assertion at each preceding block, the incoming difference
+is divisible by the remaining power of \(D\). Affine multiplication by \(q\)
+preserves it and division removes exactly one power. Thus the current
+residues, and therefore their first-hit times, agree. Applying the affine
+return formula gives the displayed endpoint difference.
+
+Since \(\gcd(P,D)=1\), the residues \(E+Pt\), \(0\le t<D\), run through all
+residues modulo \(D\). Each desired next first-hit time therefore selects
+exactly one high digit \(t\). This proves existence and uniqueness of
+each child class. Child classes from different parent classes cannot
+coincide modulo \(D^h\). Starting with the sole depth-zero class proves
+the result by induction. Composing the return formulas gives \(A_w\)
+and a nonnegative additive term \(C_w\).
+\end{proof}
+
+\section{The exact random law and its scope}
+
+\begin{corollary}
+\label{cor:moments}
+Uniform counting of residues modulo \(D^h\) makes the \(h\) return times
+independent uniform variables on \(\{0,\ldots,D-1\}\). In particular,
+\[
+\mu=\frac{D-1}{2},\qquad
+\sigma^2=\frac{D^2-1}{12},\qquad
+\mathbb E R_w=h\mu,\qquad
+\operatorname{Var}(R_w)=h\sigma^2.
+\]
+\end{corollary}
+
+\begin{proof}
+Lemma~\ref{lem:cylinders} is a bijection between the \(D^h\) residues and
+the \(D^h\) words. A prescribed set of \(k\) positions therefore has
+\(D^{h-k}\) completions. This proves the product law. The formulas for
+one uniform digit follow from
+\(\sum_{r<D}r=D(D-1)/2\) and
+\(\sum_{r<D}r^2=D(D-1)(2D-1)/6\).
+Cross terms in the variance vanish under the proved product law.
+\end{proof}
+
+Let \(\Z_D=\varprojlim_h\Z/D^h\Z\), with its uniform probability measure.
+This definition allows composite \(D\). Division by \(D\) is defined only
+on its image, so it does not replace the raw guard by field divisibility.
+
+\begin{theorem}[Shift coding]
+\label{thm:shift}
+The first-return word gives a homeomorphism
+\(\Z_D\cong\{0,\ldots,D-1\}^{\N}\) conjugating \(H\) with deletion of the
+first symbol. It carries uniform measure to the uniform product measure.
+\end{theorem}
+
+\begin{proof}
+The compatible marked cylinders in Lemma~\ref{lem:cylinders} give one
+residue modulo \(D^h\) for every prefix of length \(h\). An infinite word
+therefore determines a unique element of the inverse limit. Conversely
+an inverse-limit element determines every prefix. Cylinders are bases
+for both topologies, proving continuity in both directions. Applying
+\(H\) removes the first return block, so the codes intertwine the two
+maps. A cylinder of length \(h\) has measure \(D^{-h}\) on both sides,
+which proves equality of the measures.
+\end{proof}
+
+The real-valued linear cocycle is
+\[
+\lambda(x)=r(x)\log q-\log D,\qquad
+\gamma=\int\lambda\,dx=\frac{D-1}{2}\log q-\log D.
+\]
+It is bounded and defined from the branch marks, not from an independent
+resampling of an integer trajectory. An integrable change of coordinates
+replaces it by \(\lambda+\psi\circ H-\psi\), whose integral is still
+\(\gamma\), because \(H\) preserves uniform measure. Thus \(\gamma\ne0\)
+obstructs an integrable coboundary. Periodic marked words retain their
+own sums; averaging does not replace their closing equations.
+
+The shift coding establishes a precise connection with a Bernoulli
+process. It does not make every positive integer a typical inverse-limit
+point. The countable embedded set of integers has uniform measure zero.
+The integer conclusions below are obtained instead from finite cylinder
+counts and explicit bounds on additive terms.
+
+\begin{lemma}[Contracting full-cycle parameters]
+\label{lem:parameters}
+Under the standing hypotheses \(q\ge2,c\ge1,D\ge2\),
+\(\gcd(q,D)=1\), and \(m=D\), one has \(\gamma<0\) if and only if
+\[
+q=3,\qquad D=2,\qquad c\ \text{is odd}.
+\]
+\end{lemma}
+
+\begin{proof}
+The affine permutation has one cycle containing every residue, so it has no fixed point when \(D\ge2\).
+If \(q=2\), the residue \(-c\) is a fixed point:
+\(2(-c)+c=-c\).
+Thus full access excludes \(q=2\), and \(q\ge3\).
+
+For \(D\ge3\), induction gives \(3^{D-1}\ge D^2\).
+At \(D=3\) both sides equal \(9\).
+For the induction step,
+\[
+3D^2-(D+1)^2=2D^2-2D-1>0\qquad(D\ge3),
+\]
+so multiplying the preceding inequality by three proves the next one.
+Hence \(q^{D-1}\ge3^{D-1}\ge D^2\).
+Taking logarithms shows \(\gamma\ge0\).
+Negative drift therefore forces \(D=2\).
+Its inequality is then \(q<4\), and \(q\ge3\) forces \(q=3\).
+Modulo two the affine map is \(r\mapsto r+c\), whose zero cycle has
+length two exactly when \(c\) is odd.
+
+Conversely these parameters give full access and
+\(2\gamma=\log3-\log4<0\).
+The arithmetic bounds used here are formalized as
+\texttt{ThreeSquareGrowth} and \texttt{NegativeGainParameters};
+the exclusion of a full cycle with \(q=2\) is the fixed-point argument above.
+\end{proof}
+
+Thus the negative-drift conclusion below applies to all positive odd-offset dyadic maps \(F_{3,c,2}\), not to additional positive full-cycle multiplier--divisor pairs.
+The exact full-shift law still holds when the drift is nonnegative.
+
+\section{Closing descent on positive integers}
+
+Set
+\[
+A_*=\frac{q^{D-1}}D,\qquad
+C_*=\frac{cS_{D-1}}D,\qquad
+M_h=C_*\sum_{j=0}^{h-1}A_*^j.
+\]
+Every word has \(C_w\le M_h\): each return has nonnegative additive term
+at most \(C_*\) and multiplier at most \(A_*\), so induction on the
+composition length proves this bound.
+
+\begin{theorem}[Density-one strict descent]
+\label{thm:descent}
+If \(\gamma<0\), the set of positive integers \(n\) for which
+\(T^k(n)<n\) at some positive raw time \(k\) has ordinary natural density
+one.
+More explicitly, choose \(\eta>0\) such that
+\(\rho=q^{\mu+\eta}/D<1\), and for \(h\ge1\) put
+\[
+N_h=\left\lfloor\frac{M_h}{1-\rho^h}\right\rfloor+1.
+\]
+For every integer \(X\ge1\), the number \(E(X)\) of positive integers
+\(n\le X\) with no strict descent at any positive raw time satisfies
+\[
+E(X)\le N_h+\frac{\sigma^2}{h\eta^2}(X+D^h).
+\]
+\end{theorem}
+
+\begin{proof}
+The choice of \(\eta\) is possible because
+\(\mu\log q<\log D\) and \(\log q>0\).
+Call a word good when \(R_w\le h(\mu+\eta)\). On a good class,
+\[
+H^h(n)\le \rho^h n+M_h<n
+\quad\hbox{whenever }n\ge N_h.
+\]
+The corresponding raw time is the sum of \(h\) positive block lengths,
+and is at most \(hD\).
+
+For the uniform finite word space, every bad word has
+\((R_w-h\mu)^2>h^2\eta^2\). Summing this nonnegative square over the bad
+words and then over all words proves, without a limiting probability
+argument, that their proportion is at most \(\sigma^2/(h\eta^2)\).
+There are therefore at most
+\(D^h\sigma^2/(h\eta^2)\) bad classes. Each class has at most
+\(X/D^h+1\) representatives among \(1,\ldots,X\).
+All non-descending seeds above \(N_h\) are in these classes, proving
+the displayed estimate.
+
+For fixed \(h\), divide by \(X\) and let \(X\) tend to infinity.
+The upper limit is at most \(\sigma^2/(h\eta^2)\).
+Now let \(h\) tend to infinity. The upper limit is zero, proving
+ordinary natural density one. This order of limits fixes each finite
+additive bound before it is used.
+\end{proof}
+
+\begin{remark}
+Strict descent at one time is not eventual arrival at a particular cycle.
+The theorem does not remove the density-zero exceptional set or assert
+that repeatedly selected smaller seeds satisfy the same typicality
+condition.
+\end{remark}
+
+\section{Explicit classical constants}
+
+For \((q,c,D)=(3,1,2)\), a return time is \(0\) or \(1\), and
+\[
+H(n)=
+\begin{cases}
+n/2,&n\text{ even},\\
+(3n+1)/2,&n\text{ odd}.
+\end{cases}
+\]
+For \(h=8t\), call a word good if its number \(a\) of ones is at most
+\(5t\). Its multiplier is at most
+\[
+\frac{3^{5t}}{2^{8t}}=\left(\frac{243}{256}\right)^t.
+\]
+Let \(\beta=65536/84375\), so \(0<\beta<1\).
+
+\begin{lemma}[Tilted binary count]
+\label{lem:binary}
+The proportion of bad words of length \(8t\) is at most \(\beta^t\).
+\end{lemma}
+
+\begin{proof}
+Give a word with \(a\) ones weight \(5^a3^{8t-a}\).
+The sum of all weights is \((5+3)^{8t}=8^{8t}\).
+A bad word has \(a>5t\), and replacing a zero by a one increases its
+weight, so every bad weight is at least \(5^{5t}3^{3t}\).
+Consequently
+\[
+\frac{\#\{\hbox{bad words}\}}{2^{8t}}
+\le
+\frac{8^{8t}}{2^{8t}5^{5t}3^{3t}}
+=
+\left(\frac{4^8}{5^5\,3^3}\right)^t
+=\beta^t.
+\]
+These are exact finite counts.
+\end{proof}
+
+In the classical specialization choose \(\eta=1/8\), so that
+\(\rho^{8t}=(243/256)^t\) in the definition of \(N_h\).
+Here \(M_h\le(3/2)^h-1\). For \(t\ge1\),
+\[
+N_{8t}\le
+\frac{(3/2)^{8t}}{1-243/256}+1
+\le 22\cdot256^t.
+\]
+The second inequality follows from
+\((3/2)^8<256\) and \(256/13+1<22\).
+Thus
+\[
+E(X)\le22\cdot256^t+\beta^t(X+256^t).
+\]
+
+\begin{corollary}[A quantitative exceptional-set bound]
+\label{cor:power}
+Put
+\[
+\alpha=\frac{\log(1/\beta)}{\log(256/\beta)}\in(0,1).
+\]
+For every integer \(X\ge256/\beta\),
+\[
+E(X)\le (22+2/\beta)\,X^{1-\alpha}.
+\]
+\end{corollary}
+
+\begin{proof}
+Choose \(t=\lfloor\log X/\log(256/\beta)\rfloor\), which is positive.
+Then \(256^t\le X^{1-\alpha}\) and
+\(\beta^t\le\beta^{-1}X^{-\alpha}\).
+Also \(256^t\le X\). Substitute these three bounds into the preceding
+finite estimate.
+\end{proof}
+
+At depth twelve the exact contracting-word counts are \(3302/4096\)
+for \(q=3\) and \(1586/4096\) for \(q=5\), both with \(c=1,D=2\).
+Both models have all \(4096\) marked words, with delay sum \(24576\)
+and squared-delay sum \(159744\). Their differing contraction counts
+come from the multiplier, not from a different word law.
+The computations in \cite{BoundaryCode26} enumerate words and check
+these integer identities; they do not test an infinite predicate.
+
+\section{A non-coprime classification}
+
+The following existing affine-escape mechanism, also proved in
+\texttt{QCD.AffineEscape.001}, no longer assumes \(\gcd(q,D)=1\).
+
+\begin{theorem}[Common-divisor obstruction]
+\label{thm:noncoprime}
+Let \(q\ge1,c\ge1,D\ge2\). Suppose that an integer \(s\ge1\) divides
+both \(q\) and \(D\), but does not divide \(c\).
+Every positive seed has a unique representation \(n=D^k u\), where
+\(k\ge0\), \(u>0\), and \(D\nmid u\). Its raw orbit satisfies
+\[
+T^{k+j}(n)=q^j u+cS_j\qquad(j\ge0),
+\]
+and tends to infinity along the full raw sequence.
+In particular the conclusion holds when \(\gcd(q,D)\nmid c\).
+\end{theorem}
+
+\begin{proof}
+If \(D\mid qx+c\), then \(s\mid qx+c\). Since \(s\mid qx\), this
+would imply \(s\mid c\), a contradiction. Thus every affine image
+is permanently outside the division branch.
+
+Extract factors of \(D\) from \(n\). Each legal quotient is a smaller
+positive integer because \(D\ge2\), so extraction terminates at \(u\).
+If \(D^k u=D^\ell v\) with both remainders indivisible by \(D\), unequal
+exponents would make one remainder divisible by \(D\); equal exponents
+give \(u=v\) by cancellation. The first \(k\) raw events are therefore
+exact divisions and give \(u\). Thereafter every event is affine,
+and induction proves the geometric-sum formula. Since \(q,c\ge1\),
+each affine event increases the state by at least one. Removing the
+finite prefix proves full-sequence escape.
+\end{proof}
+
+For example, \((q,c,D)=(6,1,4)\) has this property with \(s=2\).
+The hypothesis matters: \((2,2,2)\) instead has the positive raw cycle
+\(1\mapsto4\mapsto2\mapsto1\).
+The case \(\gcd(q,D)\mid c\) requires different branch information.
+
+\section{Ordered affine structure}
+
+Each legal raw word is an ordered product of the two affine matrices
+\[
+M_{\mathrm{aff}}=
+\begin{pmatrix}q&c\\0&1\end{pmatrix},
+\qquad
+M_{\mathrm{div}}=
+\begin{pmatrix}1/D&0\\0&1\end{pmatrix}.
+\]
+Its product acts as \(x\mapsto Ax+B\).
+The coefficient \(A=q^a/D^b\) records multiplication and division
+counts; \(B\) records the ordered offset insertions.
+A rational matrix product does not certify integrality or legality:
+these are the original divisibility and nondivisibility conditions
+at every intermediate state.
+
+This structure explains several different proved mechanisms.
+At \(c=0\), the additive coordinate vanishes and multiplicative
+dependence controls scalar lattice trajectories. At \(q=1\),
+congruence access and additive contraction control the return.
+For \(m<D\), loss of legal cylinder children controls density.
+At \(m=D\), no children are lost, but the marked multiplier law
+can still close a descent estimate. The common-divisor theorem
+uses an arithmetic obstruction before any averaging.
+These are distinct conclusions obtained from preserved parts
+of one ordered composition, not a complete orbit invariant.
+
+\section{Formal and computational companions}
+
+The modules \texttt{BoundaryDrift.lean} and \texttt{NonCoprime.lean}
+prove the tilted binary inequalities, closing constants, and
+common-divisor affine-tail classification. The existing
+\texttt{ResidueCylinders.lean} proves legal source lifting, exact
+raw-clock recovery, and infinitely many divisions at \(m=D\).
+The marked shift conjugacy and density transfer in
+Theorems~\ref{thm:shift} and \ref{thm:descent} are proved in this article;
+they are not asserted as declarations in those Lean modules.
+
+\bibliographystyle{amsalpha}
+\bibliography{BoundaryReferences}
+\end{document}
