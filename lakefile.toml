@@ -111,6 +111,7 @@ defaultTargets = [
   "BeukersList",
   "LocalJoin",
   "InverseBudget",
+  "ReverseBound",
 ]
 
 [[require]]
@@ -585,3 +586,7 @@ srcDir = "QCD.LocalJoin.001/lean"
 [[lean_lib]]
 name = "InverseBudget"
 srcDir = "QCD.InverseBudget.001/lean"
+
+[[lean_lib]]
+name = "ReverseBound"
+srcDir = "QCD.ReverseBound.001/lean"

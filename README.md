@@ -276,6 +276,15 @@ clock $`(u+v)/g`$. Composite bases and nonunit residuals are allowed.
 Negative divisors, nontrivial multiplier residuals and other offset regimes
 remain separate families.
 
+### An integer-root product bound
+
+[QCD.ReverseBound.001](QCD.ReverseBound.001/README.md) gives a product-bound proof
+that two equations $2^a y=qx+1$, $2^b x=qy+1$ cannot close above state $1$ when
+$a+b$ is even. The algebraic result allows every natural multiplier and includes
+zero division counts. Complementary factors recover $q$ from their sum and
+product; difference $7$ has only the even-exponent representation
+$2^4-3^2=7$. Equality at state $1$ shows that the minimum is sharp.
+
 ### Finite ascending inverse searches
 
 [QCD.InverseBudget.001](QCD.InverseBudget.001/README.md) proves that a legal raw

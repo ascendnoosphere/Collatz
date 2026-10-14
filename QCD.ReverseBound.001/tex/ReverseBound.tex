@@ -1,0 +1,232 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Two affine returns with offset \(1\) cannot close above state \(1\) when
+ their total number of binary divisions is even. Substitution places the
+multiplier below an integer square root, while a product comparison forces
+an incompatible lower bound. The algebraic argument needs no parity
+assumption on the multiplier or states. Complementary factors also recover
+the multiplier from their sum and product and show that
+\(2^{2m}-q^2=7\) has only \((m,q)=(2,3)\) in natural numbers with
+\(q\le2^m\). The state-\(1\) cycle explains the sharp lower bound.
+\end{abstract}
+
+\section{Two returns and their division total}
+
+For an odd positive multiplier \(q\), consider the raw map
+\[
+C_q(n)=
+\begin{cases}
+n/2,&n\text{ even},\\
+qn+1,&n\text{ odd}.
+\end{cases}
+\]
+If two successive odd returns close a cycle, their states \(x,y\) and
+division counts \(a,b\) satisfy
+\begin{equation}
+\label{eq:letters}
+2^a y=qx+1,\qquad 2^b x=qy+1.
+\end{equation}
+The states may coincide. The total \(K=a+b\) counts divisions; the two
+returns together use \(K+2\) raw ticks. For odd \(q,x,y\), the equations
+imply \(a,b\ge1\). The following algebraic lemmas allow arbitrary natural
+\(q,x,y,a,b\), so they also cover the original return equations.
+
+\begin{lemma}[Closure and square window]
+\label{lem:closure}
+The equations \eqref{eq:letters} imply
+\[
+2^{a+b}x=q^2x+q+2^a
+\quad\text{and}\quad
+q^2<2^{a+b}.
+\]
+\end{lemma}
+
+\begin{proof}
+Substitution gives
+\begin{align*}
+2^{a+b}x
+&=2^a(2^b x)=2^a(qy+1)\\
+&=q(2^a y)+2^a=q(qx+1)+2^a\\
+&=q^2x+q+2^a.
+\end{align*}
+The offset \(q+2^a\) is positive. Thus \(q^2x<2^{a+b}x\).
+If \(2^{a+b}\le q^2\), multiplication by \(x\ge0\) contradicts
+that strict inequality. This proves the window.
+\end{proof}
+
+\begin{lemma}[Product comparison]
+\label{lem:product}
+Suppose \eqref{eq:letters} holds and \(\mu\le x,y\). Then
+\[
+\mu^2 2^{a+b}\le(\mu q+1)^2.
+\]
+\end{lemma}
+
+\begin{proof}
+The second equation forces \(x>0\), since \(qy+1>0\); the first likewise
+forces \(y>0\). The hypothesis \(\mu\le x\) gives the exact slack identity
+\[
+\mu(qx+1)+(x-\mu)=(\mu q+1)x.
+\]
+Indeed, expanding the left side and using \(\mu+(x-\mu)=x\) leaves
+\(\mu qx+x\). Dropping the nonnegative slack and using the first equation
+therefore gives \(\mu2^a y\le(\mu q+1)x\). Similarly,
+\(\mu2^b x\le(\mu q+1)y\). Multiplying yields
+\[
+\mu^2 2^{a+b}xy\le(\mu q+1)^2xy.
+\]
+Cancel the positive product \(xy\).
+\end{proof}
+
+\begin{lemma}[Strict integer-root ceiling]
+\label{lem:ceiling}
+If \(q^2<2^{2t}\) and \(\mu\ge2\), then
+\[
+q\le2^t-1,
+\qquad
+\mu q+1\le\mu2^t-1,
+\qquad
+(\mu q+1)^2<\mu^2 2^{2t}.
+\]
+\end{lemma}
+
+\begin{proof}
+The identity \((2^t)^2=2^{2t}\) shows that \(q\ge2^t\) would contradict
+the square window. Since the parameters are integers, \(q\le2^t-1\).
+Consequently,
+\[
+\mu q+1\le\mu(2^t-1)+1
+=\mu2^t-\mu+1\le\mu2^t-1<\mu2^t.
+\]
+Here \(\mu\ge2\) supplies the penultimate inequality, and
+\(\mu2^t>0\). Squaring the strict comparison gives the result.
+\end{proof}
+
+\begin{theorem}[Even division totals]
+\label{thm:even-empty}
+Let all parameters be natural numbers. If \(a+b=2t\) and \(x,y\ge\mu\ge2\),
+the equations \eqref{eq:letters} cannot both hold.
+\end{theorem}
+
+\begin{proof}
+Lemma~\ref{lem:closure} gives \(q^2<2^{2t}\).
+Lemma~\ref{lem:ceiling} gives \((\mu q+1)^2<\mu^2 2^{2t}\).
+Lemma~\ref{lem:product} gives the reverse weak inequality.
+\end{proof}
+
+Thus a two-return cycle of the raw map with even division total must visit
+state \(1\). No enumeration of the states, the multiplier, or the split of
+\(2t\) is needed. When \(t\ge1\), the integer \(2^t-1\) is odd and
+itself lies in the square window, since its square is less than \((2^t)^2\).
+The strict ceiling therefore includes the largest possible odd multiplier.
+
+\section{Complementary factors and recovery}
+
+\begin{lemma}[Factor identities]
+\label{lem:split}
+If \(q\le2^m\), then the natural numbers \(u=2^m-q\), \(v=2^m+q\) satisfy
+\[
+uv=2^{2m}-q^2,\qquad u+v=2^{m+1},\qquad v-u=2q.
+\]
+\end{lemma}
+
+\begin{proof}
+The product is the difference of squares. For the sum,
+\((2^m-q)+q=2^m\), because \(q\le2^m\), so
+\(u+v=2\cdot2^m=2^{m+1}\). Finally \(u+2q=v\), giving the gap.
+\end{proof}
+
+\begin{theorem}[Factor recovery]
+\label{thm:recovery}
+Suppose \(q^2\le2^{2m}\), \(u+v=2^{m+1}\),
+\(uv=2^{2m}-q^2\), and \(u\le v\). Then \(v-u=2q\).
+\end{theorem}
+
+\begin{proof}
+Write \(R=2^m\). The sum is \(u+v=2R\). If \(v<R\), then
+\(u\le v<R\) makes the sum less than \(2R\), a contradiction.
+Thus \(v\ge R\) and \(u=2R-v\le R\).
+Set \(q'=R-u\). Then \(0\le q'\le R\), \(u=R-q'\), and
+\(v=R+q'\). Lemma~\ref{lem:split} gives
+\(uv=R^2-(q')^2\). Both \(q^2\) and \((q')^2\) are at most \(R^2\),
+so restoring these squares to their respective difference identities gives
+\(q^2=(q')^2\). The square function is strictly increasing on natural
+numbers, hence \(q=q'\). The factor gap in Lemma~\ref{lem:split} is
+therefore \(v-u=2q'=2q\).
+\end{proof}
+
+The identities and recovery include \(q=0\), when the factors are equal,
+and \(q=2^m\), when the smaller factor is zero.
+
+\begin{corollary}[Difference seven]
+\label{cor:seven}
+If \(q\le2^m\) and \(2^{2m}-q^2=7\), then \(m=2\) and \(q=3\).
+Conversely, this pair satisfies the equation.
+\end{corollary}
+
+\begin{proof}
+Lemma~\ref{lem:split} gives an ordered positive factor pair \(u\le v\)
+with \(uv=7\). If \(u\ge3\), then \(uv\ge u^2\ge9\), a contradiction.
+If \(u=2\), the product would be even. Thus \(u=1\), \(v=7\).
+The factor sum is \(2^{m+1}=8\). The powers of two are strictly increasing,
+and \(2^3=8\), so \(m+1=3\) and \(m=2\). The gap gives
+\(2q=7-1=6\), hence \(q=3\). Conversely, \(2^4-3^2=16-9=7\).
+\end{proof}
+
+\section{Sharpness and exact checks}
+
+At \(q=3\), \(x=y=1\), \(a=b=2\), both return equations read
+\(4=3+1\). The product comparison at minimum \(1\) is equality:
+\((1\cdot3+1)^2=2^4=16\). The corresponding comparison at minimum \(2\)
+is strict: \(7^2=49<4\cdot2^4=64\). This is precisely the state excluded
+by the lower bound in Theorem~\ref{thm:even-empty}.
+
+The Lean file \texttt{ReverseBound.lean} proves all algebraic statements,
+including the unrestricted multiplier theorem and its raw-map specialisation.
+The Go programme checks ranks \(1\le t,m\le12\), every multiplier up to
+ the appropriate root, and minima \(2\le\mu\le8\). It also checks factor
+recovery, nonnegative slack, and present closure equations in the grid
+\(0\le a,b\le4\), \(0\le q\le8\), \(1\le x,y\le8\).
+Every operation is checked in unsigned 64-bit arithmetic. Unsupported powers
+and overflow are rejected, including exponent wraparound. Independent rank
+checks use disjoint worker slots; the numerical loops allocate no heap memory.
+The finite checks support the implementation; Theorem~\ref{thm:even-empty}
+and the recovery statements have no numerical upper bound.
+
+\end{document}
