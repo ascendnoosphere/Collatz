@@ -1,0 +1,303 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For integers \(q\ge 2\), \(k\ge 1\), and \(t\ge 1\), the raw map with divisor \(D=q^k\) and offset \(c=tD\) separates positive seeds not divisible by \(q\). Divisibility by \(\gcd(q,t)\) distinguishes an escaping neutral translation
+from a positive one-division return bounded by an explicit floor. The escape
+bound holds at every raw time. An explicit class-changing return shows why
+the floor comparison is not a trapping assertion.
+\end{abstract}
+
+\section{The neutral family}
+
+Throughout, \(q\ge 2\), \(k\ge 1\), and \(t\ge 1\) are integers. Write
+\[
+G_i(q)=1+q+\cdots+q^{i-1}
+\]
+for \(i\ge 1\), and write \(G_0(q)=0\). Thus \(G_{i+1}(q)=qG_i(q)+1\) and \(G_{i+1}(q)=G_i(q)+q^i\). Set \(D=q^k\), \(c=tD\), and \(b=tG_k(q)\). Let \(g=\gcd(q,t)\) and
+\[
+A=\frac{q}{g}b-t.
+\]
+The raw step is \(C(x)=x/D\) when \(D\) divides \(x\), and \(C(x)=qx+c\) otherwise. Iteration is written \(C^0(x)=x\) and \(C^{m+1}(x)=C(C^m(x))\).
+
+\begin{lemma}
+\label{lem:shift}
+\(b=t+q\cdot tG_{k-1}(q)\), and hence \(b-t=q\cdot tG_{k-1}(q)\). In particular \(b\ge t\ge 1\).
+\end{lemma}
+
+\begin{proof}
+The identity \(G_k(q)=qG_{k-1}(q)+1\) gives the splitting of \(b\). The second formula is cancellation of \(t\). Since \(G_k(q)\ge G_1(q)=1\), one has \(b\ge t\ge 1\).
+Also \(g\mid q\) and \(1\le g\le q\), so \(q/g\) is a positive integer.
+It follows that \(A\ge b-t\ge0\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:same-div}
+For every integer \(s\ge 0\), \(q\) divides \(n+sb\) if and only if \(q\) divides \(n+st\). Consequently, if \(g\) does not divide \(n\), then \(q\) divides no integer \(n+sb\).
+\end{lemma}
+
+\begin{proof}
+Lemma~\ref{lem:shift} gives \(n+sb=n+st+q\cdot stG_{k-1}(q)\). Divisibility by \(q\) is therefore unchanged by the last summand. If \(q\) divides \(n+st\), then \(g\) divides both \(q\) and \(t\), hence divides \(n\). The contrapositive is the second claim.
+\end{proof}
+
+\begin{definition}
+\label{def:clip}
+For a positive integer \(m\), let \(j(m)\) be the largest integer \(j\le k\) such that \(q^j\) divides \(m\). The return of \(m\) is
+\[
+H(m)=\frac{m}{q^{j(m)}}+tG_{k-j(m)}(q).
+\]
+\end{definition}
+
+\section{Affine blocks}
+
+\begin{lemma}
+\label{lem:affine}
+Let \(a\) be a positive integer not divisible by \(q\), and let \(0\le i\le k\). Then
+\[
+C^i(a)=q^ia+cG_i(q).
+\]
+If \(i<k\), the right-hand side is not divisible by \(D\). After \(k\) steps it equals \(D(a+b)\), so \(C^{k+1}(a)=a+b\).
+\end{lemma}
+
+\begin{proof}
+The case \(i=0\) is \(C^0(a)=a\). Suppose the formula holds for some \(i<k\). The second summand of \(q^ia+cG_i(q)\) is divisible by \(D\). If \(D\) also divided the sum, then \(q^{k-i}\) would divide \(a\). Since \(k-i\ge 1\), \(q\) would divide \(a\), a contradiction. Thus the next raw step is affine, and the recurrence for \(G_{i+1}(q)\) gives the formula at \(i+1\). At \(i=k\) the same formula is \(D(a+b)\), so the following raw step divides by \(D\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:prefix}
+Fix \(n\ge 1\) with \(q\nmid n\). Suppose \(q\) does not divide \(n+rb\) for every \(0\le r<s\). Then \(C^{r(k+1)}(n)=n+rb\) for every \(0\le r\le s\).
+\end{lemma}
+
+\begin{proof}
+At index zero the landing is the seed. If \(r<s\), the anchor \(n+rb\)
+is not divisible by \(q\). Lemma~\ref{lem:affine} therefore gives the next
+block landing \(n+(r+1)b\). Induction on \(r\) proves the assertion.
+\end{proof}
+
+\begin{lemma}
+\label{lem:escape}
+If \(n\ge 1\), \(q\nmid n\), and \(g\nmid n\), then for every \(s\ge 0\) and every \(i\le k\),
+\[
+C^{s(k+1)+i}(n)=q^i(n+sb)+cG_i(q).
+\]
+The raw orbit is unbounded.
+\end{lemma}
+
+\begin{proof}
+Lemma~\ref{lem:same-div} supplies the hypothesis of Lemma~\ref{lem:prefix} for every \(s\). Lemma~\ref{lem:affine}, applied to the anchor \(n+sb\), gives the displayed formula. Lemma~\ref{lem:shift} gives \(b\ge 1\), so \(C^{(N+1)(k+1)}(n)=n+(N+1)b>N\).
+\end{proof}
+
+\begin{corollary}
+\label{cor:all-clock}
+Under the hypotheses of Lemma~\ref{lem:escape}, for every raw time \(\tau\),
+\[
+C^\tau(n)\ge n+b\left\lfloor\frac{\tau}{k+1}\right\rfloor.
+\]
+Consequently \(C^\tau(n)\) tends to infinity as \(\tau\) tends to infinity.
+\end{corollary}
+
+\begin{proof}
+Euclidean division gives \(\tau=s(k+1)+i\), where \(0\le i\le k\) and
+\(s=\lfloor\tau/(k+1)\rfloor\). The formula in Lemma~\ref{lem:escape} is
+at least \(n+sb\), because \(q^i\ge1\) and \(cG_i(q)\ge0\). Since \(b\ge1\),
+for every \(M\ge0\) and every \(\tau\ge(M+1)(k+1)\), it exceeds \(M\).
+\end{proof}
+
+\section{The first divisible anchor}
+
+\begin{lemma}
+\label{lem:cover}
+Let \(q'>0\) and let \(t'\) be coprime to \(q'\). For every residue \(r\), some \(s<q'\) satisfies \(t's\equiv r\pmod{q'}\).
+\end{lemma}
+
+\begin{proof}
+Multiplication by \(t'\) on \(\Z/q'\Z\) is injective: a congruence \(t'u\equiv t'v\pmod{q'}\) with \(u\le v\) means that \(q'\) divides \(t'(v-u)\), hence divides \(v-u\), and \(0\le v-u<q'\) forces \(u=v\). An injective self-map of a finite set is surjective.
+\end{proof}
+
+\begin{lemma}
+\label{lem:delay}
+If \(q\nmid n\) and \(g\mid n\), there exists a least integer \(s\) such that \(1\le s\le q/g-1\) and \(q\) divides \(n+sb\).
+\end{lemma}
+
+\begin{proof}
+Set \(q'=q/g\), \(t'=t/g\), and \(n'=n/g\). Then \(q'>1\): otherwise \(q=g\), so \(q\) divides \(n\). Also \(\gcd(q',t')=1\). Lemma~\ref{lem:cover} supplies \(s_0<q'\) with \(t's_0\equiv -n'\pmod{q'}\), hence \(q'\) divides \(n'+t's_0\). Multiplying by \(g\) shows that \(q\) divides \(n+s_0t\), and Lemma~\ref{lem:same-div} moves the divisibility to \(n+s_0b\). The least such nonnegative integer cannot be \(0\), because \(q\nmid n\), and it is at most \(s_0\), hence at most \(q'-1\).
+\end{proof}
+
+\section{The clipped return}
+
+\begin{lemma}
+\label{lem:closed}
+Let \(m\) be a positive integer and let \(j=j(m)\). For \(0\le i\le k-j\),
+\[
+C^i(m)=q^im+cG_i(q),
+\]
+and \(C^{k-j+1}(m)=H(m)\).
+\end{lemma}
+
+\begin{proof}
+If \(i<k-j\) and \(D\) divided \(q^im+cG_i(q)\), the second summand would force \(q^{k-i}\) to divide \(m\), hence \(q^{j+1}\) to divide \(m\), contradicting maximality of \(j\). The affine recurrence therefore holds through index \(k-j\). At that index the state is
+\[
+q^{k-j}m+cG_{k-j}(q)=D\cdot H(m),
+\]
+because \(q^j\) divides \(m\) and \(q^k=q^{k-j}q^j\). The next raw step divides by \(D\). The return is positive: \(q^j\) is
+positive and divides the positive integer \(m\), so \(m/q^j\ge1\), while
+\(tG_{k-j}(q)\ge0\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:product}
+Suppose \(1\le s\le q/g-1\) and \(q\) divides \(m=n+sb\). Let \(j=j(m)\) and \(J=H(m)\). Then \(Jq\le n+A\).
+\end{lemma}
+
+\begin{proof}
+Since \(q\mid m\) and \(k\ge1\), exponent one is admissible in
+Definition~\ref{def:clip}. Maximality therefore gives \(j\ge1\), so
+\(m/q^j\le m/q\). Also \(G_{k-j}(q)\le G_{k-1}(q)\). Therefore
+\begin{align*}
+Jq
+&=q\cdot\frac{m}{q^j}+q\cdot tG_{k-j}(q)
+\le m+q\cdot tG_{k-1}(q)
+=m+(b-t).
+\end{align*}
+The bound on \(s\) gives \(m\le n+(q/g-1)b\). Adding \(b-t\) and using \(t\le b\) produces
+\[
+m+(b-t)\le n+\frac{q}{g}b-t=n+A.
+\]
+\end{proof}
+
+\begin{lemma}
+\label{lem:threshold}
+Let \(A,J,n\) be nonnegative integers and suppose \(Jq\le n+A\). Set \(N_0=\lfloor A/(q-1)\rfloor\). If \(N_0<n\), then \(J<n\). If \(n\le N_0\), then \(J\le N_0\).
+\end{lemma}
+
+\begin{proof}
+The quotient formula gives \(A<n(q-1)\) when \(N_0<n\). Hence \(n+A<nq\). Combined with \(Jq\le n+A\), this yields \(Jq<nq\), so \(J<n\).
+
+If instead \(n\le N_0\), the same quotient formula gives \(A<(N_0+1)(q-1)\), so \(A\le (N_0+1)(q-1)-1\). Then
+\[
+N_0+A\le N_0+(N_0+1)(q-1)-1=(N_0+1)q-2,
+\]
+because \((N_0+1)q=(N_0+1)(q-1)+(N_0+1)\). Thus \(n+A<(N_0+1)q\). Combined with \(Jq\le n+A\), this yields \(J<N_0+1\), hence \(J\le N_0\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:separation}
+Let \(n\ge 1\) satisfy \(q\nmid n\). If \(g\nmid n\), the identity and unboundedness of Lemma~\ref{lem:escape} hold. If \(g\mid n\), the delay \(s\) of Lemma~\ref{lem:delay} satisfies \(C^{s(k+1)}(n)=n+sb\), and the return \(J=H(n+sb)\) is the raw state \(k-j(n+sb)+1\) steps later. It obeys \(Jq\le n+A\) and the two comparisons of Lemma~\ref{lem:threshold}.
+\end{theorem}
+
+\begin{proof}
+The two divisibility conditions on \(g\) are exhaustive and mutually exclusive. The first is Lemma~\ref{lem:escape}. For the second, Lemma~\ref{lem:delay} gives the least delay \(s\), so Lemma~\ref{lem:prefix} identifies the state after \(s\) blocks with \(m=n+sb\). Lemma~\ref{lem:closed} identifies the later return with \(H(m)\). Lemma~\ref{lem:product} gives \(Jq\le n+A\), and Lemma~\ref{lem:threshold} gives the comparisons with \(\lfloor A/(q-1)\rfloor\).
+\end{proof}
+
+\section{A small return that escapes}
+
+\begin{theorem}
+\label{thm:class-change}
+For \(q=4\), \(k=2\) and \(t=2\), the seed \(n=2\) is in the return class
+and is below the floor \(N_0=6\). Its return is \(J=5\), and its full raw
+orbit tends to infinity. More precisely, for every \(s\ge0\) and \(0\le i\le2\),
+\[
+C^{5+3s+i}(2)=4^i(5+10s)+32G_i(4).
+\]
+\end{theorem}
+
+\begin{proof}
+Here \(D=16\), \(c=32\), \(g=2\), \(b=10\), and \(A=18\), giving \(N_0=6\).
+The first delay is \(s=1\), its landing is \(m=12\), and the clipped exponent
+is \(j=1\). The exact raw prefix is
+\[
+2\longmapsto40\longmapsto192\longmapsto12\longmapsto80\longmapsto5.
+\]
+The first two and fourth edges are affine; the third and fifth are divisions
+by sixteen. Thus \(C^5(2)=5\). Since \(2\nmid5\), the new seed lies in the
+escape class. Lemma~\ref{lem:escape} gives its displayed subsequent states,
+and Corollary~\ref{cor:all-clock} gives divergence of the full sequence.
+\end{proof}
+
+The floor bounds the return in Theorem~\ref{thm:separation}. It does not
+assert that the returned seed keeps the original gcd class or that the whole
+future orbit is bounded. Theorem~\ref{thm:class-change} separates these claims
+with a concrete orbit.
+
+\section{Formal proofs and computation}
+
+The Lean module proves Theorem~\ref{thm:separation}, the all-clock lower bound,
+positivity of the clipped return, and the exact class-changing example.
+Its source is \texttt{QCD.Discriminator.001/lean/Discriminator.lean}. The residue-cover
+argument constructs a finite residue permutation; it does not assume that
+\(q\) is prime. This module is part of the default Lean build.
+
+The Go implementation covers
+\[
+2\le q\le8,\qquad 1\le k\le4,\qquad1\le t\le8,\qquad1\le n\le256,
+\qquad q\nmid n.
+\]
+There are \(43{,}328\) such seeds: \(13{,}440\) escape seeds and \(29{,}888\)
+return seeds. Escape checks compare every partial state for block indices
+zero through eight with the closed formula. Return checks independently
+replay both raw landings and check the product and floor comparisons.
+These are finite computations, separate from the unrestricted proofs.
+
+Each supported raw replay uses at most \(44\) ticks; the implementation caps
+replay at \(64\). All compared intermediate states are bounded by
+\[
+4096(256+9\cdot4680)=173{,}572{,}096<2^{28}.
+\]
+Before using Lemma~\ref{lem:product}, elementary box bounds give
+\[
+J\le m+tG_k(q)\le37{,}696.
+\]
+Thus even the tested product \(qJ\) is safely within 64-bit arithmetic. The general arithmetic helpers check overflow; invalid
+family parameters are rejected before loop counters or powers are formed.
+Constant bases in power and geometric-sum helpers are handled without a
+loop. In particular \(G_{64}(2)=2^{64}-1\) is accepted without evaluating the
+unneeded power \(2^{64}\).
+
+The tests cover the complete grid, independently locate the first clipped
+division, distinguish strict and small returns, and verify the class change.
+They also check overflow and unsupported-budget controls. Successful
+checks of one seed allocate no memory. Run from the repository root:
+\begin{verbatim}
+make lean
+make go GOFILE=QCD.Discriminator.001/go/Discriminator.go
+CGO_ENABLED=0 go test ./QCD.Discriminator.001/go
+make tex TEXFILE=QCD.Discriminator.001/tex/Discriminator.tex
+bash Scripts/CheckIgnoredPdfs.sh
+bash Scripts/CheckIgnoredTexTemps.sh
+\end{verbatim}
+
+\end{document}

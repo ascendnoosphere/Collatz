@@ -276,6 +276,16 @@ clock $`(u+v)/g`$. Composite bases and nonunit residuals are allowed.
 Negative divisors, nontrivial multiplier residuals and other offset regimes
 remain separate families.
 
+### Neutral translations and return thresholds
+
+[QCD.Discriminator.001](QCD.Discriminator.001/README.md) separates the raw family
+$D=q^k$, $c=tD$, for $q\ge2$, $k,t\ge1$ and positive seeds with $q\nmid n$.
+If $\gcd(q,t)\nmid n$, every block translates by $b=tG_k(q)$ and the full raw
+orbit tends to infinity. Otherwise the least modular delay gives a positive
+return with $qJ\le n+(q/\gcd(q,t))b-t$, and hence descent above an explicit
+floor. A proved class-changing example shows why a return below the floor
+need not have a bounded future orbit.
+
 ### An integer-root product bound
 
 [QCD.ReverseBound.001](QCD.ReverseBound.001/README.md) gives a product-bound proof
