@@ -45,6 +45,16 @@ H(n)=A_{j(n)}(q,c,n)/d.
 
 **PRESERVATION CONDITIONS.** The every-seed hypothesis remains explicit and is not discharged. The pair $`(A,B)`$ is an additional hypothesis, uniform in the seed. Signs of $`q`$, $`c`$, $`d`$, and $`n`$ are unrestricted except for $`\lvert d\rvert\ge 2`$. The core theorems are instantiated only after $`H`$ has been defined on every integer. The pure-division theorem quantifies only over seeds divisible by $`d`$.
 
+## Formal verification boundary
+
+The active Lean declarations end with `NegTwoOneFirstTwoBefore`.
+The subsequent large block beginning with `ZeroOffset` is an explicitly
+**uncompiled historical appendix** inside a Lean block comment.
+Names such as its second `UniformReturnBound` do not declare checked theorems
+and do not replace the active `UniformReturnBound` listed above.
+A build is not proof verification of that commented material. The appendix
+is retained for provenance, not offered as a second formal implementation.
+
 ## What is not claimed
 
 - That every seed hits, for a general record. A first hit by time $`J`$ on each residue $`0,\ldots,\lvert d\rvert-1`$ does lift to every integer, because a multiple of $`d`$ does not move the first hit.

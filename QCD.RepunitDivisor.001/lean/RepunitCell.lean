@@ -21,6 +21,8 @@ of a raw cycle, the Hull–Dobell criterion, or the comparison `2 ρ ≤ μ ≤ 
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.ModEq
+import Mathlib.Data.Int.ModEq
+import Mathlib.Tactic.Ring
 import Mathlib.Logic.Function.Iterate
 
 set_option autoImplicit false
@@ -186,6 +188,31 @@ theorem RepunitAffineModId (q c k r : ℕ) (hq : 1 ≤ q) :
     Nat.modEq_zero_iff_dvd.mpr (Nat.dvd_mul_left (RepunitSum q k) c)
   have sumCong := power.add offset
   simpa [Nat.one_mul, Nat.add_zero] using sumCong
+
+/-- Signed offsets and signed seeds obey the same integral affine closed form. -/
+theorem RepunitAffineClosedInt (q k : ℕ) (c r : ℤ) :
+    (fun x : ℤ => (q : ℤ) * x + c)^[k] r =
+      (q : ℤ) ^ k * r + c * (RepunitSum q k : ℤ) := by
+  induction k with
+  | zero => {
+      simp [RepunitSumZero]
+    }
+  | succ k ih => {
+      rw [Function.iterate_succ_apply', ih, ← RepunitSumSuccMul]
+      push_cast
+      ring
+    }
+
+/-- The integral affine return retains arbitrary signed offset and seed. -/
+theorem RepunitAffineModIdInt (q k : ℕ) (c r : ℤ) (hq : 1 ≤ q) :
+    (fun x : ℤ => (q : ℤ) * x + c)^[k] r ≡ r [ZMOD (RepunitSum q k : ℤ)] := by
+  rw [RepunitAffineClosedInt, Int.modEq_iff_dvd]
+  have hgeom := RepunitSumGeom q k hq
+  have hcast : (q : ℤ) ^ k = 1 + (q - 1 : ℕ) * (RepunitSum q k : ℤ) := by
+    exact_mod_cast hgeom
+  refine ⟨-((q - 1 : ℕ) * r + c), ?_⟩
+  rw [hcast]
+  ring
 
 /-- Two-term repunit sum: `G_2(q) = 1 + q`. -/
 theorem RepunitSumTwo (q : ℕ) : RepunitSum q 2 = 1 + q := by

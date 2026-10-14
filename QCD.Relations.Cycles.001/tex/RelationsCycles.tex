@@ -136,7 +136,7 @@ then it exceeds \(n\).
 \begin{proof}
 An odd state is not divisible by \(2\), so the affine branch applies by
 Lemma~\ref{Lem:Branch}, which gives the first two assertions. For the parity,
-write \(c=2e\); then \((2c+1)n+c=2n(c+e)+n\), a sum of an even number and an
+write \(c=2e\); then \((2c+1)n+c=n+2(cn+e)\), a sum of an even number and an
 odd number, hence odd. For the growth,
 \((2c+1)n+c=n+c(2n+1)\) with \(c(2n+1)>0\) because \(1\le c\) and \(0<n\).
 \end{proof}
@@ -318,7 +318,7 @@ formula by induction.
 At \(j=k\) the formula gives \((d-1)d^{0}=d-1\), so \(d-1\) returns. If
 \(0<i<k+1\), write \(i=j+1\) with \(0\le j<k\); then
 \(T^{\,i}(d-1)=(d-1)d^{\,e}\) with \(e=k-j\ge1\), and since \(d\ge2\),
-\(d^{\,e}\ge2\) and \(d-1\ge1\), so \((d-1)d^{\,e}\ge2>d-1\): no earlier
+\(d^{\,e}\ge2\) and \(d-1\ge1\), so \((d-1)d^{\,e}\ge2(d-1)>d-1\): no earlier
 positive time returns. Finally, for \(d\ge3\) every value
 \((d-1)d^{\,e}\) with \(e\ge0\) is at least \(2\), so no time meets \(1\),
 again after removing full periods of length \(k+1\).

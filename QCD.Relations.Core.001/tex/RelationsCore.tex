@@ -48,8 +48,10 @@ Division has precedence, \(C^{k}\) denotes \(k\) original instructions, so
 \emph{accessible} if \(d\mid n\) or \(n\equiv c\pmod d\), and the state after
 the first division is the \emph{return} state
 \[
- R(n)=\begin{cases} n/d, & d\mid n,\\ \bigl((d-1)n+c\bigr)/d, & d\nmid n.\end{cases}
+ R(n)=\begin{cases} n/d, & d\mid n,\\ \left\lfloor\bigl((d-1)n+c\bigr)/d\right\rfloor, & d\nmid n.\end{cases}
 \]
+The floor is the natural-number quotient used by Lean. At accessible states
+the numerator is divisible by \(d\), so this quotient is exact.
 The map \(R\) is total, but only at accessible states does one or two
 instructions of \(C\) realize it, as Theorem~\ref{Thm:Realize} states. The
 \emph{core} is the interval \(\{1,\dots,c\}\). All states are natural numbers,
@@ -62,7 +64,7 @@ For every \(n\),
 \[
  C(n)=\begin{cases} n/d, & d\mid n,\\ (d-1)n+c, & d\nmid n,\end{cases}
  \qquad
- R(n)=\begin{cases} n/d, & d\mid n,\\ \bigl((d-1)n+c\bigr)/d, & d\nmid n.\end{cases}
+ R(n)=\begin{cases} n/d, & d\mid n,\\ \left\lfloor\bigl((d-1)n+c\bigr)/d\right\rfloor, & d\nmid n.\end{cases}
 \]
 \end{lemma}
 
@@ -121,11 +123,10 @@ then \(C(n)<n\).
 
 \begin{proof}
 If \(d\mid n\), then \(R(n)=C(n)=n/d<n\) by
-Lemma~\ref{Lem:DivDec}. Otherwise \(d\nmid n\), so \(R(n)=((d-1)n+c)/d\).
-Since \(d\nmid n\) implies \(n\ge c+1\) or \(n<c\): in the first case
-\((d-1)n+c<dn\) because \(c<n\); in the second case \(n\le c-1<c<n\), a
-contradiction with \(c<n\). So \((d-1)n+c<dn\) always holds under \(c<n\),
-and dividing by \(d\) gives \(R(n)<n\).
+Lemma~\ref{Lem:DivDec}. Otherwise
+\(R(n)=\lfloor((d-1)n+c)/d\rfloor\). The hypothesis \(c<n\) gives
+\((d-1)n+c<dn\), so the real quotient is strictly below the integer \(n\).
+Its floor is therefore strictly below \(n\) as well.
 \end{proof}
 
 \begin{theorem}[Core invariance]\label{Thm:Core}
@@ -136,7 +137,7 @@ for every \(k\) the iterate \(R^{k}(n)\) satisfies
 
 \begin{proof}
 If \(d\mid n\) then \(1\le n/d\le n\le c\). Otherwise
-\(R(n)=((d-1)n+c)/d\). For the upper bound, \(n\le c\) gives
+\(R(n)=\lfloor((d-1)n+c)/d\rfloor\). For the upper bound, \(n\le c\) gives
 \(((d-1)n+c)/d\le((d-1)c+c)/d=c\). For the lower bound, \(n\ge1\) and
 \(c\ge1\) give \((d-1)n+c\ge d-1+1=d\), hence \(R(n)\ge1\). The iterate
 statement follows by induction on \(k\), since the bounds \(1\le\cdot\le c\)
@@ -198,9 +199,11 @@ Let \(d\ge2\), \(c\ge1\) and \(1\le n\). Then \(R^{k}(n)\le c\) for some
 
 \begin{proof}
 If \(n\le c\) take \(k=0\). Otherwise \(c<n\), and
-Theorem~\ref{Thm:Contract} gives \(R(n)<n\), so by strong induction on \(n\)
-the state \(R(n)\) reaches the core within \(n-1\) return steps; since every
-intermediate value is at most its predecessor, the total is at most \(n\).
+Theorem~\ref{Thm:Contract} gives \(R(n)<n\). Also \(R(n)\ge1\): an exact
+division of a positive multiple of \(d\) has positive quotient, and in the
+other branch \((d-1)n+c\ge d\) has floor quotient at least one.
+Strong induction therefore gives entry from \(R(n)\) within \(R(n)\le n-1\)
+further return steps. Adding the first step gives at most \(n\) steps.
 \end{proof}
 
 \begin{theorem}[Periodicity]\label{Thm:Periodic}
@@ -217,9 +220,10 @@ By Theorem~\ref{Thm:Reach} some \(R^{k}(n)\le c\) with
 \(R^{k}(n)\ge1\). The map \(R\) sends the finite set \(\{1,\dots,c\}\) into
 itself by Theorem~\ref{Thm:Core}, so the \(c+1\) states
 \(R^{k}(n),\dots,R^{k+c}(n)\) lie in a set of \(c\) elements and two of them
-coincide. If \(R^{k+i}(n)=R^{k+j}(n)\) with \(i<j\), then \(p=j-i>0\) and
-\(R^{k+s+p}(n)=R^{k+s}(n)\) for every \(s\), by applying the same number of
-return steps to the two sides.
+coincide. If \(R^{k+i}(n)=R^{k+j}(n)\) with \(i<j\), set
+\(k'=k+i\) and \(p=j-i>0\). Applying \(R^s\) to the equality gives
+\(R^{k'+s+p}(n)=R^{k'+s}(n)\) for every \(s\). Core invariance gives
+\(R^{k'}(n)\in\{1,\ldots,c\}\), so \(k'\) and \(p\) are the required witnesses.
 \end{proof}
 
 \begin{theorem}[Trap-or-core dichotomy]\label{Thm:Dichotomy}
@@ -303,10 +307,13 @@ second case the orbit reaches the cycle.
 
 \begin{proof}
 If some iterate is inaccessible, Theorem~\ref{Thm:Trap} gives the divergence.
-Assume then that every iterate is accessible. As long as the states exceed
-\(d\) they are not in the trap range of Theorem~\ref{Thm:CornerValues}, are
-positive, and Theorem~\ref{Thm:Contract} applies to every return step: once
-the state is larger than \(c=d+1\), one return step strictly decreases it.
+Assume then that every raw iterate is accessible. Inductively each return
+state is a raw state: at a divisible state one raw tick realizes its return;
+at an accessible nonmultiple two ticks do so by
+Theorem~\ref{Thm:Realize}. The resulting return state is again accessible
+by the assumption on all raw iterates. Positivity holds in both branches.
+Once a return state is larger than \(c=d+1\),
+Theorem~\ref{Thm:Contract} strictly decreases it.
 Theorem~\ref{Thm:Reach} therefore supplies \(k\) with
 \(R^{k}(x)\le d+1\), and \(R^{k}(x)\) is accessible, hence
 \(R^{k}(x)\in\{1,d,d+1\}\) by Theorem~\ref{Thm:CornerCore}. Since every

@@ -36,14 +36,25 @@ At $`q=3`$ the threshold is $`2/5`$. The odd letter meets the value $`1`$ exactl
 | The two solutions agree when $`P\neq D`$. | `PhaseRigidFixedUnique` |
 | At $`q=3`$ the threshold is $`2/5`$. | `PhaseRigidClassicalFifth` |
 | At $`q=3`$, $`c=1`$, the branches send $`1`$ to $`2`$ and $`2`$ to $`1`$. | `PhaseRigidClassicalLoop` |
+| A closed nonresonant word with uniformly subthreshold defects is integral at every phase. | `PhaseRigidCycle` |
+| The attained maximum cyclic defect is zero or at least $`2/(q+2)`$. | `PhaseRigidCycleGap` |
+| The word $`1100`$ has a single-phase defect $`2/7<2/5`$. | `PhaseRigidIndividualCounterexample` |
 
 ## Reduction record
 
-**Original obligation.** For odd positive integers $`q`$ and $`c`$, and for every phase of a base-two divided word with positive determinant, the distance to the prescribed positive parity integer is either zero or at least $`2/(q+2)`$.
+**Original obligation.** For odd positive integers $`q`$ and $`c`$ and a
+complete cyclic base-two word with $`2^m\ne q^s`$, let $`\xi_j`$ be its
+rational phases and $`n_j`$ integers of the prescribed parities, indexed
+cyclically. The **maximum** defect
+$`E=\max_{0\le j<m}|\xi_j-n_j|`$ is either zero or at least $`2/(q+2)`$.
+This is not a lower bound for each individual phase. Positivity of
+$`2^m-q^s`$ is sufficient, but its nonvanishing is all uniqueness needs.
 
 **Replacement obligations.** (i) The parity congruence that a legal integer has an integral divided branch. (ii) The strict estimate $`(a/2+1)E<1`$ whenever $`0\leq a\leq q`$ and $`E<2/(q+2)`$. (iii) The resulting equality of the integer branch with the next integer. (iv) Uniqueness for one affine fixed-point equation when the multiplier and the denominator differ.
 
-**Recovery argument.** Suppose every phase lies at distance $`E<2/(q+2)`$ from an integer of the prescribed parity. Then (ii) and (iii) make every integer carry vanish, so those integers follow the divided word. The rational phases and the integer phases then satisfy the same affine relation. If the word multiplier differs from the power of two in the denominator, (iv) forces each rational phase to equal the corresponding integer, and the defect is zero. The dichotomy is this implication together with the alternative that the defect is at least $`2/(q+2)`$.
+**Recovery argument.** `PhaseRigidCycle` and `PhaseRigidCycleGap` assemble
+the local congruence and error transport on the complete word, including
+both rational and integer endpoint closure. Suppose every phase lies at distance $`E<2/(q+2)`$ from an integer of the prescribed parity. Then (ii) and (iii) make every integer carry vanish, so those integers follow the divided word. The rational phases and the integer phases then satisfy the same affine relation. If the word multiplier differs from the power of two in the denominator, (iv) forces each rational phase to equal the corresponding integer, and the defect is zero. The dichotomy is this implication together with the alternative that the defect is at least $`2/(q+2)`$.
 
 **Difficulty decrease.** The comparison no longer depends on a real-parameter family or on the length of the word. The remaining steps are one congruence modulo $`2`$, one strict rational inequality, and one linear subtraction.
 
@@ -51,6 +62,12 @@ At $`q=3`$ the threshold is $`2/5`$. The odd letter meets the value $`1`$ exactl
 
 ## What is not claimed
 
-The branches are not continued off the integers, and no smoothness or attraction statement is made. A phase defect of zero is not excluded. The non-strict bound $`E\leq 2/(q+2)`$ is not claimed. The stronger uniform lower bound $`3/4`$ is not claimed: the word $`1011100111110100`$ has denominator $`2^{16}-3^{10}=6487`$ and defect $`4858/6487`$, which is at least $`2/5`$ and strictly less than $`3/4`$.
+The branches are rational affine formulas for a prescribed word; no
+smooth extension of the parity-selected integer map, attraction statement,
+or transfer to analytic complex dynamics is asserted. Individual defects
+need not satisfy the gap: at $`q=3,c=1`$ the word $`1100`$ has phases
+$`5/7,11/7,20/7,10/7`$. Their distances to the nearest positive integers of
+prescribed parities $`1,1,0,0`$ are $`2/7,4/7,6/7,4/7`$.
+The first defect is strictly below $`2/5`$; the maximum $`6/7`$ is not. A phase defect of zero is not excluded. The non-strict bound $`E\leq 2/(q+2)`$ is not claimed. The stronger uniform lower bound $`3/4`$ is not claimed: the word $`1011100111110100`$ has denominator $`2^{16}-3^{10}=6487`$ and defect $`4858/6487`$, which is at least $`2/5`$ and strictly less than $`3/4`$.
 
 An integer check on odd multipliers and offsets at most $`15`$, seeds at most $`40`$, divided words of length at most $`4`$ with multipliers in $`\{1,3,5\}`$ and offsets in $`\{1,3,5\}`$, and the single length-$`16`$ word above, is not the uniform statement. No claim is made that every positive integer orbit reaches $`1`$.

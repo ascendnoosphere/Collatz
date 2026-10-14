@@ -239,6 +239,60 @@ Rearrangement gives \(A=D\xi-P\xi\) and \(A=Dn-Pn\), so \(D\xi-P\xi=Dn-Pn\). The
 If \(D\neq 0\), divide the equivalent identity \(D(\xi-n)=P(\xi-n)\) by \(D\). If \(P\neq D\), the coefficient \(D-P\) is nonzero, so the product identity forces \(\xi-n=0\).
 \end{proof}
 
+\section{The maximum defect of a closed word}
+
+\begin{theorem}
+\label{thm:cycle}
+Let \(m\ge1\), let \(e_0,\ldots,e_{m-1}\) be a prescribed binary word,
+and let \(s\) be its number of odd letters. Suppose rational phases and
+integer approximants satisfy
+\[
+\xi_{j+1}=F_{e_j}(\xi_j),\qquad
+\xi_m=\xi_0,\qquad n_m=n_0,
+\]
+where \(n_j\) has parity \(e_j\) for \(0\le j<m\).
+Assume \(2^m\ne q^s\), and define
+\[
+E=\max_{0\le j<m}|\xi_j-n_j|.
+\]
+Then \(E=0\) or \(E\ge 2/(q+2)\).
+\end{theorem}
+
+\begin{proof}
+The maximum is attained because the index set is finite and nonempty.
+If \(E\ge2/(q+2)\), the second alternative already holds. Suppose instead
+\(E<2/(q+2)\). The endpoint identities extend the bound to index \(m\).
+Theorem~\ref{thm:congruence} applies to every adjacent pair, including
+\((m-1,m)\), and gives \(n_{j+1}=N_{e_j}(n_j)\).
+Put \(\delta_j=\xi_j-n_j\). Lemma~\ref{lem:transport} yields
+\(\delta_{j+1}=(a_{e_j}/2)\delta_j\).
+If \(s_k\) counts the odd letters before index \(k\), induction gives
+\[
+2^k\delta_k=q^{s_k}\delta_0,\qquad 0\le k\le m.
+\]
+Indeed, the even successor doubles the denominator only, and the odd
+successor also multiplies the numerator by \(q\). At \(k=m\), closure
+makes \(\delta_m=\delta_0\), so
+\((2^m-q^s)\delta_0=0\). Nonresonance forces \(\delta_0=0\), and the
+prefix identities force every \(\delta_k=0\). The attained maximum is
+therefore zero.
+\end{proof}
+
+\begin{remark}
+This is a maximum-defect statement, not a gap for each phase separately.
+For \(q=3,c=1\), the word \(1100\) has the exact rational cycle
+\[
+\frac57\longmapsto\frac{11}7\longmapsto\frac{20}7
+\longmapsto\frac{10}7\longmapsto\frac57.
+\]
+The nearest positive approximants of prescribed parities are
+\(1,1,2,2\), with defects \(2/7,4/7,6/7,4/7\). Hence the first defect is
+less than \(2/5\), whereas the maximum \(6/7\) satisfies the theorem.
+The formal API \texttt{PhaseRigidCycle} retains both endpoint equalities;
+\texttt{PhaseRigidCycleGap} retains a uniform bound and an attaining index.
+Neither replaces a common cyclic witness by separate phase witnesses.
+\end{remark}
+
 \begin{corollary}
 \label{cor:fifth}
 The threshold at \(q=3\) is \(2/5\). For \(q=3\) and \(c=1\), the integer branches satisfy \(N_1(1)=2\) and \(N_0(2)=1\).

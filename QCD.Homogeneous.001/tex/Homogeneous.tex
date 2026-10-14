@@ -2,27 +2,24 @@
 \documentclass[11pt,letterpaper]{article}
 
 \usepackage[T1]{fontenc}
-\usepackage{amsmath,amssymb,amsthm}
-\usepackage{mathtools}
-\usepackage{microtype}
-\usepackage{geometry}
-\usepackage{hyperref}
-\usepackage{enumitem}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 \usepackage{booktabs}
-\usepackage{array}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
 
-\geometry{margin=1in}
-\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
-
-\newtheorem{theorem}{Theorem}[section]
+\newtheorem{theorem}{Theorem}
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{proposition}[theorem]{Proposition}
 \newtheorem{corollary}[theorem]{Corollary}
-\theoremstyle{definition}
 \newtheorem{definition}[theorem]{Definition}
 \newtheorem{example}[theorem]{Example}
-\theoremstyle{remark}
 \newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
 \newcommand{\Z}{\mathbb{Z}}
 \newcommand{\N}{\mathbb{N}}
@@ -158,7 +155,8 @@ segment of length $j-i>0$ a legal return word at the positive intermediate
 state.  This contradicts Lemma~\ref{lem:noreturn}.
 \end{proof}
 
-\begin{proof}[Proof of Theorem~\ref{thm:escape}]
+\begin{proof}
+We prove Theorem~\ref{thm:escape}.
 Proposition~\ref{prop:injective} shows that the orbit is an injective
 sequence in $\N_{>0}$.  Fix $B\in\N$.  At most $B$ orbit terms can lie in
 the finite set $\{1,\ldots,B\}$.  Their time indices form a finite set, so

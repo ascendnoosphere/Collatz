@@ -23,8 +23,9 @@ If a rational phase and the next phase both lie at distance strictly less than
 lands on the next integer. Two solutions of the same affine fixed-point
 equation agree whenever the multiplier and the denominator differ.
 
-Nothing here continues the branches off the integers, and a defect of zero is
-not excluded.
+The finite cyclic assembly below proves a gap for the maximum phase defect,
+not for each phase individually. No analytic extension or attraction claim
+is made, and a defect of zero is not excluded.
 -/
 
 set_option autoImplicit false
@@ -438,5 +439,96 @@ theorem PhaseRigidClassicalLoop :
       unfold PhaseRigidIntBranch
       decide
     }
+
+/-- Count odd letters in a chronological finite prefix of a prescribed word. -/
+def PhaseRigidOddCount (word : ℕ → Bool) : ℕ → ℕ
+  | 0 => 0
+  | k + 1 => PhaseRigidOddCount word k + if word k then 1 else 0
+
+/-- Every closed nonresonant word with uniformly small defects is integral at every phase. -/
+theorem PhaseRigidCycle (q c m : ℕ) (word : ℕ → Bool)
+    (xi : ℕ → ℚ) (n : ℕ → ℤ) (E : ℚ)
+    (hq : Odd q) (hc : Odd c)
+    (hparity : ∀ k, k < m → PhaseRigidHasParity (word k) (n k))
+    (hstep : ∀ k, k < m → xi (k + 1) = PhaseRigidShortcut q c (word k) (xi k))
+    (hclose : ∀ k, k ≤ m → |xi k - (n k : ℚ)| ≤ E)
+    (hxi : xi m = xi 0) (hn : n m = n 0)
+    (hres : q ^ PhaseRigidOddCount word m ≠ 2 ^ m)
+    (hE : E < 2 / ((q : ℚ) + 2)) :
+    ∀ k, k ≤ m → xi k = (n k : ℚ) := by
+  have hlegal : ∀ k, k < m → PhaseRigidIntBranch q c (word k) (n k) = n (k + 1) := by
+    intro k hk
+    exact PhaseRigidCongruence q c (word k) E (xi k) (xi (k + 1))
+      (n k) (n (k + 1)) hq hc (hparity k hk) hE
+      (hclose k (Nat.le_of_lt hk)) (hclose (k + 1) hk) (hstep k hk)
+  have herror : ∀ k, k ≤ m →
+      (2 : ℚ) ^ k * (xi k - (n k : ℚ)) =
+        (q : ℚ) ^ PhaseRigidOddCount word k * (xi 0 - (n 0 : ℚ)) := by
+    intro k
+    induction k with
+    | zero => {
+        simp [PhaseRigidOddCount]
+      }
+    | succ k ih => {
+        intro hk
+        have hkm : k < m := hk
+        have hcast : (n (k + 1) : ℚ) = PhaseRigidShortcut q c (word k) (n k) := by
+          rw [← hlegal k hkm]
+          exact (PhaseRigidIntBranchCast q c (word k) (n k)
+            hq hc (hparity k hkm)).symm
+        have hdifference := PhaseRigidErrorTransport (PhaseRigidLetter q (word k))
+          (xi k) (xi (k + 1)) (n k) (n (k + 1)) (PhaseRigidOffset c (word k))
+          ((hstep k hkm).trans (PhaseRigidShortcutSpec q c (word k) (xi k)))
+          (hcast.trans (PhaseRigidShortcutSpec q c (word k) (n k)))
+        have hi := ih (Nat.le_of_lt hkm)
+        rw [hdifference, PhaseRigidOddCount]
+        cases word k <;> simp [PhaseRigidLetter, pow_succ]
+        · nlinarith [hi]
+        · nlinarith [hi]
+      }
+  have hloop := herror m le_rfl
+  rw [hxi, hn] at hloop
+  have hnonzero : (2 : ℚ) ^ m - (q : ℚ) ^ PhaseRigidOddCount word m ≠ 0 := by
+    intro h
+    have he : (q : ℚ) ^ PhaseRigidOddCount word m = (2 : ℚ) ^ m :=
+      (sub_eq_zero.mp h).symm
+    apply hres
+    exact_mod_cast he
+  have hzero : xi 0 - (n 0 : ℚ) = 0 := by
+    have hprod : ((2 : ℚ) ^ m - (q : ℚ) ^ PhaseRigidOddCount word m) *
+        (xi 0 - (n 0 : ℚ)) = 0 := by nlinarith [hloop]
+    exact (mul_eq_zero.mp hprod).resolve_left hnonzero
+  intro k hk
+  have he := herror k hk
+  rw [hzero, mul_zero] at he
+  have hpow : (2 : ℚ) ^ k ≠ 0 := pow_ne_zero k (by norm_num)
+  exact sub_eq_zero.mp ((mul_eq_zero.mp he).resolve_left hpow)
+
+/-- An attained uniform maximum on a cyclic word is zero or meets the rigidity threshold. -/
+theorem PhaseRigidCycleGap (q c m : ℕ) (word : ℕ → Bool)
+    (xi : ℕ → ℚ) (n : ℕ → ℤ) (E : ℚ)
+    (hq : Odd q) (hc : Odd c)
+    (hparity : ∀ k, k < m → PhaseRigidHasParity (word k) (n k))
+    (hstep : ∀ k, k < m → xi (k + 1) = PhaseRigidShortcut q c (word k) (xi k))
+    (hclose : ∀ k, k ≤ m → |xi k - (n k : ℚ)| ≤ E)
+    (hmax : ∃ k, k ≤ m ∧ E = |xi k - (n k : ℚ)|)
+    (hxi : xi m = xi 0) (hn : n m = n 0)
+    (hres : q ^ PhaseRigidOddCount word m ≠ 2 ^ m) :
+    E = 0 ∨ 2 / ((q : ℚ) + 2) ≤ E := by
+  by_cases hE : E < 2 / ((q : ℚ) + 2)
+  · left
+    obtain ⟨k, hk, he⟩ := hmax
+    rw [he, PhaseRigidCycle q c m word xi n E hq hc hparity hstep hclose
+      hxi hn hres hE k hk, sub_self, abs_zero]
+  · exact Or.inr (le_of_not_gt hE)
+
+/-- A single cyclic phase can be below the threshold while the full maximum is above it. -/
+theorem PhaseRigidIndividualCounterexample :
+    PhaseRigidShortcut 3 1 true (5 / 7) = 11 / 7 ∧
+    PhaseRigidShortcut 3 1 true (11 / 7) = 20 / 7 ∧
+    PhaseRigidShortcut 3 1 false (20 / 7) = 10 / 7 ∧
+    PhaseRigidShortcut 3 1 false (10 / 7) = 5 / 7 ∧
+    |(5 / 7 : ℚ) - 1| = 2 / 7 ∧ (2 / 7 : ℚ) < 2 / 5 := by
+  norm_num [PhaseRigidShortcut]
 
 end GeneralizedCollatz

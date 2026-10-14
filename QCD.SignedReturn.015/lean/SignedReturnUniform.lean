@@ -6078,7 +6078,13 @@ theorem NegTwoOneFirstTwoBefore (p : Parameters) (hQ : p.Q = 1)
   intro hlate
   exact NegTwoOneTwoBefore p hQ hD hC hcop n τ hlate hpred hzero
 
-/- 
+/-
+Uncompiled historical appendix. Everything from this opening comment through
+its matching closing delimiter near the end of this file is source material,
+not declarations checked by Lean. Repeated theorem names here do not define
+or replace the active APIs above. Compilation of this file certifies only
+the active declarations outside this appendix.
+
 /-- The map with multiplier equal to the divisor and with zero offset. -/
 def ZeroOffset (d : ℤ) : Parameters :=
   { Q := d, C := 0, D := d }

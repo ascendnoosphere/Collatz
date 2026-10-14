@@ -9,7 +9,8 @@ map sends
 n\longmapsto \begin{cases} n/D, & D\mid n,\\ qn+c, & D\nmid n,\end{cases}
 ```
 
-and its residue dynamics is the affine map on $`\mathbb{Z}/D\mathbb{Z}`$
+During an affine run its residues follow the auxiliary map on
+$`\mathbb{Z}/D\mathbb{Z}`$
 
 ```math
 F(r)=qr+c \bmod D .
@@ -75,8 +76,8 @@ the orbit of $`0`$ for $`m`$ steps, and row .11 shows that this set is exactly
 the period-$`m`$ cycle containing $`0`$. Exhaustion modulo $`D`$ is full access
 $`m=D`$; rows .15 and .16 decide it modulo a prime.
 
-**Difficulty decrease.** The raw orbit analysis is replaced by a finite
-divisibility question in $`\mathbb{Z}/M(q,c,D)\mathbb{Z}`$: the least exponent
+**Difficulty decrease.** The stated auxiliary zero-orbit obligation is
+replaced by a finite divisibility question in $`\mathbb{Z}/M(q,c,D)\mathbb{Z}`$: the least exponent
 $`m`$ with $`M\mid q^{m}-1`$ is computed once, and all orbit questions become
 questions about $`m`$ (rows .5, .9, .11). No trajectory bound is assumed; the
 bound $`m\le D`$ is derived by counting the distinct residues (row .10).
@@ -92,8 +93,18 @@ $`m`$. Coprimality of $`q`$ and $`D`$ is used by the modulus coprimality clause
 of row .6 and by the injectivity of row .7; the exhaustion statements do not
 use it.
 
-**Not formalized.** The identification of the accessible residues above with
-the first-division residues of the raw map, the density-one escape when the
+**Raw-map recovery is separate.** Reduction modulo $`D`$ is not a quotient
+of raw division: for $`(q,c,D)=(3,1,4)`$, the congruent states $`0`$ and $`4`$
+have raw images $`0`$ and $`1`$. Nor does the affine orbit of zero contain
+every raw seed's residue: for $`(2,1,3)`$, the seed $`2`$ follows
+$`3\cdot2^j-1`$ and always stays in the inaccessible residue $`2`$.
+When $`\gcd(q,D)=1`$, a seed reaches a division exactly when its residue
+belongs to the cycle of zero. The legal first-division recovery and its
+finite cylinders are proved in
+[`QCD.ResidueLeakage.001`](../QCD.ResidueLeakage.001/README.md), which imports
+this family; the converse import would be circular.
+
+**Not formalized here.** The density-one escape when the
 leakage $`m<D`$ is positive, the entry bound of the contracting return core,
 the refinement at $`c=1`$ where the captured set has density zero, the
 Hull–Dobell criterion for general cycles, the general offset slice and the

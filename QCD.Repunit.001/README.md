@@ -55,7 +55,9 @@ and its minimal period; (iv) the residue walk of $`1\bmod S_k`$; (v) the trap
 set of the slice; (vi) the unit-offset return map.
 
 **Recovery.** Each replacement obligation is a statement about the raw map
-$`T_{q,S_k}`$ or about its residue dynamics $`r\mapsto qr+1\bmod S_k`$. The
+$`T_{q,S_k}`$ or about the auxiliary affine residue walk
+$`r\mapsto qr+1\bmod S_k`$. That walk models affine runs only; it is not a
+same-clock quotient of raw division. The
 orbit formula .9 lists the cycle states $`1,S_2,\dots,S_k`$ in order, so the
 periodic point and its period are explicit; .5 separates the repunit sums, so
 the listed states are distinct, and .6 shows that no positive exponent
@@ -69,10 +71,12 @@ identity $`(q-1)S_k=q^k-1`$.
 The return map .10 recovers the same cycle from the entry data of the affine
 run.
 
-**Difficulty decrease.** The infinite orbit-classification problem is replaced
-by a finite order computation in $`\mathbb{Z}/S_k\mathbb{Z}`$ of size $`k`$
-together with a closed list of cycle states. The decreasing resource is the
-number of affine events between two divisions, which is $`k-1`$ on the cycle
+**Difficulty decrease.** The stated unit-seed obligation is solved by a
+finite order computation in the ring $`\mathbb{Z}/S_k\mathbb{Z}`$, which has
+$`S_k`$ elements, together with an explicit list of $`k`$ cycle states.
+This does not reduce the classification of all positive seeds to that list.
+On the certified unit cycle, the number of affine events before its division
+is $`k-1`$
 and bounded by one order computation.
 
 **Preservation conditions.** $`k\ge1`$ in .2 and .5; $`q\ge1`$ in .3 and

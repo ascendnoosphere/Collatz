@@ -25,6 +25,9 @@ For every integer offset $`c`$ and every integer residue $`r`$, the $`k`$-fold m
 F^k(r)\equiv r\pmod{G_k(q)},
 ```
 where $`F(x)=qx+c`$. The closed value of the same iterate is $`q^kr+c\,G_k(q)`$.
+`RepunitAffineClosedInt` and `RepunitAffineModIdInt` formalize these claims
+for signed integer $`c,r`$; $`q,k`$ remain natural numbers. The natural-number
+versions are retained for the displayed cells.
 
 The displayed cells are
 ```math
