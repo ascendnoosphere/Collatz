@@ -1,0 +1,390 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For a binary word of length \(2h\), the Hamming distance between its two halves
+is invariant under cyclic rotation and has the parity of the total number of
+ones. Distance zero characterizes doubled blocks. Distance two characterizes
+a cyclic cut with equal one counts and exactly one mismatch in each direction;
+such a cut can be found within the first \(h\) rotations. Excluding these two
+classes, with an even total count, gives the sharp lower bound four. We prove
+the classification, construct the balanced cut by a sliding window, and give
+examples showing the necessity of all three hypotheses.
+\end{abstract}
+
+\section{Statement}
+
+A parity word is a finite word in the alphabet \(\{0,1\}\). Write \(|w|\) for its length and \(N(w)\) for its number of letters equal to \(1\). Positions are numbered from \(0\). The cyclic shift of \(w\) by one place moves its first letter to the end, and the shift by \(k\) places is that operation repeated \(k\) times. For words \(u\) and \(v\) of equal length, their Hamming distance \(d(u,v)\) is the number of positions at which they differ.
+
+\begin{definition}
+\label{def:antipodal}
+Let \(|w|=2h\). The antipodal distance \(H(w)\) is the Hamming distance between the length-\(h\) prefix of \(w\) and the length-\(h\) suffix of \(w\).
+\end{definition}
+
+\begin{definition}
+\label{def:transport}
+The word \(w\) admits a one-bit transport if some cyclic shift of \(w\) equals a concatenation \(uv\) with
+\[
+|u|=|v|,\qquad N(u)=N(v),\qquad d(u,v)=2.
+\]
+\end{definition}
+
+The name is justified by Lemma~\ref{lem:shape}: those two mismatches are one
+letter \(1\) opposite a letter \(0\), and one letter \(0\) opposite a letter
+\(1\). The two positions are not required to be adjacent.
+
+\begin{theorem}
+\label{thm:gap}
+Let \(w\) be a parity word and let \(h\) be a natural number with \(|w|=2h\). Suppose that \(N(w)\) is even, that \(w\) is not equal to \(uu\) for any word \(u\), and that \(w\) admits no one-bit transport. Then \(4\le H(w)\).
+\end{theorem}
+
+This is a theorem about binary words. An application to a cycle word must
+establish the transport exclusion; it is not a consequence of the stated
+parity conditions alone.
+
+\section{Shifts and distance}
+
+Concatenation adds odd-letter counts: \(N(uv)=N(u)+N(v)\). This is immediate by induction on \(u\), since the first letter contributes \(0\) or \(1\) on both sides.
+
+\begin{lemma}
+\label{lem:shift-basic}
+A cyclic shift preserves length and odd-letter count. Shifting by the length
+of a first block exchanges the blocks: if \(|u|=k\), the shift of \(uv\) by
+\(k\) places is \(vu\). A full turn fixes the word, so for every \(k\),
+shifting by \(k+|w|\) agrees with shifting by \(k\).
+\end{lemma}
+
+\begin{proof}
+The empty word is fixed. For a nonempty word, the one-place shift is the tail followed by the head, so the length is unchanged and the odd-letter count is unchanged because addition of natural numbers is commutative. The claim for \(k\) places follows by induction on \(k\).
+
+For the block exchange, induct on \(u\). If \(u\) is empty, both sides are \(v\). If \(u\) starts with the letter \(a\), one shift turns \(uv\) into the tail of \(u\), followed by \(v\), followed by \(a\). The inductive hypothesis exchanges that first block with the rest. Taking
+\(u=w\) and \(v\) empty proves that a full turn fixes \(w\). Starting further
+shifts from these equal words gives equal continuations, by induction on the
+number of further shifts.
+\end{proof}
+
+\begin{lemma}
+\label{lem:hamming-zero}
+If \(|u|=|v|\) and \(d(u,v)=0\), then \(u=v\).
+\end{lemma}
+
+\begin{proof}
+Induct on \(u\). Equal length forces \(v\) to be empty exactly when \(u\) is empty. If both words are nonempty and their first letters differ, the distance is at least \(1\). If the first letters agree, the tails have equal length and distance \(0\), so they agree.
+\end{proof}
+
+For letters \(a\) and \(b\), write \(L(a,b)=1\) if \(a=1\) and \(b=0\), and write \(L(a,b)=0\) otherwise. For words of equal length, write \(L(u,v)\) for the sum of \(L\) over corresponding letters; positions past the shorter word contribute nothing, but equal length makes that clause idle. Thus \(L(u,v)\) counts letters \(1\) in \(u\) standing opposite letters \(0\) in \(v\).
+
+\begin{lemma}
+\label{lem:split}
+If \(|u|=|v|\), then
+\[
+d(u,v)=L(u,v)+L(v,u)
+\]
+and
+\[
+N(u)+L(v,u)=N(v)+L(u,v).
+\]
+\end{lemma}
+
+\begin{proof}
+Both identities are proved by induction on \(u\), using equal length to keep the tails aligned. A mismatch is exactly one of the two head contributions \(L(a,b)\) and \(L(b,a)\). The four-term sum
+\[
+(A+B)+(P+Q)=(A+P)+(B+Q)
+\]
+then matches the head contribution with the inductive sum. For the odd-letter identity, the same regrouping and the equality
+\[
+[a=1]+L(b,a)=[b=1]+L(a,b)
+\]
+match the two readings of one column; the tails are the inductive step.
+\end{proof}
+
+\begin{lemma}
+\label{lem:shape}
+If \(|u|=|v|\), \(d(u,v)=2\), and \(N(u)=N(v)\), then \(L(u,v)=L(v,u)=1\).
+\end{lemma}
+
+\begin{proof}
+Lemma~\ref{lem:split} and the equality of odd-letter counts give \(L(v,u)=L(u,v)\). The same lemma gives
+\[
+L(u,v)+L(u,v)=d(u,v)=2.
+\]
+Hence \(2L(u,v)=2\). Dividing by \(2\) yields \(L(u,v)=1\), and therefore \(L(v,u)=1\).
+\end{proof}
+
+So a split of distance \(2\) with equal odd-letter counts moves exactly one odd letter from one half to the other.
+
+\begin{lemma}
+\label{lem:parity}
+If \(|u|=|v|\), then \(N(uv)\) and \(d(u,v)\) are congruent modulo \(2\).
+\end{lemma}
+
+\begin{proof}
+Induct on \(u\). The empty case is \(0\equiv 0\). For heads \(a\) and \(b\), the odd-letter count of the concatenation is the sum of the two head contributions and the odd-letter count of the tails. Those two head contributions are even if \(a=b\) and odd if \(a\neq b\), which is the same parity as the head contribution to the Hamming distance. The tails have the same parity by induction.
+\end{proof}
+
+\begin{lemma}
+\label{lem:antipodal-parity}
+If \(|w|=2h\), then \(H(w)\) and \(N(w)\) are congruent modulo \(2\).
+\end{lemma}
+
+\begin{proof}
+Both halves have length \(h\), because \(h\le 2h\) and the suffix has length \(2h-h=h\). Their concatenation is \(w\). Lemma~\ref{lem:parity} gives the result.
+\end{proof}
+
+\section{Rotation}
+
+\begin{lemma}
+\label{lem:rotate-ends}
+Let \(a\) and \(b\) be letters and let \(|u|=|v|\). Then
+\[
+d(ub,va)=d(au,bv).
+\]
+\end{lemma}
+
+\begin{proof}
+Induct on \(u\). If both words are empty, both distances are \(0\) or \(1\) according as \(a=b\) or not. If \(u\) and \(v\) start with \(c\) and \(d\), equal length gives equal tails. The two distances each add the comparison of \(c\) and \(d\) and the comparison of \(a\) and \(b\), in opposite order, to the common tail distance.
+\end{proof}
+
+\begin{lemma}
+\label{lem:rotate}
+If \(|w|=2h\), then every cyclic shift of \(w\) has the same antipodal distance as \(w\).
+\end{lemma}
+
+\begin{proof}
+It is enough to treat one shift; the general case is induction on the number of shifts. If \(h=0\), then \(w\) is empty and the shift is empty. Suppose \(h>0\). The prefix and the suffix are nonempty. Write them as \(au\) and \(bv\). One shift is then \((ub)(va)\), and both of those blocks have length \(h\). Lemma~\ref{lem:rotate-ends} identifies the antipodal distance of the shift with \(d(au,bv)=H(w)\).
+\end{proof}
+
+\section{An equal-count cut}
+
+\begin{lemma}
+\label{lem:unit}
+Let \(f\) be a function from natural numbers to natural numbers, and let \(n\) and \(m\) be natural numbers. Suppose that for every \(k<n\),
+\[
+f(k+1)\le f(k)+1\qquad\text{and}\qquad f(k)\le f(k+1)+1.
+\]
+If \(m\) lies between \(f(0)\) and \(f(n)\), in either order, then \(f(k)=m\) for some \(k\le n\).
+\end{lemma}
+
+\begin{proof}
+Induct on \(n\). If \(n=0\), then \(f(0)=m\). Suppose the claim holds for \(n\), and that \(m\) lies between \(f(0)\) and \(f(n+1)\). The restriction of the hypothesis to \(k<n\) is the inductive hypothesis.
+
+If \(f(0)\le m\le f(n+1)\) and also \(m\le f(n)\), the inductive hypothesis supplies the index. If instead \(f(n)<m\), then \(f(n)+1\le m\). The step hypothesis gives \(f(n+1)\le f(n)+1\), so
+\[
+f(n)+1\le m\le f(n+1)\le f(n)+1.
+\]
+Thus \(f(n+1)=m\).
+
+If \(f(n+1)\le m\le f(0)\) and also \(f(n)\le m\), the inductive hypothesis again supplies the index. If instead \(m<f(n)\), then \(m+1\le f(n)\). The step hypothesis gives \(f(n)\le f(n+1)+1\), so \(m+1\le f(n+1)+1\), hence \(m\le f(n+1)\). Combined with \(f(n+1)\le m\), this yields \(f(n+1)=m\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:half-step}
+If \(|w|=2h\) and \(h>0\), one cyclic shift changes the odd-letter count of the length-\(h\) prefix by at most one, in either direction.
+\end{lemma}
+
+\begin{proof}
+Write the prefix as \(au\) and the suffix as \(bv\), as in Lemma~\ref{lem:rotate}. The new prefix is \(ub\). Its odd-letter count is \(N(u)+[b=1]\), while the old one is \([a=1]+N(u)\). Each letter contribution is \(0\) or \(1\), so each count is at most the other plus one.
+\end{proof}
+
+\begin{lemma}
+\label{lem:equal-cut}
+If \(|w|=2h\) and \(N(w)=2t\), then some cyclic shift of \(w\), by at most \(h\) places, has prefix and suffix of length \(h\) with the same odd-letter count.
+\end{lemma}
+
+\begin{proof}
+Let \(f(k)\) be the odd-letter count of the length-\(h\) prefix of the shift of \(w\) by \(k\) places. Then \(f(0)\le N(w)=2t\). After \(h\) shifts, Lemma~\ref{lem:shift-basic} has exchanged the two halves, so the new prefix is the old suffix and
+\[
+f(h)=N(w)-f(0)=2t-f(0).
+\]
+If \(h=0\), then \(w\) is empty, so \(f(0)=0\) and \(t=0\). If \(h>0\), Lemma~\ref{lem:half-step} says that every step of \(f\) changes the value by at most one. In either case \(t\) lies between \(f(0)\) and \(f(h)\): if \(f(0)\le t\), then \(t\le 2t-f(0)\), while if \(t\le f(0)\), then \(2t-f(0)\le t\). Lemma~\ref{lem:unit} gives an index \(k\le h\) with \(f(k)=t\).
+
+The full odd-letter count is unchanged by the shift. The two halves of that shift therefore have odd-letter counts adding to \(2t\). Since the prefix contributes \(t\), the suffix contributes \(t\).
+\end{proof}
+
+\subsection{Constructing the balanced cut}
+
+For \(N(w)=2t\), Algorithm~\ref{alg:cut} computes a witnessing cut. At iteration
+\(k\), its variable \(f\) is the number of ones in the window consisting of
+positions \(k,\ldots,k+h-1\). The update removes the outgoing letter and adds
+the incoming letter, so
+\[
+f(k+1)=f(k)-w_k+w_{k+h}.
+\]
+The subtraction cannot make the count negative: the outgoing letter belongs
+to the window being counted. For \(0\le k<h\), all accessed positions lie
+between zero and \(2h-1\).
+
+\begin{algorithm}[tbp]
+\caption{First balanced cut of a word with \(N(w)=2t\)}
+\label{alg:cut}
+\begin{algorithmic}[1]
+\Require A binary word \(w\) of length \(2h\) with \(N(w)=2t\)
+\State \(f\gets N(\text{length-}h\text{ prefix of }w)\)
+\If{\(f=t\)}
+  \State \Return \(0\)
+\EndIf
+\For{\(k=0,\ldots,h-1\)}
+  \State \(f\gets f-w_k+w_{k+h}\)
+  \If{\(f=t\)}
+    \State \Return \(k+1\)
+  \EndIf
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+If \(h=0\), the word is empty, \(t=0\), and the initial test returns zero.
+Otherwise the unit-step argument in Lemma~\ref{lem:equal-cut} proves that one
+of the tests succeeds by cut \(h\). Thus there are at most \(h\) updates.
+Counting the input and sliding the window require a linear number of bit
+inspections; no search over arbitrary numbers of rotations is needed.
+
+\section{The gap}
+
+\begin{lemma}
+\label{lem:iff-two}
+If \(|w|=2h\), then \(w\) admits a one-bit transport if and only if \(H(w)=2\).
+When a transport exists, a witnessing cut can be chosen with \(0\le k\le h\).
+\end{lemma}
+
+\begin{proof}
+Suppose a shift by \(k\) places equals \(uv\) with \(|u|=|v|\), \(N(u)=N(v)\), and \(d(u,v)=2\). The shift still has length \(2h\), so \(|u|+|u|=2h\), hence \(|u|=h\). Thus \(u\) and \(v\) are the two halves of that shift. Lemma~\ref{lem:rotate} says that their Hamming distance is \(H(w)\), so \(H(w)=2\).
+
+Conversely, suppose \(H(w)=2\). Lemma~\ref{lem:antipodal-parity} says that \(N(w)\) is even, so \(N(w)=2t\) for some \(t\). Lemma~\ref{lem:equal-cut} supplies a shift whose two halves have the same odd-letter count. Lemma~\ref{lem:rotate} says that those halves have Hamming distance \(H(w)=2\). That shift is a one-bit transport, and its index is at most \(h\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:repetition}
+If \(|w|=2h\), then \(H(w)=0\) precisely when \(w=uu\) for some word \(u\).
+\end{lemma}
+
+\begin{proof}
+If \(w=uu\), the same length computation as above gives \(|u|=h\), so the two halves are equal and \(H(w)=0\). Conversely, if \(H(w)=0\), Lemma~\ref{lem:hamming-zero} says that the two halves are equal, and their concatenation is \(w\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:even-four}
+Let \(n\) be a natural number. If \(n\) is even, \(n\neq 0\), and \(n\neq 2\), then \(4\le n\).
+\end{lemma}
+
+\begin{proof}
+Write \(n=2q\). Then \(q\neq 0\) and \(q\neq 1\), so \(2\le q\). Multiplying by \(2\) gives \(4\le 2q=n\).
+\end{proof}
+
+\begin{proof}
+For the word in Theorem~\ref{thm:gap}, \(N(w)\) is even, so Lemma~\ref{lem:antipodal-parity} says that \(H(w)\) is even. If \(H(w)=0\), Lemma~\ref{lem:repetition} would make \(w\) a repeated block. If \(H(w)=2\), Lemma~\ref{lem:iff-two} would make \(w\) admit a one-bit transport. Both alternatives are excluded. Lemma~\ref{lem:even-four} gives \(4\le H(w)\).
+\end{proof}
+
+By Lemma~\ref{lem:rotate}, the same lower bound applies to the two halves determined by every cyclic cut.
+
+\section{Sharpness and necessary hypotheses}
+
+\begin{theorem}
+\label{thm:sharp}
+Let \(w\) be the word \(000011101000\). Then \(|w|=12\), \(N(w)=4\), and \(H(w)=4\). The word \(w\) is not a repeated block and admits no one-bit transport. In particular the constant \(4\) in Theorem~\ref{thm:gap} is attained.
+\end{theorem}
+
+\begin{proof}
+The halves are \(000011\) and \(101000\). They differ in the first, third, fifth, and sixth positions, and nowhere else, so \(H(w)=4\). Four letters are equal to \(1\). Since the distance is \(4\), it is neither \(0\) nor \(2\). Lemmas~\ref{lem:repetition} and~\ref{lem:iff-two} give the two negative statements. Theorem~\ref{thm:gap} applies, and the distance is exactly \(4\).
+\end{proof}
+
+This is a sharp binary-word example, without a cycle-realization assumption.
+
+\begin{theorem}
+\label{thm:necessary}
+The word \(10\) has length \(2\), one odd letter, and antipodal distance \(1\).
+It is not a repeated block and admits no one-bit transport, but \(4\not\le1\).
+The word \(0101\) has length \(4\), two odd letters, and antipodal distance
+\(0\). It is the repetition of \(01\) and admits no one-bit transport, but
+\(4\not\le0\). The word \(0011\) has two odd letters, is not a repeated block,
+and has distance \(2\). It admits a transport, and \(4\not\le2\).
+\end{theorem}
+
+\begin{proof}
+For \(10\), the halves are \(1\) and \(0\), so the distance is \(1\). Lemmas~\ref{lem:repetition} and~\ref{lem:iff-two} exclude a repeated block and a one-bit transport because the distance is neither \(0\) nor \(2\). The inequality \(4\le 1\) is false.
+
+For \(0101\), the halves are both \(01\), so the distance is \(0\) and the word
+is a repetition. The distance is not \(2\), so there is no one-bit transport.
+The odd-letter count is \(2\), and \(4\le0\) is false.
+
+For \(0011\), the halves \(00\) and \(11\) differ twice. Distance two excludes
+a repetition by Lemma~\ref{lem:repetition}. Shifting once gives \(0110\),
+whose halves \(01\) and \(10\) both have one odd letter. This is a transport,
+and \(4\le2\) is false.
+\end{proof}
+
+Each example satisfies the other two hypotheses while violating the one it
+tests. Therefore none of the three hypotheses can be removed.
+
+\begin{remark}
+The balanced halves \(001\) and \(100\), in the word \(001100\), differ in the
+first and third positions. They give a transport with nonadjacent moved
+positions. Adjacent exchanges form only a subclass of the transport pairs
+allowed in Definition~\ref{def:transport}.
+\end{remark}
+
+\section{Formal proofs and bounded computation}
+
+The Lean source \texttt{QCD.HammingGap.001/lean/HammingGap.lean} proves the
+rotation and parity identities, the equal-count cut, the distance-zero and
+distance-two classifications, the bounded transport witness, and all the
+word examples above. It is included in the default build.
+
+The Go source \texttt{QCD.HammingGap.001/go/HammingGap.go} stores the first
+letter in bit zero and accepts precisely even lengths through twenty. It
+implements Algorithm~\ref{alg:cut}, independently scans every cyclic cut,
+and checks the classifications and the one-mismatch-in-each-direction shape.
+Lemma~\ref{lem:shift-basic} justifies checking one full rotation period;
+the empty word is checked at cut zero.
+Its exhaustive census covers every word at half-lengths zero through ten:
+\(1{,}398{,}101\) words in total. At length twenty, \(477{,}184\) words satisfy
+all three gap hypotheses. These are finite computational counts, separate
+from the general proof.
+
+The tests compare the first returned cut with a separate rotation scan,
+include the empty word and every necessary-hypothesis example, and reject
+malformed masks or budgets before enumeration. Successful word checks
+allocate no memory. To run the checks from the repository root:
+\begin{verbatim}
+make lean
+make go GOFILE=QCD.HammingGap.001/go/HammingGap.go
+CGO_ENABLED=0 go test ./QCD.HammingGap.001/go
+make tex TEXFILE=QCD.HammingGap.001/tex/HammingGap.tex
+bash Scripts/CheckIgnoredPdfs.sh
+bash Scripts/CheckIgnoredTexTemps.sh
+\end{verbatim}
+
+\end{document}

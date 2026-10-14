@@ -677,6 +677,16 @@ Then $A(LR)=MA(R)+\mu$ and $A(RL)+\mu=MA(L)$.
 Coprimality makes the residues nonzero, whereas a return requires $M\mid A(w)$.
 The ordinary cycle with word $10$ is outside this concatenation family.
 
+### Antipodal distance and balanced cuts
+
+[QCD.HammingGap.001](QCD.HammingGap.001/README.md) proves that every binary word
+of length $2h$ has a rotation-invariant antipodal Hamming distance $H$ with the
+parity of its total one count. Distance zero means a doubled block. Distance
+two means that a balanced cyclic cut differs in one position in each direction;
+a witness is found within the first $h$ rotations by a sliding window.
+Thus an even total count, no doubled block and no such transport imply $H\ge4$,
+sharply. The excluded transport pairs may exchange nonadjacent positions.
+
 ### Signed return
 
 The first-division return sends a seed through the affine block

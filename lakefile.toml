@@ -113,6 +113,7 @@ defaultTargets = [
   "InverseBudget",
   "ReverseBound",
   "OneBit",
+  "HammingGap",
 ]
 
 [[require]]
@@ -595,3 +596,7 @@ srcDir = "QCD.ReverseBound.001/lean"
 [[lean_lib]]
 name = "OneBit"
 srcDir = "QCD.OneBit.001/lean"
+
+[[lean_lib]]
+name = "HammingGap"
+srcDir = "QCD.HammingGap.001/lean"
