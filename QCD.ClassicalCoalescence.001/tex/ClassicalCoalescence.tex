@@ -464,6 +464,247 @@ This is a parent-depth bound, not a forward stopping-time bound.
 No capture on the remaining residual is asserted.
 \end{proof}
 
+\section{Paired eight-letter tails}
+
+The next construction changes the tail rather than reusing the two-letter
+ending. It keeps the common denominator but compensates for a shorter
+initial odd run on the parent side with more odd letters in its tail.
+For a rational word map \(F_w(x)=(3^{r(w)}x+B_w)/2^h\), define its
+centered offset to be \(C_w=B_w-3^{r(w)}\). Then
+\[
+F_w(3^b v-1)=\frac{3^{b+r(w)}v+C_w}{2^h}.
+\]
+Thus equal lengths and equal centered offsets give a potential join
+when the parent odd count exceeds the source odd count by the number
+of letters removed from its initial run. Legality still has to be proved.
+
+% The coefficient table records both the affine maps and their exact legal cylinders.
+\begin{lemma}[Three compatible tails]
+These length-eight words have centered offset \(125\).
+Their legal input classes are as follows:
+\[
+\begin{array}{c|c|c}
+w&F_w(x)&x\pmod{256}\\
+\hline
+00000001&(3x+128)/256&128\\
+01000001&(9x+134)/256&42\\
+01011100&(81x+206)/256&146.
+\end{array}
+\]
+\end{lemma}
+\begin{proof}
+Starting with \((P,Q,B)=(1,1,0)\), each even letter replaces this
+triple by \((P,2Q,B)\), and each odd letter by
+\((3P,2Q,3B+Q)\). Eight substitutions give the three displayed maps.
+Subtracting \(3\), \(9\), and \(81\) from their respective offsets
+gives \(125\). Each numerator is divisible by \(256\) exactly on
+its displayed input class, since its multiplier is odd.
+The integer cylinder criterion proved in Lemma~\ref{lem:IntegerCylinder}
+below makes this final integrality equivalent to legality of every prefix.
+Alternatively, the inputs at the class representatives run as follows:
+\[
+\begin{aligned}
+128&\to64\to32\to16\to8\to4\to2\to1\to2,\\
+42&\to21\to32\to16\to8\to4\to2\to1\to2,\\
+146&\to73\to110\to55\to83\to125\to188\to94\to47.
+\end{aligned}
+\]
+Adding \(256t\) at the input preserves all eight guards: at the
+\(j\)-th prefix the added amount is \(3^s2^{8-j}t\), which is even
+for \(j<8\). This also proves the class assertions directly.
+\end{proof}
+
+For \(a=4,5,6\), let \(\mathcal H_a\) contain the positive sources
+\(n=2^a u-1\) with
+\[
+\begin{gathered}
+u>0\text{ odd},\quad b\ge3,\quad v>0\text{ odd},\\
+3^a u+1=2^{b+1}v,\qquad 3^b v\equiv129\pmod{256}.
+\end{gathered}
+\]
+For \(a=2,3,4\), let \(\mathcal J_a\) be defined instead by
+\[
+\begin{gathered}
+u>0\text{ odd},\quad b\ge2,\quad v>0\text{ odd},\\
+3^a u+1=2^{b+1}v,\qquad 3^b v\equiv43\pmod{256}.
+\end{gathered}
+\]
+The first ending has terminal residue one modulo four; the second has
+terminal residue three modulo four, so it reaches sources not covered
+by the earlier second-burst ending.
+
+% Every comparison uses the original source label, with no bound on the second run.
+\begin{theorem}[Paired-tail parents]
+For \(n\in\mathcal H_a\), set
+\[
+p=2^{b-3}v-1=\frac{3^a u-15}{16}.
+\]
+Then the words \(1^a01^b00000001\) and \(1^{b-3}01011100\) give
+\[
+T^{a+b+9}(n)=T^{b+5}(p)=\frac{3^{b+1}v+125}{256},\qquad
+0<p<n,\qquad1024p\le729n.
+\]
+For \(n\in\mathcal J_a\), set
+\[
+p=2^{b-2}v-1=\frac{3^a u-7}{8}.
+\]
+The words \(1^a01^b01000001\) and \(1^{b-2}01011100\) give
+\[
+T^{a+b+9}(n)=T^{b+6}(p)=\frac{3^{b+2}v+125}{256},\qquad
+0<p<n,\qquad128p\le81n.
+\]
+Neither family has an upper bound on \(b\). The parent run is empty
+when \(b=3\) in the first family or \(b=2\) in the second.
+\end{theorem}
+\begin{proof}
+The entrance equation and odd-run formula give
+\[
+T^{a+1}(n)=2^b v-1,\qquad T^{a+b+1}(n)=3^b v-1.
+\]
+The first \(a\) and next \(b\) odd letters are legal because \(u\)
+and \(v\) are odd; the intervening endpoint is even. In the first
+family, the source tail input is \(128\) modulo \(256\).
+The parent reaches \(y=3^{b-3}v-1\) after \(b-3\) odd letters.
+Its shifted input obeys
+\(27(y+1)\equiv129\pmod{256}\), hence
+\(y\equiv146\pmod{256}\). The lemma proves legality of both tails.
+Their endpoint numerators are respectively
+\[
+3(3^b v-1)+128=3^{b+1}v+125,
+\qquad81(3^{b-3}v-1)+206=3^{b+1}v+125.
+\]
+This proves the first join, including both clocks.
+For the second family, the source input is \(42\) modulo \(256\).
+The parent reaches \(y=3^{b-2}v-1\), with
+\(9(y+1)\equiv43\pmod{256}\), again giving
+\(y\equiv146\pmod{256}\). The common numerator is now
+\(3^{b+2}v+125\). All inputs and endpoints remain positive.
+
+The entrance equation gives the two stated parent formulas. They are
+integral by their power-of-two forms. Their numerators are positive:
+\(3^a u\ge81>15\) in the first family, and
+\(3^a u\ge9>7\) in the second. Substitution of \(n+1=2^a u\) gives
+\[
+\begin{array}{c|c|c}
+\text{family}&a&\text{exact relation}\\
+\hline
+\mathcal H_a&4&256p+159=81n\\
+&5&512p+237=243n\\
+&6&1024p+231=729n\\
+\hline
+\mathcal J_a&2&32p+19=9n\\
+&3&64p+29=27n\\
+&4&128p+31=81n.
+\end{array}
+\]
+Every row proves strict original-source decrease. The first three rows
+imply \(1024p\le729n\); the last three imply \(128p\le81n\).
+Each bound is stronger than \(9p\le8n\).
+\end{proof}
+
+Two whole cylinders of multiples of three illustrate the new removals:
+\[
+\begin{aligned}
+T^{16}(137199+5308416t)&=T^8(43410+1679616t)\\
+                     &=13736+531441t,\\
+T^{13}(7803+663552t)&=T^8(2194+186624t)\\
+                  &=695+59049t\qquad(t\ge0).
+\end{aligned}
+\]
+For the first, take \((a,b)=(4,3)\),
+\(u=8575+331776t\), \(v=43411+1679616t\).
+For the second, take \((a,b)=(2,2)\),
+\(u=1951+165888t\), \(v=2195+186624t\).
+Their entrance equations and guards follow by substitution.
+Both sources belong to \(\mathcal R_*\): their odd factors are one
+modulo three, and their source residues modulo \(32\) are \(15\)
+and \(27\). Both sources are multiples of three, so neither odd-modulus
+exclusion applies. The first has initial rank four; the second has
+terminal guard three modulo four. Thus neither is in
+\(\mathcal S_2\cup\mathcal S_3\), and both lie in \(\mathcal R_{**}\).
+
+% A vanishing dyadic tail controls the infinite count before CRT restrictions are imposed.
+\begin{theorem}[Residual after paired-tail removal]
+Put
+\[
+\mathcal H=\bigcup_{a=4}^6\mathcal H_a,\qquad
+\mathcal J=\bigcup_{a=2}^4\mathcal J_a,\qquad
+\mathcal R_{\dagger}=\mathcal R_{**}\setminus(\mathcal H\cup\mathcal J).
+\]
+Then
+\[
+d(\mathcal R_{\dagger})=\frac{89419}{2654208},\qquad
+ d(\mathcal R_{\dagger}\cap3\Z)=\frac{8129}{393216}.
+\]
+Every \(n>1\) outside \(\mathcal R_{\dagger}\) has a positive
+smaller-parent join with \(9p\le8n\). Parent reduction terminates at
+one or in \(\mathcal R_{\dagger}\) in at most
+\(\log n/\log(9/8)\) reductions. Capture on this residual implies
+universal positive capture; capture on the residual is not proved.
+\end{theorem}
+\begin{proof}
+Fix an allowed \(a,b\). The guard selects one odd class of \(v\)
+modulo \(256\), since \(3^b\) is a unit modulo \(256\).
+The entrance equation then selects one class of \(u\) modulo
+\(2^{b+9}\), and hence one class of \(n\) modulo \(2^{a+b+9}\).
+Every member has the exact initial rank \(a\) and second rank \(b\).
+Different ranks therefore give disjoint classes.
+For \(b\ge B\), the entrance puts all sources in one class modulo
+\(2^{a+B+1}\). Its upper density is at most \(2^{-(a+B+1)}\),
+which tends to zero. Finite sums with this tail bound give
+\[
+\begin{aligned}
+d(\mathcal H_a)&=\sum_{b\ge3}2^{-(a+b+9)}=2^{-(a+11)},\\
+d(\mathcal J_a)&=\sum_{b\ge2}2^{-(a+b+9)}=2^{-(a+10)},\\
+d(\mathcal H)&=\frac7{131072},\qquad d(\mathcal J)=\frac7{16384}.
+\end{aligned}
+\]
+The union of \(\mathcal H\) and \(\mathcal J\) is disjoint: the only
+shared initial rank is four, and its terminal guards are different.
+Neither family meets \(\mathcal S_2\cup\mathcal S_3\).
+For \(\mathcal H\), the initial ranks differ; for \(\mathcal J\),
+the terminal residue is three rather than one modulo four.
+
+Both families have \(3^a u\equiv3\pmod4\), since \(b\ge2\)
+in their entrance equations. None meets \(n\equiv11\pmod{32}\).
+For \(a\ge4\), this follows from \(2^a\mid n+1\).
+For \(a=3\), the entrance gives \(u\equiv1\pmod4\) and
+\(n\equiv7\pmod{32}\). For \(a=2\), it gives
+\(u\equiv7\pmod8\) and \(n\equiv27\pmod{32}\).
+Thus membership in \(\mathcal R_{**}\) adds exactly three odd-modulus
+conditions to each new dyadic class. The condition \(3\nmid u\)
+retains two thirds of it. The exclusions \(n\equiv4\pmod9\) and
+\(n\equiv10\pmod{81}\) remove respectively one ninth and one
+eighty-first; they are disjoint and each already satisfies \(3\nmid u\).
+The Chinese remainder theorem therefore gives the common coefficient
+\[
+\frac23-\frac19-\frac1{81}=\frac{44}{81}.
+\]
+The preceding vanishing tail remains valid after these restrictions.
+Consequently the newly removed residual densities are
+\[
+d(\mathcal R_{**}\cap\mathcal H)=\frac{77}{2654208},\qquad
+ d(\mathcal R_{**}\cap\mathcal J)=\frac{77}{331776}.
+\]
+Subtracting their disjoint sum from \(11/324\) gives the first asserted
+density. Among multiples of three, \(3\nmid u\) holds automatically,
+and neither odd-modulus exclusion applies. CRT now gives coefficient
+\(1/3\), so the total new removal in this part has density
+\[
+\frac13\left(\frac7{131072}+\frac7{16384}\right)=\frac{21}{131072}.
+\]
+Subtracting it from \(1/48\) gives \(8129/393216\).
+
+For every new removal the paired-tail theorem supplies a positive
+parent strictly below its original seed, with \(9p\le8n\).
+Together with the earlier rules this proves coverage outside
+\(\mathcal R_{\dagger}\). Strong induction and the same join recovery
+prove the capture implication. The natural-number label decreases
+at each parent choice, and after \(j\) choices it is at most
+\((8/9)^j n\). Positivity gives the stated depth bound.
+This remains a conditional reduction, not capture of the residual.
+\end{proof}
+
 \section{Exact repeated-word budget}
 
 For a nonempty binary word \(w\) of length \(h\), compose the rational
@@ -475,7 +716,7 @@ An appended odd letter replaces \((P,Q,B)\) by
 \((3P,2Q,3B+Q)\); an even letter replaces it by \((P,2Q,B)\).
 
 % The legality criterion uses the odd suffix multiplier to recover every prefix.
-\begin{lemma}[Integer cylinder criterion]
+\begin{lemma}[Integer cylinder criterion]\label{lem:IntegerCylinder}
 The word \(w\) is legal at an integer \(n\) if and only if \(Q\mid Pn+B\).
 \end{lemma}
 \begin{proof}
@@ -589,8 +830,16 @@ identities above, including all branch guards and strict parent inequalities. It
 
 The file \nolinkurl{SecondBurst.lean} proves the uniform second-burst
 join for every length, the original-source contraction bound, arithmetic
-membership recovery, and the whole \(411+1536t\) residual cylinder.
-Its length parameter is \(k=b-2\); no upper bound on it is imposed.
+membership recovery, and the whole \(411+1536t\) and \(615+3072t\)
+residual cylinders. Its length parameter is \(k=b-1\), including
+\(k=0\); no upper bound on it is imposed.
+
+The file \nolinkurl{PairedTails.lean} proves the three eight-letter tail
+relations, both uniform paired joins, both original-source contraction
+bounds, and arithmetic membership recovery. It also proves the two
+new multiple-of-three cylinder joins, endpoints and earlier residual
+guards. The parent-run parameter is \(k=b-3\) for the first pair and
+\(k=b-2\) for the second, with \(k=0\) included in each case.
 The natural-density and complete residual recovery claims remain written
 proofs, rather than Lean declarations.
 

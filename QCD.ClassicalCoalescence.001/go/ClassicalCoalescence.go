@@ -8,6 +8,7 @@ import (
 	"math/big"
 	"math/bits"
 	"os"
+	"sync"
 )
 
 // Workspace retains big-integer buffers for exact terminal-prefix trajectories.
@@ -161,12 +162,15 @@ func VerifyResidualRules(limit uint64) error {
 				p, sourceTime = (27*n+23)/32, 5
 			} else if n%81 == 10 {
 				p, parentTime = (64*n-73)/81, 6
-			} else if a == 2 || a == 3 {
+			} else {
 				z := Power(3, a)*u + 1
 				b := bits.TrailingZeros64(z) - 1
 				v := z >> (b + 1)
-				if b >= 1 && (1+2*uint64(b%2))*(v%4)%4 == 1 {
+				if (a == 2 || a == 3) && b >= 1 && Power(3, b)*v%4 == 1 {
 					p, sourceTime, parentTime = (z-4)/4, a+b+3, b+1
+				} else if drop, _ := PairedTailChoice(a, b, v); drop != 0 {
+					p = (z >> (drop + 1)) - 1
+					sourceTime, parentTime = a+b+9, b-drop+8
 				}
 			}
 		}
@@ -256,6 +260,131 @@ func VerifySecondBursts(a int, limit uint64) (int, int, int, error) {
 		}
 	}
 	return checked, removed, multiples, nil
+}
+
+// SecondBurstResidual retains exactly the residual before the paired-tail removals.
+func SecondBurstResidual(n uint64) bool {
+	if !Residual(n) || n%9 == 4 || n%32 == 11 || n%81 == 10 {
+		return false
+	}
+	a := bits.TrailingZeros64(n + 1)
+	if a != 2 && a != 3 {
+		return true
+	}
+	u := (n + 1) >> a
+	z := Power(3, a)*u + 1
+	b := bits.TrailingZeros64(z) - 1
+	v := z >> (b + 1)
+	return b < 1 || Power(3, b)*v%4 != 1
+}
+
+// PairedTailChoice selects only the proved ranks and congruences, with chronological masks.
+func PairedTailChoice(a, b int, v uint64) (int, uint64) {
+	if a < 2 || a > 6 || b < 2 {
+		return 0, 0
+	}
+	guard := Power(3, b) * v % 256
+	if a >= 4 && a <= 6 && b >= 3 && guard == 129 {
+		return 3, 128
+	}
+	if a >= 2 && a <= 4 && b >= 2 && guard == 43 {
+		return 2, 130
+	}
+	return 0, 0
+}
+
+// VerifyPairedTails checks uint64-safe source budgets and every chronological guard.
+func VerifyPairedTails(drop, a int, limit uint64) (int, int, int, error) {
+	valid := (drop == 3 && a >= 4 && a <= 6) || (drop == 2 && a >= 2 && a <= 4)
+	if !valid || limit < 63 || limit > 1000000 {
+		return 0, 0, 0, fmt.Errorf("paired-tail budget requires proved ranks, limit=63..1000000")
+	}
+	checked, removed, multiples := 0, 0, 0
+	for n := uint64(1)<<a - 1; n <= limit; n += uint64(2) << a {
+		u := (n + 1) >> a
+		z := Power(3, a)*u + 1
+		b := bits.TrailingZeros64(z) - 1
+		v := z >> (b + 1)
+		actual, sourceMask := PairedTailChoice(a, b, v)
+		if actual != drop {
+			continue
+		}
+		p := (z >> (drop + 1)) - 1
+		if p == 0 || p >= n || 9*p > 8*n ||
+			(drop == 3 && 1024*p > 729*n) || (drop == 2 && 128*p > 81*n) {
+			return checked, removed, multiples, fmt.Errorf("paired-tail order: n=%d", n)
+		}
+		x, y := n, p
+		for j := 0; j < a; j++ {
+			if x%2 != 1 {
+				return checked, removed, multiples, fmt.Errorf("paired first run: n=%d", n)
+			}
+			x = Step(x)
+		}
+		if x%2 != 0 {
+			return checked, removed, multiples, fmt.Errorf("paired entrance: n=%d", n)
+		}
+		x = Step(x)
+		for j := 0; j < b; j++ {
+			if x%2 != 1 {
+				return checked, removed, multiples, fmt.Errorf("paired source run: n=%d", n)
+			}
+			x = Step(x)
+		}
+		for j := 0; j < b-drop; j++ {
+			if y%2 != 1 {
+				return checked, removed, multiples, fmt.Errorf("paired parent run: n=%d", n)
+			}
+			y = Step(y)
+		}
+		for j := 0; j < 8; j++ {
+			if x%2 != sourceMask>>j&1 || y%2 != uint64(58)>>j&1 {
+				return checked, removed, multiples, fmt.Errorf("paired tail guard: n=%d j=%d", n, j)
+			}
+			x, y = Step(x), Step(y)
+		}
+		if x != y || x != (Power(3, b+4-drop)*v+125)/256 {
+			return checked, removed, multiples, fmt.Errorf("paired tail endpoint: n=%d", n)
+		}
+		checked++
+		if SecondBurstResidual(n) {
+			removed++
+			if n%3 == 0 {
+				multiples++
+			}
+		}
+	}
+	return checked, removed, multiples, nil
+}
+
+// VerifyTailCylinders checks whole-cylinder formulas over a bounded parameter range.
+func VerifyTailCylinders(limit int) error {
+	if limit < 0 || limit > 10000 {
+		return fmt.Errorf("paired-cylinder budget requires limit=0..10000")
+	}
+	for t := 0; t <= limit; t++ {
+		j := uint64(t)
+		for _, pair := range [2]struct {
+			n, p, endpoint uint64
+			sourceTime     int
+		}{
+			{137199 + 5308416*j, 43410 + 1679616*j, 13736 + 531441*j, 16},
+			{7803 + 663552*j, 2194 + 186624*j, 695 + 59049*j, 13},
+		} {
+			x, y := pair.n, pair.p
+			for k := 0; k < pair.sourceTime; k++ {
+				x = Step(x)
+			}
+			for k := 0; k < 8; k++ {
+				y = Step(y)
+			}
+			if x != pair.endpoint || y != x || !SecondBurstResidual(pair.n) ||
+				pair.n%3 != 0 || pair.p == 0 || pair.p >= pair.n || 9*pair.p > 8*pair.n {
+				return fmt.Errorf("paired cylinder: t=%d n=%d", t, pair.n)
+			}
+		}
+	}
+	return nil
 }
 
 // WordData composes the shortcut rational branches in chronological bit order.
@@ -427,6 +556,37 @@ func main() {
 		}
 		fmt.Printf("second bursts a=%d through 1000000: %d; removed: %d; multiples: %d\n",
 			a, second, removed, multiples)
+	}
+	if err := VerifyTailCylinders(10000); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	families := [6]struct{ drop, a int }{
+		{3, 4}, {3, 5}, {3, 6}, {2, 2}, {2, 3}, {2, 4},
+	}
+	var results [6]struct {
+		checked, removed, multiples int
+		err                         error
+	}
+	var wait sync.WaitGroup
+	// Each independent rank has one writer; reporting waits for all six chunks.
+	for i, family := range families {
+		wait.Add(1)
+		go func(index, drop, a int) {
+			defer wait.Done()
+			r := &results[index]
+			r.checked, r.removed, r.multiples, r.err = VerifyPairedTails(drop, a, 1000000)
+		}(i, family.drop, family.a)
+	}
+	wait.Wait()
+	for i, family := range families {
+		r := &results[i]
+		if r.err != nil {
+			fmt.Fprintln(os.Stderr, r.err)
+			os.Exit(1)
+		}
+		fmt.Printf("paired tails drop=%d a=%d: %d; removed: %d; multiples: %d\n",
+			family.drop, family.a, r.checked, r.removed, r.multiples)
 	}
 	budgets, err := VerifyBudgets()
 	if err != nil {
