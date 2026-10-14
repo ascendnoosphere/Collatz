@@ -15,6 +15,8 @@ printf '%s\n' \
   '## Named heading' \
   '[first](#named-heading) [second](#named-heading-1)' \
   '[linked](Other.md#linked-heading)' \
+  '[full][New label] [New label][] [New label]' \
+  '[new label]: Other.md#linked-heading' \
   '$n=\lvert x\rvert$' \
   '$`\{0,1\}`$ and $`\# A`$' \
   '``$` deliberately literal math example`$``' \
@@ -34,6 +36,9 @@ printf '%s\n' '# Linked heading' > "$workspace/Other.md"
 ExpectFailure() {
   local content="$1" expected="$2"
   printf '%s\n' "$content" > "$workspace/Bad.md"
+  if [[ -d "$workspace/.git" ]]; then
+    git -C "$workspace" add Bad.md
+  fi
   if (cd "$workspace" && bash CheckMarkdown.sh) > "$workspace/Result.log" 2>&1; then
     printf 'unexpected acceptance: %s\n' "$expected" >&2
     exit 1
@@ -41,6 +46,9 @@ ExpectFailure() {
   if ! grep -F -- "$expected" "$workspace/Result.log" >/dev/null; then
     printf 'missing expected diagnostic: %s\n' "$expected" >&2
     exit 1
+  fi
+  if [[ -d "$workspace/.git" ]]; then
+    git -C "$workspace" rm --cached --quiet Bad.md
   fi
   rm "$workspace/Bad.md"
 }
@@ -62,4 +70,16 @@ ExpectFailure '$`\[x\]`$' 'legacy math delimiter'
 ExpectFailure '$`\xmapsto{x}`$' 'unsupported arrow macro'
 ExpectFailure '| $`|x|`$ |' 'unescaped table pipe'
 ExpectFailure $'```math\nx\n```text' 'unclosed Markdown code fence'
-printf 'Markdown checker regression tests passed: accepted fixture and fifteen negative controls\n'
+ExpectFailure $'[missing][source]\n[source]: Absent.md' 'missing local target'
+ExpectFailure $'[missing][]\n[missing]: Other.md#absent' 'missing local heading anchor'
+ExpectFailure $'![missing][picture]\n[picture]: Missing.png' 'missing local target'
+ExpectFailure '[literal][undefined]' 'undefined reference label'
+# Fresh-clone checks must reject local files that happen to exist but are not published.
+git -C "$workspace" init --quiet
+printf '%s\n' 'Ignored.md' > "$workspace/.gitignore"
+git -C "$workspace" add README.md Other.md CheckMarkdown.sh .gitignore
+printf '%s\n' '# Untracked local target' > "$workspace/Untracked.md"
+printf '%s\n' '# Ignored local target' > "$workspace/Ignored.md"
+ExpectFailure '[unpublished](Untracked.md)' 'local target is not tracked'
+ExpectFailure '[ignored](Ignored.md)' 'local target is not tracked'
+printf 'Markdown checker regression tests passed: accepted fixture and twenty-one negative controls\n'

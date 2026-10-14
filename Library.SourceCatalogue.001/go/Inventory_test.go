@@ -128,6 +128,17 @@ func ZIPFixture(t *testing.T, root string) {
 	}
 }
 
+// FixtureArtifact records the exact current container bytes for archive acceptance tests.
+func FixtureArtifact(t *testing.T, root, name string) Artifact {
+	t.Helper()
+	w := NewWorkspace(0, 0)
+	digest, size, err := w.HashFile(filepath.Join(root, name))
+	if err != nil {
+		t.Fatal(err)
+	}
+	return Artifact{Path: name, SHA256: digest, Bytes: size}
+}
+
 // TestZIPScope checks content matching, occurrence preservation and fail-closed byte caps.
 func TestZIPScope(t *testing.T) {
 	root := t.TempDir()
@@ -135,7 +146,7 @@ func TestZIPScope(t *testing.T) {
 	digestBytes := sha256.Sum256([]byte("proof"))
 	digest := hex.EncodeToString(digestBytes[:])
 	groups := map[string][]string{digest: {"Current.md"}}
-	a := Artifact{Path: "Bundle.zip", SHA256: "container-hash"}
+	a := FixtureArtifact(t, root, "Bundle.zip")
 	w := NewWorkspace(1024, 2048)
 	rows, err := w.ReadZIP(root, a, groups)
 	if err != nil {
@@ -189,7 +200,7 @@ func TestZIPCRC(t *testing.T) {
 		t.Fatal(err)
 	}
 	workspace := NewWorkspace(1024, 2048)
-	_, err = workspace.ReadZIP(root, Artifact{Path: "Bad.zip"}, nil)
+	_, err = workspace.ReadZIP(root, FixtureArtifact(t, root, "Bad.zip"), nil)
 	if err == nil || !strings.Contains(err.Error(), "checksum error") {
 		t.Fatalf("CRC corruption was not rejected: %v", err)
 	}
@@ -249,7 +260,7 @@ func TestZIPZeroCRC(t *testing.T) {
 			workspace := NewWorkspace(1024, 2048)
 			// A repeated read checks checksum reset as well as the first acceptance.
 			for pass := 0; pass < 2; pass++ {
-				rows, err := workspace.ReadZIP(root, Artifact{Path: "Raw.zip"}, nil)
+				rows, err := workspace.ReadZIP(root, FixtureArtifact(t, root, "Raw.zip"), nil)
 				if !test.valid {
 					if err == nil || !strings.Contains(err.Error(), "checksum error") ||
 						workspace.archiveBytes != 0 {

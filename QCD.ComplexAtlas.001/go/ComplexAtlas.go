@@ -31,12 +31,14 @@ import (
 )
 
 const (
-	Radius           = 48
-	Ticks            = 256
-	Mesh             = 256
-	JuliaTicks       = 128
-	Workers          = 8
-	CoordLimit int64 = 1 << 26
+	Radius              = 48
+	Ticks               = 256
+	Mesh                = 256
+	JuliaTicks          = 128
+	Workers             = 8
+	CoordLimit    int64 = 1 << 26
+	RawInputLimit int64 = 1 << 44
+	CoeffLimit    int64 = 1 << 16
 )
 
 // Point stores the coefficients of 1,w; Im is not Im(z) in the Eisenstein basis.
@@ -93,6 +95,7 @@ type Polynomial struct {
 // AtlasReport separates exact finite lattice certificates from floating image diagnostics.
 type AtlasReport struct {
 	Lattices                           []Summary
+	ScalarLattices                     []Summary
 	FiniteRings                        []FiniteSummary
 	PolynomialViews                    []Polynomial
 	PolynomialSurvivors                map[string]int
@@ -152,8 +155,31 @@ func Quotient(m Model, d, z Point) (Point, bool) {
 	return Point{x / n, y / n}, true
 }
 
-// RawStep preserves the declared convention and never rounds a lattice quotient.
+// SupportedFamily certifies the parameter bounds used by every int64 raw-tick operation.
+func SupportedFamily(f Family) bool {
+	if f.Ring.Nu != 1 || f.Ring.Tau != 0 && f.Ring.Tau != -1 || f.D == (Point{}) {
+		return false
+	}
+	for _, z := range [3]Point{f.Q, f.C, f.D} {
+		if z.Re < -CoeffLimit || z.Re > CoeffLimit ||
+			z.Im < -CoeffLimit || z.Im > CoeffLimit {
+			return false
+		}
+	}
+	if f.Convention == "raw" {
+		return true
+	}
+	return f.Convention == "residue" && f.Q == (Point{3, 0}) &&
+		f.D == (Point{2, 0}) && (f.C == (Point{1, 0}) || f.C == (Point{-1, 0}))
+}
+
+// RawStep rejects unsupported inputs before arithmetic and never rounds a lattice quotient.
+// With coordinates <= 2^44 and coefficients <= 2^16, every raw numerator is < 2^62+2^16.
 func RawStep(f Family, z Point) (Point, bool) {
+	if !SupportedFamily(f) || z.Re < -RawInputLimit || z.Re > RawInputLimit ||
+		z.Im < -RawInputLimit || z.Im > RawInputLimit {
+		panic("raw tick outside supported ring, parameter or coordinate bounds")
+	}
 	if f.Convention == "residue" {
 		r := Point{Mod(z.Re, 2), Mod(z.Im, 2)}
 		if r == (Point{}) {
@@ -176,6 +202,87 @@ func RawStep(f Family, z Point) (Point, bool) {
 	return Point{q.Re + f.C.Re, q.Im + f.C.Im}, false
 }
 
+// ExponentCertificate records two prime rows with a nonzero independence determinant.
+type ExponentCertificate struct {
+	P, R, QP, QR, DP, DR int64
+}
+
+// PrimeExponent counts an exact prime factor in a positive small coefficient.
+func PrimeExponent(n, p int64) int64 {
+	if n < 1 || p < 2 {
+		panic("prime exponent requires n >= 1 and p >= 2")
+	}
+	e := int64(0)
+	for n%p == 0 {
+		n /= p
+		e++
+	}
+	return e
+}
+
+// IndependenceCertificate factors bounded coefficients into a fixed, allocation-free buffer.
+// The returned determinant is the sufficient criterion proved by ExponentIndependent in Lean.
+func IndependenceCertificate(q, d int64) (ExponentCertificate, bool) {
+	if q < -65536 || q > 65536 || d < -65536 || d > 65536 {
+		return ExponentCertificate{}, false
+	}
+	q, d = max(q, -q), max(d, -d)
+	if q < 2 || d < 2 {
+		return ExponentCertificate{}, false
+	}
+	var primes [32]int64
+	count := 0
+	for _, coefficient := range [2]int64{q, d} {
+		n := coefficient
+		for p := int64(2); p <= n/p; p++ {
+			if n%p != 0 {
+				continue
+			}
+			primes[count], count = p, count+1
+			for n%p == 0 {
+				n /= p
+			}
+		}
+		if n > 1 {
+			primes[count], count = n, count+1
+		}
+	}
+	// Duplicate prime rows are harmless; a nonzero minor supplies the complete witness.
+	for i := 0; i < count; i++ {
+		for j := i + 1; j < count; j++ {
+			p, r := primes[i], primes[j]
+			c := ExponentCertificate{p, r, PrimeExponent(q, p), PrimeExponent(q, r),
+				PrimeExponent(d, p), PrimeExponent(d, r)}
+			if c.QP*c.DR != c.QR*c.DP {
+				return c, true
+			}
+		}
+	}
+	return ExponentCertificate{}, false
+}
+
+// ProvenScalarEscape applies only to scalar raw parameters and a nonzero transverse seed.
+func ProvenScalarEscape(f Family, z Point) bool {
+	if f.Convention != "raw" || f.Q.Im != 0 || f.C.Im != 0 || f.D.Im != 0 || z.Im == 0 {
+		return false
+	}
+	_, independent := IndependenceCertificate(f.Q.Re, f.D.Re)
+	return independent
+}
+
+// ScalarFamilies tests even offsets, common prime support, signed division and a dependent control.
+func ScalarFamilies() []Family {
+	g, e := Model{"Gaussian", 0, 1}, Model{"Eisenstein", -1, 1}
+	return []Family{
+		{"GaussianEvenOffset", g, Point{3, 0}, Point{2, 0}, Point{2, 0}, "raw"},
+		{"GaussianCoprime", g, Point{2, 0}, Point{7, 0}, Point{3, 0}, "raw"},
+		{"GaussianCommonSupport", g, Point{12, 0}, Point{}, Point{18, 0}, "raw"},
+		{"EisensteinCommonSupport", e, Point{12, 0}, Point{5, 0}, Point{18, 0}, "raw"},
+		{"GaussianSignedScalar", g, Point{-2, 0}, Point{-3, 0}, Point{-3, 0}, "raw"},
+		{"GaussianDependentScalar", g, Point{4, 0}, Point{}, Point{8, 0}, "raw"},
+	}
+}
+
 // ProvenOddTail invokes only the checked off-axis (3,c,2), odd real c theorem.
 func ProvenOddTail(f Family, z Point) bool {
 	return f.Convention == "raw" && f.Q == (Point{3, 0}) && f.D == (Point{2, 0}) &&
@@ -185,7 +292,7 @@ func ProvenOddTail(f Family, z Point) bool {
 // Earlier selects a rotation-independent marked cycle representative.
 func Earlier(a, b Point) bool { return a.Re < b.Re || a.Re == b.Re && a.Im < b.Im }
 
-// Diagnose records an exact cycle or proved affine tail; every other result remains finite.
+// Diagnose records an exact cycle or theorem-backed escape; every other result remains finite.
 func Diagnose(f Family, seed Point, w *Workspace) Result {
 	clear(w.Seen)
 	z, divisions := seed, 0
@@ -202,7 +309,7 @@ func Diagnose(f Family, seed Point, w *Workspace) Result {
 			}
 			return Result{"exact cycle", rep, j - k, j, divisions}
 		}
-		if ProvenOddTail(f, z) {
+		if ProvenScalarEscape(f, z) || ProvenOddTail(f, z) {
 			return Result{Class: "proved off-axis escape", Steps: j, Divisions: divisions}
 		}
 		if j == Ticks {
@@ -485,7 +592,8 @@ func FiniteArithmetic(m Model, p int) (images, fixed, roots, invertible int) {
 	return images, fixed, roots, invertible
 }
 
-// MatrixRank performs exact elimination over the three declared prime coefficient fields.
+// MatrixRank reduces a rectangular matrix in place over characteristics 2, 3, or 5.
+// Signed and large entries are normalized before products; ragged rows are rejected.
 func MatrixRank(a [][]int, p int) int {
 	if p != 2 && p != 3 && p != 5 {
 		panic("cochain coefficient characteristic must be 2, 3, or 5")
@@ -493,8 +601,21 @@ func MatrixRank(a [][]int, p int) int {
 	if len(a) == 0 {
 		return 0
 	}
+	columns := len(a[0])
+	for _, row := range a {
+		if len(row) != columns {
+			panic("cochain matrix must be rectangular")
+		}
+		row = row[:len(row)]
+		for j, entry := range row {
+			row[j] = entry % p
+			if row[j] < 0 {
+				row[j] += p
+			}
+		}
+	}
 	rank := 0
-	for col := 0; col < len(a[0]) && rank < len(a); col++ {
+	for col := 0; col < columns && rank < len(a); col++ {
 		pivot := rank
 		for pivot < len(a) && a[pivot][col]%p == 0 {
 			pivot++
@@ -504,8 +625,11 @@ func MatrixRank(a [][]int, p int) int {
 		}
 		a[rank], a[pivot] = a[pivot], a[rank]
 		inv := 1
-		for a[rank][col]*inv%p != 1 {
+		for inv < p && a[rank][col]*inv%p != 1 {
 			inv++
+		}
+		if inv == p {
+			panic("noninvertible pivot in prime coefficient field")
 		}
 		for j := col; j < len(a[0]); j++ {
 			a[rank][j] = a[rank][j] * inv % p
@@ -529,39 +653,54 @@ func MatrixRank(a [][]int, p int) int {
 
 // FiniteAffine studies z->w*z+1 on the whole finite quadratic ring, not raw halving.
 func FiniteAffine(m Model, modulus int, name string) FiniteSummary {
+	if modulus != 2 && modulus != 3 {
+		panic("finite affine modulus must be 2 or 3")
+	}
 	n := modulus * modulus
-	edges := make([]int, n)
+	var edgeBuffer, generationBuffer, positionBuffer, pathBuffer [9]int
+	var finishedBuffer [9]bool
+	edges := edgeBuffer[:n]
 	for i := range edges {
 		z := Point{int64(i % modulus), int64(i / modulus)}
 		t := Multiply(m, Point{0, 1}, z)
 		edges[i] = int(Mod(t.Re+1, modulus)) + modulus*int(Mod(t.Im, modulus))
 	}
-	finished := make([]bool, n)
+	finished := finishedBuffer[:n]
+	generation, position := generationBuffer[:n], positionBuffer[:n]
+	path := pathBuffer[:0]
 	summary := FiniteSummary{Name: name, Modulus: modulus, States: n, Ranks: make(map[int]int)}
 	summary.FrobeniusImages, summary.FrobeniusFixed,
 		summary.DefiningRoots, summary.InvertibleNonzeroElements = FiniteArithmetic(m, modulus)
+	// A generation mark detects the current path without allocating a map per seed.
 	for seed := 0; seed < n; seed++ {
-		seen := make(map[int]int, n)
-		z, t := seed, 0
+		if finished[seed] {
+			continue
+		}
+		path = path[:0]
+		mark, z := seed+1, seed
 		for !finished[z] {
-			if first, ok := seen[z]; ok {
-				summary.CycleLengths = append(summary.CycleLengths, t-first)
+			if generation[z] == mark {
+				summary.CycleLengths = append(summary.CycleLengths, len(path)-position[z])
 				break
 			}
-			seen[z] = t
-			t++
+			generation[z], position[z] = mark, len(path)
+			path = append(path, z)
 			z = edges[z]
 		}
-		for z := range seen {
-			finished[z] = true
+		for _, state := range path {
+			finished[state] = true
 		}
 	}
 	sort.Ints(summary.CycleLengths)
 	summary.Components = len(summary.CycleLengths)
+	// The supported rings have at most nine states; reuse one bounded incidence matrix.
+	var matrixBuffer [9][9]int
+	var rowBuffer [9][]int
+	a := rowBuffer[:n]
 	for _, p := range []int{2, 3, 5} {
-		a := make([][]int, n)
 		for i := range a {
-			a[i] = make([]int, n)
+			clear(matrixBuffer[i][:])
+			a[i] = matrixBuffer[i][:n]
 			a[i][i] = (p - 1) % p
 			a[i][edges[i]] = (a[i][edges[i]] + 1) % p
 		}
@@ -888,6 +1027,20 @@ func main() {
 		SavePanel(p, filepath.Join(dir, f.Name))
 		fmt.Printf("%s: %v; %d exact marked cycles\n", f.Name, summary.Counts, len(summary.Cycles))
 	}
+	// Keep the thirteen-family historical census separate from the new scalar extension.
+	for _, f := range ScalarFamilies() {
+		results, summary := ComputeLattice(f)
+		report.ScalarLattices = append(report.ScalarLattices, summary)
+		p := NewPlot(f.Name, "$\\operatorname{Re}z$", "$\\operatorname{Im}z$")
+		p.Add(LatticePanel{f.Ring, results})
+		span := float64(Radius) + 1
+		if f.Ring.Tau != 0 {
+			span *= 1.5
+		}
+		p.X.Min, p.X.Max, p.Y.Min, p.Y.Max = -span, span, -span, span
+		SavePanel(p, filepath.Join(dir, f.Name))
+		fmt.Printf("%s: %v; %d exact marked cycles\n", f.Name, summary.Counts, len(summary.Cycles))
+	}
 	for _, pmodel := range report.PolynomialViews {
 		levels := JuliaLevels(pmodel)
 		report.PolynomialSurvivors[pmodel.Name] = 0
@@ -922,7 +1075,7 @@ func main() {
 		FiniteAffine(e, 3, "Eisenstein mod 3: ramified, not a field"),
 	}
 	WriteJSON(filepath.Join(dir, "AtlasData.json"), report)
-	figures := len(report.Lattices) + len(report.PolynomialViews)
+	figures := len(report.Lattices) + len(report.ScalarLattices) + len(report.PolynomialViews)
 	fmt.Printf("%d vector PDFs and %d GitHub PNG previews; exact data in AtlasData.json\n",
 		figures, figures)
 }

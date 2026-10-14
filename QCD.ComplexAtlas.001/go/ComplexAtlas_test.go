@@ -347,6 +347,141 @@ func TestResidueVariants(t *testing.T) {
 	}
 }
 
+// ReferenceDependent tests positive powers through eight for coefficients at most sixty-four.
+// For this bounded test, each prime exponent is at most six, so a dependent pair occurs here.
+func ReferenceDependent(q, d int64) bool {
+	var qp, dp, qb, db big.Int
+	qb.SetInt64(q)
+	db.SetInt64(d)
+	qp.SetInt64(1)
+	for a := 1; a <= 8; a++ {
+		qp.Mul(&qp, &qb)
+		dp.SetInt64(1)
+		for b := 1; b <= 8; b++ {
+			dp.Mul(&dp, &db)
+			if qp.Cmp(&dp) == 0 {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// TestScalarCertificates checks exact minors, bounded completeness, and excluded parameters.
+func TestScalarCertificates(t *testing.T) {
+	for q := int64(2); q <= 64; q++ {
+		for d := int64(2); d <= 64; d++ {
+			c, ok := IndependenceCertificate(q, d)
+			if ok == ReferenceDependent(q, d) {
+				t.Fatalf("independence mismatch: q=%d d=%d certificate=%+v", q, d, c)
+			}
+			if ok && (!big.NewInt(c.P).ProbablyPrime(20) ||
+				!big.NewInt(c.R).ProbablyPrime(20) || c.QP*c.DR == c.QR*c.DP) {
+				t.Fatal("invalid exponent-minor witness")
+			}
+			negative, signedOK := IndependenceCertificate(-q, -d)
+			if signedOK != ok || signedOK && negative != c {
+				t.Fatal("scalar signs changed the absolute-value certificate")
+			}
+		}
+	}
+	for _, pair := range [][2]int64{{0, 2}, {2, 0}, {1, 2}, {2, -1}, {65537, 2}} {
+		if _, ok := IndependenceCertificate(pair[0], pair[1]); ok {
+			t.Fatal("inadmissible or out-of-contract coefficient accepted")
+		}
+	}
+	if _, ok := IndependenceCertificate(12, 18); !ok {
+		t.Fatal("same prime support incorrectly treated as multiplicative dependence")
+	}
+}
+
+// TestScalarTransverse checks signed legal ticks and the exact monomial invariant with big.Int.
+func TestScalarTransverse(t *testing.T) {
+	for _, q := range []int64{2, 3, 4, 12, -12} {
+		for _, d := range []int64{2, 3, 8, 18, -3, -18} {
+			for _, c := range []int64{-2, 0, 2} {
+				f := Family{"scalar-test", Model{"Gaussian", 0, 1},
+					Point{q, 0}, Point{c, 0}, Point{d, 0}, "raw"}
+				for x := int64(-2); x <= 2; x++ {
+					for y := int64(-2); y <= 2; y++ {
+						z, a, b := Point{x, y}, int64(0), int64(0)
+						seen := make(map[int64]bool, 17)
+						for j := 0; j < 16 && Inside(z); j++ {
+							left := new(big.Int).Exp(big.NewInt(d), big.NewInt(b), nil)
+							left.Mul(left, big.NewInt(z.Im))
+							right := new(big.Int).Exp(big.NewInt(q), big.NewInt(a), nil)
+							right.Mul(right, big.NewInt(y))
+							if left.Cmp(right) != 0 || a+b != int64(j) {
+								t.Fatal("transverse product or raw clock lost")
+							}
+							magnitude := max(z.Im, -z.Im)
+							if ProvenScalarEscape(f, z) && seen[magnitude] {
+								t.Fatal("independent scalar magnitudes repeated")
+							}
+							seen[magnitude] = true
+							next, division := RawStep(f, z)
+							ref, divisible := ReferenceQuotient(f.Ring, f.D, z)
+							if !divisible {
+								rx := new(big.Int).Mul(big.NewInt(q), big.NewInt(z.Re))
+								rx.Add(rx, big.NewInt(c))
+								ry := new(big.Int).Mul(big.NewInt(q), big.NewInt(z.Im))
+								ref = Point{rx.Int64(), ry.Int64()}
+							}
+							if division != divisible || next != ref {
+								t.Fatal("signed scalar tick disagrees with rational reference")
+							}
+							if division {
+								b++
+							} else {
+								a++
+							}
+							z = next
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+// TestScalarControls rejects nonreal parameters and quotient clocks, and preserves the five-cycle.
+func TestScalarControls(t *testing.T) {
+	f := ScalarFamilies()[0]
+	if !ProvenScalarEscape(f, Point{1, 2}) || ProvenScalarEscape(f, Point{1, 0}) {
+		t.Fatal("even-offset theorem or real-axis boundary failed")
+	}
+	for _, field := range []string{"q", "c", "d", "convention"} {
+		g := f
+		switch field {
+		case "q":
+			g.Q.Im = 1
+		case "c":
+			g.C.Im = 1
+		case "d":
+			g.D.Im = 1
+		case "convention":
+			g.Convention = "residue"
+		}
+		if ProvenScalarEscape(g, Point{1, 2}) {
+			t.Fatal("scalar theorem crossed its domain or clock boundary")
+		}
+	}
+	g := ScalarFamilies()[5]
+	z := Point{0, 1}
+	for j, want := range []int64{1, 4, 16, 2, 8} {
+		if z != (Point{0, want}) || ProvenScalarEscape(g, z) {
+			t.Fatalf("dependent control at raw time %d", j)
+		}
+		z, _ = RawStep(g, z)
+	}
+	if z != (Point{0, 1}) {
+		t.Fatal("nonreal five-cycle did not close")
+	}
+	if n := testing.AllocsPerRun(20, func() { ProvenScalarEscape(f, Point{3, 4}) }); n != 0 {
+		t.Fatalf("scalar certificate allocations: %g", n)
+	}
+}
+
 // TestWorkspaceReuse rejects per-seed heap allocations in the bounded lattice hot loop.
 func TestWorkspaceReuse(t *testing.T) {
 	w := Workspace{Seen: make(map[Point]int, Ticks+1)}

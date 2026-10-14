@@ -5,6 +5,8 @@ package main
 import (
 	"archive/zip"
 	"bufio"
+	"bytes"
+	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -23,6 +25,13 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
+)
+
+const (
+	MaxContainerBytes int64 = 1 << 30
+	MaxListingBytes         = 32 << 20
+	ListingTimeout          = 2 * time.Minute
 )
 
 // Artifact identifies one current file; reading and theorem status are separate ledgers.
@@ -341,11 +350,93 @@ func PrivateMember(name string) bool {
 	return false
 }
 
-// ReadZIP hashes regular safe members and matches their bytes, never just their filenames.
+// SnapshotArchive copies and hashes the same stream before publishing any archive rows.
+// Later replacement or in-place mutation of the source cannot change the accepted snapshot.
+func (w *Workspace) SnapshotArchive(root string, a Artifact) (string, error) {
+	if !SafeMemberName(a.Path) || a.Bytes < 0 || a.Bytes > MaxContainerBytes {
+		return "", fmt.Errorf("archive snapshot budget or path rejected: %s", a.Path)
+	}
+	before, err := os.Lstat(filepath.Join(root, a.Path))
+	if err != nil || !before.Mode().IsRegular() {
+		return "", fmt.Errorf("archive is not a regular file: %s: %v", a.Path, err)
+	}
+	source, err := os.Open(filepath.Join(root, a.Path))
+	if err != nil {
+		return "", err
+	}
+	defer source.Close()
+	opened, err := source.Stat()
+	if err != nil || !os.SameFile(before, opened) || opened.Size() != a.Bytes {
+		return "", fmt.Errorf("archive identity or size changed: %s", a.Path)
+	}
+	snapshot, err := os.CreateTemp("", "CollatzArchive-*")
+	if err != nil {
+		return "", err
+	}
+	name := snapshot.Name()
+	accepted := false
+	defer func() {
+		if !accepted {
+			snapshot.Close()
+			os.Remove(name)
+		}
+	}()
+	w.hasher.Reset()
+	w.checksum = 0
+	// Both the private snapshot and digest consume precisely the same copied bytes.
+	n, err := io.CopyBuffer(io.MultiWriter(snapshot, w),
+		io.LimitReader(source, a.Bytes+1), w.buffer)
+	closeErr := snapshot.Close()
+	digest := hex.EncodeToString(w.hasher.Sum(nil))
+	if err != nil || closeErr != nil || n != a.Bytes || digest != a.SHA256 {
+		return "", fmt.Errorf("archive snapshot hash mismatch: %s: %v; %v", a.Path,
+			err, closeErr)
+	}
+	accepted = true
+	return name, nil
+}
+
+// ListingBuffer stops external metadata collection at the explicit listing-byte limit.
+type ListingBuffer struct {
+	buffer bytes.Buffer
+}
+
+// Write refuses bytes beyond the cap before growing the underlying buffer.
+func (b *ListingBuffer) Write(p []byte) (int, error) {
+	if len(p) > MaxListingBytes-b.buffer.Len() {
+		return 0, errors.New("archive listing byte budget exceeded")
+	}
+	return b.buffer.Write(p)
+}
+
+// Read7z lists only an accepted archive snapshot, with bounded output and runtime.
+func (w *Workspace) Read7z(root string, a Artifact) ([]ArchiveMember, error) {
+	snapshot, err := w.SnapshotArchive(root, a)
+	if err != nil {
+		return nil, err
+	}
+	defer os.Remove(snapshot)
+	ctx, cancel := context.WithTimeout(context.Background(), ListingTimeout)
+	defer cancel()
+	command := exec.CommandContext(ctx, "7z", "l", "-slt", snapshot)
+	var listing ListingBuffer
+	command.Stdout = &listing
+	if err := command.Run(); err != nil {
+		return nil, errors.Join(err, ctx.Err())
+	}
+	return Parse7zListing(listing.buffer.String(), a.Path, a.SHA256)
+}
+
+// ReadZIP hashes safe members from the exact container stream named by ArchiveSHA256.
 func (w *Workspace) ReadZIP(root string, a Artifact, groups map[string][]string) (
 	[]ArchiveMember, error,
 ) {
-	reader, err := zip.OpenReader(filepath.Join(root, a.Path))
+	snapshot, err := w.SnapshotArchive(root, a)
+	if err != nil {
+		return nil, err
+	}
+	defer os.Remove(snapshot)
+	reader, err := zip.OpenReader(snapshot)
 	if err != nil {
 		return nil, err
 	}
@@ -742,6 +833,8 @@ func Run(source, output string, workers int, maxMember, maxArchive uint64) error
 		Limitations: []string{
 			"Hashes and CRC checks certify bytes, not mathematical truth or full reading.",
 			"7z headers are listed only; format-to-format content equality remains unchecked.",
+			"Archives are parsed from verified private snapshots capped at 1 GiB each.",
+			"7z listing is capped at 32 MiB and two minutes per archive.",
 			"External originals and historical archives are recorded but never accessed.",
 			"Excluded caches/private/unrelated payloads are not opened or semantically read.",
 			"All statement-level destinations and verification tiers require a separate ledger.",
@@ -767,11 +860,7 @@ func Run(source, output string, workers int, maxMember, maxArchive uint64) error
 				}
 			}
 		case ".7z":
-			var listing []byte
-			listing, err = exec.Command("7z", "l", "-slt", filepath.Join(root, a.Path)).Output()
-			if err == nil {
-				rows, err = Parse7zListing(string(listing), a.Path, a.SHA256)
-			}
+			rows, err = w.Read7z(root, a)
 			for _, row := range rows {
 				if row.Kind != "directory" {
 					summary.Current7zMembers++
