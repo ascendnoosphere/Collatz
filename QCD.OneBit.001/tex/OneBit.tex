@@ -1,0 +1,366 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We exclude closed classical shortcut orbits whose two consecutive parity
+halves differ only by exchanging an adjacent even-odd pair. Arbitrary finite
+prefixes and suffixes around the exchange are allowed. The two numerators
+have explicit opposite residues modulo \(2^h+3^r\), where \(h\) is the
+half-length and \(r\) its odd-branch count. Coprimality makes those residues
+nonzero, whereas a return would require divisibility by that modulus. The
+proof is formalized in Lean, and an exact Go implementation checks all
+\(20481\) adjacent pairs with half-length at most \(12\).
+\end{abstract}
+
+\section{Parity words and their numerators}
+
+The shortcut below has multiplier \(3\) and offset \(1\). Write \(0\) for
+an even branch and \(1\) for an odd branch; letters occur in chronological
+order.
+
+\begin{definition}
+For \(n\in\N\),
+\[
+T(n)=\begin{cases}
+n/2,&\text{if \(n\) is even},\\
+(3n+1)/2,&\text{if \(n\) is odd}.
+\end{cases}
+\]
+A parity word is a finite sequence of even and odd branches. The word agrees with \(n\) when every branch is the parity of the state at which it is used. The run of a word is the corresponding iteration of \(T\), and the empty run is the identity. Write \(\nu(w)\) for the number of odd branches in \(w\), and write \(|w|\) for its length.
+\end{definition}
+
+\begin{definition}
+The numerator \(A(w)\) is defined from the tail:
+\[
+A(\emptyset)=0,
+\]
+an even branch followed by a tail \(u\) contributes \(2A(u)\), and an odd branch followed by a tail \(u\) contributes \(3^{\nu(u)}+2A(u)\).
+\end{definition}
+
+\begin{definition}
+For parity words \(p\) and \(s\), set \(L(p,s)=p01s\) and
+\(R(p,s)=p10s\). These are the two orders of one adjacent even-odd pair
+with the same surroundings. Set
+\begin{align*}
+h(p,s)&=|p|+2+|s|,&
+r(p,s)&=\nu(p)+1+\nu(s),\\
+M(p,s)&=2^{h(p,s)}+3^{r(p,s)},&
+\mu(p,s)&=2^{|p|}3^{r(p,s)+\nu(s)}.
+\end{align*}
+Write \(h\), \(r\), \(M\), and \(\mu\) when \(p\) and \(s\) are fixed, and write \(\delta=2^{|p|}3^{\nu(s)}\).
+\end{definition}
+
+\begin{lemma}
+\label{lem:count-append}
+Odd-branch count adds under concatenation: \(\nu(uv)=\nu(u)+\nu(v)\).
+\end{lemma}
+
+\begin{proof}
+Induct on \(u\). The empty prefix contributes nothing. An even initial branch does not change either side. An odd initial branch adds one on both sides.
+\end{proof}
+
+\begin{lemma}
+\label{lem:numerator-append}
+For parity words \(u\) and \(v\),
+\[
+A(uv)=3^{\nu(v)}A(u)+2^{|u|}A(v).
+\]
+\end{lemma}
+
+\begin{proof}
+Induct on \(u\). If \(u\) is empty, then \(A(v)=3^{\nu(v)}\cdot 0+2^{0}A(v)\). If \(u\) begins with an even branch and the tail \(u_0\) satisfies the identity, the left side is twice the appended tail. Distributing that factor of \(2\) and using \(2\cdot 2^{|u_0|}=2^{|u_0|+1}\) gives the identity for \(u\). If \(u\) begins with an odd branch, the left side is
+\[
+3^{\nu(u_0v)}+2\bigl(3^{\nu(v)}A(u_0)+2^{|u_0|}A(v)\bigr).
+\]
+Lemma~\ref{lem:count-append} splits the exponent as \(\nu(u_0)+\nu(v)\). The resulting terms \(3^{\nu(v)}3^{\nu(u_0)}\) and \(3^{\nu(v)}(2A(u_0))\) factor as \(3^{\nu(v)}A(u)\), while \(2\cdot 2^{|u_0|}A(v)=2^{|u|}A(v)\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:affine}
+If \(w\) agrees with \(n\), then
+\[
+2^{|w|}T^{w}(n)=3^{\nu(w)}n+A(w),
+\]
+where \(T^{w}(n)\) denotes the run of \(w\) at \(n\).
+\end{lemma}
+
+\begin{proof}
+Induct on \(w\). The empty word is \(2^{0}n=3^{0}n\). Suppose \(w\) begins with an even branch and the tail agrees with \(T(n)=n/2\). The inductive identity, multiplied by \(2\), becomes
+\[
+2^{|w|}T^{w}(n)=3^{\nu(w)}(2\cdot(n/2))+2A(u)=3^{\nu(w)}n+A(w),
+\]
+where \(u\) is the tail, because an agreeing even branch makes \(n\) even. Suppose instead that \(w\) begins with an odd branch. Then \(n\) is odd, so \(3n\) is odd and \(3n+1\) is even. Hence \(T(n)=(3n+1)/2\) and \(2T(n)=3n+1\). The inductive identity for the tail, multiplied by \(2\), is
+\[
+2^{|w|}T^{w}(n)=3^{\nu(u)}(3n+1)+2A(u)=3^{\nu(u)+1}n+A(w),
+\]
+and \(\nu(w)=\nu(u)+1\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:blocks}
+The word consisting of an even branch and then an odd branch has odd-branch count \(1\) and numerator \(2\). The opposite two-branch word has odd-branch count \(1\) and numerator \(1\).
+\end{lemma}
+
+\begin{proof}
+The odd tail of the first word has numerator \(3^{0}=1\), and the initial even branch doubles it. The even tail of the second word has numerator \(0\), and the initial odd branch contributes \(3^{0}\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:shape}
+Both \(L(p,s)\) and \(R(p,s)\) have length \(h\) and odd-branch count \(r\).
+\end{lemma}
+
+\begin{proof}
+Each inserted block has length \(2\), so both concatenations have length \(|p|+2+|s|\). Each inserted block has one odd branch by Lemma~\ref{lem:blocks}, and Lemma~\ref{lem:count-append} adds the odd-branch counts of \(p\) and \(s\).
+\end{proof}
+
+\section{Transport and divisibility}
+
+\begin{lemma}
+\label{lem:gap}
+Transport across the adjacent block adds one monomial:
+\[
+A\bigl(L(p,s)\bigr)=A\bigl(R(p,s)\bigr)+\delta.
+\]
+\end{lemma}
+
+\begin{proof}
+Write \(L_0\) for \(p\) followed by an even branch and then an odd branch, and \(R_0\) for the opposite block after \(p\). Lemmas~\ref{lem:numerator-append} and~\ref{lem:blocks} give
+\[
+A(L_0)=3A(p)+2^{|p|}\cdot 2,\qquad A(R_0)=3A(p)+2^{|p|},
+\]
+so \(A(L_0)=A(R_0)+2^{|p|}\). Both blocks have length \(|p|+2\). Appending \(s\) and applying Lemma~\ref{lem:numerator-append} multiplies the difference by \(3^{\nu(s)}\) and leaves the same tail term \(2^{|p|+2}A(s)\) on both sides.
+\end{proof}
+
+\begin{lemma}
+\label{lem:residues}
+The two concatenations have residues \(\mu\) and \(-\mu\):
+\begin{align*}
+A\bigl(L(p,s)R(p,s)\bigr)
+&=M\,A\bigl(R(p,s)\bigr)+\mu,\\
+A\bigl(R(p,s)L(p,s)\bigr)+\mu
+&=M\,A\bigl(L(p,s)\bigr).
+\end{align*}
+Equivalently, \(A(LR)\equiv\mu\pmod M\) and \(A(RL)\equiv-\mu\pmod M\).
+\end{lemma}
+
+\begin{proof}
+By Lemmas~\ref{lem:numerator-append},~\ref{lem:shape}, and~\ref{lem:gap},
+\begin{align*}
+A(LR)
+&=3^{r}\bigl(A(R)+\delta\bigr)+2^{h}A(R)\\
+&=(2^{h}+3^{r})A(R)+3^{r}\delta.
+\end{align*}
+The last summand is \(2^{|p|}3^{r+\nu(s)}=\mu\), and the coefficient of \(A(R)\) is \(M\). In the other order,
+\begin{align*}
+A(RL)+\mu
+&=3^{r}A(R)+2^{h}\bigl(A(R)+\delta\bigr)+\mu\\
+&=MA(R)+2^{h}\delta+3^{r}\delta,
+\end{align*}
+because \(\mu=3^{r}\delta\). The last two summands are \(M\delta\), so the right side is \(M(A(R)+\delta)=MA(L)\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:squares}
+For \(a,b\in\Z\), one has \(a^{2}-b^{2}=(a-b)(a+b)\).
+\end{lemma}
+
+\begin{proof}
+Expand \((a-b)(a+b)=a^{2}+ab-ba-b^{2}\). The cross terms cancel.
+\end{proof}
+
+\begin{lemma}
+\label{lem:closed}
+Let \(w\) agree with \(x\) and return to \(x\). If \(|w|=2h\) and \(\nu(w)=2r\), then \(2^{h}+3^{r}\) divides \(A(w)\).
+\end{lemma}
+
+\begin{proof}
+Lemma~\ref{lem:affine} gives \(2^{2h}x=3^{2r}x+A(w)\) in \(\N\). In \(\Z\),
+\[
+\bigl(2^{2h}-3^{2r}\bigr)x=A(w).
+\]
+The powers are squares, \(2^{2h}=(2^{h})^{2}\) and \(3^{2r}=(3^{r})^{2}\). Lemma~\ref{lem:squares} factors the difference as
+\[
+\bigl(2^{h}-3^{r}\bigr)\bigl(2^{h}+3^{r}\bigr)x=A(w)
+\]
+in \(\Z\). Thus \(2^{h}+3^{r}\) divides \(A(w)\) in \(\Z\). A natural number dividing another in \(\Z\) divides it in \(\N\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:coprime}
+If \(h\ge 1\), then \(2^{h}+3^{r}\) is coprime to \(2\). If also \(r\ge 1\), then \(2^{h}+3^{r}\) is coprime to \(3\).
+\end{lemma}
+
+\begin{proof}
+For \(h\ge 1\), the power \(2^{h}\) is even. Every power of \(3\) is odd, so \(2^{h}+3^{r}\) is odd and therefore coprime to \(2\). For \(r\ge 1\), the prime \(3\) divides \(3^{r}\). It does not divide \(2\), hence it does not divide \(2^{h}\). A divisor of the first summand which is coprime to the second summand is coprime to the sum, and coprimality to \(2^{h}\) reduces to coprimality to \(2\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:miss}
+If \(h\ge 1\), \(r\ge 1\), and \(a,b\in\N\), then \(2^{h}+3^{r}\) does not divide \(2^{a}3^{b}\).
+\end{lemma}
+
+\begin{proof}
+Let \(M=2^{h}+3^{r}\). Lemma~\ref{lem:coprime} makes \(M\) coprime to
+\(2\) and to \(3\). Euclid's coprimality lemma says that
+\(\gcd(M,k)=1\) and \(M\mid kz\) imply \(M\mid z\). Indeed, multiplying
+an integer identity \(\alpha M+\beta k=1\) by \(z\) proves that implication.
+Starting from \(M\mid 2^a3^b\), cancel \(a\) factors of \(2\) and then
+\(b\) factors of \(3\). This yields \(M\mid1\), hence \(M=1\).
+But \(2^h\ge2\) and \(3^r\ge3\), so \(M\ge5\), a contradiction.
+\end{proof}
+
+\begin{lemma}
+\label{lem:seven}
+For every \(p\) and \(s\), one has \(M(p,s)\ge 7\).
+\end{lemma}
+
+\begin{proof}
+The length \(h\) is at least \(2\), and the odd-branch count \(r\) is at least \(1\). Thus \(2^{h}\ge 4\) and \(3^{r}\ge 3\).
+\end{proof}
+
+\begin{theorem}
+\label{thm:transport}
+For all parity words \(p\) and \(s\) and every natural number \(x\),
+\begin{align*}
+A\bigl(L(p,s)R(p,s)\bigr)
+&=M(p,s)\,A\bigl(R(p,s)\bigr)+\mu(p,s),\\
+A\bigl(R(p,s)L(p,s)\bigr)+\mu(p,s)
+&=M(p,s)\,A\bigl(L(p,s)\bigr),
+\end{align*}
+the modulus satisfies \(M(p,s)\ge 7\) and does not divide \(\mu(p,s)\), and neither concatenation both agrees with \(x\) and returns to \(x\).
+\end{theorem}
+
+\begin{proof}
+The two numerator identities are Lemma~\ref{lem:residues}, and the lower bound is Lemma~\ref{lem:seven}. Here \(h\ge 2\) and \(r\ge 1\), while \(\mu=2^{|p|}3^{r+\nu(s)}\). Lemma~\ref{lem:miss} says that \(M\) does not divide \(\mu\).
+
+Suppose \(LR\) agrees with \(x\) and returns to \(x\). Lemma~\ref{lem:shape} gives \(|LR|=2h\) and \(\nu(LR)=2r\). Lemma~\ref{lem:closed} yields \(M\mid A(LR)\). The first identity writes this numerator as \(MA(R)+\mu\). Since \(M\) divides \(MA(R)\), it divides \(\mu\), contradicting Lemma~\ref{lem:miss}.
+
+Suppose instead that \(RL\) agrees with \(x\) and returns to \(x\). The same two lemmas yield \(M\mid A(RL)\). The second identity says that \(M\) divides \(A(RL)+\mu\). A divisor of both \(A(RL)\) and \(A(RL)+\mu\) divides \(\mu\), again a contradiction.
+\end{proof}
+
+\begin{corollary}
+\label{cor:empty}
+For empty surroundings, \(h=2\), \(r=1\), \(M=7\), and \(\mu=3\). The odd-then-even word has numerator \(1\), and the even-then-odd word has numerator \(2\). The two concatenations have numerators \(10\) and \(11\), and
+\[
+10=7\cdot 1+3,\qquad 11+3=7\cdot 2.
+\]
+\end{corollary}
+
+\begin{proof}
+The definitions give \(h=2\), \(r=1\), \(M=7\) and \(\mu=3\).
+Lemma~\ref{lem:blocks} gives \(A(L)=2\) and \(A(R)=1\). The concatenation
+formula yields \(A(LR)=3\cdot2+4\cdot1=10\) and
+\(A(RL)=3\cdot1+4\cdot2=11\). These values satisfy the two equalities.
+\end{proof}
+
+\begin{corollary}
+For \(p=1\) and \(s=0\), the halves are \(L=1010\) and \(R=1100\),
+with \(h=4\), \(r=2\), \(M=25\) and \(\mu=18\). Their numerators are
+\(A(L)=7\) and \(A(R)=5\), and
+\[
+A(LR)=143=25\cdot5+18,\qquad A(RL)+18=157+18=25\cdot7.
+\]
+\end{corollary}
+
+\begin{proof}
+The three-letter prefix numerators are \(A(101)=7\) and \(A(110)=5\).
+Appending the last even branch leaves each numerator unchanged, by
+Lemma~\ref{lem:numerator-append}. Both halves have two odd branches, so
+that lemma gives \(A(LR)=9\cdot7+16\cdot5=143\) and
+\(A(RL)=9\cdot5+16\cdot7=157\). The remaining parameters follow from
+the definitions.
+\end{proof}
+
+\begin{remark}
+The ordinary shortcut cycle \(1\mapsto2\mapsto1\) has word \(10\).
+Its doubled word \(1010\) also returns to \(1\); it repeats its half
+instead of exchanging adjacent letters between halves. Theorem~\ref{thm:transport}
+excludes exactly the stated family of concatenations. It does not classify
+all cycles or prove capture.
+\end{remark}
+
+\section{Formalization and exact implementation}
+
+The Lean file \texttt{OneBit.lean} proves the numerator identities, the
+coprimality obstruction and the two return exclusions for arbitrary finite
+prefixes and suffixes. The declarations use natural-number states and the
+shortcut clock defined above. Both numerical examples are also checked by
+Lean's kernel.
+
+The Go file \texttt{OneBit.go} represents a word by its length and a bit mask,
+with its first letter in the least significant bit. For each half-length
+\(h\), there are \(h-1\) choices of prefix length. Each choice leaves
+\(h-2\) free letters, hence \(2^{h-2}\) prefix/suffix pairs. The program
+checks the gap, both numerator identities, coprimality and the resulting
+integer-return obstruction for every pair with \(2\le h\le12\). The total is
+\[
+\sum_{h=2}^{12}(h-1)2^{h-2}=20481.
+\]
+Each half-length has an independent worker with a fixed power cache; successful
+pair checks allocate no working buffers.
+
+The maximum concatenated length is \(24\). Induction on the numerator
+recurrence gives \(A(w)+2^{|w|}\le3^{|w|}\). For a tail of length \(k\),
+the even case is
+\[
+A(0w)+2^{k+1}=2\bigl(A(w)+2^k\bigr)\le2\cdot3^k\le3^{k+1}.
+\]
+Since \(\nu(w)\le k\), the odd case is
+\[
+A(1w)+2^{k+1}=3^{\nu(w)}+2\bigl(A(w)+2^k\bigr)
+\le3^k+2\cdot3^k=3^{k+1}.
+\]
+The empty case is equality, and equality persists through every odd letter.
+Thus \(0\le A(w)\le3^{|w|}-2^{|w|}\), with equality for the all-odd word.
+The count bound and the numerator bound are also proved in Lean.
+Every tested numerator is therefore less than
+\(3^{24}=282429536481\). The monomial is also at most \(3^{24}\): use
+\(2^{|p|}\le3^{|p|}\) and
+\(|p|+r+\nu(s)\le2h\le24\). Both sides of the residue identities
+are therefore below \(2\cdot3^{24}<2^{40}\), so the coefficient checks fit
+in unsigned \(64\)-bit arithmetic.
+
+The tests separately replay actual parity words for seeds \(0\le n<1024\)
+at every length \(0\le |w|\le10\), checking the affine identity. They also
+check the ordinary cycle, malformed-word rejection, the coefficient budget,
+odd-numerator overflow and zero allocations in successful pair checks. These
+finite tests concern the implementation; the universal return exclusion is
+the conclusion of Theorem~\ref{thm:transport}.
+
+\end{document}

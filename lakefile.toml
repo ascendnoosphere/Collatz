@@ -112,6 +112,7 @@ defaultTargets = [
   "LocalJoin",
   "InverseBudget",
   "ReverseBound",
+  "OneBit",
 ]
 
 [[require]]
@@ -590,3 +591,7 @@ srcDir = "QCD.InverseBudget.001/lean"
 [[lean_lib]]
 name = "ReverseBound"
 srcDir = "QCD.ReverseBound.001/lean"
+
+[[lean_lib]]
+name = "OneBit"
+srcDir = "QCD.OneBit.001/lean"

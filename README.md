@@ -667,6 +667,16 @@ $`M\mid A(U)-A(V)`$ and $`Q\mid A(U)+A(V)`$. The factors can separate: for $`q=3
 and $`r=2`$ the sum modulus divides the numerator difference, while the
 difference modulus does not divide the numerator sum.
 
+### Adjacent-swapped halves
+
+[QCD.OneBit.001](QCD.OneBit.001/README.md) excludes closed classical shortcut
+words whose two consecutive halves are $L=p01s$ and $R=p10s$, in either order.
+For arbitrary finite surroundings $p,s$, put $h=|p|+2+|s|$,
+$r=\nu(p)+1+\nu(s)$, $M=2^h+3^r$ and $\mu=2^{|p|}3^{r+\nu(s)}$.
+Then $A(LR)=MA(R)+\mu$ and $A(RL)+\mu=MA(L)$.
+Coprimality makes the residues nonzero, whereas a return requires $M\mid A(w)$.
+The ordinary cycle with word $10$ is outside this concatenation family.
+
 ### Signed return
 
 The first-division return sends a seed through the affine block
