@@ -27,6 +27,7 @@ exact marked-cycle data, reproduction commands, and a
 | [Gaussian split-prime escape](QCD.GaussianDynamics.001/README.md), $`(q,c,d)=(2+i,0,2-i)`$ | **Checked theorem:** every nonzero Gaussian seed escapes although multiplier and divisor have equal norm | Offsets and noncoprime ring parameters |
 | [Ordinary and twisted cohomology](QCD.ComplexCohomology.001/README.md) | **Checked:** ordinary cycle quotient, all finite functional-graph dimensions, actual twisted quotients, and the scalar closing equation $`(1-P)u=B`$ | Branch admissibility, integer reconstruction, and universal capture |
 | [Quadratic Galois fields](QCD.ComplexAtlas.001/README.md#actual-quadratic-galois-fields-with-ramified-negative-controls) | **Checked:** actual $`\mathbb F_9,\mathbb F_4`$ field structures, exhaustive two-element Galois groups, and same-clock affine conjugacy | Ramified nonfields and raw lattice guards remain distinct |
+| [Marked minus-cycle resonance](QCD.ComplexCohomology.001/Resonance.md) | **Checked:** exact raw period $`18`$; coefficient defect $`139`$; genuine Frobenius action on the actual twisted quotient over $`\mathbb F_{139^2}`$, with $`139`$ fixed classes and unique fixed/sign recovery | No descent of the parity-guarded raw map modulo $`139`$; no Julia or infinite-graph transfer |
 | [Quadratic-order arithmetic](QCD.QuadraticArithmetic.001/README.md) | Exact lattice division and ideal quotients; bounded computational checks in five orders | Existing trajectory classifications have the formalization scope stated there |
 | [Residue-wise complex quotient maps](QCD.ComplexLattice.001/README.md#a-different-complex-family-really-does-have-nonreal-cycles) | **Checked construction:** nonreal fixed points and cycles, unlike the raw scalar map | Global classification of quotient-map basins |
 | [Polynomial Julia countermodels](QCD.ComplexAtlas.001/README.md#julia-portraits-same-lattice-cycle-different-complex-stability) | **Checked:** equal finite cycle values can have different multipliers; radius $`8`$ certifies exterior escape | No canonical Julia set or Julia-to-lattice transfer is asserted |
@@ -53,6 +54,16 @@ The finite-field examples instead study specified affine maps and their
 functional-graph cohomology. The [verification ledger](QCD.ComplexAtlas.001/Verification.md)
 records exact checks and their limits.
 
+The [marked minus-cycle extension](QCD.ComplexCohomology.001/Resonance.md)
+adds three finite pictures with exact reconstruction, rather than relabelling
+a residue texture as a Julia set:
+
+![Actual quotient coordinates and Frobenius-fixed classes](QCD.ComplexCohomology.001/other/Galois139.png)
+
+Its ordinary complex-coefficient twisted cohomology vanishes; characteristic
+$`139`$ produces a genuine one-dimensional quotient. The **actual offsets still
+represent zero**; a marked unit edge detects its nonzero classes.
+
 ## Source provenance and migration coverage
 
 The [public source catalogue](Library.SourceCatalogue.001/README.md) accounts for
@@ -65,7 +76,10 @@ entries are header-only; unavailable external archives remain metadata-only.
 **Byte provenance is not mathematical review.** The exhaustive source-to-result
 crosswalk, reading coverage, and remaining supported-result migration are still
 open. A pending assignment is not an exclusion or a claim that a source contains
-no result. [Reproduction and verification](Library.SourceCatalogue.001/README.md#reproduction-and-input-contract)
+no result. The new [seven-row cycle-lattice crosswalk](QCD.ComplexCohomology.001/CycleSourceAudit.md)
+and [38-row analytic/fractal crosswalk](QCD.ComplexAtlas.001/CanonicalClaims.md)
+preserve supported results, correct false bridges, and retain explicit open migration obligations.
+[Reproduction and verification](Library.SourceCatalogue.001/README.md#reproduction-and-input-contract)
 state the scanner's finite scope and safety limits.
 
 ## Foundations

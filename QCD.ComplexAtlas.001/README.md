@@ -13,6 +13,19 @@ separate objects.
 [Detailed mathematics](tex/ComplexAtlas.tex) · [Source audit](ResearchAudit.md) ·
 [Executed verification](Verification.md) · [Machine-readable census](other/AtlasData.json)
 
+## New finite quotient and bounded source crosswalk
+
+The [marked minus-cycle extension](../QCD.ComplexCohomology.001/Resonance.md)
+constructs the genuine Gaussian field $`\mathbb F_{139^2}`$ and its Frobenius
+action on an actual twisted cohomology quotient. Its three finite pictures
+show fixed classes, ordered holonomy, and the offset correction; they do not
+add raw lattice seeds or Julia models to the counts below.
+
+The [canonical 38-row analytic/fractal crosswalk](CanonicalClaims.md)
+records corrected statements, supported but unmigrated results, unreproduced
+certificates, and open bridges. The [seven-row cycle-lattice crosswalk](../QCD.ComplexCohomology.001/CycleSourceAudit.md)
+is separate. Neither bounded audit completes the corpus migration.
+
 ## The principal mathematical finding
 
 For odd real integral $`c`$, every nonreal raw $`(3,c,2)`$ lattice seed escapes

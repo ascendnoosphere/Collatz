@@ -91,6 +91,7 @@ defaultTargets = [
   "ComplexCohomology",
   "ComplexGraph",
   "ComplexLocalSystem",
+  "CycleResonance",
   "ComplexLattice",
   "ComplexPolynomials",
   "ComplexFields",
@@ -487,6 +488,10 @@ srcDir = "QCD.ComplexCohomology.001/lean"
 
 [[lean_lib]]
 name = "ComplexLocalSystem"
+srcDir = "QCD.ComplexCohomology.001/lean"
+
+[[lean_lib]]
+name = "CycleResonance"
 srcDir = "QCD.ComplexCohomology.001/lean"
 
 [[lean_lib]]

@@ -1,0 +1,242 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+An eighteen-tick raw \(3n-1\) cycle supplies a concrete, characteristic-sensitive twisted cochain calculation. Its quotient vanishes in characteristic zero and in characteristic \(137\), but has one dimension in characteristic \(139\). We construct the Gaussian field with \(139^2\) elements, classify its two prime-field automorphisms, and descend Frobenius to the actual cochain quotient. There are exactly \(139\) Frobenius-fixed classes. The actual affine offset nevertheless represents the zero class: a different last-edge cochain witnesses the nonzero quotient. The coefficient field does not replace the integer branch guard. The companion Lean proof and independent finite Go calculation preserve that distinction. Standard field terminology follows \cite{Lang02}; the arguments needed here are given below.
+\end{abstract}
+
+\section{The retained integer obligation}
+
+Keep the original raw map
+\[
+T(x)=\begin{cases}x/2,&2\mid x,\\3x-1,&2\nmid x,\end{cases}
+\qquad x\in\Z.
+\]
+The following marked vertices, indexed from \(0\) to \(17\), close at the original raw clock:
+\[
+\begin{split}
+(v_0,\ldots,v_{17})={}&(17,50,25,74,37,110,55,164,82,\allowbreak\\
+&41,122,61,182,91,272,136,68,34).
+\end{split}
+\]
+Write \(v_{j+18}=v_j\). Let \(J=\{0,2,4,6,9,11,13\}\). Every \(v_j\) for \(j\in J\) is odd, with successor \(3v_j-1\); the other eleven vertices are even, with successor \(v_j/2\). Thus every displayed edge is legal. Direct comparison shows that the eighteen vertices are distinct. Consequently the marked seed \(17\) has exact raw return time \(18\), rather than merely a closed word presentation. In Lean, \texttt{RawEdges}, \texttt{RawCycleOrbit}, \texttt{RawCycleReturn}, and \texttt{RawCycleMinimal} check these assertions using the foundational \texttt{RawStep} definition.
+
+% The coefficients describe the retained edges, not a quotient-state dynamical map.
+\begin{definition}[Coefficient cochains]
+Let \(K\) be a field with \(2\ne0\). Set
+\[
+\lambda_j=\begin{cases}3,&j\in J,\\1/2,&j\notin J,\end{cases}
+\qquad
+ a_j=\begin{cases}-1,&j\in J,\\0,&j\notin J.\end{cases}
+\]
+On \(C^0=C^1=K^{18}\), with the last coordinate followed by the first, define
+\[
+(\delta_\lambda f)_j=f_{j+1}-\lambda_jf_j,
+\qquad H^1_\lambda=C^1/\operatorname{im}\delta_\lambda.
+\]
+For \(a\in C^1\), its ordered period is
+\[
+\Pi_\lambda(a)=\sum_{j=0}^{17}\left(\prod_{k=j+1}^{17}\lambda_k\right)a_j.
+\]
+\end{definition}
+
+All the coefficients are units when the characteristic is neither \(2\) nor \(3\), so these cases are rank-one local systems. In characteristic \(3\), the same formula defines a linear map with a zero affine multiplier, but it is not called a local system. In characteristic \(2\), halving is not defined.
+
+The state coordinates remain integers. Their coefficient casts satisfy \(v_{j+1}=\lambda_jv_j+a_j\) in \(K\), because every division edge was already checked in \(\Z\). No parity decision is made in \(K\). For example, the integer inputs \(0\) and \(139\) have the same class modulo \(139\), but their raw successors have classes \(0\) and \(-1\). Thus the raw map does not descend to this residue field.
+
+\section{Exact resonance and its contrasting classes}
+
+% The degree of the residual calculation decreases to one scalar closing equation.
+\begin{theorem}[Holonomy and neutrality]
+For every such coefficient field,
+\[
+P:=\prod_{j=0}^{17}\lambda_j=\frac{3^7}{2^{11}}=\frac{2187}{2048},
+\qquad
+P=1\quad\Longleftrightarrow\quad139=0\text{ in }K.
+\]
+The actual quotient has dimension \(1\) over \(\mathbb F_{139}\), and dimension \(0\) over \(\mathbb F_{137}\) and \(\C\).
+\end{theorem}
+\begin{proof}
+There are seven marked affine factors and eleven division factors, giving the product. Since \(2^{11}\ne0\), the equation \(P=1\) is equivalent to \(3^7-2^{11}=0\); the integer difference is \(2187-2048=139\). Both \(137\) and \(139\) are prime, as checked in the companion proof. Hence the difference vanishes in the latter prime field and not in the former or in characteristic zero.
+
+For completeness, ordered transport of an arbitrary edge cochain from \(f_0=u\) gives \(f_{18}=Pu+\Pi_\lambda(a)\). If \(P\ne1\), the choice \(u=\Pi_\lambda(a)/(1-P)\) closes every cochain, so the image is all of \(C^1\) and the quotient is zero. If \(P=1\), a cochain is a coboundary exactly when its weighted period is zero. The cochain equal to \(1\) on the last edge and \(0\) elsewhere has period \(1\), making the period map onto. Its kernel is the image of the genuine shared-potential coboundary map, so the induced linear map \(H^1_\lambda\to K\) is an isomorphism. No dimension is inferred only from a numerical rank experiment.
+\end{proof}
+
+% This explicitly separates a nonzero quotient from the class of the actual dynamical offset.
+\begin{theorem}[Offset classes]
+The actual offset \(a\) represents zero in \(H^1_\lambda\) for every field with \(2\ne0\). Over \(\mathbb F_{139}\), its weighted period is zero, while the last-edge unit cochain represents a nonzero class.
+\end{theorem}
+\begin{proof}
+The cast integer vertices constitute one common cyclic potential and satisfy \(a=\delta_\lambda v\) on all eighteen edges. This proves exactness independently of neutrality. At resonance, image equals period kernel, giving \(\Pi_\lambda(a)=0\). The last-edge unit has period \(1\), since its suffix product is empty; it cannot lie in that kernel. These are different cochains. A nonzero ambient quotient does not imply a nonzero class for the actual affine data.
+\end{proof}
+
+\section{An actual Gaussian coefficient field and its automorphisms}
+
+Let \(k=\mathbb F_{139}\) and \(E=k[i]\), with \(i^2=-1\). Every element has a unique expression \(u+vi\) with \(u,v\in k\).
+
+% Irreducibility is verified before field and Galois claims are used.
+\begin{lemma}[Gaussian field]
+The polynomial \(X^2+1\) has no root in \(k\). The quotient \(E\) is a field with \(19321\) elements and is a Galois extension of \(k\).
+\end{lemma}
+\begin{proof}
+If \(r^2=-1\) in \(k\), then \(r\ne0\). Fermat's identity gives \(r^{138}=1\), but the same power is \((-1)^{69}=-1\), contradicting \(1\ne-1\) in characteristic \(139\). Thus the degree-two polynomial is irreducible and its quadratic quotient is a field. Its unique coefficient pairs give exactly \(139^2=19321\) elements. The polynomial has distinct roots \(i,-i\) in \(E\), since \(2i\ne0\), and \(E\) is its splitting field. This proves normality and separability. The Lean proof additionally checks the no-root condition by exhaustion of all \(139\) base coefficients and uses Mathlib's finite-field Galois theorem for the constructed field.
+\end{proof}
+
+% Classifying all automorphisms avoids naming a Galois group from one exhibited symmetry.
+\begin{theorem}[Frobenius and automorphisms]
+The Frobenius and conjugation agree:
+\[
+\sigma(u+vi)=(u+vi)^{139}=u-vi.
+\]
+Every \(k\)-algebra automorphism of \(E\) is either identity or \(\sigma\); these are distinct and \(\sigma^2=1\). Frobenius-fixed elements are precisely \(k\), and \(X^2+1\) has exactly the two roots \(i,-i\) in \(E\).
+\end{theorem}
+\begin{proof}
+Prime-characteristic Frobenius is additive and multiplicative. It fixes the base field, and \(i^{139}=i^3=-i\), since \(139\equiv3\pmod4\). Applying it to the coefficient expression gives the displayed formula and its square is identity. Its fixed equation is \(2v=0\), hence \(v=0\).
+
+If \(z^2=-1\), then \((z-i)(z+i)=0\). As \(E\) is a field, \(z=i\) or \(z=-i\). Both are roots and are distinct. Every base-algebra automorphism must send \(i\) to one of them and is determined by this image together with its action on the base field. Therefore its two possibilities are exactly identity and conjugation. This proves exhaustion of the automorphism group, not only existence of one involution.
+\end{proof}
+
+\section{Frobenius descends to the genuine quotient}
+
+All \(\lambda_j\) lie in \(k\). For cochains over \(E\), put \((\Sigma a)_j=\sigma(a_j)\). This map is \(\sigma\)-semilinear, rather than \(E\)-linear.
+
+% Invariance of the actual image is the needed recovery edge for the quotient action.
+\begin{theorem}[The quotient action and fixed classes]
+The cochain action preserves genuine coboundaries and induces a well-defined semilinear map \(\overline\Sigma\) on \(H^1_\lambda(E)\). The weighted-period isomorphism \(\Phi:H^1_\lambda(E)\to E\) obeys
+\[
+\Phi(\overline\Sigma x)=\sigma(\Phi(x)).
+\]
+Consequently \(\overline\Sigma^2=1\), and its fixed classes are in bijection with \(k\), so there are exactly \(139\) of them. The action is not \(E\)-linear.
+\end{theorem}
+\begin{proof}
+Since \(\sigma(\lambda_j)=\lambda_j\), coefficient conjugation commutes with the same ordered transport recurrence and satisfies
+\[
+\Pi_\lambda(\Sigma a)=\sigma(\Pi_\lambda(a)).
+\]
+In particular it preserves the period kernel, which at resonance is exactly the coboundary image. Thus it descends to the quotient of the actual edge space by that image. Its period identity gives the stated intertwining equation on every concrete class.
+
+Applying the identity twice and using injectivity of \(\Phi\) proves \(\overline\Sigma^2=1\). A class is fixed if and only if its period is fixed by \(\sigma\), equivalently its \(i\)-coefficient is zero. The explicit bijection sends a fixed class to the real coefficient of its period and sends \(r\in k\) to \(\Phi^{-1}(r)\). The latter is fixed by the intertwining identity; the two maps are inverse by uniqueness of the coefficient expression. This proves the cardinality without enumerating \(E^{18}\).
+
+Finally let \(x=\Phi^{-1}(1)\). Its conjugate equals itself, but
+\[
+\Phi(\overline\Sigma(i x))=-i\ne i=\Phi(i\overline\Sigma x).
+\]
+Hence extension-field linearity fails. Under restriction to \(k\), the coordinates \(1,i\) show that the fixed line and the sign-reversed line are the two eigenspaces. This is a Galois action on graph cohomology, not an identification with group Galois cohomology or an etale cohomology construction.
+\end{proof}
+
+% The commuting square states the same-class compatibility, not separate witness existence.
+\begin{center}
+\begin{tikzpicture}[>=stealth]
+\node (A) at (0,2) {\(H^1_\lambda(E)\)};
+\node (B) at (5,2) {\(E\)};
+\node (C) at (0,0) {\(H^1_\lambda(E)\)};
+\node (D) at (5,0) {\(E\)};
+\draw[->] (A) -- node[above] {\(\Phi\)} (B);
+\draw[->] (C) -- node[above] {\(\Phi\)} (D);
+\draw[->] (A) -- node[left] {\(\overline\Sigma\)} (C);
+\draw[->] (B) -- node[right] {\(\sigma:z\mapsto z^{139}\)} (D);
+\end{tikzpicture}
+\end{center}
+
+% The decomposition recovers both witnesses for the same quotient class and proves uniqueness.
+\begin{theorem}[Unique recovery]
+The quotient has \(19321\) classes. For any class \(x\), define
+\[
+\Phi(x)=u+vi,\qquad x_+=\Phi^{-1}(u),\qquad x_-=\Phi^{-1}(vi).
+\]
+Then \(x=x_++x_-\), \(\overline\Sigma x_+=x_+\), and
+\(\overline\Sigma x_-=-x_-\). These are the unique fixed and sign-reversed
+classes whose sum is \(x\). The field-coordinate norm is
+\[
+N(u+vi)=(u+vi)\sigma(u+vi)=u^2+v^2\in k.
+\]
+\end{theorem}
+\begin{proof}
+The period isomorphism is a bijection with the field of \(19321\) elements.
+Conjugation fixes exactly those field coordinates with zero imaginary
+coefficient, and reverses the sign exactly when the real coefficient is zero:
+in the latter case \(u=-u\), hence \(2u=0\) and \(u=0\).
+Linearity and injectivity of \(\Phi\) recover the stated sum and both actions.
+Conversely, the period of any fixed summand has imaginary coefficient zero,
+and that of any sign-reversed summand has real coefficient zero. Their sum
+therefore determines both coefficients uniquely. Expanding
+\((u+vi)(u-vi)\) and using \(i^2=-1\) proves the norm identity.
+No extension-field linearity of Frobenius is used.
+\end{proof}
+
+\section{Finite pictures and their interpretation}
+
+The first picture displays the actual quotient coordinates under \(\Phi\);
+each cell is one chosen representative \(u+vi\), \(u,v\in[-69,69]\), reduced
+modulo \(139\). Conjugation reflects across \(v=0\); color is the exact
+prime-field norm. Ordering its integer representatives is a plotting choice,
+not a canonical metric on the finite field or a complex Julia set.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.8\linewidth]{../other/Galois139.pdf}
+\caption{All quotient coordinates, with a separate legend strip.
+The red line marks the \(139\) Frobenius-fixed classes.}
+\end{figure}
+
+At prefix length \(j\), the ordered affine recurrence gives
+\(v_j=P_j17+B_j\). At return, \(v_{18}=17\), \(P_{18}=2187/2048\),
+and \(-B_{18}/17=139/2048\). Logarithmic and rational plotting coordinates
+illustrate these finite identities; they are not neighborhood stability claims.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{../other/WordHolonomy.pdf}
+\caption{The original raw return and its distinct ordered multiplier profile.}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{../other/OffsetCorrection.pdf}
+\caption{The offset correction, magnified separately to show the return defect.}
+\end{figure}
+
+\section{Executed certificate scope and remaining targets}
+
+The independent Go program checks every original integer branch and the distinct marked states. Its exact prime-field elimination gives ranks \(18\) over \(\mathbb F_{137}\) and \(17\) over \(\mathbb F_{139}\). Over \(\mathbb F_{137}\), holonomy is \(79\) and the actual offset period is \(44\): this nonzero period is compatible with exactness because holonomy is nonneutral. Over \(\mathbb F_{139}\), holonomy is \(1\) and the actual period is \(0\). The last-edge period is \(1\) in both fields. Exhaustion of \(19321\) Gaussian coefficient pairs checks \(19320\) nonzero inverses, \(19321\) distinct Frobenius images, \(139\) fixed coefficients and two defining roots, as well as all \(19321\) norm identities and their Frobenius invariance. Invalid characteristics \(2,3\), composites, and unsupported finite budgets are rejected.
+
+The original finite obligation is replaced by the scalar period and an explicit quotient isomorphism, with eighteen-step coordinate reconstruction. The reduction preserves edge order, original integer legality, and the action on coefficients. It does not classify other cycles, construct an infinite-graph cohomology theory, decide positive-integer convergence, or transfer a Julia portrait to guarded arithmetic.
+
+\bibliographystyle{amsalpha}
+\bibliography{CycleResonance}
+\end{document}

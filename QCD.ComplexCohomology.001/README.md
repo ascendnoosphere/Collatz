@@ -14,6 +14,29 @@ with specified coefficients, **not** a claim to have constructed a Galois,
 [Exact finite-field checks](../QCD.ComplexAtlas.001/go/ComplexAtlas_test.go) ·
 [Visual atlas](../QCD.ComplexAtlas.001/README.md)
 
+## New marked-cycle extension: coefficient 139, not a new raw guard
+
+[Resonance and three finite figures](Resonance.md) ·
+[Lean quotient and Galois proofs](lean/CycleResonance.lean) ·
+[Exact Go certificate](go/CycleResonance.go) ·
+[Independent tests](go/CycleResonance_test.go) ·
+[Detailed TeX proof](tex/CycleResonance.tex) ·
+[Source cycle-lattice crosswalk](CycleSourceAudit.md) ·
+[Verification](ResonanceVerification.md)
+
+The original guarded $`(3,-1,2)`$ map has the marked raw period-$`18`$ cycle
+starting at $`17`$. Its ordered multiplier is $`3^7/2^{11}`$ and its integer
+power defect is $`139`$. Reduction changes the **cochain coefficients**:
+the actual quotient has dimension zero over $`\mathbb C`$ and $`\mathbb F_{137}`$,
+and dimension one over $`\mathbb F_{139}`$. Its actual offset class is zero
+in every permitted coefficient field.
+
+Over the genuine Gaussian field $`\mathbb F_{139^2}`$, Frobenius acts
+semilinearly on that same quotient. Weighted period intertwines the action,
+gives exactly $`139`$ fixed classes, and uniquely recovers each class as a
+fixed plus sign-reversed sum. This is a finite Galois action on graph
+cohomology, not a universal Collatz theorem or Galois-group cohomology.
+
 ## A field is a coefficient domain, not a lattice divisibility test
 
 For a field $`K`$ and $`d\ne0`$, every $`z\in K`$ is divisible by $`d`$, because

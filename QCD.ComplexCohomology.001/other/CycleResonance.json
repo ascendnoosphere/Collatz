@@ -1,0 +1,56 @@
+{
+  "raw_states": [
+    17,
+    50,
+    25,
+    74,
+    37,
+    110,
+    55,
+    164,
+    82,
+    41,
+    122,
+    61,
+    182,
+    91,
+    272,
+    136,
+    68,
+    34
+  ],
+  "raw_cycle_legal": true,
+  "raw_states_distinct": true,
+  "affine_ticks": 7,
+  "division_ticks": 11,
+  "integer_power_defect": 139,
+  "coefficient_fields": [
+    {
+      "characteristic": 137,
+      "holonomy": 79,
+      "actual_offset_period": 44,
+      "last_edge_unit_period": 1,
+      "twisted_incidence_rank": 18,
+      "h1_dimension": 0,
+      "actual_offset_exact": true
+    },
+    {
+      "characteristic": 139,
+      "holonomy": 1,
+      "actual_offset_period": 0,
+      "last_edge_unit_period": 1,
+      "twisted_incidence_rank": 17,
+      "h1_dimension": 1,
+      "actual_offset_exact": true
+    }
+  ],
+  "gaussian_extension": {
+    "characteristic": 139,
+    "elements": 19321,
+    "frobenius_images": 19321,
+    "frobenius_fixed": 139,
+    "defining_roots": 2,
+    "nonzero_inverses": 19320,
+    "norm_invariant_checks": 19321
+  }
+}
