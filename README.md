@@ -143,6 +143,15 @@ locates the independent local corpus.
 
 ## Reductions
 
+### Dyadic square equations
+
+[QCD.BeukersList.001](QCD.BeukersList.001/README.md) classifies positive solutions
+of $`x^2+D=2^n`$ for $`D=7,23`$ at every even exponent and at all exponents
+$`n\le32`$. Consecutive-square bounds give the unrestricted even-exponent
+proofs; explicit square brackets give the finite odd-exponent classifications.
+Every Mersenne parameter $`D=2^k-1`$, $`k\ge4`$, has two distinct positive
+representations. These arithmetic statements do not assert affine-cycle capture.
+
 ### Coprime scaling and offset normalization
 
 [QCD.Scaling.001](QCD.Scaling.001/README.md) proves that coprime scaling preserves

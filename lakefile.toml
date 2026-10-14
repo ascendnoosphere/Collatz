@@ -108,6 +108,7 @@ defaultTargets = [
   "HomogeneousLattice",
   "ComplexPolynomials",
   "ComplexFields",
+  "BeukersList",
 ]
 
 [[require]]
@@ -570,3 +571,7 @@ srcDir = "QCD.ComplexDynamics.001/lean"
 [[lean_lib]]
 name = "ComplexFields"
 srcDir = "QCD.ComplexDynamics.001/lean"
+
+[[lean_lib]]
+name = "BeukersList"
+srcDir = "QCD.BeukersList.001/lean"
