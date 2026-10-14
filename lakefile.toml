@@ -109,6 +109,7 @@ defaultTargets = [
   "ComplexPolynomials",
   "ComplexFields",
   "BeukersList",
+  "LocalJoin",
 ]
 
 [[require]]
@@ -575,3 +576,7 @@ srcDir = "QCD.ComplexDynamics.001/lean"
 [[lean_lib]]
 name = "BeukersList"
 srcDir = "QCD.BeukersList.001/lean"
+
+[[lean_lib]]
+name = "LocalJoin"
+srcDir = "QCD.LocalJoin.001/lean"

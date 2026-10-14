@@ -1,0 +1,260 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For every integer \(t\ge0\), the raw Collatz orbits starting at
+\(n=11003+1048576t\) and \(p=9915+944784t\) have prefixes that first meet at
+\(33466+3188646t\), after \(32\) and \(6\) raw steps respectively.
+Their next common value is \(j=16733+1594323t\).
+The parent is positive and satisfies \(100p\le91n\).
+A finite table of affine coefficients proves the branch legality,
+the exact meeting clocks, and the absence of earlier intersections
+uniformly in \(t\). These are smaller-parent identities on one cylinder,
+not an assertion that its orbits reach \(1\).
+\end{abstract}
+
+\section{Raw clock and affine coefficients}
+
+We use the raw map
+\[
+C(x)=
+\begin{cases}
+x/2,&x\equiv0\pmod2,\\
+3x+1,&x\equiv1\pmod2.
+\end{cases}
+\]
+The map is defined on the nonnegative integers; all states below are positive.
+In particular, an odd step and its following division count as two steps.
+The shortcut map would count that pair as one.
+
+Fix an integer \(t\ge0\), and write
+\[
+n=11003+1048576t,\qquad p=9915+944784t,\qquad
+j=16733+1594323t.
+\]
+
+\begin{lemma}[Affine coefficient rules]
+\label{lem:coefficients}
+If \(a,b\) are even nonnegative integers, then
+\(C(a+bt)=a/2+(b/2)t\).
+If \(a\) is odd and \(b\) is even, then
+\(C(a+bt)=(3a+1)+(3b)t\).
+If \(a<c\) and \(b\le d\), then \(a+bt<c+dt\).
+\end{lemma}
+
+\begin{proof}
+In the first case, \(a+bt=2(a/2+(b/2)t)\).
+In the second, \(bt\) is even, so the argument is odd, and expanding
+\(3(a+bt)+1\) gives the stated coefficients.
+For the comparison,
+\(a+bt\le a+dt<c+dt\), since \(t\ge0\).
+\end{proof}
+
+\section{A complete finite coefficient table}
+
+Each label in Table~\ref{tab:states} denotes \(a+bt\) with the displayed
+constant \(a\) and slope \(b\). The source labels are \(n_0,\ldots,n_{33}\);
+the parent labels are \(p_0,\ldots,p_7\).
+The labels \(e,f\) are the two additional forms excluded below.
+The table is sorted by its constant: read down the left half, then
+down the right half. Its constants strictly increase and its slopes
+do not decrease. Thus Lemma~\ref{lem:coefficients} compares any two
+distinct rows strictly for every \(t\ge0\).
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{crrcrr}
+\toprule
+State & \(a\) & \(b\) & State & \(a\) & \(b\)\\
+\midrule
+\(e\) & 8251 & 786432 & \(n_{19}\) & 35255 & 3359232 \\
+\(p_{0}\) & 9915 & 944784 & \(n_{6}\) & 37138 & 3538944 \\
+\(n_{0}\) & 11003 & 1048576 & \(n_{11}\) & 41782 & 3981312 \\
+\(p_{5}\) & 11155 & 1062882 & \(p_{3}\) & 44620 & 4251528 \\
+\(n_{5}\) & 12379 & 1179648 & \(n_{29}\) & 44621 & 4251528 \\
+\(n_{10}\) & 13927 & 1327104 & \(n_{16}\) & 47006 & 4478976 \\
+\(p_{2}\) & 14873 & 1417176 & \(n_{3}\) & 49516 & 4718592 \\
+\(n_{2}\) & 16505 & 1572864 & \(n_{21}\) & 52883 & 5038848 \\
+\(n_{33}, p_{7}\) & 16733 & 1594323 & \(n_{8}\) & 55708 & 5308416 \\
+\(n_{7}\) & 18569 & 1769472 & \(n_{26}\) & 59494 & 5668704 \\
+\(n_{12}\) & 20891 & 1990656 & \(n_{13}\) & 62674 & 5971968 \\
+\(p_{4}\) & 22310 & 2125764 & \(n_{31}\) & 66932 & 6377292 \\
+\(n_{17}\) & 23503 & 2239488 & \(n_{18}\) & 70510 & 6718464 \\
+\(f\) & 24754 & 2359296 & \(n_{23}\) & 79325 & 7558272 \\
+\(n_{4}\) & 24758 & 2359296 & \(n_{28}\) & 89242 & 8503056 \\
+\(n_{9}\) & 27854 & 2654208 & \(n_{15}\) & 94012 & 8957952 \\
+\(p_{1}\) & 29746 & 2834352 & \(n_{20}\) & 105766 & 10077696 \\
+\(n_{27}\) & 29747 & 2834352 & \(n_{25}\) & 118988 & 11337408 \\
+\(n_{14}\) & 31337 & 2985984 & \(n_{30}\) & 133864 & 12754584 \\
+\(n_{1}\) & 33010 & 3145728 & \(n_{22}\) & 158650 & 15116544 \\
+\(n_{32}, p_{6}\) & 33466 & 3188646 & \(n_{24}\) & 237976 & 22674816 \\
+\bottomrule
+\end{tabular}
+\caption{All forty distinct chain forms and the two excluded forms.}
+\label{tab:states}
+\end{table}
+
+\begin{theorem}[Legal successor chains]
+\label{thm:chains}
+For every integer \(t\ge0\),
+\[
+n_i=C^i(n)\quad(0\le i\le33),\qquad
+p_i=C^i(p)\quad(0\le i\le7).
+\]
+Their common rows are precisely
+\[
+n_{32}=p_6=33466+3188646t,\qquad
+n_{33}=p_7=j.
+\]
+\end{theorem}
+
+\begin{proof}
+The initial rows are \(n_0=n\) and \(p_0=p\).
+All source slopes before \(n_{33}\) and all parent slopes before \(p_7\)
+are even, so each input row has the parity of its constant.
+For an even input row, halving both coefficients gives the row with the
+next index; for an odd input row, the next coefficients are \(3a+1,3b\).
+Every required pair appears in the table. For example,
+\[
+C(n_4)=C(24758+2359296t)=12379+1179648t=n_5,
+\]
+and
+\[
+C(p_5)=C(11155+1062882t)=33466+3188646t=p_6.
+\]
+Applying the coefficient rules to each consecutive pair proves the chains
+by induction on the displayed indices.
+Finally, the table has exactly two rows carrying both a source label and
+a parent label. All other rows are unequal by coefficient dominance.
+\end{proof}
+
+\begin{corollary}[Exact first meeting]
+\label{cor:first}
+The two displayed prefixes have no intersection before their shared tail.
+In particular,
+\[
+C^{32}(n)=C^6(p),\qquad C^{33}(n)=C^7(p)=j.
+\]
+\end{corollary}
+
+\begin{proof}
+Every source row \(n_i\) with \(i<32\) is distinct from every parent row
+\(p_k\) with \(0\le k\le7\), by the two-label description in
+Theorem~\ref{thm:chains}. Likewise, the parent rows with \(k<6\) are
+distinct from all displayed source rows. The two listed shared rows
+therefore give the first intersection of these prefixes.
+\end{proof}
+
+\section{Parent size and the terminal parity split}
+
+\begin{theorem}[Positive contracted parent]
+\label{thm:parent}
+For every integer \(t\ge0\),
+\[
+0<p<n<j,\qquad 100p\le91n.
+\]
+Moreover,
+\[
+n-p=1088+103792t,\qquad j-n=5730+545747t.
+\]
+\end{theorem}
+
+\begin{proof}
+The constant of \(p\) is positive. Subtracting the coefficients gives the
+two gap identities, whose right-hand sides are positive.
+For the contraction,
+\[
+91n-100p=9773+942016t>0.
+\]
+Thus the claimed weak bound holds, with strict slack.
+\end{proof}
+
+\begin{remark}[The next branch depends on the parameter]
+Both coefficients of \(j\) are odd, so \(j\equiv t+1\pmod2\).
+Consequently, \(C(j)=j/2\) when \(t\) is odd, whereas
+\(C(j)=3j+1\) when \(t\) is even.
+There is no single affine continuation in \(t\) on the full cylinder.
+\end{remark}
+
+\begin{corollary}[Excluded forms]
+No displayed chain state equals
+\[
+e=8251+786432t,\qquad f=24754+2359296t.
+\]
+\end{corollary}
+
+\begin{proof}
+The two forms have separate rows in Table~\ref{tab:states} and are
+strictly separated from every source and parent row by coefficient
+dominance. In particular, \(f\) is not the fourth successor
+\(n_4=24758+2359296t\), even though their slopes agree.
+\end{proof}
+
+\section{Recovery and scope}
+
+If the parent orbit reaches \(1\), then the source orbit also reaches \(1\).
+Indeed, the parent prefix \(p_0,\ldots,p_6\) contains no value \(1\);
+its smallest constant is \(9915\).
+Any visit to \(1\) therefore occurs at a time \(h>6\).
+The identity \(C^{32}(n)=C^6(p)\) then gives
+\(C^{32+h-6}(n)=C^h(p)=1\).
+This argument uses the same parent and the same forward orbit.
+
+The fixed factor \(91/100<1\) makes this parent replacement
+well-founded whenever it can be used. It does not ensure that a later
+parent lies in this cylinder, supply a rule for all other seeds, or prove
+capture of \(p\).
+The theorem is therefore a uniform smaller-parent join for one
+explicit arithmetic progression, not a global capture theorem.
+
+\section{Formal proofs and exact computation}
+
+The accompanying \texttt{lean/LocalJoin.lean} proves the coefficient rules,
+both successor chains, their cross comparisons, the excluded forms,
+the four raw iterate identities, and the parent contraction.
+The finite comparison conjunctions retain the actual numerical coefficients;
+their proofs use the same dominance argument as the table.
+
+The Go program in \texttt{go/LocalJoin.go} checks all coefficient transitions,
+all cross comparisons and both exclusions directly.
+It also compares numerical raw iterates with every row for parameters
+\(0\le t\le10^4\), with explicit input support through \(t=10^6\).
+These finite numerical checks are supplementary:
+the proofs above and in Lean cover every integer \(t\ge0\).
+
+\end{document}

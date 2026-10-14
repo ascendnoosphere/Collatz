@@ -276,6 +276,17 @@ clock $`(u+v)/g`$. Composite bases and nonunit residuals are allowed.
 Negative divisors, nontrivial multiplier residuals and other offset regimes
 remain separate families.
 
+### An exact raw smaller-parent cylinder
+
+[QCD.LocalJoin.001](QCD.LocalJoin.001/README.md) proves, for every $t\ge0$,
+the raw-clock identity
+```math
+C^{32}(11003+1048576t)=C^6(9915+944784t)=33466+3188646t.
+```
+The two prefixes have no earlier intersection. Their positive parent satisfies
+$100p\le91n$, and their next common state is $16733+1594323t$.
+This is a single uniform cylinder, not an exhaustive capture theorem.
+
 ### Classical capture recovery and absorbing tails
 
 [QCD.ClassicalRecovery.001](QCD.ClassicalRecovery.001/README.md) treats
