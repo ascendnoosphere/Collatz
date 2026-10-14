@@ -173,8 +173,90 @@ func VerifyGoldenCylinders(q, c int64, h uint) error {
 	return nil
 }
 
-// main emits exact finite word counts only after validating the declared cylinder budgets.
+// BoundedBinomial evaluates word counts for 0 <= n <= 17; other arguments return zero.
+func BoundedBinomial(n, k int64) int64 {
+	if n < 0 || n > 17 || k < 0 || k > n {
+		return 0
+	}
+	if k > n-k {
+		k = n - k
+	}
+	value := int64(1)
+	for j := int64(1); j <= k; j++ {
+		value = value * (n - k + j) / j
+	}
+	return value
+}
+
+// VerifyGoldenStatistics checks word counts and both initial laws using integer numerators.
+// At h <= 16, the cleared second-moment products are below 243 * 16^2 * 2^32 < 2^48.
+func VerifyGoldenStatistics(h uint) error {
+	if h == 0 || h > 16 {
+		return fmt.Errorf("statistical word check requires depth between one and sixteen")
+	}
+	count := make([]int64, h+1)
+	count = count[:len(count)]
+	var haarTotal, haarMoment, total, moment, second int64
+	for mask := uint(0); mask < 1<<h; mask++ {
+		if !LegalWord(mask, h, false) {
+			continue
+		}
+		b, delta := uint(0), uint(0)
+		for j := uint(0); j < h; j++ {
+			if mask&(1<<j) != 0 {
+				b++
+			}
+		}
+		if mask&(1<<(h-1)) != 0 {
+			delta = 1
+		}
+		count[b]++
+		// Clear the Haar denominator 2^h and the stationary denominator 3 * 2^h.
+		haarWeight := int64(1) << (b - delta)
+		firstFactor := int64(4)
+		if mask&1 != 0 {
+			firstFactor = 2
+		}
+		weight := firstFactor * haarWeight
+		haarTotal += haarWeight
+		haarMoment += haarWeight * int64(b)
+		total += weight
+		moment += weight * int64(b)
+		second += weight * int64(b*b)
+	}
+	for b := uint(0); b <= h; b++ {
+		want := BoundedBinomial(int64(h-b+1), int64(b))
+		if count[b] != want {
+			return fmt.Errorf("depth %d, %d ones: count %d != %d", h, b, count[b], want)
+		}
+	}
+	scale, sign := int64(1)<<h, int64(1)
+	if h%2 != 0 {
+		sign = -1
+	}
+	if haarTotal != scale || total != 3*scale || moment != int64(h)*scale {
+		return fmt.Errorf("normalization or stationary mean failed at depth %d", h)
+	}
+	if 9*haarMoment != (3*int64(h)+1)*scale-sign {
+		return fmt.Errorf("Haar mean failed at depth %d", h)
+	}
+	// E[B_h^2] = h^2/9 + 2h/27 + 8(1 - (-1/2)^h)/81 has integral numerators.
+	left := 81 * second * scale
+	right := total * ((9*int64(h*h)+6*int64(h)+8)*scale - 8*sign)
+	if left != right {
+		return fmt.Errorf("stationary variance failed at depth %d", h)
+	}
+	return nil
+}
+
+// main validates finite moment identities before printing word and periodic-point counts.
 func main() {
+	for h := uint(1); h <= 16; h++ {
+		if err := VerifyGoldenStatistics(h); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+	}
 	for h := uint(1); h <= 12; h++ {
 		if err := VerifyGoldenCylinders(3, 1, h); err != nil {
 			fmt.Fprintln(os.Stderr, err)

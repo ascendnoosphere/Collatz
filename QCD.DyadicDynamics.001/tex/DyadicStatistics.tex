@@ -1,0 +1,419 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library: Exact Statistics of the Raw Dyadic Clock}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For odd multiplier and offset on the 2-adic integers, raw affine events
+cannot occur consecutively. Their parity process is a two-state Markov
+chain. We derive exact finite word counts and moments, a central limit
+theorem, and an explicit large-deviation rate. Cylinder probabilities
+transfer to ordinary integer densities with a uniform discrepancy
+bound. The same bound gives a central limit for integer samples at
+growing finite depths; almost-sure statements concern the 2-adic
+probability space.
+\end{abstract}
+
+\section{The probability space and the raw clock}
+
+Let \(\Z_2\) denote the ring of 2-adic integers. Fix odd
+\(q,c\in\Z_2\), and use
+\[
+T(x)=\begin{cases}x/2,&x\text{ even},\\qx+c,&x\text{ odd}.\end{cases}
+\]
+Write \(\mu\) for normalized Haar probability and \(\nu\) for the
+invariant probability with Haar density \(4/3\) on even states and
+\(2/3\) on odd states. For \(h\ge1\), let
+\[
+S_j(x)=\boldsymbol{1}_{\{T^j(x)\text{ odd}\}},\qquad
+B_h(x)=\sum_{j=0}^{h-1}S_j(x).
+\]
+Thus \(B_h\) counts affine instructions in \(h\) raw ticks, and
+\(h-B_h\) counts divisions. All logarithms are natural.
+
+The companion cylinder construction \cite{DyadicTopology26} proves
+that the parity sequence has no adjacent ones. If a legal length-\(h\)
+word has \(b\) ones and last letter \(\delta\in\{0,1\}\), its Haar
+measure is \(2^{-h+b-\delta}\). Under \(\nu\) its measure is this
+quantity multiplied by \(4/3\) or \(2/3\), according as its first
+letter is zero or one. The parity process is a Markov chain with
+\[
+P=\begin{pmatrix}1/2&1/2\\1&0\end{pmatrix}.
+\]
+Its initial distribution is \((1/2,1/2)\) under \(\mu\), and the
+stationary distribution \((2/3,1/3)\) under \(\nu\).
+Indeed, conditioned on an even source, the next state is Haar
+distributed; conditioned on an odd source, it is Haar distributed
+within the even states. Applying this argument successively proves
+the conditional transition law, not just its one-step marginal.
+
+\section{Exact counts and moments}
+
+% Removing one separating zero after each earlier one gives a finite bijection.
+\begin{lemma}[Word counts]
+For \(0\le b\le\lceil h/2\rceil\), the number of legal length-\(h\)
+words with \(b\) ones is
+\[
+N(h,b)=\binom{h-b+1}{b}.
+\]
+Consequently,
+\[
+\begin{aligned}
+\tfrac12 N(h,b)2^{-h+b}
+&\le\mu(B_h=b)\le N(h,b)2^{-h+b},\\
+\tfrac13 N(h,b)2^{-h+b}
+&\le\nu(B_h=b)\le\tfrac43 N(h,b)2^{-h+b}.
+\end{aligned}
+\]
+Outside that range both probabilities are zero.
+\end{lemma}
+
+\begin{proof}
+If the one positions are \(1\le i_1<\cdots<i_b\le h\), legality says
+\(i_{r+1}\ge i_r+2\). The positions \(j_r=i_r-(r-1)\) form an
+arbitrary \(b\)-element subset of \(\{1,\ldots,h-b+1\}\).
+The inverse is \(i_r=j_r+(r-1)\), so this is a bijection, also for
+\(b=0\). Each Haar word weight differs from \(2^{-h+b}\) by the
+factor \(2^{-\delta}\in\{1,1/2\}\). Multiplying by the specified
+first-letter density gives factors between \(1/3\) and \(4/3\)
+for \(\nu\). Summing over the bijection proves the bounds.
+\end{proof}
+
+% The nontrivial Markov eigenvalue controls every covariance and the finite variance.
+\begin{theorem}[Exact stationary moments]
+\label{thm:moments}
+For every \(h\ge1\),
+\[
+\mathbb E_\nu B_h=h/3,\qquad
+\operatorname{Var}_\nu B_h
+=\frac{2h}{27}+\frac8{81}\bigl(1-(-1/2)^h\bigr).
+\]
+For Haar initial data,
+\[
+\mathbb E_\mu B_h=h/3+\frac19\bigl(1-(-1/2)^h\bigr).
+\]
+\end{theorem}
+
+\begin{proof}
+Let \(\Pi\) have both rows equal to \((2/3,1/3)\). Direct
+multiplication gives \(P^r=\Pi+(-1/2)^r(I-\Pi)\).
+Under the stationary law,
+\[
+\operatorname{Cov}_\nu(S_0,S_r)=\frac29(-1/2)^r.
+\]
+This includes \(r=0\), since a Bernoulli variable with mean \(1/3\)
+has variance \(2/9\). Summing the covariances gives
+\[
+\operatorname{Var}_\nu B_h
+=\frac{2h}9+\frac49\sum_{r=1}^{h-1}(h-r)(-1/2)^r.
+\]
+For \(t\ne1\), multiplication of the finite geometric sum by
+\(1-t\), or differentiation of that polynomial, yields
+\[
+\sum_{r=1}^{h-1}(h-r)t^r
+=\frac{ht}{1-t}-\frac{t}{(1-t)^2}
++\frac{t^{h+1}}{(1-t)^2}.
+\]
+Substitution of \(t=-1/2\) proves the variance formula.
+Under \(\mu\), the odd probability at time \(r\) is
+\(1/3+(1/6)(-1/2)^r\), by the same matrix identity and the initial
+law \((1/2,1/2)\). Its sum proves the final assertion.
+\end{proof}
+
+\section{Large deviations}
+
+Define, with \(0\log0=0\),
+\[
+I(a)=
+\begin{cases}
+\begin{aligned}
+&(1-a)\log2+a\log a\\
+&\quad +(1-2a)\log(1-2a)-(1-a)\log(1-a)
+\end{aligned}
+&0\le a\le1/2,\\
++\infty,&\text{otherwise}.
+\end{cases}
+\]
+It is continuous on its finite domain, with \(I(0)=\log2\),
+\(I(1/2)=\tfrac12\log2\), and its unique zero is \(a=1/3\).
+To check the last assertion directly, on \(0<a<1/2\),
+\[
+I'(a)=\log\frac{a(1-a)}{2(1-2a)^2},\qquad
+I''(a)=\frac1a-\frac1{1-a}+\frac4{1-2a}>0.
+\]
+The derivative vanishes at \(1/3\), where substitution gives zero.
+
+% Uniform factorial estimates turn the exact finite count into both LDP directions.
+\begin{theorem}[Explicit rate]
+\label{thm:rate}
+For either \(\eta=\mu\) or \(\eta=\nu\), the variables \(B_h/h\)
+satisfy the large-deviation principle with rate \(I\). Precisely,
+for every closed \(F\subset\R\) and open \(U\subset\R\),
+\[
+\begin{aligned}
+\limsup_{h\to\infty}h^{-1}\log\eta(B_h/h\in F)
+&\le-\inf_{a\in F}I(a),\\
+\liminf_{h\to\infty}h^{-1}\log\eta(B_h/h\in U)
+&\ge-\inf_{a\in U}I(a).
+\end{aligned}
+\]
+The convention is \(\log0=-\infty\).
+\end{theorem}
+
+\begin{proof}
+Put \(f(m)=m\log m\) for positive integers and \(f(0)=0\).
+Comparison with the integral of the increasing function \(\log x\)
+gives \(\log(m!)=f(m)-m+O(\log(m+1))\), with an absolute constant.
+Therefore, uniformly for legal \(b\),
+\[
+\log N(h,b)
+=f(h-b+1)-f(b)-f(h-2b+1)+O(\log(h+1)).
+\]
+Replacing an argument \(m+1\) by \(m\) changes \(f\) by at most
+\(\log(h+1)+1\). For \(b\le h/2\), apply these two replacements,
+then add \((-h+b)\log2\) and the bounded word-weight factors.
+This yields
+\[
+\log\eta(B_h=b)=-hI(b/h)+O(\log(h+1)).
+\]
+If \(h\) is odd and \(b=(h+1)/2\), then \(N(h,b)=1\);
+the same estimate holds with \(b/h\) replaced by \(1/2\).
+Thus the uniform formula uses
+\(\widehat a_h(b)=\min(b/h,1/2)\), with
+\(\lvert\widehat a_h(b)-b/h\rvert\le1/(2h)\).
+
+For a closed set, sum at most \(h+1\) probabilities and use this
+uniform formula. Any convergent sequence of admissible \(b/h\) in
+the closed set has its limit in that set and in \([0,1/2]\).
+Compactness and continuity of \(I\) prove the upper bound.
+If there is no such sequence, the event is eventually empty.
+
+For an open set and any \(a\in U\cap[0,1/2]\), choose legal
+integers \(b_h\) with \(b_h/h\to a\). These exist at both endpoints:
+take zero for \(a=0\), and \(\lfloor h/2\rfloor\) for \(a=1/2\).
+For all large \(h\), \(b_h/h\in U\). A single point probability
+and the uniform formula give the lower bound \(-I(a)\).
+Take the supremum of these lower bounds; an empty intersection
+makes the required lower bound vacuous.
+\end{proof}
+
+\section{The central limit and almost-sure frequency}
+
+% The analytic two-eigenvalue formula supplies a characteristic-function limit.
+\begin{theorem}[Raw central limit]
+\label{thm:clt}
+Under either \(\mu\) or \(\nu\),
+\[
+\frac{B_h-h/3}{\sqrt{2h/27}}
+\ \Longrightarrow\ N(0,1).
+\]
+\end{theorem}
+
+\begin{proof}
+For either initial row \(p=(1/2,1/2)\) or \(p=(2/3,1/3)\), put
+\(D(s)=\operatorname{diag}(1,e^s)\). Conditioning successively on
+the parity states gives the exact moment generating function
+\[
+\mathbb E_p e^{sB_h}=pD(s)\bigl(PD(s)\bigr)^{h-1}
+\begin{pmatrix}1\\1\end{pmatrix}.
+\]
+The eigenvalues of \(PD(s)\), analytic near zero with the indicated
+square-root branch, are
+\[
+\lambda(s)=\frac{1+\sqrt{1+8e^s}}4,\qquad
+\gamma(s)=\frac{1-\sqrt{1+8e^s}}4.
+\]
+They are distinct near zero. The two spectral projections give
+\(\mathbb E_p e^{sB_h}
+=A_p(s)\lambda(s)^{h-1}+C_p(s)\gamma(s)^{h-1}\),
+where the coefficients are analytic. At zero, the eigenvector
+\((1,1)^\mathsf{T}\) lies entirely in the eigenvalue-one space;
+thus \(A_p(0)=1\), \(C_p(0)=0\).
+Moreover \(\lambda(0)=1\), \(\gamma(0)=-1/2\), so the second
+term is exponentially small relative to the first, uniformly in
+a sufficiently small complex neighborhood of zero.
+
+Differentiation of the displayed root gives
+\[
+\log\lambda(s)=s/3+s^2/27+O(|s|^3).
+\]
+For fixed real \(t\), set \(s=it/\sqrt{2h/27}\), and subtract the
+centering term \(sh/3\). The logarithm of the leading term tends
+to \(-t^2/2\); its cubic remainder is \(O(h^{-1/2})\).
+The analytic prefactor tends to one, and the other eigenvalue
+contribution tends to zero. Hence the characteristic functions
+of the normalized variables converge to \(e^{-t^2/2}\).
+
+Here is an explicit passage from this limit to distribution functions.
+The stationary variance formula bounds the second moments of the
+normalized variables uniformly. This is also true under \(\mu\),
+because \(d\mu/d\nu\le3/2\). Add an independent centered Gaussian
+\(Z_\varepsilon\) of variance \(\varepsilon^2>0\).
+Gaussian Fourier inversion and Fubini give the smoothed density
+\[
+g_{h,\varepsilon}(u)=\frac1{2\pi}\int_\R
+e^{-itu}\phi_h(t)e^{-\varepsilon^2t^2/2}\,dt.
+\]
+Dominated convergence implies uniform convergence of these
+densities to the centered Gaussian density of variance
+\(1+\varepsilon^2\). Uniform second-moment bounds control the
+tails, so integration on bounded intervals proves convergence
+of the smoothed distribution functions.
+For every \(\delta>0\), the unsmoothed distribution function
+\(F_h\) lies between
+\[
+F_{h,\varepsilon}(u-\delta)-\Pr(|Z_\varepsilon|>\delta)
+\quad\text{and}\quad
+F_{h,\varepsilon}(u+\delta)+\Pr(|Z_\varepsilon|>\delta).
+\]
+First let \(h\to\infty\). Then take \(\delta=\sqrt\varepsilon\)
+and let \(\varepsilon\downarrow0\); Chebyshev bounds the extra
+tail by \(\varepsilon\), and the Gaussian distribution function
+is continuous. These bounds prove the asserted central limit.
+\end{proof}
+
+% A summable subsequence estimate and bounded increments recover the full sequence.
+\begin{corollary}[2-adic frequency]
+For \(\mu\)-almost every and \(\nu\)-almost every \(x\),
+\[
+\lim_{h\to\infty}B_h(x)/h=1/3.
+\]
+The division frequency is therefore \(2/3\). The 2-adic derivative
+Lyapunov exponent is \((2/3)\log2\).
+\end{corollary}
+
+\begin{proof}
+The stationary variance is \(O(h)\). At \(h=k^2\), Chebyshev gives
+\(\nu(|B_{k^2}/k^2-1/3|>\varepsilon)=O_\varepsilon(k^{-2})\).
+The probability of any such event after index \(K\) is bounded
+by the tail of this convergent series, which tends to zero.
+Using \(\varepsilon=1/m\), \(m\ge1\), gives almost-sure convergence
+along squares. For \(k^2\le h<(k+1)^2\), the count changes by at
+most \(2k+1\), proving full-sequence convergence. The measures
+\(\mu,\nu\) are equivalent, so the same almost-sure conclusion
+holds for Haar data.
+
+On each parity neighborhood the derivative is \(1/2\) or \(q\).
+The chain rule is applicable on each finite itinerary cylinder.
+Since \(|q|_2=1\), it gives
+\(\lvert(T^h)'(x)\rvert_2=2^{h-B_h(x)}\).
+Taking its logarithm and using the proved frequency gives
+the exponent.
+\end{proof}
+
+For ordinary nonzero odd integer \(q\), the associated
+\emph{real slope statistic} has limiting value
+\((\log|q|-2\log2)/3\) on this probability space. This statistic
+is the logarithm of the absolute product of the branch slopes,
+divided by the raw time. It is not a claim about the growth of ordinary
+integer orbit values.
+
+\section{Recovery of finite integer laws}
+
+% Finite precision gives a uniform discrepancy, while the stated limit order excludes capture.
+\begin{theorem}[Ordinary density transfer]
+\label{thm:transfer}
+Suppose now that \(q,c\) are odd integers. For any event \(E\)
+depending only on the first \(h\ge1\) raw parity letters,
+\[
+\left|\frac{\#\{1\le n\le X:n\in E\}}X-\mu(E)\right|
+\le\frac{2^h}{X}
+\]
+for every positive integer \(X\).
+Thus every fixed finite-count event has ordinary natural density
+given by its Haar law. The central limit also holds for uniformly
+selected \(n\in\{1,\ldots,X\}\) at any integer depth \(h(X)\to\infty\)
+with \(2^{h(X)}/X\to0\).
+\end{theorem}
+
+\begin{proof}
+Each legal word cylinder is one residue class modulo
+\(2^{h-b+\delta}\), and \(h-b+\delta\le h\). Thus \(E\) is a union
+of classes modulo \(2^h\). Each class contributes within one of
+\(X/2^h\), and its Haar measure is \(2^{-h}\).
+Summing these discrepancies over at most \(2^h\) classes proves
+the bound. For a distribution-function event in the central limit,
+this error is uniform in the threshold. Combine it with the Haar
+central limit at the growing depth to prove the last assertion.
+\end{proof}
+
+These recovery statements concern finite prefixes. For the
+large-deviation law, one valid interpretation is to take the
+ordinary-density limit \(X\to\infty\) at each fixed \(h\), then
+let \(h\to\infty\). The uniform bound also controls other joint
+limits when its error is small compared with the probability
+being estimated. None of these conclusions alone assigns an
+infinite-orbit frequency or capture outcome to density-one
+ordinary integer seeds.
+
+% Integer capture and 2-adic typical frequencies can differ even for the same coefficients.
+\begin{remark}[An integer comparison]
+For \(q=-1,c=1\), every ordinary integer reaches zero, so
+\(B_h(n)/h\to0\) for every integer seed \(n\). To prove this,
+use the first-division map
+\[
+H(n)=\begin{cases}n/2,&n\text{ even},\\(1-n)/2,&n\text{ odd}.
+\end{cases}
+\]
+For \(|n|>1\), its magnitude is strictly smaller than \(|n|\):
+the even case halves it, and the odd case satisfies
+\(|H(n)|\le(1+|n|)/2<|n|\). Descent in the nonnegative
+integer magnitude reaches \(\{-1,0,1\}\); here
+\(H(-1)=1\), \(H(1)=0\), and \(H(0)=0\).
+Every \(H\)-step is one or two legal raw ticks, so the raw orbit
+also reaches zero. Its total number of odd visits is then finite.
+Nevertheless, the almost-sure 2-adic limit for these same coefficients
+is \(1/3\), by the frequency corollary. This example separates
+fixed-prefix integer density from infinite integer-orbit frequency.
+\end{remark}
+
+\section{Exact finite implementation}
+
+The accompanying Go implementation \cite{DyadicCode26} enumerates every
+legal word through depth sixteen, compares counts with the
+binomial formula, and verifies stationary normalization, mean
+and variance by exact integer arithmetic. It also checks
+the raw cylinder formulas against signed orbits for odd integer
+\(q,c\in[-7,7]\) through depth twelve. The first computation tests
+Theorem~\ref{thm:moments}; the second tests the cylinder input to
+Theorem~\ref{thm:transfer}. Neither finite enumeration supplies the
+infinite arguments in Theorems~\ref{thm:rate} and~\ref{thm:clt},
+which are proved above. The statistical theorems in this article
+are written proofs rather than Lean declarations.
+
+\bibliographystyle{amsalpha}
+\bibliography{DyadicReferences}
+\end{document}

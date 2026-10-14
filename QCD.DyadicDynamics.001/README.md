@@ -13,6 +13,7 @@ conclusions refer to different absolute values and are kept separate.
 
 [Signed integer proof](tex/DyadicDynamics.tex) ·
 [2-adic topology and measure proof](tex/DyadicTopology.tex) ·
+[Raw-clock statistics](tex/DyadicStatistics.tex) ·
 [Lean companion](lean/DyadicDynamics.lean) ·
 [Exact finite checks](go/DyadicDynamics.go)
 
@@ -140,9 +141,72 @@ The topological and all invariant metric entropies are zero. Its only
 periodic points are these two fixed points, so its 2-adic Artin–Mazur zeta
 function is $`(1-z)^{-2}`$.
 
-The 2-adic conjugacies, invariant measures, mixing, entropy, and zeta
-statements have detailed written proofs in `tex/DyadicTopology.tex`;
-they are not Lean declarations. The Go tests check the finite cylinder
-identities on odd $`q,c\in[-7,7]`$ through depth twelve, signed affine
-certificates on a declared grid, and exact Mersenne phases through exponent
-256. These finite checks do not replace the infinite proofs.
+## Exact raw-clock statistics
+
+For odd $`q,c\in\mathbb Z_2`$, let $`B_h`$ count odd states in the
+first $`h`$ raw ticks. Under the invariant probability $`\nu`$ above,
+
+```math
+\mathbb E_\nu B_h=h/3,\qquad
+\operatorname{Var}_\nu B_h=\frac{2h}{27}
+ +\frac8{81}\bigl(1-(-1/2)^h\bigr).
+```
+
+For Haar initial data,
+$`\mathbb E_\mu B_h=h/3+(1-(-1/2)^h)/9`$.
+The number of legal length-$`h`$ words with $`b`$ ones is
+$`\binom{h-b+1}{b}`$, for $`0\le b\le\lceil h/2\rceil`$.
+Under either probability,
+
+```math
+\frac{B_h-h/3}{\sqrt{2h/27}}\Longrightarrow N(0,1).
+```
+
+The variables $`B_h/h`$ also satisfy a large-deviation principle with rate
+
+```math
+I(a)=(1-a)\log2+a\log a+(1-2a)\log(1-2a)
+ -(1-a)\log(1-a),\qquad 0\le a\le1/2,
+```
+
+with $`0\log0=0`$ and $`I(a)=+\infty`$ outside this interval.
+Its unique zero is $`a=1/3`$. Almost surely on $`\mathbb Z_2`$,
+the affine and division frequencies are $`1/3`$ and $`2/3`$;
+the 2-adic derivative exponent is $`(2/3)\log2`$.
+
+When $`q,c`$ are ordinary odd integers, every event $`E`$ depending
+on the first $`h`$ parity letters has the uniform bound
+
+```math
+\left|\frac{\#\{1\le n\le X:n\in E\}}X-\mu(E)\right|
+\le\frac{2^h}{X}.
+```
+
+Thus its fixed-depth natural density is the Haar probability. The central
+limit holds for uniform integer samples at any growing depth $`h(X)`$
+with $`2^{h(X)}/X\to0`$. These finite-prefix laws do not imply an
+infinite-orbit frequency or capture outcome for ordinary integer seeds.
+For example, at $`q=-1,c=1`$ every integer reaches zero and hence has
+limiting affine frequency zero, while the almost-sure 2-adic frequency
+for the same coefficients is $`1/3`$.
+The [statistics paper](tex/DyadicStatistics.tex) proves all these statements,
+including the boundary cases of the rate function and the joint-limit condition.
+
+## Proofs and implementation
+
+The 2-adic conjugacies, invariant measures, mixing, entropy, zeta, and
+statistical theorems have detailed written proofs in the two linked 2-adic
+papers; they are not Lean declarations. The Lean companion formalizes the
+signed integer results specified above.
+
+The Go tests check cylinder identities for odd $`q,c\in[-7,7]`$ through
+depth twelve, word counts and exact moments under both initial laws through
+depth sixteen, signed affine certificates on a declared grid, and Mersenne
+phases through exponent 256. Run them from the repository root with
+
+```sh
+CGO_ENABLED=0 go test ./QCD.DyadicDynamics.001/go
+make go GOFILE=QCD.DyadicDynamics.001/go/DyadicDynamics.go
+```
+
+Finite checks complement the written and formal proofs; they do not replace them.
