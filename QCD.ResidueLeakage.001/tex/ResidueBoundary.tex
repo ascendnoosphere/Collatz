@@ -344,6 +344,77 @@ Also \(256^t\le X\). Substitute these three bounds into the preceding
 finite estimate.
 \end{proof}
 
+% Two quarter-budget bounds close fixed-fraction descent with the raw logarithmic clock.
+\begin{theorem}[Fixed-fraction descent in logarithmic raw time]
+\label{thm:fractional}
+Fix a positive odd integer \(c\) and a real \(C\ge1\), and use the
+raw map \(T=F_{3,c,2}\). Put
+\[
+\begin{aligned}
+\rho&=243/256, & G&=(3/2)^8, & L&=\log(256/\beta),\\
+t_C&=\max\left(1,\left\lceil\frac{\log(4C)}{\log(1/\rho)}\right\rceil\right).
+\end{aligned}
+\]
+Let \(\mathcal E_{c,C}(X)\) count the positive integers \(n\le X\)
+for which there is no raw time
+\[
+0\le j\le\frac{16\log n}{\log G}\quad\text{with}\quad T^j(n)<n/C.
+\]
+For every integer \(X\ge\exp(Lt_C)\),
+\[
+\mathcal E_{c,C}(X)
+\le(4Cc+1+2/\beta)X^{1-\alpha},
+\qquad \alpha=\frac{\log(1/\beta)}L>0.
+\]
+In particular, for every fixed \(c,C\), density-one seeds reach a
+value less than their starting value divided by \(C\) in a logarithmic
+number of raw ticks. The bound is ordinary natural density, with
+explicit fixed-parameter constants.
+\end{theorem}
+
+\begin{proof}
+The depth-\(h\) offset for \((3,c,2)\) obeys
+\(C_{j+1}\le(3/2)C_j+c/2\), \(C_0=0\), because a return has delay
+zero or one. Induction gives
+\(C_h\le c((3/2)^h-1)\). For a good depth-\(8t\) word, therefore,
+\[
+H^{8t}(n)\le\rho^t n+cG^t.
+\]
+If \(t\ge t_C\), then \(\rho^t\le1/(4C)\). If also
+\(n\ge4CcG^t\), the offset is at most \(n/(4C)\). Hence
+\[
+H^{8t}(n)\le n/(2C)<n/C.
+\]
+Each first-division block takes at most two raw ticks, so this endpoint
+is reached at a raw time \(j\le16t\). Since \(C,c\ge1\), the same
+lower bound on \(n\) gives \(n\ge G^t\), and consequently
+\(j\le16\log n/\log G\). Both the endpoint bound and the clock bound
+hold for the same legal word and seed.
+
+Exactly one class modulo \(256^t\) realizes each marked word.
+Lemma~\ref{lem:binary} bounds the fraction of bad classes by \(\beta^t\).
+Each class contributes at most \(X/256^t+1\) seeds to \([1,X]\).
+Discarding the at most \(\lceil4CcG^t\rceil\) small seeds gives
+\[
+\mathcal E_{c,C}(X)
+\le 4CcG^t+1+\beta^t(X+256^t).
+\]
+Choose \(t=\lfloor\log X/L\rfloor\). The assumed threshold ensures
+\(t\ge t_C\). As in Corollary~\ref{cor:power},
+\[
+256^t\le X^{1-\alpha}\le X,
+\qquad \beta^t\le\beta^{-1}X^{-\alpha}.
+\]
+Since \(1<G<256\), also \(G^t\le X^{1-\alpha}\), and
+\(1\le X^{1-\alpha}\). Substitution proves the stated estimate.
+The exceptional fraction tends to zero since \(\alpha>0\).
+\end{proof}
+
+This theorem controls one fixed-factor stopping event, not capture of a
+fixed terminal value. The constants depend on \(c,C\), and the same
+counting argument cannot be reapplied along an adaptively selected
+trajectory without additional control of its selected descendants.
+
 At depth twelve the exact contracting-word counts are \(3302/4096\)
 for \(q=3\) and \(1586/4096\) for \(q=5\), both with \(c=1,D=2\).
 Both models have all \(4096\) marked words, with delay sum \(24576\)
@@ -354,8 +425,9 @@ these integer identities; they do not test an infinite predicate.
 
 \section{A non-coprime classification}
 
-The following existing affine-escape mechanism, also proved in
-\texttt{QCD.AffineEscape.001}, no longer assumes \(\gcd(q,D)=1\).
+The affine-escape mechanism below permits non-coprime parameters.
+It is also proved in the module
+\nolinkurl{QCD.AffineEscape.001/lean/AffineEscape.lean}.
 
 \begin{theorem}[Common-divisor obstruction]
 \label{thm:noncoprime}
@@ -422,8 +494,11 @@ of one ordered composition, not a complete orbit invariant.
 \section{Formal and computational companions}
 
 The modules \texttt{BoundaryDrift.lean} and \texttt{NonCoprime.lean}
-prove the tilted binary inequalities, closing constants, and
-common-divisor affine-tail classification. The existing
+prove the tilted binary inequalities, closing constants, the binary
+offset and endpoint envelopes, the quarter-budget fixed-fraction
+closing estimate, and common-divisor affine-tail classification.
+The complete fixed-fraction counting theorem and logarithmic raw-clock
+bound above are written proofs, not Lean declarations. The existing
 \texttt{ResidueCylinders.lean} proves legal source lifting, exact
 raw-clock recovery, and infinitely many divisions at \(m=D\).
 The marked shift conjugacy and density transfer in

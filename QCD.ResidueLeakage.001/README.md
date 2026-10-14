@@ -161,9 +161,36 @@ offset absorption and the simultaneous choice of depth and counting scale.
 bound, the good multiplier bound, the parameter restriction and the closing constants. It does
 not yet formalize the complete inverse-limit or integer-density theorem.
 
-Density-one descent does not imply that every classical seed reaches one:
-the exceptional set and the behavior of later descending states require
-additional control.
+### Fixed-fraction descent in logarithmic raw time
+
+Fix positive odd $`c`$ and $`C\ge1`$. Put
+
+```math
+\rho=243/256,\quad G=(3/2)^8,\quad L=\log(256/\beta),\quad
+ t_C=\max\bigl(1,\lceil\log(4C)/\log(1/\rho)\rceil\bigr).
+```
+
+Let $`\mathcal E_{c,C}(X)`$ count seeds $`n\le X`$ which have no raw
+endpoint below $`n/C`$ by time $`16\log n/\log G`$. For
+$`X\ge\exp(Lt_C)`$, the stronger stopping estimate is
+
+```math
+\mathcal E_{c,C}(X)\le(4Cc+1+2/\beta)X^{1-\alpha}.
+```
+
+A good depth-$`8t`$ word has endpoint at most $`\rho^t n+cG^t`$.
+For $`t\ge t_C`$ and $`n\ge4CcG^t`$, both terms are at most
+$`n/(4C)`$. The same seed reaches this endpoint in at most $`16t`$
+raw ticks, and $`n\ge G^t`$ gives the logarithmic clock bound.
+Choosing $`t=\lfloor\log X/L\rfloor`$ closes the interval count.
+The full argument is in `tex/ResidueBoundary.tex`.
+`BinaryOffsetEnvelope`, `BinaryEndpointEnvelope` and
+`FractionalEndpointDescent` formalize the finite closing estimates;
+the full counting and logarithmic-clock theorem is a written proof.
+
+Fixed-fraction descent does not imply that every classical seed reaches one:
+the exceptional set and the behavior of adaptively selected descending states
+require additional control.
 
 ## Prime-square nonunit family
 

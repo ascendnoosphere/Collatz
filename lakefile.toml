@@ -24,6 +24,7 @@ defaultTargets = [
   "CommonBaseGeneralHighOffsetRay",
   "ClassicalAbsorption",
   "AffineEscape",
+  "DyadicDynamics",
   "Homogeneous",
   "DependentHomogeneous",
   "UnitHomogeneous",
@@ -228,6 +229,10 @@ srcDir = "QCD.ClassicalRecovery.001/lean"
 [[lean_lib]]
 name = "AffineEscape"
 srcDir = "QCD.AffineEscape.001/lean"
+
+[[lean_lib]]
+name = "DyadicDynamics"
+srcDir = "QCD.DyadicDynamics.001/lean"
 
 [[lean_lib]]
 name = "Homogeneous"

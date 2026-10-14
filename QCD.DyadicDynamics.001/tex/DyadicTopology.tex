@@ -1,0 +1,379 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library: The Raw Dyadic Clock on the 2-Adic Integers}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For odd multiplier and odd offset the raw division-first map on the
+2-adic integers is conjugate to the golden-mean shift. We construct the
+inverse itinerary map, calculate every finite cylinder, and derive its
+invariant mixing probability, entropy, periodic-point counts, and zeta
+function. The first-division map has a different clock and a full binary
+coding. Even multipliers with odd offset instead give two fixed points,
+zero topological entropy, and an explicit classification of invariant
+probabilities. These are statements about compact 2-adic dynamics,
+separate from integer capture or Archimedean escape.
+\end{abstract}
+
+\section{Domain and continuity}
+
+Let \(\Z_2\) be the compact ring of 2-adic integers, with metric
+\(|x-y|_2\), and let \(\mu\) be its normalized additive Haar probability.
+For \(q,c\in\Z_2\), define
+\[
+T(x)=\begin{cases}x/2,&x\in2\Z_2,\\qx+c,&x\notin2\Z_2.\end{cases}
+\]
+The two domains are clopen. Division by two is continuous on
+\(2\Z_2\); multiplication and addition are continuous. Consequently
+\(T\) is a continuous self-map of \(\Z_2\), including when its
+coefficients are ordinary signed integers.
+All logarithms below are natural.
+
+\section{Odd coefficients and legal raw itineraries}
+
+Assume throughout this section that \(q,c\) are odd, meaning that both
+are units modulo two. Define the parity itinerary
+\[
+\Psi(x)_j=T^j(x)\bmod2\in\{0,1\},\qquad j\ge0.
+\]
+An odd state maps to an even state. Thus every itinerary belongs to
+\[
+\Sigma=\{s\in\{0,1\}^{\N}:s_j s_{j+1}=0\text{ for all }j\},
+\]
+the one-sided golden-mean shift. Write \(\sigma\) for left shift.
+
+% Inverse cylinders preserve terminal parity, which is needed for the final affine guard.
+\begin{theorem}[Constructive raw-clock conjugacy]
+\label{thm:conjugacy}
+The map \(\Psi:\Z_2\to\Sigma\) is a homeomorphism and
+\(\Psi T=\sigma\Psi\). For a legal word \(w\) of length \(h\ge1\),
+let \(a(w)\) count its zeros and let \(\delta(w)\) be one if its last
+letter is one, and zero otherwise. Its source cylinder \(C_w\) is a
+single 2-adic residue class of modulus \(2^{a(w)+\delta(w)}\), and
+\[
+\mu(C_w)=2^{-a(w)-\delta(w)}.
+\]
+Every depth-\(h\) cylinder has diameter at most
+\(2^{-\lfloor h/2\rfloor}\).
+\end{theorem}
+
+\begin{proof}
+The inverse branch functions are
+\[
+L_0(y)=2y,\qquad L_1(y)=(y-c)/q.
+\]
+The first is defined on all of \(\Z_2\) and yields an even predecessor.
+The second is used on even \(y\) and yields an odd predecessor, since
+\(q,c\) are odd. It is an isometry; \(L_0\) contracts distances by two.
+For \(w=w_0\cdots w_{h-1}\), put
+\[
+E_w=\begin{cases}2\Z_2,&w_{h-1}=1,\\\Z_2,&w_{h-1}=0,\end{cases}
+\qquad
+C_w=L_{w_0}\circ\cdots\circ L_{w_{h-1}}(E_w).
+\]
+If a nonfinal letter is one, its next letter is zero, and \(L_0\)
+ensures that its inverse input is even. The final constraint \(E_w\)
+ensures the same guard at a final one. Consequently every application
+is legal, and the resulting set is exactly the source cylinder.
+The affine composition has slope \(2^{a(w)}q^{-b(w)}\), where \(b(w)\)
+counts ones and \(q^{-b(w)}\) is a unit. Its image of \(E_w\) is
+therefore a coset of \(2^{a(w)+\delta(w)}\Z_2\), proving nonemptiness,
+the cylinder description, and its Haar measure.
+
+The cylinders for prefixes of any \(s\in\Sigma\) are nonempty nested
+compact sets. A legal word has at least \(\lfloor h/2\rfloor\) zeros,
+so their diameters tend to zero. Compactness gives an intersection and
+the diameter bound makes it a singleton. This constructs the inverse
+of \(\Psi\). Every finite itinerary condition is clopen, hence
+\(\Psi\) is continuous. A continuous bijection from the compact
+space \(\Z_2\) to the Hausdorff space \(\Sigma\) is a homeomorphism:
+images of closed sets are compact and hence closed. Finally, deleting
+the first itinerary letter is exactly one raw application of \(T\).
+\end{proof}
+
+For instance, the Haar measures of the cylinders for
+\(0,1,00,01,10\) are respectively \(1/2,1/2,1/4,1/4,1/2\).
+The word \(10\) and its first-letter
+prefix have the same cylinder, because an odd event forces a division.
+
+% Counting legal words determines entropy for a generating sequence of clopen partitions.
+\begin{corollary}[Entropy and periodic points]
+\label{cor:entropy}
+Put \(\varphi=(1+\sqrt5)/2\). The raw entropy is
+\[
+h_{\mathrm{top}}(T)=\log\varphi.
+\]
+For every \(h\ge1\), the number of 2-adic points fixed by \(T^h\) is
+\[
+\#\operatorname{Fix}(T^h)=\operatorname{tr}(A^h),\qquad
+A=\begin{pmatrix}1&1\\1&0\end{pmatrix}.
+\]
+In particular the counts at times \(1,2,3,4,5\) are \(1,3,4,7,11\).
+The Artin--Mazur zeta function on \(\Z_2\), as a formal power series, is
+\[
+\exp\left(\sum_{h\ge1}\frac{\#\operatorname{Fix}(T^h)}h z^h\right)
+=\frac1{1-z-z^2}.
+\]
+\end{corollary}
+
+\begin{proof}
+The number \(W_h\) of legal words satisfies
+\(W_0=1,W_1=2,W_h=W_{h-1}+W_{h-2}\), so \(W_h=F_{h+2}\).
+Its exponential growth rate is \(\varphi\), by the two roots
+\(\varphi\) and \(-1/\varphi\) of the recurrence.
+The parity cover joined over \(h\) raw steps has exactly \(W_h\)
+nonempty disjoint atoms. The shrinking-cylinder bound shows that every
+finite open cover is refined by a sufficiently long cylinder partition.
+Its successive joins are then refined by partitions whose lengths
+differ by a fixed constant. Their exponential growth rates coincide,
+proving the asserted topological entropy from the open-cover definition.
+
+A sequence fixed by \(\sigma^h\) is uniquely its length-\(h\) word,
+repeated forever. That word must also obey the last-to-first guard.
+Such cyclically legal words are the closed walks of length \(h\)
+in the two-vertex graph with adjacency matrix \(A\), counted with
+their specified initial vertex by \(\operatorname{tr}(A^h)\).
+The conjugacy proves the periodic-point formula, including points
+whose primitive period divides \(h\). The eigenvalues of \(A\)
+are \(\varphi,-1/\varphi\), so the formal identity
+\(\sum_{h\ge1}\lambda^h z^h/h=-\log(1-\lambda z)\) gives
+\(\det(I-zA)^{-1}=(1-z-z^2)^{-1}\).
+\end{proof}
+
+\section{An invariant mixing probability}
+
+% Stationary density is computed using both inverse branches and their different clocks.
+\begin{theorem}[Invariant mixing law]
+\label{thm:measure}
+The probability \(\nu\) defined by
+\[
+\frac{d\nu}{d\mu}(x)=
+\begin{cases}4/3,&x\text{ even},\\2/3,&x\text{ odd}\end{cases}
+\]
+is \(T\)-invariant and mixing. Under its itinerary coding the process
+is the stationary Markov chain with
+\[
+\pi=(2/3,1/3),\qquad
+P=\begin{pmatrix}1/2&1/2\\1&0\end{pmatrix}.
+\]
+Its parity-block Shannon entropy rate is \((2/3)\log2\).
+\end{theorem}
+
+\begin{proof}
+The density integrates to one. For any Borel set \(B\), the division
+preimage \(2B\) has Haar measure \(\mu(B)/2\). The affine preimage
+in the odd branch has Haar measure \(\mu(B\cap2\Z_2)\), since
+multiplication by the odd unit \(q\) and translation preserve Haar
+measure and biject that branch onto \(2\Z_2\). Thus
+\[
+\nu(T^{-1}B)=\frac23\mu(B)+\frac23\mu(B\cap2\Z_2)=\nu(B).
+\]
+
+For a legal word, Theorem~\ref{thm:conjugacy} gives its Haar measure.
+The identity
+\(a(w)+\delta(w)=1+\#\{j<h-1:w_j=0\}\) then gives
+\[
+\nu(C_w)=\pi_{w_0}\prod_{j=0}^{h-2}P_{w_j,w_{j+1}}.
+\]
+This proves the entire stationary Markov law, not just its marginals.
+Let \(\Pi\) have both rows equal to \(\pi\). Direct multiplication
+shows \(P=\Pi-\tfrac12(I-\Pi)\), \(\Pi^2=\Pi\), and hence
+\[
+P^r=\Pi+(-1/2)^r(I-\Pi),\qquad r\ge0.
+\]
+The joint probability of two separated finite cylinders therefore
+converges to the product, with error bounded by a constant times
+\(2^{-r}\) for their separation \(r\). Finite unions of cylinders
+approximate every Borel set in \(\nu\)-measure: the class of sets
+approximable in symmetric difference by this algebra is a sigma-algebra
+and contains the cylinders, which generate the topology. Approximate
+two arbitrary Borel sets first, use invariance to control the shifted
+approximation error, and then take separation to infinity. This proves
+mixing. Finally the chain rule gives, for \(h\ge1\),
+\[
+H_\nu(w_0,\ldots,w_{h-1})=H(\pi)+(h-1)\frac23\log2.
+\]
+The odd row is deterministic and the even row has two equal choices;
+dividing by \(h\) proves the entropy-rate formula.
+\end{proof}
+
+Every invariant Borel probability for \(T\) corresponds, by \(\Psi\),
+to a shift-invariant Borel probability on \(\Sigma\), and conversely.
+This includes the Dirac mass at zero and the uniform masses on the
+finite cycles. An invariant mixing probability need not be the only
+invariant probability.
+
+% The Perron weights give a sharp entropy bound and an equality certificate.
+\begin{theorem}[Maximal entropy]
+\label{thm:maximal}
+The unique invariant probability of maximal metric entropy has itinerary
+transition matrix and stationary distribution
+\[
+P_*=
+\begin{pmatrix}\varphi^{-1}&\varphi^{-2}\\1&0\end{pmatrix},
+\qquad
+\pi_*=\left(\frac{\varphi^2}{\varphi^2+1},
+\frac1{\varphi^2+1}\right).
+\]
+Its entropy is \(\log\varphi\).
+\end{theorem}
+
+\begin{proof}
+Take the positive vector \(v=(\varphi,1)\), so \(Av=\varphi v\),
+and put \((P_*)_{ij}=A_{ij}v_j/(\varphi v_i)\).
+This gives the displayed stochastic matrix; solving \(\pi_*P_*=\pi_*\)
+and normalizing gives the displayed distribution.
+For any stationary process on \(\Sigma\), let \(r_i\) be its
+conditional distribution of the next letter given the current letter
+\(i\), ignoring rows of zero stationary mass. The nonnegativity of
+relative entropy gives
+\[
+H(X_1\mid X_0)\le
+\sum_{i,j}\Pr(X_0=i,X_1=j)(-\log(P_*)_{ij})
+=\log\varphi.
+\]
+Only allowed edges occur. On them,
+\(-\log(P_*)_{ij}=\log\varphi+\log v_i-\log v_j\),
+and stationarity cancels the last two expected values.
+Relative entropy is nonnegative by \(\log u\le u-1\), and equality
+requires \(r_i=(P_*)_{i\cdot}\) in every positive-mass row.
+The entropy rate is at most \(H(X_1\mid X_0)\), since conditioning
+on more past letters cannot increase entropy. If the rate is
+\(\log\varphi\), every finite conditional entropy must equal this
+one-step conditional entropy. Its difference is an averaged relative
+entropy; its vanishing forces all finite conditional laws to depend
+only on the last letter. Thus the process is Markov with transition
+matrix \(P_*\). Its stationary distribution is uniquely \(\pi_*\),
+and its finite cylinder probabilities are uniquely determined.
+Conversely that Markov law attains the bound by the same calculation.
+
+For completeness, the parity-block entropy rate is the full metric
+entropy here. The parity partition is a finite generator by the
+shrinking-cylinder theorem. If \(\mathcal R\) is any finite measurable
+partition, approximate its atoms by unions of depth-\(k\) cylinders.
+The probability of a mismatched atom can be made arbitrarily small;
+its conditional entropy is at most the binary entropy of that mismatch
+plus its probability times the logarithm of the number of atoms.
+The chain rule bounds the entropy rate of \(\mathcal R\) by the
+cylinder-partition rate plus this conditional entropy. Letting the
+mismatch tend to zero proves the generator assertion. Transport by
+\(\Psi\) completes the theorem for \(T\) itself.
+\end{proof}
+
+\section{The first-division clock}
+
+For odd \(q,c\), define instead
+\[
+H(x)=\begin{cases}x/2,&x\text{ even},\\(qx+c)/2,&x\text{ odd}.\end{cases}
+\]
+One application of \(H\) takes one raw tick at an even source and two
+raw ticks at an odd source. Its inverse branches
+\(y\mapsto2y\) and \(y\mapsto(2y-c)/q\) both contract by two and
+are defined for every \(y\in\Z_2\). The same nested-cylinder argument
+therefore conjugates \(H\) to the full binary shift. Each depth-\(h\)
+cylinder has Haar measure \(2^{-h}\), so \(H\) preserves Haar and
+its marks are independent fair bits under Haar. For the raw clock,
+a one must be followed by zero; these inserted division ticks explain
+the stationary frequencies \(2/3,1/3\) and the golden-mean word count.
+
+\section{Even multipliers and odd offsets}
+
+% The fixed-set classification uses convergence for every point, not a finite sample.
+\begin{theorem}[Contractive odd branch]
+\label{thm:even}
+Let \(q\in2\Z_2\) and let \(c\) be odd. Put
+\(a=-c/(q-1)\), an odd 2-adic integer. Every nonzero seed converges
+to \(a\); zero is fixed. The invariant Borel probabilities are exactly
+\[
+\lambda\delta_0+(1-\lambda)\delta_a,\qquad 0\le\lambda\le1.
+\]
+The topological entropy is zero, and every invariant probability has
+metric entropy zero. The only periodic points are the two fixed points
+\(0,a\). Consequently \(\#\operatorname{Fix}(T^h)=2\) for every
+\(h\ge1\), and the 2-adic Artin--Mazur zeta function is
+\((1-z)^{-2}\).
+\end{theorem}
+
+\begin{proof}
+Every nonzero \(x\in\Z_2\) has finite valuation and reaches an odd
+anchor \(u\) after that many divisions. Since \(q\) is even and
+\(c\) odd, the odd branch stays odd. Its exact affine formula is
+\(T^j(u)=a+q^j(u-a)\). As \(|q|_2\le1/2\), it converges to \(a\),
+including the constant case \(q=0\). A finite periodic orbit with a
+limit must be constant: each of its finitely many states occurs along
+a subsequence and therefore equals that limit. Every nonzero periodic
+point is thus \(a\), and zero is fixed. Both are distinct because
+\(a\) is odd. The periodic counts are two, and the formal identity
+\(\exp(\sum_{h\ge1}2z^h/h)=(1-z)^{-2}\) gives the zeta function.
+
+Let \(K=\{0,a\}\) and let \(f(x)\) be the metric distance from \(x\)
+to \(K\). This is bounded, continuous, nonnegative, and tends to zero
+along every orbit. For an invariant probability \(\eta\), invariance
+and bounded convergence give
+\(\int f\,d\eta=\int f\circ T^j\,d\eta\to0\).
+It follows that \(\eta(K)=1\): each set \(\{f\ge1/r\}\) has measure
+zero, and their union is the complement of \(K\). Both points are
+fixed, so every and only the displayed mixtures are invariant. Their
+metric entropy is zero, since every measurable partition has constant
+names at these fixed points.
+
+To bound topological entropy, fix the partition into residue classes
+modulo \(2^k\). A seed whose first odd state occurs at time \(r<N\)
+has all of its first \(N\) residue names determined by \(r\) and its
+odd anchor modulo \(2^k\). The prior states are dyadic multiples of
+that anchor, and the subsequent affine branch never enlarges 2-adic
+distances. This gives at most \(N2^{k-1}\) names. Seeds divisible by
+\(2^N\) have names determined by their quotient modulo \(2^k\),
+giving at most \(2^k\) further names. Thus the count is at most
+\((N+1)2^k\), which has zero exponential rate. Residue partitions
+refine every finite open cover for sufficiently large \(k\), proving
+zero topological entropy.
+\end{proof}
+
+\section{Scope and exact finite checks}
+
+All topological, invariant-measure, mixing, entropy, and 2-adic zeta
+statements in this article have written proofs, not Lean declarations.
+The exact finite implementation \cite{DyadicCode26} checks legal raw
+word counts and cylinder sizes on declared signed integer parameter
+ranges. A periodic 2-adic point need not be an ordinary integer.
+Neither the shift conjugacy nor its rational zeta function settles
+integer cycle finiteness, natural-density capture, or real-magnitude
+escape for odd multipliers.
+
+\bibliographystyle{amsalpha}
+\bibliography{DyadicReferences}
+\end{document}

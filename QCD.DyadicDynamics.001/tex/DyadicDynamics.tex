@@ -1,0 +1,310 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library: Signed Dyadic Affine Tails and Exact Cycles}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For the division-first integer map with divisor two, opposite-parity
+coefficients make the odd branch invariant. A translated integer coordinate
+then gives a complete signed escape/fixed-tail classification for multipliers
+of magnitude at least two. We determine its exceptional basins, retain the
+initial division clock, and classify all even multipliers with offset one.
+The unit multiplier has an exact ceiling-halving return and logarithmic
+capture bound. Mersenne multipliers give a primitive cycle through one with
+one affine step and precisely the prescribed number of divisions.
+\end{abstract}
+
+\section{Domain and raw clock}
+
+Fix integers \(q,c\), and define
+\[
+T_{q,c}(n)=
+\begin{cases}
+n/2,&2\mid n,\\
+qn+c,&2\nmid n.
+\end{cases}
+\]
+Division takes precedence, including at zero, so zero is always fixed.
+An orbit escapes in magnitude when \(|T^j(n)|\to\infty\) as \(j\to\infty\)
+along every raw time, not just a subsequence. All divisibility assertions
+in this article are in \(\Z\).
+
+% The odd guard is proved together with the affine formula; no branch is discarded.
+\begin{lemma}[Exact odd tail]
+\label{lem:tail}
+Suppose \(q+c\) is odd. Every nonzero integer has a unique expression
+\(n=2^k u\), with \(k\ge0\) and \(u\) odd. The first \(k\) raw steps are
+divisions, and for every \(j\ge0\),
+\[
+T^{k+j}(n)=q^j u+c\sum_{i=0}^{j-1}q^i.
+\]
+Every state at or after time \(k\) is odd. If \(q\ne1\), then
+\begin{equation}
+\label{eq:shift}
+(q-1)T^{k+j}(n)+c=q^j\bigl((q-1)u+c\bigr).
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Repeated exact halving terminates on a nonzero integer because absolute
+value strictly decreases at each such division. The number of halvings is
+\(k=v_2(|n|)\). Uniqueness follows because an equality
+\(2^k u=2^\ell v\), with \(k<\ell\), would make \(u\) even.
+For odd \(x\), reduction modulo two gives \(qx+c\equiv q+c\equiv1\).
+The guard therefore remains odd forever once \(u\) is reached.
+Induction in the recurrence \(x_{j+1}=qx_j+c\) gives the displayed sum.
+The identity \((q-1)\sum_{i<j}q^i=q^j-1\), proved by telescoping,
+gives \eqref{eq:shift}. All these steps have their original raw clock.
+\end{proof}
+
+% The vanished shift is the only exceptional case, rather than an assumption of escape.
+\begin{theorem}[Signed classification]
+\label{thm:signed}
+Suppose \(q+c\) is odd and \(|q|\ge2\). For \(n=2^k u\ne0\) as above,
+put \(b=(q-1)u+c\).
+\begin{enumerate}[label=(\roman*)]
+\item If \(b=0\), the orbit is constantly \(u\) after time \(k\).
+\item If \(b\ne0\), the full raw orbit escapes in magnitude, and
+\[
+\lim_{j\to\infty}\frac{|T^{k+j}(n)|}{|q|^j}
+=\left|u+\frac{c}{q-1}\right|>0.
+\]
+\item The only periodic points are zero and the odd integer
+\(u_*=-c/(q-1)\), if that quotient is an odd integer.
+The basin of \(u_*\) is exactly
+\(\{2^k u_*:k\ge0\}\); the basin of zero is \(\{0\}\).
+\end{enumerate}
+If \(q<0\), every escaping tail eventually alternates signs.
+If \(q>0\), its eventual sign is the sign of \(u+c/(q-1)\).
+\end{theorem}
+
+\begin{proof}
+The integer \(q-1\) is nonzero. If \(b=0\), equation \eqref{eq:shift}
+forces every tail state to equal \(u\). Otherwise it gives
+\[
+T^{k+j}(n)=q^j\left(u+\frac{c}{q-1}\right)-\frac{c}{q-1}.
+\]
+The first term has magnitude tending to infinity and the second is fixed.
+Dividing absolute values by \(|q|^j\) proves the limit. Removing a finite
+prefix preserves full-sequence escape. The eventual-sign conclusions
+follow from the same formula, with a fixed nonzero leading coefficient.
+
+A periodic nonzero orbit must equal a fixed odd tail: a positive number
+of initial divisions cannot belong to an orbit whose later states are
+all odd. The equation for that fixed tail is \((q-1)u+c=0\).
+Conversely every stated dyadic multiple executes its halving prefix and
+then stays fixed. No other odd anchor reaches the fixed tail, since its
+nonzero shift is multiplied by nonzero powers of \(q\).
+Every nonzero trajectory has only nonzero initial divisions and an odd
+tail, so none reaches zero. This proves both basin assertions.
+\end{proof}
+
+% Positivity selects the expanding side of the shifted affine line.
+\begin{corollary}[Two all-positive escape families]
+If \(q\ge2,c\ge1\), \(q\) is even, and \(c\) is odd, every positive
+seed escapes to \(+\infty\). The same holds for \(q=3\) and every
+nonnegative even offset \(c\).
+\end{corollary}
+
+\begin{proof}
+The coefficients have opposite parity. For a positive odd anchor \(u\),
+\((q-1)u+c>0\) in the first case and \(2u+c>0\) in the second.
+Theorem~\ref{thm:signed} applies and gives a positive leading coefficient.
+\end{proof}
+
+% The divisibility of one determines the entire even-multiplier exception set.
+\begin{corollary}[All even multipliers with offset one]
+For every even integer \(q\) with \(|q|\ge2\), the only nonzero
+non-escaping seeds are \(-2^k\), \(k\ge0\), when \(q=2\).
+They reach the fixed point \(-1\). For all other such even \(q\),
+every nonzero signed seed escapes in magnitude. All positive seeds
+escape for every even \(q\ge2\).
+\end{corollary}
+
+\begin{proof}
+An integral exceptional anchor would require \(q-1\mid1\).
+The possibilities are \(q=0\) or \(q=2\), and the magnitude assumption
+excludes zero. For \(q=2\), the anchor is \(-1\).
+The basin and positivity assertions follow from Theorem~\ref{thm:signed}.
+\end{proof}
+
+% A target exponent is recovered by decreasing exact quotients, not forward orbit search.
+\begin{theorem}[Polynomial-time reachability]
+\label{thm:reachability}
+Suppose \(q,c\in\Z\), \(q+c\) is odd, and \(|q|\ge2\).
+Given signed integers \(n,m\), both reachability of \(m\) from \(n\)
+and eventual periodicity of \(n\) are decidable. With binary input,
+these decisions take polynomial bit time, uniformly in the coefficients
+and both seeds.
+\end{theorem}
+
+\begin{proof}
+If \(n=0\), its only reachable value is zero, and it is periodic.
+Otherwise extract \(n=2^k u\) and check each value \(n/2^i\),
+\(0\le i\le k\), for equality with \(m\). This checks the entire
+initial division prefix. Put \(b=(q-1)u+c\) and \(e=(q-1)m+c\).
+If \(b=0\), the subsequent orbit is fixed at \(u\), which was
+already checked. If \(b\ne0\), equation~\eqref{eq:shift} shows that
+\(m\) occurs in the tail if and only if
+\[
+e=q^j b\quad\text{for some integer }j\ge0.
+\]
+Necessity follows from that equation. Conversely, the equation forces
+\(m=T^{k+j}(n)\), since multiplication by the nonzero integer
+\(q-1\) is injective. Thus it recovers a legal raw state, not just a
+formal affine value.
+If \(e=0\), the equation is impossible. Otherwise start at \(r=e\).
+Check \(r=b\); if unequal and \(q\mid r\), replace \(r\) by
+\(r/q\) and repeat. If \(q\nmid r\), stop with a negative answer.
+Each division decreases nonzero magnitude by a factor at least two.
+Hence every possible exponent is checked in finitely many steps.
+Eventual periodicity is exactly the condition \(n=0\) or \(b=0\),
+by Theorem~\ref{thm:signed}.
+
+Let \(L\) be the sum of the binary lengths of \(q,c,n,m\), with
+one bit allowed for zero and a separate sign bit. The extraction uses
+at most \(L\) halvings. Products forming \(b,e\) have at most
+\(O(L)\) bits, and the target-quotient loop uses at most \(O(L)\)
+divisions on integers of at most \(O(L)\) bits. Ordinary schoolbook
+multiplication and division use \(O(L^2)\) bit operations at these
+sizes. Thus \(O(L^3)\) bit operations suffice. No step searches an
+unbounded forward orbit. This is a written algorithmic proof, not an
+additional Lean declaration.
+\end{proof}
+
+\section{The three small multipliers}
+
+% The return is an exact integer operation and has a two-tick ceiling bound.
+\begin{theorem}[Unit multiplier capture and its clock]
+\label{thm:unit}
+For \(q=c=1\), every positive seed reaches one. If \(n\ge1\), it
+reaches one in at most \(2\lceil\log_2 n\rceil\) raw steps.
+The only positive primitive cycle is \(1,2\).
+Every negative seed reaches zero.
+\end{theorem}
+
+\begin{proof}
+For a positive seed define a return block by
+\[
+H(n)=\begin{cases}n/2,&n\text{ even},\\(n+1)/2,&n\text{ odd}.
+\end{cases}
+\]
+The even block takes one raw tick; the odd block takes two, because
+\(n+1\) is even. In both cases \(H(n)=\lceil n/2\rceil\).
+For \(n>1\), this is a smaller positive integer, which already proves
+capture by induction. More exactly,
+\[
+H^h(n)=\left\lceil\frac{n}{2^h}\right\rceil.
+\]
+To justify induction in this formula, for any real \(x\) and positive
+integer \(m\), an integer \(r\) satisfies
+\(mr\ge\lceil x\rceil\) if and only if \(mr\ge x\).
+Thus \(\lceil\lceil x\rceil/m\rceil=\lceil x/m\rceil\).
+Taking \(h=\lceil\log_2 n\rceil\) gives \(H^h(n)=1\), and at most
+\(2h\) raw ticks suffice. Since \(1\mapsto2\mapsto1\), any positive
+cycle must be this primitive cycle.
+
+If \(n<0\), an even step halves its magnitude, and an odd step sends
+\(n\) to \(n+1\). The state stays nonpositive and its absolute value
+strictly decreases until zero. Zero is fixed.
+\end{proof}
+
+% Constant and reflected affine branches have separate terminal cases.
+\begin{theorem}[Constant and reflection multipliers]
+For \(q=0,c=1\), every nonzero signed seed reaches the fixed point one.
+For \(q=-1,c=1\), every signed seed reaches zero, and every nonzero
+seed visits one before reaching zero. Zero is the only periodic point
+in the reflection case.
+\end{theorem}
+
+\begin{proof}
+For \(q=0\), the initial divisions reach an odd integer, which maps to
+one; one is odd and maps to itself.
+For \(q=-1\), an even nonzero state halves its absolute value. An odd
+state \(n\) first maps to the even integer \(1-n\), and then to
+\((1-n)/2\). If \(|n|\ge3\), this return has magnitude at most
+\((|n|+1)/2<|n|\). Integer descent therefore enters \(\{-1,0,1\}\).
+The terminal paths are \(-1\mapsto2\mapsto1\mapsto0\) and
+\(1\mapsto0\). An even nonzero state cannot map directly to zero;
+the only odd preimage of zero is one. Thus every nonzero path visits
+one, and every periodic orbit is the fixed point zero.
+\end{proof}
+
+\section{Mersenne excursions}
+
+% Distinct powers of two establish primitivity rather than closure alone.
+\begin{theorem}[Primitive cycle through one]
+\label{thm:mersenne}
+Let \(k\ge1\), \(q=2^k-1\), and \(c=1\). The orbit of one is
+\[
+1\longmapsto2^k\longmapsto2^{k-1}\longmapsto\cdots
+\longmapsto2\longmapsto1.
+\]
+Its primitive raw period is \(k+1\). Precisely,
+\(T^{j+1}(1)=2^{k-j}\) for \(0\le j\le k\).
+For \(k=0\), the multiplier is zero and one is fixed.
+\end{theorem}
+
+\begin{proof}
+The first step is affine and equals \((2^k-1)\cdot1+1=2^k\).
+All subsequent states before return are positive even powers of two,
+so division is the legal branch. There are exactly \(k\) divisions.
+Each state at times \(1,\ldots,k\) is greater than one; hence no earlier
+positive time closes the orbit. This proves primitivity. The case
+\(k=0\) is the constant multiplier case already computed.
+\end{proof}
+
+For example, \(q=3,7,15\) give primitive raw periods \(3,4,5\).
+The statement specifies the cycle through one and does not classify
+other cycles of odd multipliers.
+
+\section{Formal statements and exact computation}
+
+The companion \texttt{lean/DyadicDynamics.lean} \cite{DyadicCode26}
+proves odd guard propagation, the signed division prefix, the integer
+shift identity, full-sequence magnitude escape, fixed-tail recovery,
+and the signed all-seed dichotomy. Its positive natural-number
+\texttt{UnitCapture} theorem proves capture of one for \(q=c=1\),
+and its Mersenne theorems prove every phase, closure, and primitive
+period. The logarithmic bound and the constant/reflection statements
+have the detailed written proofs above; they are not additional Lean
+declarations in that companion.
+The Go checks use exact integer arithmetic and finite declared ranges;
+they test the formulas and clocks, rather than supply the infinite proofs.
+
+\bibliographystyle{amsalpha}
+\bibliography{DyadicReferences}
+\end{document}

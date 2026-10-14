@@ -5,6 +5,7 @@ import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.FieldSimp
 
 set_option autoImplicit false
 
@@ -82,6 +83,43 @@ theorem ClassicalClosingConstants :
     (0 : ℝ) < 243 / 256 ∧ (243 / 256 : ℝ) < 1 ∧
       (0 : ℝ) < 65536 / 84375 ∧ (65536 / 84375 : ℝ) < 1 := by
   norm_num
+
+/-- The binary offset envelope solves the worst-case affine recurrence at every depth. -/
+theorem BinaryOffsetEnvelope (c : ℝ) (offset : ℕ → ℝ) (hzero : offset 0 = 0)
+    (hstep : ∀ j, offset (j + 1) ≤ (3 / 2 : ℝ) * offset j + c / 2) (h : ℕ) :
+    offset h ≤ c * ((3 / 2 : ℝ) ^ h - 1) := by
+  induction h with
+  | zero => { simp [hzero] }
+  | succ h ih => {
+      have hs := hstep h
+      rw [pow_succ]
+      nlinarith
+    }
+
+/-- Good words carry a seed-linear contraction and a seed-independent offset bound. -/
+theorem BinaryEndpointEnvelope (t a : ℕ) (ha : a ≤ 5 * t) (n c E : ℝ)
+    (hn : 0 ≤ n) (hc : 0 ≤ c)
+    (he : E ≤ 3 ^ a / (2 : ℝ) ^ (8 * t) * n +
+      c * ((3 / 2 : ℝ) ^ (8 * t) - 1)) :
+    E ≤ (243 / 256 : ℝ) ^ t * n + c * ((3 / 2 : ℝ) ^ 8) ^ t := by
+  have hs := ClassicalGoodMultiplier t a ha
+  have hm := mul_le_mul_of_nonneg_right hs hn
+  simp only [pow_mul] at he hm
+  linarith
+
+/-- Two independently controlled terms give an arbitrary fixed-fraction descent. -/
+theorem FractionalEndpointDescent (C n E slope offset : ℝ) (hC : 0 < C)
+    (hn : 0 < n) (hs : slope ≤ 1 / (4 * C)) (ho : offset ≤ n / (4 * C))
+    (he : E ≤ slope * n + offset) : E < n / C := by
+  have hmul := mul_le_mul_of_nonneg_right hs hn.le
+  have hfirst : E ≤ n / (2 * C) := by
+    have hidentity : 1 / (4 * C) * n + n / (4 * C) = n / (2 * C) := by
+      field_simp; ring
+    linarith
+  have hstrict : n / (2 * C) < n / C := by
+    apply div_lt_div_of_pos_left hn hC
+    linarith
+  exact lt_of_le_of_lt hfirst hstrict
 
 /-- From divisor three onward, the least full-cycle multiplier cannot have negative drift. -/
 theorem ThreeSquareGrowth (D : ℕ) (hD : 3 ≤ D) :
