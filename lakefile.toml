@@ -83,6 +83,9 @@ defaultTargets = [
   "MirrorSign",
   "ThreeAffineClosure",
   "ThreeAffineLegal",
+  "ClassicalThreeReturn",
+  "ClassicalCoalescence",
+  "TerminalConverse",
   "RecursiveClose",
   "NoCrossing",
   "ParentRise",
@@ -465,6 +468,18 @@ srcDir = "QCD.ThreeAffineClosure.001/lean"
 [[lean_lib]]
 name = "ThreeAffineLegal"
 srcDir = "QCD.ThreeAffineClosure.001/lean"
+
+[[lean_lib]]
+name = "ClassicalThreeReturn"
+srcDir = "QCD.ThreeAffineClosure.001/lean"
+
+[[lean_lib]]
+name = "ClassicalCoalescence"
+srcDir = "QCD.ClassicalCoalescence.001/lean"
+
+[[lean_lib]]
+name = "TerminalConverse"
+srcDir = "QCD.ClassicalCoalescence.001/lean"
 
 [[lean_lib]]
 name = "RecursiveClose"

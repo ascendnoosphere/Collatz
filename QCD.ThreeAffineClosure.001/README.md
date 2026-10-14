@@ -88,3 +88,34 @@ $`\Delta x=B`$ and the rotated identities without imposing positivity or
 oddness. The legal criterion is a separate stronger statement for the
 positive odd class. It supplies no uniform bound on $`K`$ or classification
 of all three-letter parameter words.
+
+## Classical closures with at most five odd states
+
+For the classical multiplier $`q=3`$, let $`1\le r\le5`$ and suppose
+positive odd states satisfy cyclic equations
+
+```math
+2^{a_i}x_{i+1}=3x_i+1,\qquad a_i\ge1.
+```
+
+Then every $`x_i=1`$ and every $`a_i=2`$. This permits repeated traversals
+of the unit cycle; it does not call a repeated word primitive.
+
+If no state equals one, all states are at least three. Multiplying the
+edge equations puts $`2^{\sum a_i}`$ in
+$`(3^r,(10/3)^r]`$. For $`r=1,2,4`$, that window contains no power of
+two. For $`r=3`$ it forces total exponent five; all six positive
+compositions fail the required divisibility by five. For $`r=5`$ it
+forces total exponent eight; all 35 positive compositions fail
+ordered numerator divisibility by thirteen. The detailed proof gives
+seven cyclic representatives and proves they exhaust the 35 cases.
+
+[Complete three-edge formal classification](lean/ClassicalThreeReturn.lean) ·
+[Written at-most-five classification](tex/ThreeAffineClosure.tex)
+
+The Lean file also proves five-edge elimination and the failure of all
+35 exponent-eight compositions. The five-edge product window and the
+full at-most-five statement are written proofs, not additional Lean
+classification declarations. In the classified closures, shortcut
+length is $`2r`$ and raw length is $`3r`$; the primitive lengths remain
+two and three respectively. Arbitrary positive cycles are not classified.

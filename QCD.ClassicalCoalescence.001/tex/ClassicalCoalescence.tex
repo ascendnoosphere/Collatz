@@ -1,0 +1,396 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Classical Parent Joins and Terminal Words}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We give exact smaller-parent certificates for the classical shortcut map,
+including certificates whose meeting point lies above the original seed.
+Four elementary rules reduce capture to an explicitly described residual
+set of natural density \(1/12\). Three further legal words reduce that set
+to density \(11/216\), with uniform contraction of the parent labels.
+We also give an exact valuation budget for repetitions of any fixed word
+and classify terminal powers within the initial prefix \(1^a01\).
+Every reduction retains both orbit clocks and the strict parent inequality.
+These results do not assert capture for the remaining residual seeds.
+\end{abstract}
+
+\section{Clocks and joins}
+
+Throughout, the domain is the positive integers and
+\[
+T(n)=\begin{cases}n/2,&2\mid n,\\(3n+1)/2,&2\nmid n.\end{cases}
+\]
+A word records the parity of the input at each shortcut tick: \(1\) is the
+odd branch and \(0\) is the even branch. A legal word of length \(h\) with
+\(r\) odd letters expands to \(h+r\) division-first raw ticks.
+The target shortcut cycle is \(1\to2\to1\).
+
+% Join recovery must allow the parent to have reached one before the meeting.
+\begin{lemma}[Join recovery]
+If \(T^b(n)=T^c(p)\) and \(p\) reaches \(1\), then \(n\) reaches \(1\).
+If, in addition, \(T^d(p)=T^e(q)\), then
+\[
+T^{b+d}(n)=T^{c+e}(q).
+\]
+\end{lemma}
+\begin{proof}
+Choose \(k\) with \(T^k(p)=1\). If \(c\le k\), another \(k-c\) steps from
+the meeting point reach \(1\). If \(c>k\), the meeting point is \(1\) or
+\(2\), since the target cycle is invariant; zero or one further steps
+reach \(1\). This proves the first assertion without comparing the
+meeting time to the first arrival time. Applying \(T^d\) to the first
+join and \(T^c\) to the second proves the displayed composition identity.
+\end{proof}
+
+Thus any rule assigning \(1\le p<n\) and a legal join permits strong
+induction on the original integer label. A join alone, without this
+inequality, does not furnish that induction step.
+
+\section{An explicit residual set}
+
+For odd \(n\), write uniquely
+\[
+n=2^a u-1,\qquad a=v_2(n+1)\ge1,\qquad u>0\text{ odd}.
+\]
+Set
+\[
+\mathcal R=\{2^a u-1:a\ge2,\ u>0\text{ odd},\ 3\nmid u,
+                         \ 3^a u\equiv3\pmod4\}.
+\]
+
+% The four rules are ordered so their failure determines exactly the residual class.
+\begin{theorem}[Four parent rules]
+Every \(n>1\) outside \(\mathcal R\) has a positive parent \(p<n\) with
+\(5p\le4n\) and an explicit join. Apply these rules in order:
+\begin{enumerate}[label=\arabic*.]
+\item If \(n\) is even, take \(p=n/2\), so \(T(n)=p\).
+\item If \(n\equiv1\pmod4\), take \(p=(3n+1)/4\), so \(T^2(n)=p\).
+\item If \(n\equiv2\pmod3\), take \(p=(2n-1)/3\), so \(T(p)=n\).
+\item If \(a\ge2\) and \(3^a u\equiv1\pmod4\), take
+\(p=2^{a-1}u-1\), so \(T^{a+2}(n)=T^{a+1}(p)\).
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+The first identity and inequality are immediate. In the second case,
+\(n>1\) implies \(n\ge5\); the first output is even and
+\(5(3n+1)\le16n\). In the third case, the quotient is a positive odd
+integer, \(3p+1=2n\), and \(p<2n/3\).
+
+For the fourth rule the exact initial odd run is
+\[
+T^j(n)=3^j2^{a-j}u-1\quad(0\le j\le a).
+\]
+For \(j<a\) the input is odd, which proves the formula inductively;
+the endpoint at \(j=a\) is even. The assumed congruence gives two even
+steps from that endpoint, so
+\[
+T^{a+2}(n)=\frac{3^a u-1}{4}.
+\]
+The parent's initial run has length \(a-1\). Its endpoint is
+\(3^{a-1}u-1\), congruent to \(2\) modulo \(4\). One even step and one
+odd step therefore give
+\[
+T^{a+1}(p)=\frac{3(3^{a-1}u-1)+2}{4}
+          =\frac{3^a u-1}{4}.
+\]
+The parent is positive because \(a\ge2\), and \(2p=n-1\).
+If rules one and two fail, \(a\ge2\). If rule three also fails, then
+\(3\nmid u\), since \(3\mid u\) would imply \(n\equiv2\pmod3\).
+The odd integer \(3^a u\) is \(1\) or \(3\) modulo \(4\); failure of the
+fourth rule leaves precisely \(\mathcal R\).
+\end{proof}
+
+\section{Three further residual certificates}
+
+% These are coefficient identities on entire cylinders, not representative tests.
+\begin{lemma}[Three cylinder identities]
+For every integer \(t\ge0\),
+\[
+\begin{aligned}
+T^3(3+8t)&=4+9t,\\
+T^5(11+32t)&=10+27t,\\
+T^6(7+64t)&=10+81t.
+\end{aligned}
+\]
+The parent words in the first and third identities are \(110\) and
+\(111010\); the source word in the second is \(11010\).
+\end{lemma}
+\begin{proof}
+The first two state lists are
+\[
+3+8t\to5+12t\to8+18t\to4+9t
+\]
+and
+\[
+\begin{aligned}
+11+32t&\to17+48t\to26+72t\\
+      &\to13+36t\to20+54t\to10+27t.
+\end{aligned}
+\]
+Every parity guard follows from the displayed constant term and even
+coefficient at that input. Exact substitution in the two branches proves
+every arrow. In the first list the parent satisfies
+\(9(3+8t)<8(4+9t)\). In the second,
+\(10+27t<11+32t\), and for \(t\ge1\) also
+\(9(10+27t)\le8(11+32t)\).
+The third state list is
+\[
+\begin{aligned}
+7+64t&\to11+96t\to17+144t\to26+216t\\
+     &\to13+108t\to20+162t\to10+81t.
+\end{aligned}
+\]
+The constant parities verify \(111010\), and every coefficient is even
+at its input. Substitution proves each step. Its positive parent obeys
+\(9(7+64t)<8(10+81t)\), so is strictly smaller than the source.
+\end{proof}
+
+Define the smaller residual set
+\[
+\mathcal R_*=
+\left\{n\in\mathcal R:
+\begin{array}{l}
+n\not\equiv4\pmod9,\quad n\not\equiv11\pmod{32},\\
+n\not\equiv10\pmod{81}
+\end{array}\right\}.
+\]
+
+\begin{theorem}[Residual recovery]
+Every \(n>1\) outside \(\mathcal R_*\) admits a positive smaller-parent
+join with \(9p\le8n\). Repeated parent reduction terminates at \(1\) or
+in \(\mathcal R_*\), after at most \(\log n/\log(9/8)\) reductions.
+Capture of every member of \(\mathcal R_*\) implies capture of every
+positive integer. Moreover, \(d(\mathcal R_*)=11/216\).
+\end{theorem}
+\begin{proof}
+Outside \(\mathcal R\), use the four parent rules; their factor \(4/5\)
+is at most \(8/9\). Inside \(\mathcal R\), if \(n\equiv4\pmod9\), write
+\(n=4+9t\) and use parent \(3+8t\) with source time zero. Otherwise, if
+\(n\equiv11\pmod{32}\), write \(n=11+32t\) and use the five-tick
+endpoint as parent. Here \(t=0\) would give \(u=3\), contrary to
+\(3\nmid u\), so the uniform eight-ninths bound applies.
+For the final uncovered class \(n\equiv10\pmod{81}\), write
+\(n=10+81t\) and use parent \(7+64t\) with source time zero and
+parent time six. This certificate has the same uniform bound.
+All parents stay positive. The natural-number label decreases strictly,
+so iteration terminates. After \(k\) reductions its positive value is at
+most \((8/9)^k n\), proving the logarithmic bound. Strong induction,
+using join recovery and the assumed capture on \(\mathcal R_*\), proves
+the capture implication. This bounds parent depth, not forward time.
+
+For each fixed \(a\ge2\), the residual constraints select two classes
+of \(u\) modulo \(12\), and hence density \(1/(6\cdot2^a)\) in the
+original \(n\)-labels. The portion with \(a\ge A\) lies in
+\(n\equiv-1\pmod{2^A}\) and has upper density at most \(2^{-A}\).
+Finite sums followed by this tail bound give \(d(\mathcal R)=1/12\).
+Adding \(n\equiv4\pmod9\) selects one class of \(u\) modulo \(36\)
+for each \(a\); the condition \(3\nmid u\) is then automatic. Its
+intersection with \(\mathcal R\) has density
+\[
+\sum_{a\ge2}\frac1{36\cdot2^a}=\frac1{72}.
+\]
+The class \(n=11+32t\) has \(a=2\) and \(u=3+8t\), which always has
+the required congruence modulo \(4\). Excluding \(3\mid u\) removes
+exactly \(t\equiv0\pmod3\); the intersection has density \(1/48\).
+Finally \(11+32t\equiv4\pmod9\) means \(t\equiv4\pmod9\), giving
+intersection density \(1/288\). These two exclusions leave density
+\(1/12-1/72-1/48+1/288=5/96\).
+For the third class \(n\equiv10\pmod{81}\), the congruence on
+\(u\) modulo \(81\) is \(2^a u\equiv11\); it automatically
+excludes \(3\mid u\). Together with the required class modulo four,
+this selects one class modulo \(324\) for each fixed \(a\). Its
+intersection with \(\mathcal R\) therefore has density
+\[
+\sum_{a\ge2}\frac1{324\cdot2^a}=\frac1{648}.
+\]
+It is disjoint from \(n\equiv4\pmod9\), since \(10\equiv1\pmod9\).
+Its intersection with \(n\equiv11\pmod{32}\) has density
+\(1/(81\cdot32)=1/2592\): the two coprime congruences select one
+class, which has \(a=2\), the required odd-burst congruence, and
+\(3\nmid u\). The valuation tail bound above still justifies all
+infinite sums. Thus the final density is
+\[
+\frac5{96}-\frac1{648}+\frac1{2592}=\frac{11}{216}.
+\]
+\end{proof}
+
+A genuinely residual example is the entire cylinder
+\[
+n=31+1152t,\qquad p=27+1024t\quad(t\ge0).
+\]
+Here \(a=5\), \(u=1+36t\), and \(T^3(p)=n\) with \(p<n\).
+The source's first five ticks are odd and strictly increasing.
+This is a parent certificate before any source descent. It also shows
+why an increase of the source burst length does not itself prevent a
+smaller-parent join. No assertion is made that every member of
+\(\mathcal R_*\) has such a certificate.
+
+\section{Exact repeated-word budget}
+
+For a nonempty binary word \(w\) of length \(h\), compose the rational
+branches to obtain
+\[
+F_w(n)=\frac{Pn+B}{Q},\qquad P=3^{r(w)},\quad Q=2^h.
+\]
+An appended odd letter replaces \((P,Q,B)\) by
+\((3P,2Q,3B+Q)\); an even letter replaces it by \((P,2Q,B)\).
+
+% The legality criterion uses the odd suffix multiplier to recover every prefix.
+\begin{lemma}[Integer cylinder criterion]
+The word \(w\) is legal at an integer \(n\) if and only if \(Q\mid Pn+B\).
+\end{lemma}
+\begin{proof}
+Legality implies integrality of the endpoint. Conversely, fix a prefix
+of length \(j\) with numerator \(N_j\) and denominator \(2^j\).
+The full numerator is \(3^sN_j+2^jC\), where \(s\) and \(C\) come from
+the suffix. Divisibility by \(2^h\) therefore implies \(2^j\mid N_j\),
+since \(3^s\) is odd. Thus every rational prefix state is integral.
+For an even letter, integrality of its successor forces its input even.
+For an odd letter, integrality of \((3x+1)/2\) forces its input odd.
+Every letter is therefore the actual shortcut branch.
+\end{proof}
+
+\begin{theorem}[Repetition budget]
+Put \(D_w(n)=(P-Q)n+B\). For every \(k\ge0\),
+\[
+w^k\text{ is legal at }n\quad\Longleftrightarrow\quad Q^k\mid D_w(n).
+\]
+If \(D_w(n)\ne0\), the maximal number of complete initial copies is
+\[
+\left\lfloor\frac{v_2(|D_w(n)|)}h\right\rfloor.
+\]
+\end{theorem}
+\begin{proof}
+The numerator of the \(k\)-fold rational composition is
+\[
+N_k=P^kn+B\sum_{j=0}^{k-1}P^{k-1-j}Q^j.
+\]
+Multiplication and telescoping give
+\[
+(P-Q)N_k=P^kD_w(n)-BQ^k.
+\]
+Both \(P\) and \(P-Q\) are odd, so each is a unit modulo \(Q^k\).
+Consequently \(Q^k\mid N_k\) if and only if \(Q^k\mid D_w(n)\).
+The cylinder criterion supplies legality. The valuation statement
+follows since \(Q^k=2^{hk}\). For \(k=0\) both assertions are automatic.
+\end{proof}
+
+For \(w=110\), one has \((P,Q,B)=(9,8,5)\), hence the budget is
+\(\lfloor v_2(n+5)/3\rfloor\). For a positive seed and \(P>Q\),
+\(D_w(n)>0\), because \(B\ge0\); such a word cannot repeat forever.
+The theorem concerns repetitions of one fixed word, not switching
+between different words.
+
+\section{Terminal powers}
+
+% The valuation step is stated with its exact odd-length and positivity conditions.
+\begin{lemma}[Divisibility at three]
+For \(L>0\),
+\[
+3^{a+1}\mid2^L+1
+\quad\Longleftrightarrow\quad
+L\text{ is odd and }3^a\mid L.
+\]
+\end{lemma}
+\begin{proof}
+If \(3\mid2^L+1\), reduction modulo \(3\) makes \(L\) odd.
+For odd \(L\), lifting the exponent gives
+\(v_3(2^L+1)=1+v_3(L)\): apply the odd-prime sum-of-powers identity
+with prime \(3\), bases \(2\) and \(1\), and odd exponent \(L\).
+The prime divides \(2+1\) and does not divide either base. Comparing
+the valuation to \(a+1\) proves both directions. The Lean companion
+specializes this exact theorem from Mathlib \cite{Mathlib}.
+\end{proof}
+
+\begin{theorem}[Terminal-prefix classification]
+Fix \(a\ge2\), let \(u>0\) be odd, and set \(n=2^a u-1\).
+The legal prefix \(1^a01\) ends at a power of two if and only if
+\[
+u=\frac{2^{3^a t}+1}{3^{a+1}}
+\quad\text{for some positive odd integer }t.
+\]
+Writing \(L=3^a t\), its endpoint is \(2^{L-2}\); the first hit of
+\(1\) occurs at time \(a+L\). Its unique peak before that hit is
+\((2^L-2)/3\), attained at time \(a\).
+\end{theorem}
+\begin{proof}
+The odd-run formula gives \(T^a(n)=3^a u-1\), which is even.
+If the following halving is odd, one more odd shortcut gives
+\[
+T^{a+2}(n)=\frac{3^{a+1}u-1}{4}.
+\]
+If this equals \(2^m\), then \(3^{a+1}u=2^{m+2}+1\).
+The divisibility lemma forces \(m+2=3^a t\) with \(t>0\) odd and
+recovers exactly the stated quotient for \(u\).
+
+Conversely, the divisibility lemma makes that quotient integral. Its
+numerator and denominator are odd, so \(u\) is odd, and it is positive.
+Here \(L\ge9\). Reduction of \(3^{a+1}u=2^L+1\) modulo \(4\) gives
+\(3^a u\equiv3\pmod4\); thus the halving after the first odd run is
+odd, verifying the final letter. The endpoint is exactly \(2^{L-2}\).
+It requires \(L-2\) further halvings to reach \(1\), with no earlier
+hit on that tail. All states of the initial odd run increase strictly,
+and its peak is \(3^a u-1=(2^L-2)/3\). The following half is smaller;
+also \(3\cdot2^{L-2}<2^L-2\), so the first terminal power is smaller
+than that peak. The subsequent powers decrease strictly. Every state
+before the final \(1\) is greater than \(1\), proving both the unique
+peak and the first-arrival assertion.
+\end{proof}
+
+\section{Formal scope}
+
+The formal companions are in the directory
+\[
+\texttt{QCD.ClassicalCoalescence.001/lean/}.
+\]
+The file \nolinkurl{ClassicalCoalescence.lean} proves the parent-cylinder
+identities above, including all branch guards and strict parent inequalities. It also proves the separate
+\(79+128t\) cylinder join to \(67+108t\), whose meeting point is
+\(101+162t\); that cylinder lies outside \(\mathcal R\).
+
+In the same directory, \nolinkurl{TerminalConverse.lean} proves the
+divisibility identity, the odd-run formula, the terminal
+endpoint equation, and both directions of terminal-prefix classification
+with the endpoint exponent retained. The first-arrival and peak
+corollaries are written proofs. The complete residual recovery and
+density theorem, the general repeated-word budget, and join recovery
+above are also written proofs, not Lean declarations in these files.
+The precise interfaces are indexed in the local library \cite{Library}.
+
+\bibliographystyle{amsalpha}
+\bibliography{ClassicalReferences}
+\end{document}
