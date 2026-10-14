@@ -15,6 +15,36 @@ func TestParentFamilies(t *testing.T) {
 	}
 }
 
+// TestSecondBurstWords includes both initial lengths and the empty parent odd run.
+func TestSecondBurstWords(t *testing.T) {
+	for _, expected := range [2]struct {
+		a, checked, removed, multiples int
+	}{
+		{2, 31250, 8487, 5208},
+		{3, 15625, 8487, 5212},
+	} {
+		checked, removed, multiples, err := VerifySecondBursts(expected.a, 1000000)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if checked != expected.checked || removed != expected.removed ||
+			multiples != expected.multiples {
+			t.Fatalf("changed second-burst coverage a=%d: %d %d %d",
+				expected.a, checked, removed, multiples)
+		}
+	}
+	for _, limit := range []uint64{0, 6, 1000001} {
+		if _, _, _, err := VerifySecondBursts(2, limit); err == nil {
+			t.Fatalf("accepted unsupported budget: %d", limit)
+		}
+	}
+	for _, a := range []int{1, 4} {
+		if _, _, _, err := VerifySecondBursts(a, 1000000); err == nil {
+			t.Fatalf("accepted unsupported initial burst: %d", a)
+		}
+	}
+}
+
 // TestExactBudgets compares word legality with signed displacement divisibility.
 func TestExactBudgets(t *testing.T) {
 	count, err := VerifyBudgets()

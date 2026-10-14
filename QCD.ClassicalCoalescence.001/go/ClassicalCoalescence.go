@@ -113,6 +113,27 @@ func VerifyFamilies(limit int) error {
 		if !Residual(n) || Step(Step(Step(p))) != n || p >= n {
 			return fmt.Errorf("residual cylinder: t=%d", t)
 		}
+		// Both second-burst cylinders are new removals from the earlier residual.
+		for _, pair := range [2]struct {
+			source, parent         uint64
+			sourceTime, parentTime int
+		}{
+			{411 + 1536*j, 231 + 864*j, 9, 5},
+			{615 + 3072*j, 519 + 2592*j, 10, 5},
+		} {
+			n, p = pair.source, pair.parent
+			x, y := n, p
+			for k := 0; k < pair.sourceTime; k++ {
+				x = Step(x)
+			}
+			for k := 0; k < pair.parentTime; k++ {
+				y = Step(y)
+			}
+			if x != y || !Residual(n) || n%3 != 0 || n%32 == 11 ||
+				n%9 == 4 || n%81 == 10 || 7*p > 6*n {
+				return fmt.Errorf("second-burst cylinder: t=%d n=%d", t, n)
+			}
+		}
 	}
 	return nil
 }
@@ -140,6 +161,13 @@ func VerifyResidualRules(limit uint64) error {
 				p, sourceTime = (27*n+23)/32, 5
 			} else if n%81 == 10 {
 				p, parentTime = (64*n-73)/81, 6
+			} else if a == 2 || a == 3 {
+				z := Power(3, a)*u + 1
+				b := bits.TrailingZeros64(z) - 1
+				v := z >> (b + 1)
+				if b >= 1 && (1+2*uint64(b%2))*(v%4)%4 == 1 {
+					p, sourceTime, parentTime = (z-4)/4, a+b+3, b+1
+				}
 			}
 		}
 		if p == 0 {
@@ -163,6 +191,71 @@ func VerifyResidualRules(limit uint64) error {
 		}
 	}
 	return nil
+}
+
+// VerifySecondBursts checks both initial lengths with uint64-safe finite budgets.
+func VerifySecondBursts(a int, limit uint64) (int, int, int, error) {
+	if (a != 2 && a != 3) || limit < 7 || limit > 1000000 {
+		return 0, 0, 0, fmt.Errorf("second-burst budget requires a=2 or 3, limit=7..1000000")
+	}
+	checked, removed, multiples := 0, 0, 0
+	for n := uint64(1)<<a - 1; n <= limit; n += uint64(2) << a {
+		u := (n + 1) >> a
+		z := Power(3, a)*u + 1
+		b := bits.TrailingZeros64(z) - 1
+		v := z >> (b + 1)
+		if b < 1 || (1+2*uint64(b%2))*(v%4)%4 != 1 {
+			continue
+		}
+		p := (z - 4) / 4
+		if v%2 == 0 || p == 0 || p >= n || 7*p > 6*n || 4*p+3 != Power(3, a)*u {
+			return checked, removed, multiples, fmt.Errorf("second-burst order: n=%d", n)
+		}
+		x, y := n, p
+		for j := 0; j < a; j++ {
+			if x%2 != 1 {
+				return checked, removed, multiples, fmt.Errorf("first odd run: n=%d", n)
+			}
+			x = Step(x)
+		}
+		if x%2 != 0 {
+			return checked, removed, multiples, fmt.Errorf("burst entrance guard: n=%d", n)
+		}
+		x = Step(x)
+		if x != (uint64(1)<<b)*v-1 {
+			return checked, removed, multiples, fmt.Errorf("burst entrance value: n=%d", n)
+		}
+		// The odd-run lengths differ by one, including an empty parent run at b=1.
+		for j := 0; j < b; j++ {
+			if x%2 != 1 {
+				return checked, removed, multiples, fmt.Errorf("source odd run: n=%d", n)
+			}
+			x = Step(x)
+		}
+		for j := 0; j < b-1; j++ {
+			if y%2 != 1 {
+				return checked, removed, multiples, fmt.Errorf("parent odd run: n=%d", n)
+			}
+			y = Step(y)
+		}
+		for j := 0; j < 2; j++ {
+			if x%2 != 0 || y%2 != uint64(j) {
+				return checked, removed, multiples, fmt.Errorf("terminal guards: n=%d", n)
+			}
+			x, y = Step(x), Step(y)
+		}
+		if x != y || x != (Power(3, b)*v-1)/4 {
+			return checked, removed, multiples, fmt.Errorf("second-burst endpoint: n=%d", n)
+		}
+		checked++
+		if Residual(n) && n%9 != 4 && n%32 != 11 && n%81 != 10 {
+			removed++
+			if n%3 == 0 {
+				multiples++
+			}
+		}
+	}
+	return checked, removed, multiples, nil
 }
 
 // WordData composes the shortcut rational branches in chronological bit order.
@@ -324,6 +417,16 @@ func main() {
 	if err := VerifyResidualRules(100000); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
+	}
+	// Each initial burst has its own exhaustive arithmetic-guard check.
+	for _, a := range [2]int{2, 3} {
+		second, removed, multiples, err := VerifySecondBursts(a, 1000000)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		fmt.Printf("second bursts a=%d through 1000000: %d; removed: %d; multiples: %d\n",
+			a, second, removed, multiples)
 	}
 	budgets, err := VerifyBudgets()
 	if err != nil {

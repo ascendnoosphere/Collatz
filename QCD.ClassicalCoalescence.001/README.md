@@ -16,6 +16,7 @@ above the source. Strict decrease of the parent label permits strong induction.
 [Detailed proofs](tex/ClassicalCoalescence.tex) ·
 [Formal cylinder joins](lean/ClassicalCoalescence.lean) ·
 [Formal terminal classification](lean/TerminalConverse.lean) ·
+[Formal second-burst joins](lean/SecondBurst.lean) ·
 [Exact finite checks](go/ClassicalCoalescence.go)
 
 ## A smaller residual obligation
@@ -48,7 +49,7 @@ T^3(3+8t)&=4+9t &&\text{parent word }110,\\ T^5(11+32t)&=10+27t &&\text{source w
 
 Here $`t\ge0`$. In the second identity, membership of the source in
 $`\mathcal R`$ excludes $`t=0`$. All applicable parents obey $`9p\le8n`$.
-Thus the remaining obligation is capture on
+These seven rules leave the intermediate residual
 
 ```math
 \mathcal R_*=
@@ -75,6 +76,75 @@ T^6(79+128t)=T(67+108t)=101+162t
 has a smaller parent despite no source descent in its first six shortcut ticks.
 Its source lies outside $`\mathcal R`$; it illustrates the join mechanism,
 not an additional residual density gain.
+
+## Uniform second-burst joins
+
+Two further rules have arbitrarily long clocks. For $`a\in\{2,3\}`$,
+let $`\mathcal S_a`$ contain the positive sources $`n=2^a u-1`$ satisfying
+
+```math
+u>0\text{ odd},\quad b\ge1,\quad v>0\text{ odd},\quad
+3^a u+1=2^{b+1}v,\quad 3^b v\equiv1\pmod4.
+```
+
+The odd factor $`v`$ makes $`b`$ unique. The legal words
+$`1^a01^b00`$ and $`1^{b-1}01`$ give the common parent certificate
+
+```math
+p=2^{b-1}v-1=\frac{3^a u-3}{4},\qquad
+T^{a+b+3}(n)=T^{b+1}(p),\qquad 0<p<n,\qquad 7p\le6n.
+```
+
+For $`a=2`$, the sharper relation is $`16p+3=9n`$;
+for $`a=3`$, it is $`32p=27n+3`$.
+The case $`b=1`$ has an empty initial odd run on the parent side
+and is included. Both clocks are shortcut clocks. Their common endpoint is
+$`(3^b v-1)/4`$; it need not be below the source.
+
+Two whole residual multiple-of-three cylinders have
+
+```math
+\begin{aligned}
+T^9(411+1536t)&=T^5(231+864t)=587+2187t,\\ T^{10}(615+3072t)&=T^5(519+2592t)=1316+6561t
+\qquad(t\ge0).
+\end{aligned}
+```
+
+At $`t=0`$, every positive source tick through each join exceeds its
+original source, while the corresponding parent is smaller. These are
+parent certificates before any source descent.
+
+For fixed $`a,b`$, the guard selects one source class modulo
+$`2^{a+b+3}`$. The tail $`b\ge B`$ lies in one class modulo
+$`2^{a+B+1}`$, which justifies the infinite sums.
+The $`a=2,b=1`$ class is already removed by the earlier exclusion
+$`n\equiv11\pmod{32}`$. The remaining $`a=2`$ classes have
+$`b\ge2`$, while the $`a=3`$ family includes every $`b\ge1`$.
+Each of these two eligible families has density $`1/64`$ before
+the odd-modulus restrictions. Consequently, for each $`a=2,3`$,
+
+```math
+d(\mathcal R_*\cap\mathcal S_a)
+=\left(\frac23-\frac19-\frac1{81}\right)\frac1{64}
+=\frac{11}{1296}.
+```
+
+This is half of each $`a=2`$ or $`a=3`$ part of
+$`\mathcal R_*`$. The two removals are disjoint because their
+sources have different valuations of $`n+1`$. The final residual is
+
+```math
+\mathcal R_{**}=\mathcal R_*\setminus(\mathcal S_2\cup\mathcal S_3),\qquad
+d(\mathcal R_{**})=\frac{11}{324},\qquad
+d(\mathcal R_{**}\cap3\mathbb Z)=\frac1{48}.
+```
+
+Every positive seed outside $`\mathcal R_{**}`$ has a proved smaller parent
+with $`9p\le8n`$. Parent reduction terminates at one or in this set,
+with the same $`\log n/\log(9/8)`$ depth bound. Join recovery and strong
+induction show that capture of every member of $`\mathcal R_{**}`$ would
+imply universal positive capture. Capture on this final residual remains
+unproved; its smaller density is not a capture theorem.
 
 ## Exact repetition budget
 
@@ -112,15 +182,21 @@ well as the integrality required for construction.
 
 ## Formal and computational scope
 
-The two Lean files prove the displayed cylinder identities, their guards
+The three Lean files prove the displayed cylinder identities, their guards
 and parent inequalities, the odd-run formula, the terminal valuation and
 endpoint equation, and both directions of terminal-prefix classification
-with the endpoint exponent retained. The complete residual recovery,
+with the endpoint exponent retained. They also prove the uniform second-burst
+joins for both initial lengths, with no bound on the second length,
+their original-source contraction, arithmetic membership recovery, and the
+entire residual cylinders $`411+1536t`$ and $`615+3072t`$.
+The complete residual recovery,
 natural density, general repetition budget, first-arrival and peak claims
 have written proofs; they are not declared as Lean theorems in these files.
 
 The Go companion checks cylinder parameters $`t=0,\ldots,10000`$,
-parent rules for $`2\le n\le100000`$, all binary words of lengths one
+parent rules for $`2\le n\le100000`$, both guarded second-burst families through
+$`n=1000000`$ (46,875 sources, including 16,974 previously residual seeds),
+all binary words of lengths one
 through eight at seeds one through 256 with zero through three copies,
 support windows through twelve with at most three crossings, all 35
 five-return exponent-eight compositions, and nine terminal constructions

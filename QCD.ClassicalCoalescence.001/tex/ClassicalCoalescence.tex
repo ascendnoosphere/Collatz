@@ -41,7 +41,9 @@ We give exact smaller-parent certificates for the classical shortcut map,
 including certificates whose meeting point lies above the original seed.
 Four elementary rules reduce capture to an explicitly described residual
 set of natural density \(1/12\). Three further legal words reduce that set
-to density \(11/216\), with uniform contraction of the parent labels.
+to density \(11/216\). Two second-burst rules, uniform in the burst length,
+then reduce the residual density to \(11/324\). All covered seeds retain
+uniform contraction of their original parent labels.
 We also give an exact valuation budget for repetitions of any fixed word
 and classify terminal powers within the initial prefix \(1^a01\).
 Every reduction retains both orbit clocks and the strict parent inequality.
@@ -259,6 +261,209 @@ why an increase of the source burst length does not itself prevent a
 smaller-parent join. No assertion is made that every member of
 \(\mathcal R_*\) has such a certificate.
 
+\section{Uniform second-burst parents}
+
+These rules permit unbounded source and parent clocks while keeping their
+difference fixed. They are not finite lists of tested residue classes.
+For \(a\in\{2,3\}\), let \(\mathcal S_a\) consist of the positive sources
+\(n=2^a u-1\) for which
+\[
+\begin{gathered}
+u>0\text{ odd},\qquad b\ge1,\qquad v>0\text{ odd},\\
+3^a u+1=2^{b+1}v,\qquad 3^b v\equiv1\pmod4.
+\end{gathered}
+\]
+The odd factor \(v\) determines \(b\) uniquely. The entrance equation
+also gives \(3^a u\equiv3\pmod4\), as required by the original residual
+apart from its restriction modulo three.
+
+% The shorter parent run improves contraction and admits a third initial odd letter.
+\begin{theorem}[Two- and three-burst joins]
+For \(a\in\{2,3\}\) and every \(n\in\mathcal S_a\), the positive integer
+\[
+p=2^{b-1}v-1=\frac{3^a u-3}{4}
+\]
+satisfies
+\[
+T^{a+b+3}(n)=T^{b+1}(p),\qquad p<n,\qquad 7p\le6n.
+\]
+The source and parent words are respectively \(1^a01^b00\) and
+\(1^{b-1}01\). Their common endpoint is \((3^b v-1)/4\).
+More precisely,
+\[
+\begin{array}{c|c|c}
+a&\text{exact original-source relation}&\text{contraction}\\
+\hline
+2&16p+3=9n&16p\le9n\\
+3&32p=27n+3&7p\le6n.
+\end{array}
+\]
+\end{theorem}
+\begin{proof}
+The odd-run formula gives
+\[
+T^j(n)=3^j2^{a-j}u-1\quad(0\le j\le a).
+\]
+Since \(u\) is odd, the first \(a\) input guards are odd, and their
+endpoint \(3^a u-1\) is even. Its next halving gives
+\[
+T^{a+1}(n)=\frac{3^a u-1}{2}=2^b v-1.
+\]
+Because \(v\) is odd, this state has precisely \(b\) initial odd guards.
+The second odd run therefore ends at
+\[
+T^{a+b+1}(n)=3^b v-1.
+\]
+The assumed congruence makes this endpoint divisible by four.
+Two legal halvings give \(T^{a+b+3}(n)=(3^b v-1)/4\).
+
+For the parent, \(p+1=2^{b-1}v\), so its initial odd run has length
+\(b-1\) and ends at \(3^{b-1}v-1\).
+The source guard implies \(3^{b-1}v\equiv3\pmod4\).
+Thus this parent endpoint is two modulo four; a halving is followed by
+an odd shortcut. Their result is
+\[
+T^{b+1}(p)=\frac{3(3^{b-1}v-1)+2}{4}
+         =\frac{3^b v-1}{4}.
+\]
+When \(b=1\), the initial parent run is empty, and its initial state
+itself is two modulo four. The same guarded two-step calculation applies.
+
+The entrance equation gives \(4(p+1)=3^a u+1\), hence the displayed
+formula for \(p\). Its numerator is at least six for \(a=2\) and
+at least twenty-four for \(a=3\), so the integral parent is positive.
+For \(a=2\), substitution of \(n+1=4u\) gives \(16p+3=9n\);
+this proves \(p<n\), \(16p\le9n\), and \(7p\le6n\).
+For \(a=3\), substitution of \(n+1=8u\) gives \(32p=27n+3\).
+Here \(n\ge7\), so \(27n+3<32n\) and
+\(7(27n+3)\le192n\), proving the remaining bounds.
+Both comparisons are against the original source, not the larger
+meeting point.
+\end{proof}
+
+Two entire residual multiple-of-three cylinders illustrate the joins:
+\[
+\begin{aligned}
+T^9(411+1536t)&=T^5(231+864t)=587+2187t,\\
+T^{10}(615+3072t)&=T^5(519+2592t)=1316+6561t
+\qquad(t\ge0).
+\end{aligned}
+\]
+For the first, take \(a=2\), \(b=4\), \(u=103+384t\),
+and \(v=29+108t\). For the second, take \(a=3\), \(b=4\),
+\(u=77+384t\), and \(v=65+324t\).
+These substitutions verify the entrance equations and the terminal guards.
+Their respective sources are \(27\) and \(7\) modulo \(32\);
+they are multiples of three, while \(u\equiv1\) and \(2\) modulo three
+respectively. Thus neither cylinder is removed by any earlier exclusion,
+and both source cylinders lie in \(\mathcal R_*\).
+At \(t=0\), every positive source tick through its displayed join
+lies above its original source. For example, the second source runs
+\[
+\begin{aligned}
+615&\to923\to1385\to2078\to1039\to1559\\
+   &\to2339\to3509\to5264\to2632\to1316,
+\end{aligned}
+\]
+while \(519\to779\to1169\to1754\to877\to1316\).
+These are smaller-parent certificates before any source descent.
+
+% Exact dyadic tails justify the count over all second-burst lengths.
+\begin{theorem}[Refined residual density and recovery]
+Set
+\[
+\mathcal R_{**}=\mathcal R_*\setminus(\mathcal S_2\cup\mathcal S_3).
+\]
+Then
+\[
+d(\mathcal R_{**})=\frac{11}{324},\qquad
+d(\mathcal R_{**}\cap3\Z)=\frac1{48}.
+\]
+Every \(n>1\) outside this set has a positive smaller-parent join with
+\(9p\le8n\). Capture of every member of \(\mathcal R_{**}\) implies
+capture of every positive integer, with the same logarithmic parent-depth
+bound as before. For each \(a=2,3\),
+\[
+d(\mathcal R_*\cap\mathcal S_a)=\frac{11}{1296}.
+\]
+Exactly half of each previously residual part with \(v_2(n+1)=2\) or
+\(v_2(n+1)=3\), measured by natural density, is removed.
+\end{theorem}
+\begin{proof}
+Fix \(a\in\{2,3\}\) and \(b\ge1\).
+The terminal congruence specifies one odd class of \(v\) modulo four.
+The entrance equation therefore specifies one class of \(u\) modulo
+\(2^{b+3}\), because \(3^a\) is invertible modulo that power of two.
+It selects one class of \(n\) modulo \(2^{a+b+3}\), of density
+\(2^{-(a+b+3)}\). Different \(b\) give disjoint classes.
+For \(b\ge B\ge1\), all these sources satisfy
+\(3^a u+1\equiv0\pmod{2^{B+1}}\).
+They lie in one class modulo \(2^{a+B+1}\), of upper density at most
+\(2^{-(a+B+1)}\). This tends to zero and justifies every infinite sum below.
+
+For \(a=2\), the class with \(b=1\) has \(u\equiv3\pmod8\), hence
+\(n\equiv11\pmod{32}\), and is already excluded from \(\mathcal R_*\).
+The remaining classes, with \(b\ge2\), have \(u\equiv7\pmod8\)
+and \(n\equiv27\pmod{32}\). Their combined density is
+\[
+\sum_{b\ge2}2^{-(b+5)}=\frac1{64}.
+\]
+For \(a=3\), the entrance equation gives \(u\equiv1\pmod4\),
+hence \(n\equiv7\pmod{32}\). No such class meets the exclusion
+\(n\equiv11\pmod{32}\), and their combined density is
+\[
+\sum_{b\ge1}2^{-(b+6)}=\frac1{64}.
+\]
+
+For either remaining family, membership in \(\mathcal R\) adds only
+\(3\nmid u\). The Chinese remainder theorem retains two out of three
+classes at each fixed \(b\). The exclusions \(n\equiv4\pmod9\)
+and \(n\equiv10\pmod{81}\) respectively occupy fractions \(1/9\)
+and \(1/81\) of each dyadic class. They already imply \(3\nmid u\)
+and are disjoint, since \(10\pmod{81}\) is one, not four, modulo nine.
+Consequently, for each \(a=2,3\),
+\[
+d(\mathcal R_*\cap\mathcal S_a)
+ =\left(\frac23-\frac19-\frac1{81}\right)\frac1{64}
+ =\frac{11}{1296}.
+\]
+The two families have different exact valuations of \(n+1\), so are
+disjoint. Subtracting both removals from \(11/216\) gives \(11/324\).
+The whole \(a=2\) part of \(\mathcal R_*\) is the class
+\(n\equiv27\pmod{32}\) with the same three odd-modulus restrictions.
+The whole \(a=3\) part is \(n\equiv7\pmod{32}\) with those restrictions.
+Each therefore has density
+\[
+\left(\frac23-\frac19-\frac1{81}\right)\frac1{32}
+=\frac{11}{648},
+\]
+twice its removed density.
+
+For multiples of three, each remaining burst family has density
+\(1/(3\cdot64)=1/192\). The condition \(3\nmid u\) is automatic there,
+and neither odd-modulus exclusion contains a multiple of three.
+The original multiple-of-three part of \(\mathcal R\) has density
+\(\sum_{a\ge2}1/(12\cdot2^a)=1/24\).
+The class \(n\equiv11\pmod{32}\) removes density \(1/96\):
+its sources \(11+32t\) are divisible by three exactly when
+\(t\equiv2\pmod3\). Hence
+\[
+d(\mathcal R_*\cap3\Z)=\frac1{24}-\frac1{96}=\frac1{32},\qquad
+d(\mathcal R_{**}\cap3\Z)=\frac1{32}-\frac2{192}=\frac1{48}.
+\]
+
+Outside \(\mathcal R_*\), use the previous parent certificates.
+Inside either newly removed family, use the burst theorem.
+Its factor \(6/7\) is below \(8/9\).
+The parent remains a positive integer smaller than the original seed.
+Strong induction and join recovery prove the capture implication.
+Iteration terminates because the integer label decreases at every choice.
+After \(j\) choices the positive label is at most \((8/9)^j n\);
+hence \(j\le\log n/\log(9/8)\).
+This is a parent-depth bound, not a forward stopping-time bound.
+No capture on the remaining residual is asserted.
+\end{proof}
+
 \section{Exact repeated-word budget}
 
 For a nonempty binary word \(w\) of length \(h\), compose the rational
@@ -381,6 +586,13 @@ The file \nolinkurl{ClassicalCoalescence.lean} proves the parent-cylinder
 identities above, including all branch guards and strict parent inequalities. It also proves the separate
 \(79+128t\) cylinder join to \(67+108t\), whose meeting point is
 \(101+162t\); that cylinder lies outside \(\mathcal R\).
+
+The file \nolinkurl{SecondBurst.lean} proves the uniform second-burst
+join for every length, the original-source contraction bound, arithmetic
+membership recovery, and the whole \(411+1536t\) residual cylinder.
+Its length parameter is \(k=b-2\); no upper bound on it is imposed.
+The natural-density and complete residual recovery claims remain written
+proofs, rather than Lean declarations.
 
 In the same directory, \nolinkurl{TerminalConverse.lean} proves the
 divisibility identity, the odd-run formula, the terminal

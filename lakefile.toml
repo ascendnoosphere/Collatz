@@ -86,6 +86,7 @@ defaultTargets = [
   "ClassicalThreeReturn",
   "ClassicalCoalescence",
   "TerminalConverse",
+  "SecondBurst",
   "RecursiveClose",
   "NoCrossing",
   "ParentRise",
@@ -479,6 +480,10 @@ srcDir = "QCD.ClassicalCoalescence.001/lean"
 
 [[lean_lib]]
 name = "TerminalConverse"
+srcDir = "QCD.ClassicalCoalescence.001/lean"
+
+[[lean_lib]]
+name = "SecondBurst"
 srcDir = "QCD.ClassicalCoalescence.001/lean"
 
 [[lean_lib]]
