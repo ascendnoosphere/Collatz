@@ -1,0 +1,381 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We give exact coordinates for the initial odd run of the classical shortcut and an exponentially decaying bound for its square-root occupation. With the original source weights \(\mu(n)=2/(n(n-1))\), every finite family of odd seeds at least \(3\) whose initial run lengths are at least \(A\ge1\) has weighted occupation at most \((2560/27)(7/16)^A\). The same estimate holds for the convergent series over all eligible seeds. The proof uses the exact burst formula, an elementary odd-cofactor telescope, and a geometric tail; it does not replace the source weights by a law at a later entrance.
+\end{abstract}
+
+\section{The shortcut and the burst}
+
+\begin{definition}
+Let \(T\) send an even natural number \(n\) to \(n/2\) and an odd natural number \(n\) to \((3n+1)/2\). For odd \(n\), the numerator \(3n+1\) is even, so the second branch is an integer.
+\end{definition}
+
+\begin{definition}
+The initial odd-burst length \(A(n)\) is \(0\) when \(n\) is even. When \(n\) is odd, \(A(n)\) is the largest integer \(a\) such that \(2^{a}\) divides \(n+1\). The odd cofactor \(u(n)\) is then the odd positive integer satisfying \(n+1=2^{A(n)}u(n)\). The even-seed cofactor is unused.
+\end{definition}
+
+\begin{lemma}
+\label{lem:split}
+If \(n\) is odd, then \(A(n)\ge 1\), the cofactor \(u(n)\) is odd and at least \(1\), and \(n+1=2^{A(n)}u(n)\).
+\end{lemma}
+
+\begin{proof}
+Since \(n\) is odd, \(n+1\) is even, so \(2\) divides \(n+1\) and the largest such exponent is at least \(1\). Removing that power of \(2\) leaves an odd positive quotient \(u(n)\). The displayed factorization is the definition of that quotient.
+\end{proof}
+
+\begin{lemma}
+\label{lem:closed}
+Let \(n\) be odd and write \(a=A(n)\) and \(u=u(n)\). For every integer \(j\) with \(0\le j\le a\),
+\[
+T^{j}(n)+1=3^{j}2^{a-j}u.
+\]
+If \(j<a\), then \(T^{j}(n)\) is odd. The state \(T^{a}(n)\) is even.
+\end{lemma}
+
+\begin{proof}
+The case \(j=0\) is Lemma~\ref{lem:split}. Suppose the formula holds for some \(k<a\), and write
+\[
+t=3^{k}2^{a-k-1}u.
+\]
+The inductive formula gives \(T^{k}(n)+1=2t\), and \(t\ge 1\), so \(T^{k}(n)=2t-1\). This integer is odd. The odd branch therefore gives
+\[
+T^{k+1}(n)=\frac{3(2t-1)+1}{2}=3t-1,
+\]
+because \(3(2t-1)+1=2(3t-1)\). Hence
+\[
+T^{k+1}(n)+1=3t=3^{k+1}2^{a-(k+1)}u.
+\]
+Induction reaches every \(j\le a\).
+
+If \(j<a\), the closed formula is divisible by \(2\), so \(T^{j}(n)+1\) is even and \(T^{j}(n)\) is odd. At time \(a\), the same formula gives \(T^{a}(n)+1=3^{a}u\). Both \(3^{a}\) and \(u\) are odd, so their product is odd and \(T^{a}(n)\) is even.
+\end{proof}
+
+Thus \(A(n)\) is exactly the length of the initial run of odd states: every strict prefix is odd, and the first state at time \(A(n)\) is even. For example, the source \(7\) has \(A(7)=3\), \(u(7)=1\), and the prefix
+\[
+7\longmapsto11\longmapsto17\longmapsto26.
+\]
+Its occupation is \(\sqrt7+\sqrt{11}+\sqrt{17}\), and its original weight is \(1/21\).
+
+\begin{definition}
+For \(n\ge 3\), the source weight is \(\mu(n)=2/(n(n-1))\). The square-root occupation of the initial odd burst is
+\[
+O(n)=\sum_{j<A(n)}\sqrt{T^{j}(n)}.
+\]
+For a positive integer \(u\), write \(\rho(u)=1/(u\sqrt{u})\).
+\end{definition}
+
+\section{The rational ratio}
+
+\begin{lemma}
+\label{lem:seven}
+The inequality that produces the ratio \(7/16\) is
+\[
+\frac{\sqrt{3}}{4}<\frac{7}{16}.
+\]
+Equivalently, \(\sqrt{3}<7/4\). This holds because \(3<49/16\), since \(48<49\).
+\end{lemma}
+
+\begin{proof}
+The positive number \(7/4\) satisfies \((7/4)^{2}=49/16>3\), so \(\sqrt{3}<7/4\). Dividing both sides by the positive number \(4\) gives \(\sqrt{3}/4<(7/4)/4=7/16\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:five}
+\[
+\sqrt{\frac{3}{2}}-1>\frac{1}{5},
+\]
+and therefore
+\[
+\frac{1}{\sqrt{3/2}-1}<5.
+\]
+\end{lemma}
+
+\begin{proof}
+The inequality \(6/5<\sqrt{3/2}\) is equivalent, after squaring the positive number \(6/5\), to \(36/25<3/2\). Cross-multiplication gives the true comparison \(72<75\). Subtracting \(1\) yields \(1/5<\sqrt{3/2}-1\). The reciprocal reverses the inequality between these positive numbers, and \(1/(1/5)=5\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:height}
+Let \(a\ge 1\) and let \(u\ge 1\) be an integer. Then
+\[
+\sum_{j<a}\sqrt{3^{j}2^{a-j}u}
+<5\sqrt{u}\,(\sqrt{3})^{a}.
+\]
+\end{lemma}
+
+\begin{proof}
+For \(0\le j\le a\),
+\begin{align*}
+\sqrt{3^{j}2^{a-j}u}
+&=\sqrt{u}\,(\sqrt{2})^{a-j}(\sqrt{3})^{j}\\
+&=\sqrt{u}\,(\sqrt{2})^{a}
+\left(\sqrt{\frac{3}{2}}\right)^{j}.
+\end{align*}
+The second line uses \((\sqrt{2})^{a-j}(\sqrt{3})^{j}=(\sqrt{2})^{a}(\sqrt{3}/\sqrt{2})^{j}\). Let \(r=\sqrt{3/2}\). Then \(r>1\), because \(3/2>1\). The geometric sum is
+\[
+\sum_{j<a}r^{j}=\frac{r^{a}-1}{r-1}<\frac{r^{a}}{r-1}.
+\]
+Hence the original sum is strictly less than
+\[
+\sqrt{u}\,(\sqrt{2})^{a}\frac{r^{a}}{r-1}
+=\frac{\sqrt{u}\,(\sqrt{3})^{a}}{r-1},
+\]
+where \((\sqrt{2}\,r)^{a}=(\sqrt{3})^{a}\). Lemma~\ref{lem:five} replaces the denominator by \(5\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:source}
+If \(n\ge 3\), then
+\[
+\mu(n)\le \frac{16}{3(n+1)^{2}}.
+\]
+If \(n\) is also odd, with burst length \(a\) and odd cofactor \(u\), then
+\[
+\mu(n)\le \frac{16}{3\cdot 4^{a}u^{2}}.
+\]
+\end{lemma}
+
+\begin{proof}
+The hypothesis \(n\ge 3\) gives \(4n\ge 3n+3\), so \(n\ge (3/4)(n+1)\). It also gives \(2n-2\ge n+1\), so \(n-1\ge (1/2)(n+1)\). Both factors on the right are positive. Multiplying them yields
+\[
+\frac{3}{8}(n+1)^{2}\le n(n-1).
+\]
+Taking reciprocals and multiplying by \(2\) gives the first bound. For odd \(n\), Lemma~\ref{lem:split} gives \(n+1=2^{a}u\), so \((n+1)^{2}=4^{a}u^{2}\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:one}
+Let \(n\ge 3\) be odd, with burst length \(a\) and odd cofactor \(u\). Then
+\[
+\mu(n)\,O(n)
+<\frac{80}{3}\left(\frac{7}{16}\right)^{a}\rho(u).
+\]
+\end{lemma}
+
+\begin{proof}
+Lemma~\ref{lem:closed} gives \(T^{j}(n)+1=3^{j}2^{a-j}u\) for \(j<a\), and the right side is positive, so \(T^{j}(n)\) is strictly smaller than that height. Square roots preserve the strict inequality. Summing over the nonempty range \(j<a\) and applying Lemma~\ref{lem:height} gives
+\[
+O(n)<5\sqrt{u}\,(\sqrt{3})^{a}.
+\]
+The source bound of Lemma~\ref{lem:source} is positive, so
+\begin{align*}
+\mu(n)\,O(n)
+&<\frac{16}{3\cdot 4^{a}u^{2}}\cdot 5\sqrt{u}\,(\sqrt{3})^{a}\\
+&=\frac{80}{3}\left(\frac{\sqrt{3}}{4}\right)^{a}\frac{1}{u\sqrt{u}}.
+\end{align*}
+The algebraic identity is
+\[
+\frac{16\cdot 5}{3\cdot 4^{a}u^{2}}\sqrt{u}\,(\sqrt{3})^{a}
+=\frac{80}{3}\cdot\frac{(\sqrt{3})^{a}}{4^{a}}\cdot\frac{1}{u\sqrt{u}},
+\]
+using \(u^{2}=u\cdot\sqrt{u}\cdot\sqrt{u}\). Since \(a\ge 1\) and \(\sqrt{3}/4>0\), Lemma~\ref{lem:seven} raises to the \(a\)-th power and preserves the strict inequality. Multiplication by the positive number \((80/3)\rho(u)\) gives the stated bound.
+\end{proof}
+
+\section{Odd reciprocals and the geometric tail}
+
+\begin{lemma}
+\label{lem:gap}
+For every natural number \(m\),
+\[
+\rho(2m+3)
+<\frac{1}{\sqrt{2m+1}}-\frac{1}{\sqrt{2m+3}}.
+\]
+\end{lemma}
+
+\begin{proof}
+Let \(a=2m+1\) and \(b=a+2=2m+3\). Both are positive, and \(b-a=2\). The difference of square roots is
+\[
+\sqrt{b}-\sqrt{a}=\frac{b-a}{\sqrt{a}+\sqrt{b}}=\frac{2}{\sqrt{a}+\sqrt{b}}.
+\]
+Therefore
+\begin{align*}
+\frac{1}{\sqrt{a}}-\frac{1}{\sqrt{b}}
+&=\frac{\sqrt{b}-\sqrt{a}}{\sqrt{a}\sqrt{b}}\\
+&=\frac{2}{(\sqrt{a}+\sqrt{b})\sqrt{a}\sqrt{b}}.
+\end{align*}
+The comparison \((\sqrt{a}+\sqrt{b})\sqrt{a}<2b\) is equivalent to \(a+\sqrt{ab}<a+(a+4)\), hence to \(\sqrt{ab}<a+4\). Squaring the nonnegative quantities gives the polynomial identity
+\[
+(a+4)^{2}-ab=6a+16>0.
+\]
+Multiplying the resulting strict inequality by the positive number \(\sqrt{b}\) produces
+\[
+(\sqrt{a}+\sqrt{b})\sqrt{a}\sqrt{b}<2b\sqrt{b}.
+\]
+Cross-division of the positive quantities \(1\) and \(2\) then yields
+\[
+\frac{1}{b\sqrt{b}}
+<\frac{2}{(\sqrt{a}+\sqrt{b})\sqrt{a}\sqrt{b}},
+\]
+which is the claim.
+\end{proof}
+
+\begin{lemma}
+\label{lem:recip}
+Every finite set of odd positive integers has reciprocal sum at most \(2\): if \(U\) is finite and every \(u\in U\) is odd, then
+\[
+\sum_{u\in U}\rho(u)\le 2.
+\]
+\end{lemma}
+
+\begin{proof}
+An odd positive integer is either \(1\) or at least \(3\). Split \(U\) into the subset of elements equal to \(1\) and the subset of elements at least \(3\). These subsets are disjoint, so the sum splits.
+
+The first subset is empty or equal to \(\{1\}\). In the first case its sum is \(0\). In the second, \(\rho(1)=1\). Thus its contribution is at most \(1\).
+
+If the second subset \(R\) is empty, its sum is \(0\). Otherwise let \(M\) be its largest element, so \(M\ge 3\) and every element of \(R\) is at most \(M\). Each \(u\in R\) is odd and at least \(3\), so \(u-3\) is nonnegative and even. Writing \(m=(u-3)/2\) gives \(u=2m+3\) and \(0\le m<M\). Distinct elements give distinct indices, so
+\[
+\sum_{u\in R}\rho(u)
+\le\sum_{m<M}\rho(2m+3).
+\]
+Lemma~\ref{lem:gap} bounds each term by the corresponding gap. The gaps telescope:
+\[
+\sum_{m<M}\left(\frac{1}{\sqrt{2m+1}}-\frac{1}{\sqrt{2m+3}}\right)
+=1-\frac{1}{\sqrt{2M+1}}\le 1.
+\]
+Adding the two contributions gives a sum at most \(2\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:tail}
+Let \(A\le B\) be natural numbers. Then
+\[
+\sum_{A\le a<B}\left(\frac{7}{16}\right)^{a}
+\le\left(\frac{7}{16}\right)^{A}\frac{16}{9}.
+\]
+\end{lemma}
+
+\begin{proof}
+Let \(r=7/16\). Then \(r\neq 1\) and \(1-r=9/16\). The finite geometric sum is
+\[
+\sum_{A\le a<B}r^{a}=\frac{r^{A}-r^{B}}{1-r}.
+\]
+The numerator is at most \(r^{A}\) because \(r^{B}\ge 0\). Division by the positive number \(9/16\) preserves the inequality, and
+\[
+\frac{r^{A}}{9/16}=r^{A}\cdot\frac{16}{9}.
+\]
+\end{proof}
+
+\section{The uniform bound}
+
+\begin{theorem}
+\label{thm:main}
+Let \(A\ge 1\) be an integer, and let \(S\) be a finite set of odd integers \(n\ge 3\) such that \(A(n)\ge A\) for every \(n\in S\). Then
+\[
+\sum_{n\in S}\mu(n)\,O(n)
+\le\frac{2560}{27}\left(\frac{7}{16}\right)^{A}.
+\]
+\end{theorem}
+
+\begin{proof}
+If \(S\) is empty, the sum is \(0\) and the right side is positive. Assume \(S\) is nonempty. Lemma~\ref{lem:one} gives, for every \(n\in S\),
+\[
+\mu(n)\,O(n)
+\le\frac{80}{3}\left(\frac{7}{16}\right)^{A(n)}\rho(u(n)).
+\]
+The map \(n\mapsto(A(n),u(n))\) is injective on odd seeds: the pair determines \(n+1=2^{A(n)}u(n)\). Let \(L\) be the set of burst lengths attained on \(S\), and let \(U\) be the set of odd cofactors attained on \(S\). The image of the pairs is contained in the rectangle \(L\times U\), and every coordinate weight \((7/16)^{a}\rho(u)\) is nonnegative. Therefore
+\begin{align*}
+\sum_{n\in S}\left(\frac{7}{16}\right)^{A(n)}\rho(u(n))
+&\le\sum_{a\in L}\sum_{u\in U}\left(\frac{7}{16}\right)^{a}\rho(u)\\
+&=\left(\sum_{a\in L}\left(\frac{7}{16}\right)^{a}\right)
+\left(\sum_{u\in U}\rho(u)\right).
+\end{align*}
+Let \(M\) be the largest length in \(L\). Then \(A\le M\), and every length in \(L\) lies in the integer interval from \(A\) to \(M\) inclusive. Lemma~\ref{lem:tail}, applied up to \(M+1\), bounds the length sum by \((7/16)^{A}(16/9)\). Every cofactor is odd, so Lemma~\ref{lem:recip} bounds the reciprocal sum by \(2\). The product of the two bounds is
+\[
+\left(\frac{7}{16}\right)^{A}\frac{16}{9}\cdot 2.
+\]
+Multiplication by the positive number \(80/3\) yields
+\[
+\frac{80}{3}\cdot\frac{16}{9}\cdot 2
+=\frac{2560}{27}.
+\]
+Summing the one-seed bounds finishes the proof.
+\end{proof}
+
+\section{The complete source series}
+
+\begin{definition}
+For an integer \(A\ge1\), extend the admissible source contribution by zero:
+\[
+f_A(n)=
+\begin{cases}
+\mu(n)O(n),&n\ge3,\ n\text{ odd},\ A(n)\ge A,\\
+0,&\text{otherwise}.
+\end{cases}
+\]
+The first branch uses \(\mu\) only on its stated domain. Thus every value is well-defined and nonnegative.
+\end{definition}
+
+\begin{corollary}
+\label{cor:series}
+For every integer \(A\ge1\), the series \(\sum_{n\ge0}f_A(n)\) converges, and
+\[
+\sum_{n\ge0}f_A(n)
+\le\frac{2560}{27}\left(\frac7{16}\right)^A.
+\]
+\end{corollary}
+
+\begin{proof}
+Let \(F\) be any finite set of natural numbers and let \(S\) be its subset of eligible seeds. Zero extension gives
+\[
+\sum_{n\in F}f_A(n)=\sum_{n\in S}\mu(n)O(n).
+\]
+Theorem~\ref{thm:main} bounds this sum independently of \(F\). In particular, the partial sums over \(0\le n<N\) are nondecreasing and bounded above by the displayed constant. Completeness of the real numbers gives their finite limit, which is the nonnegative series sum, and the upper bound passes to that limit. The same finite bound applies to every finite subfamily, so no rearrangement changes the sum.
+\end{proof}
+
+\begin{corollary}
+\label{cor:total}
+The full initial occupation of odd sources at least \(3\) satisfies
+\[
+\sum_{\substack{n\ge3\\n\text{ odd}}}\mu(n)O(n)\le\frac{1120}{27}.
+\]
+\end{corollary}
+
+\begin{proof}
+Every odd seed has \(A(n)\ge1\) by Lemma~\ref{lem:split}. Its contribution therefore equals \(f_1(n)\), while all other natural seeds have zero extended contribution. Apply Corollary~\ref{cor:series} at \(A=1\) and simplify
+\[
+\frac{2560}{27}\cdot\frac7{16}=\frac{1120}{27}.
+\]
+\end{proof}
+
+The weights remain attached to the original seeds in both the finite and infinite sums. A later odd run is not an initial run for the original seed, and the distribution at that entrance is generally a transported distribution. The estimates above make no assertion about that new distribution or about eventual capture of an individual seed.
+
+\section{Formal proof}
+
+The companion Lean file is \texttt{OddBurst.lean} in the topic's \texttt{lean/} directory. It formalizes the exact burst coordinates, parity through the first even state, square-root and source bounds, cofactor telescope, and finite-family theorem. Its declaration \texttt{InitialOddBurstSeries} proves both summability of the zero-extended contribution and the uniform series bound. The declaration \texttt{OddBurstTailOne} identifies the full odd-source sum. Its bound \(1120/27\) is formalized by \texttt{InitialOddBurstTotal}. The default library build includes this module.
+
+\end{document}

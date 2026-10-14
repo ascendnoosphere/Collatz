@@ -115,6 +115,7 @@ defaultTargets = [
   "OneBit",
   "HammingGap",
   "Discriminator",
+  "OddBurst",
 ]
 
 [[require]]
@@ -605,3 +606,7 @@ srcDir = "QCD.HammingGap.001/lean"
 [[lean_lib]]
 name = "Discriminator"
 srcDir = "QCD.Discriminator.001/lean"
+
+[[lean_lib]]
+name = "OddBurst"
+srcDir = "QCD.OddBurst.001/lean"

@@ -304,6 +304,16 @@ finite exhaustive search. There are exactly $\binom{s+e}{s}$ words of fixed
 counts, and each has at most one legal start at a specified terminal value.
 Exact offset reconstruction and branch replay recover the accepted starts.
 
+### Source-weighted initial odd occupation
+
+[QCD.OddBurst.001](QCD.OddBurst.001/README.md) proves the exact initial
+odd-run coordinates for the classical shortcut. With $\mu(n)=2/(n(n-1))$,
+the nonnegative series of square-root occupation over odd seeds $n\ge3$
+whose initial run length is at least $A\ge1$ converges and is bounded by
+$\frac{2560}{27}(7/16)^A$. The full initial occupation is at most
+$1120/27$. These are estimates for the original source weights, not for
+weights transported to a later run.
+
 ### An exact raw smaller-parent cylinder
 
 [QCD.LocalJoin.001](QCD.LocalJoin.001/README.md) proves, for every $t\ge0$,
