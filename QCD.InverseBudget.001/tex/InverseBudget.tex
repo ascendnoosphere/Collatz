@@ -1,0 +1,330 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For positive integers \(q,c,D\) with \(D\ge2\), the raw map divides a multiple of \(D\) and otherwise applies \(n\mapsto qn+c\). A legal word of affine count \(s\) and division count \(e\) can carry a positive start to a strictly larger terminal value only when \(D^e<(q+c)^s\). Each word has at most one legal start at a fixed terminal value. There are exactly \(\binom{s+e}{s}\) words of those counts. Together these statements give a complete finite ascending inverse search at every fixed affine ceiling, with an integer-power cutoff on divisions.
+\end{abstract}
+
+\section{Ascending inverse words and the raw step}
+
+Throughout, \(D\), \(q\), and \(c\) are positive integers and \(D\ge 2\). The raw step is the rule that sends a nonnegative integer \(n\) to \(n/D\) when \(D\) divides \(n\), and to \(qn+c\) otherwise.
+
+\begin{definition}
+\label{def:letters}
+An \emph{affine letter} denotes the branch \(n\mapsto qn+c\). A \emph{division letter} denotes the branch \(n\mapsto n/D\). A \emph{word} is a finite list of these letters, read from the head. The \emph{affine count} \(s(w)\) is the number of affine letters in \(w\), and the \emph{division count} \(e(w)\) is the number of division letters. The \emph{replay} \(\operatorname{Replay}(w,p)\) is the integer obtained by reading \(w\) from the head at the start \(p\); a division that is not exact is ordinary integer truncation. The word \(w\) is \emph{legal} at \(p\) when every affine letter is applied to an integer not divisible by \(D\) and every division letter is applied to a multiple of \(D\).
+\end{definition}
+
+\begin{definition}
+\label{def:offset}
+The \emph{offset} of a word is defined from the head by \(\operatorname{Offset}([])=0\),
+\[
+\operatorname{Offset}(A{::}t)=q^{s(t)}+\operatorname{Offset}(t),
+\]
+and \(\operatorname{Offset}(E{::}t)=D\cdot\operatorname{Offset}(t)\). Here \(A\) is an affine letter, \(E\) is a division letter, and \(s(t)\) is the affine count of the tail.
+\end{definition}
+
+\begin{definition}
+\label{def:words}
+For nonnegative integers \(s\) and \(e\), the list \(\operatorname{Words}(s,e)\) contains every word with affine count \(s\) and division count \(e\). It is the empty word when \(s=e=0\). A positive division count and zero affine count places a division letter at the head of \(\operatorname{Words}(0,e-1)\). A positive affine count and zero division count places an affine letter at the head of \(\operatorname{Words}(s-1,0)\). When both counts are positive, the list is the concatenation of the affine-headed words from \(\operatorname{Words}(s-1,e)\) with the division-headed words from \(\operatorname{Words}(s,e-1)\).
+\end{definition}
+
+The concatenation in Definition~\ref{def:words} decreases the sum of the two counts, so the list is finite. The empty word is its only entry of counts \((0,0)\).
+
+\begin{lemma}
+\label{lem:edge}
+For every nonnegative integer \(n\), replaying an affine letter and then a division letter at \(n\) yields \((qn+c)/D\). That word is legal at \(n\) if and only if \(D\) does not divide \(n\) and \(D\) divides \(qn+c\).
+\end{lemma}
+
+\begin{proof}
+The first letter replaces \(n\) by \(qn+c\), and the second letter divides by \(D\). Legality is exactly the condition that the first input is not a multiple of \(D\) and the second input is a multiple of \(D\). The empty tail is legal at every integer.
+\end{proof}
+
+\section{The ascending inequality}
+
+\begin{lemma}
+\label{lem:affine-bound}
+If \(1\le c\) and \(1\le p\), then \(qp+c\le(q+c)p\).
+\end{lemma}
+
+\begin{proof}
+Since \(1\le p\), one has \(c\le cp\). Adding \(qp\) gives \(qp+c\le qp+cp=(q+c)p\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:height}
+Let \(w\) be legal at \(p\), with \(1\le c\) and \(1\le p\). Then \(1\le\operatorname{Replay}(w,p)\), and
+\[
+D^{e(w)}\operatorname{Replay}(w,p)\le p(q+c)^{s(w)}.
+\]
+\end{lemma}
+
+\begin{proof}
+The proof is by induction on \(w\). The empty word replays to \(p\), and both counts are zero, so the product on the left is \(p\).
+
+Suppose the head is affine and the tail \(t\) is legal at \(y=qp+c\). Then \(1\le y\). The inductive hypothesis gives \(1\le\operatorname{Replay}(t,y)\) and
+\[
+D^{e(t)}\operatorname{Replay}(t,y)\le y(q+c)^{s(t)}.
+\]
+The whole word has the same division count as \(t\), one more affine letter, and the same replay as the tail at \(y\). Lemma~\ref{lem:affine-bound} gives \(y\le(q+c)p\). Multiplying by the nonnegative power \((q+c)^{s(t)}\) and regrouping
+\[
+((q+c)p)(q+c)^{s(t)}=p(q+c)^{s(t)+1}
+\]
+yields the claimed bound.
+
+Suppose the head is a division and \(D\) divides \(p\). The quotient \(p/D\) is a positive integer: it cannot be zero, because \(D\cdot(p/D)=p\) and \(p\ge 1\). The tail is legal there. The inductive bound, multiplied on the left by \(D\), becomes
+\[
+D\cdot\bigl(D^{e(t)}\operatorname{Replay}(t,p/D)\bigr)\le D\cdot\bigl((p/D)(q+c)^{s(t)}\bigr).
+\]
+The left side is \(D^{e(w)}\) times the replay of \(w\), because the head contributes one division. The right side is \(p(q+c)^{s(t)}\), and the affine count is unchanged by a division. This is the claim.
+\end{proof}
+
+\begin{lemma}
+\label{lem:gate}
+Let \(w\) be legal at \(p\), and suppose \(\operatorname{Replay}(w,p)=m\) with \(1\le c\), \(2\le D\), and \(1\le p<m\). Then
+\[
+D^{e(w)}<(q+c)^{s(w)}.
+\]
+\end{lemma}
+
+\begin{proof}
+Lemma~\ref{lem:height} gives \(D^{e(w)}m\le p(q+c)^{s(w)}\). Since \(D\ge 2\), the power \(D^{e(w)}\) is at least \(1\). From \(p+1\le m\),
+\[
+D^{e(w)}(p+1)\le D^{e(w)}m,
+\]
+and the left side expands as \(D^{e(w)}p+D^{e(w)}\). Thus
+\[
+D^{e(w)}p<D^{e(w)}p+D^{e(w)}\le p(q+c)^{s(w)}.
+\]
+Cancel the positive factor \(p\). The resulting inequality is the claim.
+\end{proof}
+
+\begin{lemma}
+\label{lem:offset}
+If \(w\) is legal at \(p\), then
+\[
+D^{e(w)}\operatorname{Replay}(w,p)=q^{s(w)}p+c\cdot\operatorname{Offset}(w).
+\]
+Consequently, a legal replay to \(m\) solves
+\[
+q^{s(w)}p=D^{e(w)}m-c\cdot\operatorname{Offset}(w).
+\]
+\end{lemma}
+
+\begin{proof}
+Induct on \(w\). Both sides are \(p\) for the empty word.
+
+If the head is affine and \(y=qp+c\), the inductive identity on the tail is \(D^{e(t)}\operatorname{Replay}(t,y)=q^{s(t)}y+c\cdot\operatorname{Offset}(t)\). The head does not change the division count. Expand \(q^{s(t)}(qp+c)=q^{s(t)+1}p+cq^{s(t)}\) and absorb the two multiples of \(c\) into \(c(q^{s(t)}+\operatorname{Offset}(t))\), which is the offset of the whole word.
+
+If the head is a division, \(D\) divides \(p\) and \(D\cdot(p/D)=p\). The inductive identity at \(p/D\), multiplied by \(D\), produces one more factor of \(D\) in the denominator power and replaces \(\operatorname{Offset}(t)\) by \(D\cdot\operatorname{Offset}(t)\). The affine count is unchanged.
+
+The solved form is the same identity with the replay replaced by \(m\), followed by subtracting \(c\cdot\operatorname{Offset}(w)\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:unique}
+Assume \(1\le q\). If one word is legal at \(p_1\) and at \(p_2\), and both replays equal \(m\), then \(p_1=p_2\).
+\end{lemma}
+
+\begin{proof}
+Lemma~\ref{lem:offset} gives the same right-hand side for \(q^{s(w)}p_1\) and \(q^{s(w)}p_2\). The power \(q^{s(w)}\) is positive because \(q\ge 1\). Cancel it.
+\end{proof}
+
+\begin{lemma}
+\label{lem:two-pow}
+Every nonnegative integer \(n\) satisfies \(n<2^n\).
+\end{lemma}
+
+\begin{proof}
+The case \(n=0\) is \(0<1\). If \(n<2^n\), then \(n+1\le 2^n\). Also \(2^n<2^{n+1}\), because \(2^n\cdot 1<2^n\cdot 2\). Hence \(n+1<2^{n+1}\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:exponent}
+If \(2\le D\) and \(D^e<R\), then \(e<R\).
+\end{lemma}
+
+\begin{proof}
+Otherwise \(R\le e\). Lemma~\ref{lem:two-pow} and the comparison of bases \(2\le D\) give \(e<2^e\le D^e\), so \(R<D^e\), contrary to \(D^e<R\).
+\end{proof}
+
+\section{The finite list}
+
+\begin{lemma}
+\label{lem:list}
+The list \(\operatorname{Words}(s,e)\) has no duplicate. A word lies on it if and only if its affine count is \(s\) and its division count is \(e\).
+\end{lemma}
+
+\begin{proof}
+Consing a fixed letter is injective, and the image of a duplicate-free list under an injective map is duplicate-free. An affine-headed word is never equal to a division-headed word. Proceed by induction on \(s\), and for each \(s\) by induction on \(e\).
+
+If \(s=e=0\), the list is the singleton consisting of the empty word. If \(s=0\) and \(e=e_0+1\), the list is the division head applied to \(\operatorname{Words}(0,e_0)\). The inductive hypothesis supplies the count \(e_0\) and the absence of duplicates, and the division head adds one division. If \(e=0\) and \(s=s_0+1\), the same argument applies to the affine head and \(\operatorname{Words}(s_0,0)\).
+
+If \(s=s_0+1\) and \(e=e_0+1\), the two concatenated blocks are duplicate-free by the inductive hypothesis and the two cons maps. They are disjoint because their heads differ. A word in the first block has affine count \(s_0+1\) and division count \(e_0+1\). A word in the second block has the same counts. Conversely, every word of counts \((s,e)\) has either an affine head, in which case the tail lies on \(\operatorname{Words}(s-1,e)\), or a division head, in which case the tail lies on \(\operatorname{Words}(s,e-1)\). The same case division, read from the head of an arbitrary word, shows that the word occurs on the list indexed by its own counts.
+\end{proof}
+
+\begin{definition}
+\label{def:tower}
+The \emph{division word} of length \(e\) is the word of \(e\) division letters and no affine letter.
+\end{definition}
+
+\begin{lemma}
+\label{lem:tower}
+The division word of length \(e\) is legal at \(D^em\), and its replay is \(m\). If \(1\le m\) and \(1\le e\), then \(m<D^em\), and \(D^e<(q+c)^{0}\) is false.
+\end{lemma}
+
+\begin{proof}
+The count statement is immediate by induction on \(e\). For the replay, the case \(e=0\) is the empty word at \(m\). If the word of length \(e\) replays from \(D^em\) to \(m\), the word of length \(e+1\) starts at \(D\cdot(D^em)=D^{e+1}m\), whose first division is exact and returns to \(D^em\).
+
+Now assume \(e\ge 1\) and \(m\ge 1\). Then \(D^e\ge D>1\), so \(m<mD^e\). The affine count is zero, and \((q+c)^0=1\), whereas \(D^e\ge 2\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:word-count}
+For all \(s,e\ge0\), the list \(\operatorname{Words}(s,e)\) has length
+\[
+\binom{s+e}{s}.
+\]
+\end{lemma}
+
+\begin{proof}
+If either count is zero, there is exactly one word and the binomial
+coefficient is \(1\). For positive counts the two head classes are disjoint,
+and the defining recursion gives
+\[
+|\operatorname{Words}(s,e)|
+=|\operatorname{Words}(s-1,e)|+|\operatorname{Words}(s,e-1)|.
+\]
+Induction on \(s+e\), followed by Pascal's identity, gives
+\[
+\binom{s+e-1}{s-1}+\binom{s+e-1}{s}=\binom{s+e}{s}.
+\]
+\end{proof}
+
+\section{The budget}
+
+\begin{theorem}
+\label{thm:inverse-budget}
+Let \(D,q,c,s,e\) be positive integers with \(D\ge 2\), and let \(m\) be a nonnegative integer. Then all of the following hold.
+\begin{enumerate}
+\item For every nonnegative integer \(n\), replaying an affine letter and then a division letter at \(n\) yields \((qn+c)/D\), and that word is legal at \(n\) if and only if \(D\) does not divide \(n\) and \(D\) divides \(qn+c\).
+\item The list \(\operatorname{Words}(s,e)\) has no duplicate. A word lies on it if and only if it has affine count \(s\) and division count \(e\). Every word on the list has both counts positive.
+\item A word has at most one nonnegative start that replays legally to \(m\).
+\item If \(w\) lies on the list, \(w\) is legal at \(p\), the replay equals \(m\), and \(1\le p<m\), then the counts of \(w\) are \(s\) and \(e\), and \(D^e<(q+c)^s\).
+\item If a word of counts \(s\) and \(e\) is legal at \(p\), replays to \(m\), and \(1\le p<m\), then \(D^e<(q+c)^s\) and the word lies on the list.
+\item If \(D^e<(q+c)^s\) fails, no start \(p\) with \(1\le p<m\) has a legal word of these counts replaying to \(m\).
+\item If \(D^e<(q+c)^s\), then \(e<(q+c)^s\).
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+The first item is Lemma~\ref{lem:edge}. The duplicate-free characterization is Lemma~\ref{lem:list}. Both counts of a listed word equal the positive integers \(s\) and \(e\). Uniqueness of a legal start is Lemma~\ref{lem:unique}.
+
+For the fourth item, Lemma~\ref{lem:list} identifies the counts, and Lemma~\ref{lem:gate} is the strict inequality. For the fifth, Lemma~\ref{lem:gate} again gives the inequality, and Lemma~\ref{lem:list} places the word on the list indexed by its counts. The sixth item is the contrapositive of that inequality. The seventh is Lemma~\ref{lem:exponent} with \(R=(q+c)^s\).
+\end{proof}
+
+\begin{corollary}
+\label{cor:fixed-depth}
+Fix a terminal value \(m\) and an affine ceiling \(S\ge1\). Put \(R=q+c\),
+and let \(E\) be the unique nonnegative integer with
+\[
+D^E<R^S\le D^{E+1}.
+\]
+All legal words that carry some \(1\le p<m\) to \(m\) with at most
+\(S\) affine letters can be found by inspecting the finitely many lists
+\[
+\operatorname{Words}(s,e),\qquad 1\le s\le S,\quad 0\le e\le E.
+\]
+Each word requires at most one candidate start and a legality check.
+\end{corollary}
+
+\begin{proof}
+Here \(R\ge2\), so \(R^S>1=D^0\). The powers of \(D\ge2\) strictly
+increase and are unbounded; for example
+\(n<2^n\le D^n\) by Lemma~\ref{lem:two-pow}. Thus \(E\) exists and is unique.
+An ascending word cannot have zero affine count, because successive
+legal divisions do not increase a positive integer. Lemma~\ref{lem:gate}
+gives
+\[
+D^{e(w)}<R^{s(w)}\le R^S,
+\]
+so \(e(w)\le E\). Lemma~\ref{lem:list} places the word in the required
+list. Lemma~\ref{lem:unique} gives at most one start, recovered from
+Lemma~\ref{lem:offset} and then checked by replay. Conversely, every
+accepted replay satisfies all the specified conditions. This proves
+both completeness and soundness of the finite search.
+\end{proof}
+
+\begin{lemma}
+\label{lem:examples}
+For \(q=3\), \(c=1\), and \(D=2\), the following three replays are legal. Affine then division carries \(5\) to \(8\). Two copies of that edge carry \(3\) to \(8\). A division followed by those two edges carries \(6\) to \(8\). In all three cases \(1\le p<8\), so Theorem~\ref{thm:inverse-budget} supplies \(2^e<4^s\) for the corresponding counts.
+\end{lemma}
+
+\begin{proof}
+The orbit \(5\mapsto 16\mapsto 8\) applies the affine letter at the odd integer \(5\) and divides the even integer \(16\). The orbit \(3\mapsto 10\mapsto 5\mapsto 16\mapsto 8\) does the same twice. The orbit \(6\mapsto 3\mapsto 10\mapsto 5\mapsto 16\mapsto 8\) begins with an exact division. The three inequalities are \(2<4\), \(4<16\), and \(8<16\).
+\end{proof}
+
+\section{Formal proofs and exact checks}
+
+The Lean companion proves the path-height estimate, the strict ascending
+inequality, offset reconstruction, uniqueness, and complete duplicate-free
+word enumeration. The theorem \texttt{WordsLength} gives the binomial count.
+
+At a fixed affine ceiling, \texttt{AscendingDepthBound} gives
+\(e(w)<(q+c)^S\). The sharper maximal-power cutoff in
+Corollary~\ref{cor:fixed-depth} is the written search prescription.
+
+The Go program checks every binary word through length \(16\). It compares
+inverse enumeration with forward walks for \(2\le D\le4\),
+\(1\le q,c\le4\), \(2\le m\le12\), and \(1\le S\le3\).
+For \((q,c,D,m,S)=(3,1,2,8,3)\), it finds exactly the starts \(3,5,6\)
+in Lemma~\ref{lem:examples}. These are all the starts below \(8\) at that
+ceiling, because the forward check inspects every integer \(1\le p<8\).
+
+The word solver uses a buffer of length \(16\). The inverse search accepts
+an affine ceiling at most \(16\), and its workspace holds at most \(64\)
+distinct starts. Products, sums and powers are checked for integer overflow.
+An overflow or exhausted workspace is reported as an unsuccessful search.
+When \((q+c)^S\) fits in an unsigned \(64\)-bit integer, the necessary
+inequality implies \(e\le63\), which justifies the forward check's
+\(S+64\) step budget.
+
+The finite search keeps its affine ceiling fixed. Removing that ceiling
+would require a separate bound and is not a consequence of the denominator
+inequality.
+
+\end{document}

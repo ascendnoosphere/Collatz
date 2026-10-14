@@ -276,6 +276,15 @@ clock $`(u+v)/g`$. Composite bases and nonunit residuals are allowed.
 Negative divisors, nontrivial multiplier residuals and other offset regimes
 remain separate families.
 
+### Finite ascending inverse searches
+
+[QCD.InverseBudget.001](QCD.InverseBudget.001/README.md) proves that a legal raw
+word carrying $1\le p<m$ to $m$ must satisfy $D^e<(q+c)^s$, where $s$ and $e$
+are its affine and division counts. A fixed affine ceiling therefore gives a
+finite exhaustive search. There are exactly $\binom{s+e}{s}$ words of fixed
+counts, and each has at most one legal start at a specified terminal value.
+Exact offset reconstruction and branch replay recover the accepted starts.
+
 ### An exact raw smaller-parent cylinder
 
 [QCD.LocalJoin.001](QCD.LocalJoin.001/README.md) proves, for every $t\ge0$,
