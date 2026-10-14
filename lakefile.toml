@@ -85,6 +85,7 @@ defaultTargets = [
   "RhoMass",
   "ProfileDrop",
   "ProfilePrimePower",
+  "ProfilePrecision",
   "GaussianDynamics",
   "QuadraticArithmetic",
   "DyadicArithmetic",
@@ -93,6 +94,7 @@ defaultTargets = [
   "ComplexLocalSystem",
   "CycleResonance",
   "ComplexLattice",
+  "ScalarEscape",
   "ComplexPolynomials",
   "ComplexFields",
 ]
@@ -467,6 +469,10 @@ name = "ProfilePrimePower"
 srcDir = "QCD.ProfileDrop.001/lean"
 
 [[lean_lib]]
+name = "ProfilePrecision"
+srcDir = "QCD.ProfileDrop.001/lean"
+
+[[lean_lib]]
 name = "GaussianDynamics"
 srcDir = "QCD.GaussianDynamics.001/lean"
 
@@ -496,6 +502,10 @@ srcDir = "QCD.ComplexCohomology.001/lean"
 
 [[lean_lib]]
 name = "ComplexLattice"
+srcDir = "QCD.ComplexLattice.001/lean"
+
+[[lean_lib]]
+name = "ScalarEscape"
 srcDir = "QCD.ComplexLattice.001/lean"
 
 [[lean_lib]]

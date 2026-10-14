@@ -9,6 +9,24 @@ A(n)=qn+c,\qquad z(n)=(q-1)n+c,\qquad f(r)=(qr+c)\bmod m.
 The raw map divides the current state by $`d`$ when $`d`$ divides it, and otherwise
 applies $`A`$. The zeroth raw state is the seed.
 
+## Profile/PairProfile schema and fixed precision
+
+The [item-by-item schema audit](SchemaAudit.md) treats all **297 requested
+bullets**, with domains, exact uses, candidate bridges and underspecified
+observables kept separate. It is not a claim that those labels classify
+arbitrary raw orbits.
+
+For every $`q,c\in\mathbb Z`$, $`d\ge2`$ and $`k\ge0`$, the inputs
+$`0,d^{k+1}`$ agree modulo $`d^{k+1}`$, but their raw successors
+$`0,d^k`$ do not. Thus no memoryless successor map at this fixed division-base
+precision recovers every raw tick. The corrected exact statement transfers
+agreement of divisible inputs modulo $`d^{k+1}`$ to agreement of their
+quotients modulo $`d^k`$.
+[ProfilePrecision.lean](lean/ProfilePrecision.lean) proves both statements;
+[ProfileDrop.tex](tex/ProfileDrop.tex) gives the matching complete proofs.
+No claim is made that this refutes other finite factors or supplies a future
+division budget.
+
 ## Cycle criterion
 
 The following are equivalent:
@@ -139,6 +157,8 @@ extrapolating the rectangle. Behavior after the first division is not classified
 - [Detailed proofs](tex/ProfileDrop.tex).
 - [Lean definitions and theorems](lean/ProfileDrop.lean).
 - [Restricted prime-power affine-return helpers](lean/ProfilePrimePower.lean).
+- [Fixed raw precision and exact division transfer](lean/ProfilePrecision.lean).
+- [Complete enumerated Profile/PairProfile crosswalk](SchemaAudit.md).
 - [Bounded arithmetic certificate](go/ProfileDrop.go).
 - [Exact-reference and boundary tests](go/ProfileDrop_test.go).
 

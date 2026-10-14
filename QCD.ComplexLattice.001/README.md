@@ -1,13 +1,21 @@
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 # QCD.ComplexLattice.001 — Raw complex lattices and off-axis escape
 
-**Closed obligation:** for every odd integer $`c`$, every nonreal seed of the
-raw $`(3,c,2)`$ map escapes on the Gaussian lattice, the Eisenstein lattice,
-and every imaginary quadratic coordinate order below. The conclusion is
-full-sequence escape, not just an unbounded subsequence. The real axis retains
-its original signed integer problem.
+**Closed obligation:** for every real integer offset $`c`$, every nonreal
+seed of the raw scalar map escapes on each imaginary quadratic coordinate
+order below whenever $`|q|,|d|\ge2`$ are multiplicatively independent.
+Signs of both coefficients are retained. The conclusion is full-sequence
+escape, not just an unbounded subsequence. The real axis retains its original
+signed integer problem.
 
-[Lean proofs](lean/ComplexLattice.lean) · [Detailed proof](tex/ComplexLattice.tex) ·
+The older raw $`(3,c,2)`$ theorem with odd $`c`$ also gives a quantitative
+entry time into a division-free tail. That stronger clock estimate is kept
+separate from the new theorem, which allows infinitely many divisions.
+
+[General scalar Lean proof](lean/ScalarEscape.lean) ·
+[General scalar detailed proof](tex/ScalarEscape.tex) ·
+[Dyadic Lean proofs](lean/ComplexLattice.lean) ·
+[Dyadic detailed proof](tex/ComplexLattice.tex) ·
 [Exact arithmetic foundations](../QCD.QuadraticArithmetic.001/README.md) ·
 [Visual atlas and Go checks](../QCD.ComplexAtlas.001/README.md)
 
@@ -61,6 +69,77 @@ no lattice states. Its exact imaginary-part formula and
 `ImaginaryEmbeddingNorm` retain the fixed transverse scale.
 `ComplexOffAxisEscape` then proves the displayed full-sequence statement
 in the actual complex norm, with every real bound quantified.
+
+## General scalar escape by arithmetic independence
+
+For the signed raw scalar map
+
+```math
+T_{q,c,d}(x+y\theta)=
+\begin{cases}
+(x/d)+(y/d)\theta,&d\mid x\text{ and }d\mid y,\\ (qx+c)+qy\theta,&\text{otherwise},
+\end{cases}
+```
+
+let $`a_n,b_n`$ count affine and division ticks. The exact transverse identity is
+
+```math
+a_n+b_n=n,\qquad d^{b_n}y_n=q^{a_n}y_0.
+```
+
+It does **not** replace the common guard by a guard on $`y`$ alone.
+If $`y_0\ne0`$, any repeated magnitude $`|y_i|=|y_j|`$, $`i<j`$,
+would give $`|q|^a=|d|^b`$ on that actual segment, with $`a,b>0`$.
+Multiplicative independence excludes every such collision. Hence every bounded
+set of nonnegative integer magnitudes is visited finitely often, proving
+$`|y_n|\to\infty`$ along the full sequence. The same positive transverse
+embedding scale recovers $`|T^n(z)|\to\infty`$.
+
+A finite sufficient certificate is a nonzero prime-exponent minor:
+
+```math
+v_p(|q|)v_r(|d|)-v_r(|q|)v_p(|d|)\ne0.
+```
+
+Coprime magnitudes at least two satisfy independence. Coprimality is not
+necessary: for $`12=2^2\cdot3`$ and $`18=2\cdot3^2`$, the minor is
+$`2\cdot2-1\cdot1=3`$. Thus all nonreal seeds escape for raw
+$`(12,c,18)`$, for every integer $`c`$.
+
+**Infinitely dividing control.** For $`(12,0,18)`$ and seed $`\theta`$,
+
+```math
+8^j\theta\longmapsto12\cdot8^j\theta
+\longmapsto144\cdot8^j\theta\longmapsto8^{j+1}\theta.
+```
+
+The third tick divides in every block. An eventual-affine-tail argument would
+miss this family. Independence gives no monotonicity or uniform effective
+last-visit bound.
+
+**Dependent control.** For raw $`(4,0,8)`$, there is a primitive nonreal five-cycle:
+
+```math
+\theta\to4\theta\to16\theta\to2\theta\to8\theta\to\theta,
+\qquad4^3=8^2.
+```
+
+The new Lean file proves actual scalar divisibility and unique quotient,
+all-clock coordinate recovery, transverse injectivity and escape, both
+controls, and the complex-norm statement. Its namespace is
+`GeneralizedCollatz.ScalarEscape`; the quantitative dyadic module retains
+`GeneralizedCollatz.ComplexLattice`.
+
+### Same-clock conjugacy between different orders
+
+Coefficient matching $`x+y\theta\mapsto x+y\theta'`$ is a bijective
+same-clock conjugacy for fixed scalar $`q,c,d`$. It preserves every state,
+branch, period and return time. It is **not** generally a ring homomorphism:
+matching $`i`$ to $`\omega`$ sends $`i^2`$ to $`-1`$, but
+$`\omega^2=-1-\omega`$. Thus the scalar dynamical systems are isomorphic,
+while their multiplication tables, nonscalar divisors and ideal arithmetic
+remain distinct. `OrderTransferRaw`, `OrderTransferIterate` and
+`OrderTransferNotMultiplicative` formalize this separation.
 
 ## Decreasing dyadic rank and exact recovery
 

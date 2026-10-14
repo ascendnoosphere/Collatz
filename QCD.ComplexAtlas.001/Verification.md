@@ -1,6 +1,58 @@
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 # Executed verification and remaining obligations
 
+## Scalar and profile update
+
+The earlier sections below are **historical verification records**, with
+counts belonging to their stated earlier batches. The update based on
+`44d4687` has the following freshly executed checks:
+
+- `make lean`: all **96 configured default targets**, 2,741 build jobs, passed;
+  unchanged legacy linter warnings remain. `ScalarEscape` and
+  `ProfilePrecision` are registered.
+- A fresh Lean axiom audit of **29 added theorem declarations** passed;
+  only `propext`, `Classical.choice` and `Quot.sound` occur. This covers the
+  scalar guard/escape/order-transfer proofs, fixed precision, cyclic phase
+  assembly and signed repunit formulas.
+- `CGO_ENABLED=0 go test -count=1 ./...` passed all **66 locally present
+  packages**; `CGO_ENABLED=0 go vet ./...` passed. Preserved untracked packages
+  are not thereby published or semantically certified.
+- Fresh `make tex` builds passed all 75 previously tracked documents plus
+  `ScalarEscape.tex`, **76 documents**; both ignored-PDF/temp checks passed.
+- `make go GOFILE=QCD.ComplexAtlas.001/go/ComplexAtlas.go` regenerated
+  **25 vector PDFs and 25 PNG previews**, with all historical counts retained
+  separately and six scalar rows adding 56,454 seeds. The combined lattice
+  census has **178,771 seeds**. All six new PNGs were visually inspected;
+  axes and titles were unclipped and the Eisenstein coefficient window is
+  shown in its actual parallelogram embedding.
+- The static Markdown regression suite passed **21 negative controls**;
+  the GitHub payload fixture suite passed its 13 accepted and 18 rejected
+  payload fixtures plus evidence/cache safety controls. Fixture success is
+  not an actual API or live-browser rendering result.
+
+The [repository audit](../Library.SourceCatalogue.001/RepositoryAudit.md)
+records the six bounded semantic review lanes, corrected claims, a refuted
+review finding, the uncompiled signed-return appendix and unread remainder.
+The [297-item schema crosswalk](../QCD.ProfileDrop.001/SchemaAudit.md) separates
+proved uses from candidates and missing definitions. No repository-wide
+all-proofs-complete attestation or universal integer-axis theorem is made.
+
+An isolated **staged-index checkout** passed Go tests and vet for its **60
+published packages**, static checks for **85 maintained Markdown pages**, and
+both script regression suites without borrowing any of the twelve untracked
+research folders. This separates the published tree from the larger 66-package
+working tree.
+
+The actual authenticated GitHub GFM API checked **85 pages and 6,036 expressions**,
+with exact source/HTML payload cardinality, order, display mode and TeX bytes.
+The first run detected GitHub inserting a third backslash at a line-final cases
+row separator. Keeping that separator and its next row on the same source line
+removed the transport mutation; the strict checker was not weakened. This is
+not live-browser layout inspection, MathJax execution or mathematical validation.
+The evidence is stored privately under `.pi/Markdown/GitHub/`, not committed.
+
+## Historical complex verification
+
 This record covers the complex-ring, cohomology and visualization work, plus
 repository-wide maintenance checks. It does **not** certify completion of the
 source-corpus migration or resolve universal Collatz targets. The source tree

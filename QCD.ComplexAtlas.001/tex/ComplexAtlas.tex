@@ -37,7 +37,7 @@
 \maketitle
 
 \begin{abstract}
-A reproducible atlas distinguishes exact Gaussian and Eisenstein lattice maps, residue-wise quotient variants, affine permutations on finite quadratic rings, and selected holomorphic polynomial models. The raw \((3,c,2)\) nonreal escape theorem has a finite dyadic descent proof; the quotient variants have nonreal cycles. Four polynomial models preserve the same selected real orbit values but have different exact cycle multipliers. This supplies a checked obstruction to inferring Julia geometry from finite arithmetic orbit data. Their exact escape radius is proved, while the plotted pixels remain finite-time floating-point experiments. The numerical census is bounded and all conventions, clocks, fences, and unresolved classifications are retained.
+A reproducible atlas distinguishes exact Gaussian and Eisenstein lattice maps, residue-wise quotient variants, affine permutations on finite quadratic rings, and selected holomorphic polynomial models. The raw \((3,c,2)\) nonreal escape theorem has a finite dyadic descent proof. A broader scalar theorem covers arbitrary real integral offsets and signed multiplicatively independent magnitudes, including an escaping orbit that divides infinitely often. The quotient variants have nonreal cycles. Four polynomial models preserve the same selected real orbit values but have different exact cycle multipliers. This supplies a checked obstruction to inferring Julia geometry from finite arithmetic orbit data. Their exact escape radius is proved, while the plotted pixels remain finite-time floating-point experiments. The numerical census is bounded and all conventions, clocks, fences, and unresolved classifications are retained.
 \end{abstract}
 
 \section{Four different dynamical objects}
@@ -89,6 +89,78 @@ In contrast, \(J_+\) has \(1+\theta\to2+2\theta\to1+\theta\), while \(J_-\) fixe
 The exact workload is thirteen families, each with \(97^2=9,409\) seeds in the coefficient box \([-48,48]^2\), at most \(256\) ticks, and coordinate fence \(2^{26}\). The total is \(122,317\) seeds. For Gaussian coordinates plot \((x,y)\); for Eisenstein coordinates plot \((x-y/2,\sqrt3y/2)\). Repeated scalar-law counts in these embeddings are not independent convergence evidence.
 
 The four raw \((3,\pm1,2)\) rows each have \(97\) exact-cycle seeds and \(9,312\) proved off-axis escapes. Each of the four quotient rows has \(745\) exact-cycle seeds, \(8,510\) fence exits, and \(154\) unresolved prefixes, reaching \(45\) distinct cycles from the window. For the genuinely complex raw parameters, cycle seeds are \(13\) for Gaussian \((2,1,1+i)\), \(1\) for Gaussian \((2i,1+i,2)\), \(1\) for Eisenstein \((2\omega,1,2)\), \(8\) for Eisenstein \((1-\omega,1,1-\omega)\), and \(1\) for Gaussian \((2+i,0,2-i)\). The remaining seeds in those five rows cross the fence. They are not called universally escaping from this finite test. Complete per-family counts, cycle representatives, and primitive periods are retained in \texttt{AtlasData.json}.
+
+\section{Independent scalar families and a dependent control}
+
+The general scalar result and actual ring-to-complex recovery are proved in
+\texttt{QCD.ComplexLattice.001/tex/ScalarEscape.tex} and
+\texttt{QCD.ComplexLattice.001/lean/ScalarEscape.lean}
+\cite{LibraryScalar26}. For
+\(q,c,d\in\Z\), \(|q|,|d|\ge2\), it assumes
+\[
+|q|^a\ne|d|^b\qquad(a,b\in\N_{>0})
+\]
+and proves full-sequence complex-norm escape for every nonreal seed on any
+of the specified imaginary quadratic coordinate orders. It does not
+classify the real integer axis.
+
+Here is the arithmetic hinge. If \(a_n,b_n\) count affine and division
+ticks, legal exact division and scalar multiplication give
+\[
+a_n+b_n=n,\qquad d^{b_n}y_n=q^{a_n}y_0.
+\]
+A repeated nonzero transverse magnitude at two times would, on that
+actual intervening segment, imply \(|q|^a=|d|^b\) with \(a,b>0\), a
+contradiction. The resulting injective sequence of nonnegative integer
+magnitudes visits every bounded set only finitely often. Its divergence
+recovers complex-norm escape through the positive imaginary basis scale.
+This argument retains the two-coordinate guard; it is not a scalar
+one-coordinate raw quotient.
+
+For \(12=2^2\cdot3\) and \(18=2\cdot3^2\), the prime-exponent minor
+is \(2\cdot2-1\cdot1=3\ne0\). The raw \((12,0,18)\) seed \(\theta\)
+has the exact three-tick blocks
+\[
+8^j\theta\to12\cdot8^j\theta\to144\cdot8^j\theta\to8^{j+1}\theta.
+\]
+It divides forever. An eventual division-free tail is therefore not a
+valid prerequisite for the general result. In contrast, the dependent
+pair \((4,8)\) has the primitive five-cycle
+\[
+\theta\to4\theta\to16\theta\to2\theta\to8\theta\to\theta.
+\]
+Both examples and the independence minor are checked in Lean.
+
+Six additional scalar families each use the same \(9,409\) seeds,
+\(256\)-tick horizon and \(2^{26}\) census fence: \(56,454\) added seeds,
+\(178,771\) combined lattice seeds. The JSON stores these separately as
+\texttt{ScalarLattices}. In the Gaussian \((3,2,2)\), \((2,7,3)\),
+\((12,0,18)\), signed \((-2,-3,-3)\), and Eisenstein \((12,5,18)\)
+rows, each has \(9,312\) theorem-backed off-axis escapes. Their respective
+real-axis exact-cycle/fence-exit counts are \((7,90)\), \((19,78)\),
+\((1,96)\), \((5,92)\), and \((1,96)\). The Gaussian \((4,0,8)\)
+row has \(9,409\) cycle seeds reaching \(7,009\) marked cycles in this
+window. None of these rows has an unresolved prefix. A real-axis fence
+exit is not certified escape, and the dependent row is not an infinite
+all-seed cycle enumeration.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.47\textwidth]{../other/GaussianCommonSupport.pdf}
+\hfill
+\includegraphics[width=.47\textwidth]{../other/GaussianDependentScalar.pdf}
+\caption{Independent shared-support scalar parameters \((12,0,18)\) on the
+left, and dependent \((4,0,8)\) on the right. Navy denotes theorem-backed
+off-axis escape; other colors identify exact reached cycles by the same
+noninjective six-color hash. The left integer-axis fence exits are not an
+escape theorem.}
+\end{figure}
+
+Coefficient matching between two quadratic orders is a bijective
+same-clock conjugacy for fixed scalar parameters, but need not preserve
+multiplication: matching \(i\) to \(\omega\) sends \(i^2\) to \(-1\),
+whereas \(\omega^2=-1-\omega\). The companion formal proof separates
+the dynamical isomorphism from ring and ideal arithmetic.
 
 \section{Concrete cohomology, fields, and ramification}
 

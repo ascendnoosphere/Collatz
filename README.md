@@ -13,17 +13,39 @@ n/d,&d\mid n,\\ qn+c,&d\nmid n.
 The divisor retains its sign. Division has precedence, including at zero.
 The classical raw map is $`F_{3,1,2}`$.
 
+## Major results
+
+These are the strongest proved classifications and behavior transports in the
+maintained library, not claims of a general Collatz solution. Each link gives
+the hypotheses, recovery argument, formal scope and remaining obligation.
+
+| Result | Exact scope and structural insight |
+|---|---|
+| [Scalar off-axis escape](QCD.ComplexLattice.001/README.md#general-scalar-escape-by-arithmetic-independence) | On every specified imaginary quadratic order, arbitrary real integer offset and independent $`\lvert q\rvert,\lvert d\rvert\ge2`$ force every nonreal raw seed to escape in full sequence. The proof permits infinitely many divisions and leaves the integer axis unchanged. |
+| [Homogeneous classification](QCD.Homogeneous.001/README.md) · [dependent case](QCD.Homogeneous.002/README.md) | For $`c=0`$, $`q,D\ge2`$ and positive seeds, independent powers give escape; a primitive dependence $`q=t^u,D=t^v`$ gives eventual raw period $`u+v`$. Unit and signed cases have separate hypotheses. |
+| [Positive additive classification](QCD.Additive.003/README.md) | For $`q=1,c\ge1,D\ge2`$, every positive seed is eventually periodic or reaches an exact escaping affine tail. All positive seeds are eventually periodic exactly when $`\gcd(c,D)=1`$. |
+| [High-offset common-base escape](QCD.CommonBase.001/README.md) | A quantitative super-offset threshold proves full-sequence escape for every nonzero signed seed in the stated common-base family, not just a numerical census. |
+| [Residue leakage](QCD.ResidueLeakage.001/README.md) | For the stated coprime positive family with affine zero-return period $`m<D`$, exact cylinders give density-one raw escape. The full-period boundary $`m=D`$ is excluded. |
+| [Clock-correct compression](QCD.TimeCompression.002/README.md) · [offset absorption](QCD.Scaling.002/README.md) | Admissible transformations recover the same states, primitive cycles and behavior with their exact same or variable clocks. A rational affine identity alone does not suffice. |
+| [Marked cycle resonance](QCD.ComplexCohomology.001/Resonance.md) | A legal raw period-18 cycle has defect $`3^7-2^{11}=139`$. The actual twisted quotient acquires a one-dimensional characteristic-139 class, with checked Frobenius-fixed/sign reconstruction. It does not induce a raw finite-field map. |
+
+[Every requested Profile/PairProfile item](QCD.ProfileDrop.001/SchemaAudit.md)
+and the [repository audit ledger](Library.SourceCatalogue.001/RepositoryAudit.md)
+record what was inspected, what was repaired and what remains unproved.
+
 ## Complex rings, cohomology, and visual atlas
 
-The [complex atlas](QCD.ComplexAtlas.001/README.md) studies **13 lattice families**
-over Gaussian and Eisenstein integers, four finite quadratic rings, and four
-explicit polynomial countermodels. It includes 19 GitHub-visible PNG panels,
+The [complex atlas](QCD.ComplexAtlas.001/README.md) studies **19 declared lattice families**
+(thirteen baseline families and six scalar controls) over Gaussian and
+Eisenstein integers, four finite quadratic rings, and four explicit polynomial
+countermodels. It includes 25 GitHub-visible PNG panels,
 exact marked-cycle data, reproduction commands, and a
 [source audit](QCD.ComplexAtlas.001/ResearchAudit.md).
 
 | Result or model | Status and actual gain | What remains separate |
 |---|---|---|
-| [Off-axis raw $`(3,c,2)`$ escape](QCD.ComplexLattice.001/README.md), odd real integral $`c`$ | **Checked theorem:** every nonreal lattice seed escapes; at most $`2v_2(y)`$ ticks to an odd transverse coefficient | Integer-axis dynamics and other parameters |
+| [Independent scalar escape](QCD.ComplexLattice.001/README.md#general-scalar-escape-by-arithmetic-independence), arbitrary real integral $`c`$ | **Checked theorem:** every nonreal lattice seed escapes when $`\lvert q\rvert,\lvert d\rvert\ge2`$ are multiplicatively independent; actual ring and complex-norm recovery | Integer-axis dynamics, dependent magnitudes, nonscalar parameters |
+| [Quantitative raw $`(3,c,2)`$ descent](QCD.ComplexLattice.001/README.md#decreasing-dyadic-rank-and-exact-recovery), odd real integral $`c`$ | **Checked theorem:** at most $`2v_2(y)`$ ticks to an odd transverse coefficient and then an explicit affine tail | The general scalar theorem need not have a last division |
 | [Gaussian split-prime escape](QCD.GaussianDynamics.001/README.md), $`(q,c,d)=(2+i,0,2-i)`$ | **Checked theorem:** every nonzero Gaussian seed escapes although multiplier and divisor have equal norm | Offsets and noncoprime ring parameters |
 | [Ordinary and twisted cohomology](QCD.ComplexCohomology.001/README.md) | **Checked:** ordinary cycle quotient, all finite functional-graph dimensions, actual twisted quotients, and the scalar closing equation $`(1-P)u=B`$ | Branch admissibility, integer reconstruction, and universal capture |
 | [Quadratic Galois fields](QCD.ComplexAtlas.001/README.md#actual-quadratic-galois-fields-with-ramified-negative-controls) | **Checked:** actual $`\mathbb F_9,\mathbb F_4`$ field structures, exhaustive two-element Galois groups, and same-clock affine conjugacy | Ramified nonfields and raw lattice guards remain distinct |
@@ -640,8 +662,12 @@ first-division maps also have their own definitions and clocks.
 
 ## Build
 
-`make` and `make lean` build the formal library. The `tex` profile uses pdfLaTeX
-and BibTeX with `amsalpha`; the `go` profile uses `CGO_ENABLED=0`.
+`make` and `make lean` build the **96 registered default targets**, not every
+Lean file that happens to exist in the working tree. Twelve preserved untracked
+research folders are unregistered and excluded from that claim. The
+[coverage ledger](Library.SourceCatalogue.001/RepositoryAudit.md) also marks the
+large uncompiled historical appendix in the signed-return source. The `tex`
+profile uses pdfLaTeX and BibTeX with `amsalpha`; the `go` profile uses `CGO_ENABLED=0`.
 
 Markdown mathematics uses GitHub's code-protected inline form and `math` fences so
 Markdown preprocessing cannot consume TeX punctuation. Run the offline checks with:

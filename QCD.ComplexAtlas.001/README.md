@@ -1,7 +1,8 @@
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 # QCD.ComplexAtlas.001 — Complex lattices, finite fields, and Julia countermodels
 
-**Executed research:** thirteen exact lattice families, four finite quadratic
+**Executed research:** thirteen baseline lattice families, six additional scalar
+controls, four finite quadratic
 rings, ordinary and twisted cochain checks, and four noncanonical polynomial
 escape-time portraits. Gaussian and Eisenstein **raw** maps, residue-wise
 quotient maps, finite-ring affine maps, and holomorphic maps are explicitly
@@ -113,6 +114,53 @@ inside a square or parallelogram.
 [Gaussian split pair](other/GaussianSplit.png) ·
 [Gaussian quotient minus](other/GaussianJosephMinus.png) ·
 [Eisenstein quotient plus](other/EisensteinResiduePlus.png)
+
+## Independent scalar families and a dependent control
+
+The [general scalar theorem](../QCD.ComplexLattice.001/README.md#general-scalar-escape-by-arithmetic-independence)
+allows arbitrary real integer offsets and signed parameters with independent
+magnitudes at least two. It proves full-sequence escape through injectivity
+of the transverse magnitudes, without assuming an eventual affine tail.
+The additional six families use the same $`97^2`$ seed window and raw clock:
+**56,454 further seeds**, stored separately as `ScalarLattices` in the JSON.
+The combined lattice census has **178,771 seeds**. Its finite counts are:
+
+| Family | Ring | Raw $`(q,c,d)`$ | Proved off-axis escape | Exact-cycle seeds | Coordinate exits |
+|---|---|---|---:|---:|---:|
+| GaussianEvenOffset | Gaussian | $`(3,2,2)`$ | 9,312 | 7 | 90 |
+| GaussianCoprime | Gaussian | $`(2,7,3)`$ | 9,312 | 19 | 78 |
+| GaussianCommonSupport | Gaussian | $`(12,0,18)`$ | 9,312 | 1 | 96 |
+| EisensteinCommonSupport | Eisenstein | $`(12,5,18)`$ | 9,312 | 1 | 96 |
+| GaussianSignedScalar | Gaussian | $`(-2,-3,-3)`$ | 9,312 | 5 | 92 |
+| GaussianDependentScalar | Gaussian | $`(4,0,8)`$ | 0 | 9,409 | 0 |
+
+There are no unresolved prefixes in these six bounded rows. The independent
+rows leave the integer axis separate: its fence exits are **not** certified
+by the off-axis theorem. The dependent row reaches 7,009 marked cycles in
+this window; that finite observation is not an all-seed cycle classification.
+The written and formal five-cycle $`\theta,4\theta,16\theta,2\theta,8\theta`$
+is an exact negative control for dropping independence.
+
+| Even offset, Gaussian | Shared prime support, Gaussian |
+|---|---|
+| ![Gaussian even-offset raw family](other/GaussianEvenOffset.png) | ![Gaussian shared-support raw family](other/GaussianCommonSupport.png) |
+
+| Shared prime support, Eisenstein | Dependent five-cycle family |
+|---|---|
+| ![Eisenstein shared-support raw family](other/EisensteinCommonSupport.png) | ![Gaussian dependent scalar family](other/GaussianDependentScalar.png) |
+
+[Coprime scalar family](other/GaussianCoprime.png) ·
+[Signed scalar family](other/GaussianSignedScalar.png)
+
+The support coincidence is substantive: $`12=2^2\cdot3`$ and
+$`18=2\cdot3^2`$ have the same prime divisors, but exponent minor
+$`2\cdot2-1\cdot1=3\ne0`$. The raw $`(12,0,18)`$ seed $`\theta`$
+divides every third tick forever while its block values grow by eight.
+A "finite division prefix" argument cannot prove this example.
+
+The same-clock coefficient matching between the two orders is proved in
+`ScalarEscape.lean`. It is a dynamical conjugacy, not a ring identification;
+nonscalar multipliers and divisors still depend on the multiplication table.
 
 ## Cohomology with concrete coefficient fields
 

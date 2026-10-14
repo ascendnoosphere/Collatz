@@ -1,0 +1,336 @@
+% SPDX-License-Identifier: CC-BY-4.0
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
+
+\title{Generalized Collatz Library: Scalar Off-Axis Escape on Imaginary Quadratic Orders}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Let \(R=\Z[\theta]\subset\C\), where
+\(\theta^2=\tau\theta-\nu\), \(\tau,\nu\in\Z\), and \(4\nu>\tau^2\).
+For any scalar integral offset \(c\), every nonreal seed of the division-first
+raw map \(z\mapsto z/d\) or \(qz+c\) escapes in the complex norm if
+\(|q|,|d|\ge2\) have no equal positive powers. The conclusion holds along
+the full original raw sequence. The exact transverse identity, rather than
+an eventual division-free tail, excludes every repeated transverse magnitude.
+Integer discreteness completes the proof. Scalar coordinate matching also
+gives a same-clock conjugacy between all these orders, although it is not
+a ring homomorphism. A shared-prime-support example keeps dividing forever,
+and a dependent pair has a primitive nonreal five-cycle.
+\end{abstract}
+
+\section{The original ring and guard}
+
+Fix \(\tau,\nu\in\Z\) with \(4\nu>\tau^2\) and choose
+\[
+\theta=\frac{\tau+i\sqrt{4\nu-\tau^2}}2.
+\]
+Then \(\theta^2=\tau\theta-\nu\) and \(\operatorname{Im}\theta>0\).
+Every element of \(R=\Z[\theta]\) has a unique expression \(x+y\theta\)
+with \(x,y\in\Z\): reduction by the monic quadratic gives existence,
+and equality of imaginary parts followed by real parts gives uniqueness.
+For scalar parameters \(q,c,d\in\Z\), \(|d|\ge2\), define
+\[
+T_{q,c,d}(z)=
+\begin{cases}
+z/d,&z\in dR,\\
+qz+c,&z\notin dR.
+\end{cases}
+\]
+Division has precedence, including at zero; the sign of \(d\) is retained.
+The Gaussian order uses \((\tau,\nu)=(0,1)\), and the Eisenstein order
+uses \((\tau,\nu)=(-1,1)\). This is ring divisibility, not divisibility
+in the fraction field.
+
+% The coordinate guard and quotient are proved in the actual integral ring.
+\begin{lemma}\label{Lem:Guard}
+A scalar \(d\) divides \(x+y\theta\) in \(R\) exactly when \(d\mid x\)
+and \(d\mid y\). Its quotient has coordinates \((x/d,y/d)\), and that
+quotient is unique for \(d\ne0\). Consequently the coordinate map is
+\[
+(x,y)\longmapsto
+\begin{cases}
+(x/d,y/d),&d\mid x\text{ and }d\mid y,\\
+(qx+c,qy),&\text{otherwise}.
+\end{cases}
+\]
+\end{lemma}
+\begin{proof}
+If \(x+y\theta=d(u+v\theta)\), uniqueness of coordinates gives
+\(x=du\) and \(y=dv\). Conversely these two integer equalities construct
+the ring quotient \(u+v\theta\). If two quotients exist, subtract their
+coordinate equalities and cancel the nonzero integer \(d\) in each
+coordinate. No assumption about a chosen branch or a fraction-field
+quotient is needed. Multiplication by a scalar and addition of a scalar
+have the displayed affine coordinates.
+\end{proof}
+
+\section{An exact transverse invariant}
+
+Write \(T^n(z)=x_n+y_n\theta\). Let \(a_n\) and \(b_n\) count affine and
+division instructions among the first \(n\) raw ticks.
+
+% This prefix formula retains every guard and the original raw clock.
+\begin{lemma}\label{Lem:Product}
+For every \(n\ge0\),
+\[
+a_n+b_n=n,\qquad d^{b_n}y_n=q^{a_n}y_0.
+\]
+If \(q\ne0\) and \(y_0\ne0\), then \(y_n\ne0\) for all \(n\).
+\end{lemma}
+\begin{proof}
+At time zero both counts vanish and the product identity is \(y_0=y_0\).
+An affine instruction sends \(y_n\) to \(qy_n\) and adds one to \(a_n\),
+so multiplication by \(q\) preserves the identity. A division instruction
+is legal only if \(d\mid y_n\); it sends \(y_n\) to its exact signed
+quotient and adds one to \(b_n\). The equality
+\(d(y_n/d)=y_n\) preserves the identity. These two cases are exhaustive,
+regardless of how \(x_n\) affects the common guard.
+The right side \(q^{a_n}y_0\) is nonzero under the stated hypotheses,
+so the left side cannot have \(y_n=0\).
+\end{proof}
+
+\begin{definition}\label{Def:Independent}
+Positive integers \(Q,D\ge2\) are multiplicatively independent here if
+\[
+Q^a\ne D^b\quad\text{for every }a,b\in\N_{>0}.
+\]
+This is a condition on their full prime-exponent vectors, not just their
+gcd, their prime supports, or their numerical sizes.
+\end{definition}
+
+% A return would be an arithmetic resonance, independent of the offset.
+\begin{lemma}\label{Lem:Injective}
+Suppose \(|q|,|d|\ge2\) are multiplicatively independent and \(y_0\ne0\).
+Then the sequence \((|y_n|)_{n\ge0}\) is injective.
+\end{lemma}
+\begin{proof}
+Suppose \(i<j\) and \(|y_i|=|y_j|\). Apply Lemma~\ref{Lem:Product}
+to the actual orbit segment starting at time \(i\), of length \(j-i\).
+With its counts \(a,b\), absolute values and cancellation of
+\(|y_i|>0\) give
+\[
+|d|^b=|q|^a,\qquad a+b=j-i>0.
+\]
+Neither exponent can vanish: if \(a=0\) then \(b>0\) and \(|d|^b>1\),
+contradicting the equality; if \(b=0\) the same argument uses \(|q|^a>1\).
+Both positive exponents therefore contradict independence.
+\end{proof}
+
+% Discreteness supplies full-sequence escape rather than an unbounded subsequence.
+\begin{theorem}\label{Thm:Escape}
+Let \(q,c,d\in\Z\), \(|q|,|d|\ge2\), and suppose \(|q|,|d|\) are
+multiplicatively independent. For every nonreal \(z\in R\),
+\[
+\forall B\in\R\ \exists K\in\N\ \forall n\ge K:\quad |T^n(z)|>B.
+\]
+In particular every finite raw cycle lies on the real integer axis.
+\end{theorem}
+\begin{proof}
+A nonreal seed has \(y_0\ne0\). For any integer \(H\ge0\), injectivity
+allows at most \(H+1\) indices with \(|y_n|\le H\), because their values
+belong to \(\{0,\ldots,H\}\). The indices in this finite set have a last
+element if the set is nonempty. Taking \(K\) beyond that last element
+(or \(K=0\) when empty) proves \(|y_n|\to\infty\) along the full sequence.
+Now
+\[
+|T^n(z)|\ge|\operatorname{Im}T^n(z)|
+=(\operatorname{Im}\theta)|y_n|,
+\]
+with a fixed strictly positive factor. For each real \(B\), choose a
+nonnegative integer \(H\) with \((\operatorname{Im}\theta)H>B\), then
+apply the preceding tail statement. A finite cycle would repeat a
+transverse magnitude, so it cannot contain a nonreal point.
+\end{proof}
+
+\begin{remark}
+The argument bounds the number of visits to each bounded transverse set,
+not the last visiting time. It gives no uniform effective escape-time
+bound in \(q,c,d,z,B\). Injectivity alone does not imply monotone growth.
+The real axis is invariant and retains exactly its original signed
+integer map; the theorem does not decide that remaining integer problem.
+\end{remark}
+
+\section{Finite arithmetic certificates and negative controls}
+
+% A small determinant replaces a quantification over all positive exponents.
+\begin{lemma}\label{Lem:Certificate}
+Coprime \(Q,D\ge2\) are multiplicatively independent. More generally,
+if two primes \(p,r\) satisfy
+\[
+v_p(Q)v_r(D)-v_r(Q)v_p(D)\ne0,
+\]
+then \(Q,D\) are multiplicatively independent.
+\end{lemma}
+\begin{proof}
+If \(Q^a=D^b\), coprimality gives
+\(\gcd(Q^a,D^b)=1\), whereas equality makes this gcd \(D^b>1\), a
+contradiction. For the second criterion, take valuations at \(p\) and
+\(r\): \(a v_p(Q)=b v_p(D)\) and
+\(a v_r(Q)=b v_r(D)\). Cross multiplication and subtraction yield
+\(a(v_p(Q)v_r(D)-v_r(Q)v_p(D))=0\). A positive \(a\) and a nonzero
+minor make that impossible.
+\end{proof}
+
+For \(Q=12=2^2 3\), \(D=18=2\,3^2\), the exponent minor is
+\(2\cdot2-1\cdot1=3\ne0\). Thus every nonreal seed escapes for
+\((q,c,d)=(12,c,18)\), for every integer \(c\), even though the two
+coefficients have identical prime support and gcd six.
+
+% The escape mechanism must permit infinitely many legal divisions.
+\begin{lemma}\label{Lem:InfiniteDivisions}
+For \((q,c,d)=(12,0,18)\) and seed \(\theta\), every \(j\ge0\) has the
+three-tick block
+\[
+8^j\theta\longmapsto12\,8^j\theta
+\longmapsto144\,8^j\theta\longmapsto8^{j+1}\theta.
+\]
+In particular the orbit has infinitely many divisions, although it escapes.
+\end{lemma}
+\begin{proof}
+The first transverse coefficient has no factor three, so eighteen does not
+divide it. The second has exactly one factor three, so eighteen does not
+divide it either. The third is divisible by eighteen, and its quotient
+is \(8^{j+1}\). The real coordinate is zero throughout. The blocks
+therefore have exactly their stated guards, and induction gives
+\(T^{3j}(\theta)=8^j\theta\).
+\end{proof}
+
+% Dependence can support genuinely nonreal recurrent raw dynamics.
+\begin{lemma}\label{Lem:Dependent}
+For \((q,c,d)=(4,0,8)\), the seed \(\theta\) has primitive raw period five:
+\[
+\theta\longmapsto4\theta\longmapsto16\theta
+\longmapsto2\theta\longmapsto8\theta\longmapsto\theta.
+\]
+\end{lemma}
+\begin{proof}
+Eight does not divide transverse coefficients one or four, so the first
+two ticks multiply by four. It divides sixteen, so the next tick gives
+two; two is not divisible by eight, so the next gives eight; the last tick
+divides eight. The five listed transverse coefficients are distinct.
+Also \(4^3=8^2\), exactly the excluded positive-power resonance.
+\end{proof}
+
+\section{A dynamical conjugacy, not an identification of rings}
+
+% Scalar dynamics forgets the multiplication table without forgetting its guards.
+\begin{theorem}\label{Thm:Transfer}
+Let \(R'=\Z[\theta']\) be another imaginary quadratic coordinate order.
+The coefficient matching
+\[
+\Phi(x+y\theta)=x+y\theta'
+\]
+is a bijection and satisfies
+\(\Phi\circ T_{q,c,d}=T'_{q,c,d}\circ\Phi\).
+It retains the original raw clock and the complete return-time set.
+It need not preserve ring multiplication.
+\end{theorem}
+\begin{proof}
+The inverse matches coefficients in the opposite direction.
+Lemma~\ref{Lem:Guard} gives the same two integer divisibility tests in
+both orders and the same scalar affine and division formulas. Thus the
+one-tick identity holds in both branches; induction gives the identity
+at every raw time. Bijectivity reflects as well as preserves each return.
+For the last assertion, match the Gaussian basis element \(i\) to the
+Eisenstein basis element \(\omega\). Then
+\(\Phi(i^2)=\Phi(-1)=-1\), whereas
+\(\Phi(i)^2=\omega^2=-1-\omega\ne-1\).
+\end{proof}
+
+\section{Reduction record and verification scope}
+
+\paragraph{Original obligation.}
+Classify the off-axis raw behavior for independent scalar parameters on
+every specified imaginary quadratic order, retaining arbitrary real
+integral offset and the full raw clock.
+\paragraph{Replacement obligations.}
+Prove actual ring-to-coordinate recovery; derive the transverse prefix
+identity; exclude repeated magnitude by arithmetic independence; use the
+local finiteness of the nonnegative integers and recover the complex norm.
+\paragraph{Recovery.}
+Lemma~\ref{Lem:Guard} preserves each guard, quotient and raw state.
+Theorem~\ref{Thm:Escape} quantifies every real norm bound and all later
+raw times. No unproved last-division assertion enters recovery.
+\paragraph{Difficulty decrease.}
+The two-coordinate adaptive guard no longer has to be solved. Its only
+needed effect is an exactly integral division of the transverse coordinate.
+The residual obstruction is a coefficient resonance, refuted by a finite
+prime-exponent minor on each certified parameter pair, followed by finite
+counting at each fixed height. This is a solved parameter subclass, not a
+reduction of the remaining axis or dependent-scalar classification.
+\paragraph{Preservation conditions.}
+Scalar integral \(q,c,d\); \(|q|,|d|\ge2\); independence of absolute
+magnitudes; a free integral quadratic basis with positive imaginary part;
+and a nonzero transverse coefficient. Nonreal offsets, nonscalar divisors
+and residue-wise quotient maps are not included.
+
+\paragraph{Formal correspondence.}
+The complete proof is in
+\texttt{QCD.ComplexLattice.001/lean/ScalarEscape.lean}.
+Lemma~\ref{Lem:Guard} corresponds to
+\texttt{ScalarDivides}, \texttt{ScalarQuotient}, \texttt{ScalarUnique},
+\texttt{RingCoordinates} and \texttt{RingCoordinatesIter}.
+Lemma~\ref{Lem:Product} is \texttt{TransverseProduct} and
+\texttt{TransverseNonzero}; Lemma~\ref{Lem:Injective} is
+\texttt{NoMagnitudeReturn} and \texttt{MagnitudeInjective};
+Theorem~\ref{Thm:Escape} is \texttt{OffAxisEscape} and
+\texttt{ComplexOffAxisEscape}, using the checked complex embedding and
+norm bound from \texttt{ComplexLattice.lean}.
+Lemma~\ref{Lem:Certificate} is \texttt{CoprimeIndependent} and
+\texttt{ExponentIndependent}; the shared-support certificate is
+\texttt{TwelveEighteenIndependent}.
+Lemmas~\ref{Lem:InfiniteDivisions} and \ref{Lem:Dependent} are
+\texttt{CommonSupportBlock}, \texttt{CommonSupportIterate} and
+\texttt{DependentFiveCycle}.
+Theorem~\ref{Thm:Transfer} is \texttt{OrderTransferInverse},
+\texttt{OrderTransferRaw}, \texttt{OrderTransferIterate} and
+\texttt{OrderTransferNotMultiplicative}.
+
+\paragraph{Computational scope and prior conventions.}
+The Go atlas produces additional scalar-family pictures and verifies
+bounded signed arithmetic against independent exact references. Its
+prime-exponent certificate accepts magnitudes at most \(65536\); this
+implementation range is not a hypothesis of the Lean theorem.
+A bounded trajectory cutoff is not itself an escape proof.
+The residue-wise Gaussian convention described by Kucinski
+\cite{Kucinski00} instead uses residue-dependent affine numerators followed
+by division. Its nonreal cycles are not counterexamples to this raw map.
+Only that definition and distinction are used here; no external global
+classification theorem is imported.
+
+\bibliographystyle{amsalpha}
+\bibliography{ScalarEscape}
+
+\end{document}

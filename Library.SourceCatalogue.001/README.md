@@ -12,6 +12,17 @@ The source remains read-only. The public evidence below was regenerated from tha
 source with [Inventory.go](go/Inventory.go), not copied from a success report.
 Its five outputs agree byte-for-byte with the preceding private inventory.
 
+## Checked repository update
+
+The [repository audit](RepositoryAudit.md) records the new scalar-escape and
+precision proofs, mathematical repairs, six bounded review lanes and freshly
+executed repository checks. It distinguishes semantic coverage from build success.
+The archive reader now binds member listings to a verified private snapshot with
+explicit byte/output/time budgets. The new fixtures passed, but **the historical
+production census below was not rescanned in this update**; its numbers retain
+their original evidence scope. Ancestor-path hardening and multi-file output
+transactionality remain limitations.
+
 ## Executed finite scope
 
 | Quantity | Checked result |
