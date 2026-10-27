@@ -88,6 +88,7 @@ defaultTargets = [
   "TerminalConverse",
   "SecondBurst",
   "PairedTails",
+  "SwarmLemma",
   "RecursiveClose",
   "NoCrossing",
   "ParentRise",
@@ -498,6 +499,10 @@ srcDir = "QCD.ClassicalCoalescence.001/lean"
 [[lean_lib]]
 name = "PairedTails"
 srcDir = "QCD.ClassicalCoalescence.001/lean"
+
+[[lean_lib]]
+name = "SwarmLemma"
+srcDir = "QCD.SwarmAttack.001/lean"
 
 [[lean_lib]]
 name = "RecursiveClose"

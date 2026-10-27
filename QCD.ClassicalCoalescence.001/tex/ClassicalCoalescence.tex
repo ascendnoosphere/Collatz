@@ -41,9 +41,10 @@ We give exact smaller-parent certificates for the classical shortcut map,
 including certificates whose meeting point lies above the original seed.
 Four elementary rules reduce capture to an explicitly described residual
 set of natural density \(1/12\). Three further legal words reduce that set
-to density \(11/216\). Two second-burst rules, uniform in the burst length,
-then reduce the residual density to \(11/324\). All covered seeds retain
-uniform contraction of their original parent labels.
+to density \(11/216\). Two second-burst rules, uniform in the burst length, and two paired-tail
+rules reduce the residual density to \(89419/2654208\). Eight explicit
+direct-descent cylinders reduce it further to \(65659/2654208\). All
+covered seeds retain uniform contraction of their original parent labels.
 We also give an exact valuation budget for repetitions of any fixed word
 and classify terminal powers within the initial prefix \(1^a01\).
 Every reduction retains both orbit clocks and the strict parent inequality.
@@ -705,6 +706,528 @@ at each parent choice, and after \(j\) choices it is at most
 This remains a conditional reduction, not capture of the residual.
 \end{proof}
 
+\section{Direct descents in the residual}
+
+% These cylinders give forward descents rather than nontrivial parent-side words.
+\begin{theorem}[Eight residual cylinders]\label{thm:EightResidualCylinders}
+Let \(\mathcal C\) be the disjoint union of the seven cylinders
+\[
+\begin{aligned}
+\mathcal C={}&\{n:n\equiv175,199\pmod{256}\}\\
+&{}\cup\{n:n\equiv287,367,507,583,815\pmod{1024}\},
+\end{aligned}
+\]
+and put \(\mathcal K=\{123+256t:t\ge0\}\). Every member \(n\) of
+\(\mathcal C\) has a direct descendant \(p\) with \(24p\le23n\), as follows:
+\[
+\begin{array}{c|c|c|c}
+n&\text{shortcut word}&p&\text{raw ticks}\\ \hline
+175+256t&11110100&167+243t&13\\
+199+256t&11101010&190+243t&13\\
+287+1024t&1111101000&205+729t&16\\
+367+1024t&1111011000&262+729t&16\\
+507+1024t&1101101100&362+729t&16\\
+583+1024t&1110101100&416+729t&16\\
+815+1024t&1111010100&581+729t&16
+\end{array}
+\]
+Every member of \(\mathcal K\) satisfies
+\[
+\begin{aligned}
+T^8(123+256t)&=118+243t<123+256t,\\
+123(118+243t)&\le118(123+256t).
+\end{aligned}
+\]
+Its shortcut word is \(11011010\), so it takes thirteen raw ticks. Moreover,
+\[
+\begin{aligned}
+d(\mathcal R_{\dagger}\cap\mathcal C)&=\frac{143}{20736},\\
+d(\mathcal R_{\dagger}\cap\mathcal K)&=\frac{341}{165888}.
+\end{aligned}
+\]
+The sets \(\mathcal C\) and \(\mathcal K\) are disjoint. Hence, for
+\[
+\mathcal R_{\mathrm D}
+ =\mathcal R_{\dagger}\setminus(\mathcal C\cup\mathcal K),
+\]
+one has
+\[
+d(\mathcal R_{\mathrm D})=\frac{65659}{2654208}.
+\]
+Every \(n>1\) outside \(\mathcal R_{\mathrm D}\) has a positive smaller
+parent \(p\) with \(123p\le118n\). Parent reduction reaches one or
+\(\mathcal R_{\mathrm D}\) after at most
+\[
+\left\lceil\frac{\log n}{\log(123/118)}\right\rceil
+\]
+reductions. Capture on \(\mathcal R_{\mathrm D}\) implies universal positive
+capture; capture on this new residual is not proved.
+\end{theorem}
+\begin{proof}
+For a fixed parity word, write its affine action as
+\[
+T^j(n)=\frac{A_jn+B_j}{2^j}.
+\]
+Starting from \((A_0,B_0)=(1,0)\), an even letter replaces
+\((A_j,B_j)\) by \((A_j,B_j)\), while an odd letter replaces it by
+\((3A_j,3B_j+2^j)\). The denominator doubles in either case. Applying this
+recurrence to the seven displayed words gives
+\[
+\begin{array}{c|c}
+\text{word}&T^h(n)\\ \hline
+11110100&(3^5n+227)/2^8\\
+11101010&(3^5n+283)/2^8\\
+1111101000&(3^6n+697)/2^{10}\\
+1111011000&(3^6n+745)/2^{10}\\
+1101101100&(3^6n+1085)/2^{10}\\
+1110101100&(3^6n+977)/2^{10}\\
+1111010100&(3^6n+809)/2^{10}.
+\end{array}
+\]
+Substitution gives the listed endpoints and makes each final numerator
+divisible by its word denominator. For a prefix numerator \(N_j\), the full
+numerator has the form \(3^sN_j+2^jC\). Since \(3^s\) is odd, divisibility
+by \(2^h\) implies \(2^j\mid N_j\). Integrality of the next state then
+forces the input parity to be the displayed letter. Thus every prefix is legal
+throughout each cylinder. The contraction calculations are
+\[
+\begin{array}{c|c}
+\text{source cylinder}&23n-24p\\ \hline
+175+256t&17+56t\\
+199+256t&17+56t\\
+287+1024t&1681+6056t\\
+367+1024t&2153+6056t\\
+507+1024t&2973+6056t\\
+583+1024t&3425+6056t\\
+815+1024t&4801+6056t.
+\end{array}
+\]
+They prove positivity, strict decrease, and \(24p\le23n\). Counting odd
+letters gives the raw times.
+
+We next identify the portion of these cylinders still in the residual. Their
+first two burst factorizations are summarized by
+\[
+\begin{array}{c|c|c|c|c}
+n&a&u&b&v\\ \hline
+175+256t&4&11+16t&1&223+324t\\
+199+256t&3&25+32t&1&169+216t\\
+287+1024t&5&9+32t&1&547+1944t\\
+367+1024t&4&23+64t&2&233+648t\\
+507+1024t&2&127+256t&2&143+288t\\
+583+1024t&3&73+128t&1&493+864t\\
+815+1024t&4&51+64t&1&1033+1296t.
+\end{array}
+\]
+Thus every entry has \(3^au+1=2^{b+1}v\). The source residues modulo
+\(32\) are respectively \(15,7,31,15,27,7,15\), never \(11\).
+The second-burst terminal guard is \(3\pmod4\) on every row to which it
+applies, and \(b\le2\) excludes every \(\mathcal H_a\). Only the rows
+starting at \(367\) and \(507\) can meet a \(\mathcal J_a\) guard, but
+\[
+\begin{aligned}
+3^bv&\equiv49+200t\pmod{256}&&\text{for }n=367+1024t,\\
+3^bv&\equiv7+32t\pmod{256}&&\text{for }n=507+1024t.
+\end{aligned}
+\]
+The first is \(1\pmod8\), and the second is \(7\pmod{32}\); neither can
+be \(43\pmod{256}\). Consequently, on each cylinder, membership in
+\(\mathcal R_{\dagger}\) is exactly the conjunction
+\[
+3\nmid u,\qquad n\not\equiv4\pmod9,
+\qquad n\not\equiv10\pmod{81}.
+\]
+As \(t\) runs modulo \(81\), these three exclusions remove respectively
+\(27,9,1\) classes. They are pairwise disjoint: \(3\mid u\) forces
+\(3\mid n+1\), which is incompatible with either displayed source exclusion,
+and the classes \(4\pmod9\) and \(10\pmod{81}\) differ modulo \(9\).
+They leave \(44\) classes. Modulo \(1024\), the seven dyadic cylinders
+expand to the thirteen distinct classes
+\[
+175,199,287,367,431,455,507,583,687,711,815,943,967.
+\]
+They are therefore disjoint and have total density
+\[
+\frac2{256}+\frac5{1024}=\frac{13}{1024}.
+\]
+The Chinese remainder theorem now gives
+\[
+d(\mathcal R_{\dagger}\cap\mathcal C)
+ =\frac{13}{1024}\frac{44}{81}=\frac{143}{20736}.
+\]
+
+For the remaining cylinder, the complete shortcut itinerary is
+\[
+\begin{aligned}
+123+256t&\longmapsto185+384t\longmapsto278+576t
+ \longmapsto139+288t\longmapsto209+432t\\
+&\longmapsto314+648t\longmapsto157+324t
+ \longmapsto236+486t\longmapsto118+243t.
+\end{aligned}
+\]
+The input constants have parities \(11011010\), while every coefficient of
+\(t\) is even. Positivity and descent follow from
+\[
+(123+256t)-(118+243t)=5+13t>0,
+\]
+and the uniform comparison follows from
+\[
+118(123+256t)-123(118+243t)=319t\ge0.
+\]
+Writing \(n=4(31+64t)-1\) gives \(a=2\), \(u=31+64t\), and
+\[
+9u+1=8(35+72t),
+\]
+so \(b=2\), \(v=35+72t\). Here \(n\equiv27\pmod{32}\), the terminal
+guard is \(3^bv\equiv3\pmod4\), and
+\[
+3^bv=315+648t\equiv43\pmod{256}
+\iff t\equiv30\pmod{32}.
+\]
+The initial and odd-modulus guards reduce to
+\[
+\begin{aligned}
+3\nmid u&\iff t\not\equiv2\pmod3,\\
+n\equiv4\pmod9&\iff t\equiv4\pmod9,\\
+n\equiv10\pmod{81}&\iff t\equiv10\pmod{81}.
+\end{aligned}
+\]
+Thus substitution in all earlier guards gives
+\[
+123+256t\in\mathcal R_{\dagger}
+\iff
+\begin{cases}
+t\not\equiv2\pmod3,\\
+t\not\equiv4\pmod9,\\
+t\not\equiv10\pmod{81},\\
+t\not\equiv30\pmod{32}.
+\end{cases}
+\]
+The first three conditions retain \(44\) classes modulo \(81\), and the
+last retains \(31\) classes modulo \(32\). Hence
+\[
+d(\mathcal R_{\dagger}\cap\mathcal K)
+ =\frac1{256}\frac{44}{81}\frac{31}{32}
+ =\frac{341}{165888}.
+\]
+The source classes of \(\mathcal C\) are never \(123\pmod{256}\), proving
+disjointness. Subtracting both removed densities from
+\(89419/2654208\) gives \(65659/2654208\).
+
+On the eight direct cylinders, take the displayed endpoint as parent. Outside
+\(\mathcal R_{\dagger}\), retain the earlier parent. The comparisons
+\[
+\frac89<\frac{118}{123},\qquad
+\frac{23}{24}<\frac{118}{123}
+\]
+show that every chosen parent satisfies \(123p\le118n\). Strong induction
+gives the capture implication, and iteration of \(p\le(118/123)n\) gives
+the parent-depth bound. This bounds parent choices, not forward stopping time.
+\end{proof}
+
+\section{Twenty-four further certificates}
+
+The next finite family gives a substantial direct-descent gain, while two
+deep cylinders resolve the first residual trajectory and one affine join
+resolves the next residual seed. We first record the lifting argument that
+turns each finite base calculation into a uniform cylinder identity.
+
+% This lemma converts one checked base trajectory into a uniform symbolic cylinder.
+\begin{lemma}[Dyadic cylinder lifting]\label{lem:DyadicLifting}
+Suppose the first \(h\) shortcut inputs on the trajectory from \(c\) have
+exactly \(r\) odd members. Then, for every \(t\ge0\), those \(h\) parity
+decisions are unchanged after replacing \(c\) by \(c+2^ht\), and
+\[
+T^h(c+2^ht)=T^h(c)+3^rt.
+\]
+\end{lemma}
+\begin{proof}
+After \(j\) steps, let \(r_j\) be the number of odd inputs among the first
+\(j\) base steps. Induction on \(j\) gives
+\[
+T^j(c+2^ht)=T^j(c)+3^{r_j}2^{h-j}t
+\qquad(0\le j\le h).
+\]
+For \(j<h\), the added term is even, so the next parity agrees with that of
+the base state. An even step divides the added term by two, while an odd
+step multiplies it by three and then divides it by two. These are exactly
+the two induction updates. At \(j=h\), the formula is the claimed identity.
+\end{proof}
+
+Let \(\mathcal A\) be the union of the twenty-one source cylinders in the
+following tables. In the first table \(h=10\) and \(q=729\); in the second,
+\(h=12\) and \(q=2187\). Each row means
+\[
+n=r+2^ht,\qquad T^h(n)=p_0+qt\qquad(t\ge0).
+\]
+The column \(B\) records the affine word map
+\(F_w(x)=(qx+B)/2^h\), and \(\Delta=3r-4p_0\).
+\[
+\begin{array}{r|c|r|r|r}
+r&w&p_0&B&\Delta\\ \hline
+347&1101110100&248&989&49\\
+423&1110110100&302&881&61
+\end{array}
+\]
+\[
+\begin{array}{r|c|r|r|r}
+r&w&p_0&B&\Delta\\ \hline
+2203&110111101000&1177&3031&1901\\
+3675&110111011000&1963&3223&3173\\
+2907&110111010100&1553&3479&2509\\
+1787&110110111000&955&3511&1541\\
+1019&110110110100&545&3767&877\\
+3143&111010110100&1679&3443&2713\\
+3911&111010111000&2089&3187&3377\\
+1703&111011011000&910&2899&1469\\
+935&111011010100&500&3155&805\\
+231&111011101000&124&2707&197\\
+3119&111101011000&1666&2683&2693\\
+2351&111101010100&1256&2939&2029\\
+1647&111101101000&880&2491&1421\\
+879&111101100100&470&2747&757\\
+2031&111101110000&1085&2363&1753\\
+2591&111110101000&1384&2347&2237\\
+1823&111110100100&974&2603&1573\\
+2975&111110110000&1589&2219&2569\\
+2239&111111010000&1196&2123&1933
+\end{array}
+\]
+The first two words have six odd letters and use sixteen raw ticks; the
+remaining words have seven odd letters and use nineteen raw ticks.
+
+Define three more source families
+\[
+\begin{aligned}
+\mathcal K_{2075}&=\{2075+8192t:t\ge0\},\\
+\mathcal K_{27}&=\{27+2^{59}t:t\ge0\},\\
+\mathcal K_{111}&=\{111+2^{15}3^7t:t\ge0\}.
+\end{aligned}
+\]
+
+% The theorem accounts for every overlap before subtracting the new density.
+\begin{theorem}[Twenty-four residual certificates]\label{thm:FurtherCertificates}
+Every source \(n\in\mathcal A\) has the displayed direct descendant \(p\),
+and
+\[
+4p<3n.
+\]
+The two deep direct cylinders satisfy
+\[
+\begin{aligned}
+T^{13}(2075+8192t)&=1663+6561t,&6(1663+6561t)&\le5(2075+8192t),\\
+T^{59}(27+2^{59}t)&=23+3^{37}t,&7(23+3^{37}t)&\le6(27+2^{59}t).
+\end{aligned}
+\]
+Their raw clocks are respectively \(21\) and \(96\).
+For \(n=111+2^{15}3^7t\), the smaller parent
+\[
+p=103+2^{26}t
+\]
+has the common descendant
+\[
+T(n)=T^{12}(p)=167+2^{14}3^8t,
+\qquad 123p\le118n.
+\]
+
+All twenty-four source families are pairwise disjoint after intersection
+with \(\mathcal R_{\mathrm D}\). More precisely,
+\[
+\begin{aligned}
+d(\mathcal R_{\mathrm D}\cap\mathcal A)&=\frac{1529}{442368},\\
+d(\mathcal R_{\mathrm D}\cap\mathcal K_{2075})&=\frac{77}{1327104},\\
+d(\mathcal R_{\mathrm D}\cap\mathcal K_{27})
+ &=\frac{11}{11673330234144325632},\\
+\mathcal K_{111}&\subset\mathcal R_{\mathrm D},
+&d(\mathcal K_{111})&=\frac1{71663616}.
+\end{aligned}
+\]
+Consequently, for
+\[
+\mathcal R_{\mathrm E}=\mathcal R_{\mathrm D}\setminus
+ (\mathcal A\cup\mathcal K_{2075}\cup\mathcal K_{27}
+  \cup\mathcal K_{111}),
+\]
+one has
+\[
+d(\mathcal R_{\mathrm E})
+ =\frac{6689147268412473047}{315179916321896792064}.
+\]
+Every \(n>1\) outside \(\mathcal R_{\mathrm E}\) has a positive
+orbit-linked parent \(p<n\) with \(123p\le118n\). Capture on
+\(\mathcal R_{\mathrm E}\) therefore implies universal positive capture,
+and parent reduction reaches one or \(\mathcal R_{\mathrm E}\) within
+\[
+\left\lceil\frac{\log n}{\log(123/118)}\right\rceil
+\]
+reductions. Capture on \(\mathcal R_{\mathrm E}\) is not proved.
+\end{theorem}
+\begin{proof}
+For each row of \(\mathcal A\), the affine recurrence
+\[
+(P,Q,B)\longmapsto
+\begin{cases}
+(P,2Q,B),&0,\\
+(3P,2Q,3B+Q),&1
+\end{cases}
+\]
+gives exactly the displayed word, coefficient, and offset. The endpoint
+relations are equivalently
+\[
+729r+B=1024p_0
+\quad\text{or}\quad
+2187r+B=4096p_0.
+\]
+Lemma~\ref{lem:IntegerCylinder} proves legality, and
+Lemma~\ref{lem:DyadicLifting} gives every uniform endpoint. The positive
+last column gives
+\[
+3n-4p=\Delta+(3\cdot2^h-4q)t>0.
+\]
+The two coefficients of \(t\) are respectively \(156\) and \(3540\).
+
+For \(2075\), the base trajectory is
+\[
+\begin{aligned}
+2075&\to3113\to4670\to2335\to3503\to5255\to7883\\
+&\to11825\to17738\to8869\to13304\to6652\to3326\to1663.
+\end{aligned}
+\]
+It has word \(1101111101000\), with eight odd inputs. Dyadic lifting gives
+the first deep identity. Its order follows from
+\[
+n-p=412+1631t,
+\qquad5n-6p=397+1594t.
+\]
+For \(27\), the base trajectory through its first descent is
+\[
+\begin{aligned}
+27,&41,62,31,47,71,107,161,242,121,182,91,137,206,103,155,\\
+&233,350,175,263,395,593,890,445,668,334,167,251,377,566,\\
+&283,425,638,319,479,719,1079,1619,2429,3644,1822,911,1367,\\
+&2051,3077,4616,2308,1154,577,866,433,650,325,488,244,122,\\
+&61,92,46,23.
+\end{aligned}
+\]
+Its fifty-nine inputs contain thirty-seven odd members. Dyadic lifting gives
+the second identity, and
+\[
+6(27+2^{59}t)-7(23+3^{37}t)
+ =1+306777172583559387t>0.
+\]
+Counting odd shortcut inputs gives both raw clocks.
+
+The parent trajectory from \(103\) has word \(111011110100\), eight odd
+inputs, and endpoint \(167\). Lemma~\ref{lem:DyadicLifting} gives
+\[
+T^{12}(103+2^{26}t)=167+2^{14}3^8t.
+\]
+The odd branch gives the same expression from
+\(111+2^{15}3^7t\). Positivity, strict decrease, and the global comparison
+follow from
+\[
+n-p=8+(2^{15}3^7-2^{26})t>0,
+\qquad118n-123p=429+201916416t>0.
+\]
+
+We next count only sources still in \(\mathcal R_{\mathrm D}\). The
+cylinders in \(\mathcal A\) are prefix-free: the two depth-ten residues are
+\(347,423\pmod{1024}\), while the nineteen depth-twelve residues reduce to
+\[
+\begin{gathered}
+155,603,859,763,1019,71,839,679,935,231,\\
+47,303,623,879,1007,543,799,927,191
+\end{gathered}
+\pmod{1024}.
+\]
+These are distinct and avoid all eight earlier direct cylinders. Exact
+substitution into the \(\mathcal H_a\) and \(\mathcal J_a\) guards leaves
+the following nontrivial parameter factors:
+\[
+\begin{array}{c|c|c}
+r&3^bv\pmod{256}&\text{retained fraction}\\ \hline
+347&43+48t&15/16\\
+423&75+48t&15/16\\
+2203&11+32t&7/8\\
+231&43+32t&7/8\\
+1647&171+32t&7/8\\
+2031&209+176t&15/16
+\end{array}
+\]
+The forbidden parameter classes, in table order, are
+\[
+0,10\pmod{16};\qquad1,0,4\pmod8;\qquad1\pmod{16}.
+\]
+Direct substitution in the other fifteen rows gives no \(\mathcal H\) or
+\(\mathcal J\) solution. The \(a=2,3\) rows also have terminal residue
+three modulo four, so they avoid \(\mathcal S_2\cup\mathcal S_3\).
+On every retained dyadic parameter class, the three odd-modulus exclusions
+remove disjoint sets of \(27,9,1\) classes modulo \(81\), leaving the factor
+\(44/81\). Therefore
+\[
+\begin{aligned}
+d(\mathcal R_{\mathrm D}\cap\mathcal A)
+ &=\frac{44}{81}\left(
+   \frac{2(15/16)}{2^{10}}
+  +\frac{15+(15/16)+3(7/8)}{2^{12}}\right)\\
+ &=\frac{44}{81}\frac{417}{65536}
+ =\frac{1529}{442368}.
+\end{aligned}
+\]
+
+For the \(2075\)-cylinder, substitution in every earlier guard gives
+\[
+2075+8192t\in\mathcal R_{\mathrm D}
+\Longleftrightarrow
+\begin{cases}
+t\not\equiv0\pmod3,\\
+t\not\equiv4\pmod9,\\
+t\not\equiv70\pmod{81},\\
+t\not\equiv5\pmod8.
+\end{cases}
+\]
+The first three exclusions are disjoint and leave forty-four classes modulo
+\(81\); the last leaves seven modulo eight. This proves its density.
+For the \(27\)-cylinder, the exact equivalence is
+\[
+27+2^{59}t\in\mathcal R_{\mathrm D}
+\Longleftrightarrow
+\begin{cases}
+t\not\equiv1\pmod3,\\
+t\not\equiv8\pmod9,\\
+t\not\equiv2\pmod{81}.
+\end{cases}
+\]
+It leaves forty-four classes modulo \(81\), proving the third density.
+
+Finally, every member of \(\mathcal K_{111}\) has
+\[
+a=4,
+\quad u=7+2^{11}3^7t,
+\quad b=2,
+\quad v=71+2^8 3^{11}t.
+\]
+Thus \(3\nmid u\), and its source residues are
+\[
+\begin{gathered}
+3\pmod9,\qquad30\pmod{81},\\
+15\pmod{32},\qquad3^bv\equiv127\pmod{256}.
+\end{gathered}
+\]
+It survives every earlier guard and is \(111\pmod{1024}\). Every source
+in either deep direct cylinder is \(27\pmod{1024}\); the \(2075\)-cylinder
+is \(2075\pmod{8192}\), while the deep \(27\)-cylinder is
+\(27\pmod{8192}\). The residue list for \(\mathcal A\) contains neither
+\(27\) nor \(111\pmod{1024}\). Thus the twenty-four families are pairwise
+disjoint, which permits subtraction of all four listed densities. Reducing
+that exact difference gives the displayed density of
+\(\mathcal R_{\mathrm E}\).
+
+For newly removed sources, take the displayed descendant or parent; all four
+contraction factors are below \(118/123\). Elsewhere retain the parent from
+Theorem~\ref{thm:EightResidualCylinders}. Strong induction proves recovery.
+Iterating \(p\le(118/123)n\) gives the stated parent-depth bound.
+\end{proof}
 \section{Exact repeated-word budget}
 
 For a nonempty binary word \(w\) of length \(h\), compose the rational
@@ -752,7 +1275,20 @@ Multiplication and telescoping give
 Both \(P\) and \(P-Q\) are odd, so each is a unit modulo \(Q^k\).
 Consequently \(Q^k\mid N_k\) if and only if \(Q^k\mid D_w(n)\).
 The cylinder criterion supplies legality. The valuation statement
-follows since \(Q^k=2^{hk}\). For \(k=0\) both assertions are automatic.
+follows since \(Q^k=2^{hk}\). For \(k=0\) the legality and divisibility
+conditions are both automatic.
+
+The Lean proof uses the same budget through a one-copy transport identity.
+For a legal copy with endpoint \(m=F_w(n)\), the affine equation gives
+\[
+D_w(n)=Q(m-n),\qquad D_w(m)=P(m-n).
+\]
+Since \(P\) is odd, it is coprime to \(Q^k\). Cancelling these factors
+shows that \(Q^{k+1}\mid D_w(n)\) is equivalent to
+\(Q^k\mid D_w(m)\). The cylinder criterion supplies the first legal copy,
+and induction on \(k\) proves the repetition criterion. This also covers
+the empty word when \(P=Q=1\) and \(B=0\); the valuation formula requires
+\(h>0\) as stated.
 \end{proof}
 
 For \(w=110\), one has \((P,Q,B)=(9,8,5)\), hence the budget is
@@ -760,6 +1296,205 @@ For \(w=110\), one has \((P,Q,B)=(9,8,5)\), hence the budget is
 \(D_w(n)>0\), because \(B\ge0\); such a word cannot repeat forever.
 The theorem concerns repetitions of one fixed word, not switching
 between different words.
+
+\section{A bounded-depth obstruction}
+
+% This obstructs finite dyadic covers using only the two certificate types below.
+For \(t\ge0\), put \(n(t)=27+1024t\). Its first two valuation blocks satisfy
+\[
+n(t)=2^2(7+256t)-1,
+\qquad
+9(7+256t)+1=2^6(1+36t).
+\]
+Thus \(a=2\), \(b=5\), and \(v=1+36t\). Substitution in all the
+guards defining \(\mathcal R_{\mathrm D}\) gives the exact test
+\begin{equation}\label{eq:TwentySevenResidual}
+n(t)\in\mathcal R_{\mathrm D}
+\quad\Longleftrightarrow\quad
+\begin{cases}
+t\not\equiv2\pmod3,\\
+t\not\equiv7\pmod9,\\
+t\not\equiv76\pmod{81},\\
+t\not\equiv42\pmod{64}.
+\end{cases}
+\end{equation}
+Indeed, the first three conditions are respectively \(3\nmid u\),
+\(n\not\equiv4\pmod9\), and \(n\not\equiv10\pmod{81}\). The
+second-burst guard fails because \(3^5v\equiv3\pmod4\), while the only
+applicable paired-tail guard is
+\[
+3^5v\equiv43\pmod{256}
+\quad\Longleftrightarrow\quad t\equiv42\pmod{64}.
+\]
+The class \(27\pmod{1024}\) is in none of the eight direct cylinders.
+
+For \(L\ge1\), let \(\tau_L\) be the unique residue modulo \(2^L\)
+such that
+\begin{equation}\label{eq:TauDefinition}
+183+6561\tau_L\equiv0\pmod{2^L}.
+\end{equation}
+It exists uniquely because \(6561\) is odd. For \(L\ge6\), reduction
+modulo \(64\) gives \(\tau_L\equiv41\pmod{64}\). Define
+\[
+\mathcal E_L=
+\left\{27+1024t:
+\begin{array}{l}
+t\equiv\tau_L\pmod{2^L},\\
+t\not\equiv2\pmod3,\\
+t\not\equiv7\pmod9,\\
+t\not\equiv76\pmod{81}
+\end{array}
+\right\}.
+\]
+For \(1\le d\le5\), put
+\[
+\begin{aligned}
+p_d(t)&=2^{5-d}(1+36t)-1,\\
+X(t)&=242+8748t,
+&Y_d(t)&=3^{5-d}(1+36t)-1.
+\end{aligned}
+\]
+We allow the empty word, which has length zero, is legal at every integer,
+has \(F_{\varnothing}\) equal to the identity, and satisfies
+\(r(\varnothing)=0\).
+
+\begin{theorem}[Bounded-depth obstruction]\label{thm:BoundedDepthObstruction}
+For every \(H\ge1\), choosing \(L\ge\max\{6,H\}\) gives an infinite
+set \(\mathcal E_L\subset\mathcal R_{\mathrm E}\) of density
+\[
+d(\mathcal E_L)=\frac{44}{81\cdot2^{L+10}}
+\]
+with the following properties.
+\begin{enumerate}
+\item No \(n\in\mathcal E_L\) has \(T^j(n)<n\) for
+      \(1\le j\le H\).
+\item None of the five smaller parents \(p_d(t)\) admits a uniform
+affine-tail collision with the source using fixed words of lengths at most
+\(H\) that are legal at their respective source and parent inputs on any
+nonempty intersection of \(\mathcal E_L\) with a parameter congruence
+\(t\equiv c\pmod{2^M}\).
+\end{enumerate}
+More precisely, put
+\[
+C=\{t\ge0:n(t)\in\mathcal R_{\mathrm E}\}.
+\]
+There is no finite cover of \(C\) by sets
+\[
+C_i=C\cap\{t:t\equiv c_i\pmod{2^{M_i}}\},
+\qquad M_i\ge0,
+\]
+such that every \(C_i\) has one fixed certificate of either form:
+\begin{enumerate}[label=(\alph*)]
+\item a time \(j_i\ge1\) for which \(T^{j_i}(n(t))<n(t)\) throughout
+      \(C_i\); or
+\item a number \(d_i\in\{1,\ldots,5\}\), two possibly empty words
+      \(w_{s,i},w_{p,i}\) of respective lengths \(h_{s,i},h_{p,i}\),
+      such that for every \(t\in C_i\), the words are legal at
+      \(X(t),Y_{d_i}(t)\), respectively, and
+\[
+F_{w_{s,i}}(X(t))=F_{w_{p,i}}(Y_{d_i}(t)).
+\]
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+The first ten shortcut iterates are
+\[
+\begin{aligned}
+T^0(n(t))&=27+1024t,  &T^1(n(t))&=41+1536t,\\
+T^2(n(t))&=62+2304t, &T^3(n(t))&=31+1152t,\\
+T^4(n(t))&=47+1728t, &T^5(n(t))&=71+2592t,\\
+T^6(n(t))&=107+3888t,&T^7(n(t))&=161+5832t,\\
+T^8(n(t))&=242+8748t,&T^9(n(t))&=121+4374t,\\
+T^{10}(n(t))&=182+6561t.&&
+\end{aligned}
+\]
+Every entry after the first exceeds \(n(t)\). If
+\(t\equiv\tau_L\pmod{2^L}\), write
+\(183+6561t=2^Lq\). Then, for \(0\le j\le L\),
+\[
+T^{10+j}(n(t))=3^j2^{L-j}q-1.
+\]
+For \(0\le j<L\), these states are odd, and the \(L\) transitions from
+\(j\) to \(j+1\) are increasing odd-branch steps. This proves the first
+assertion.
+
+The congruence \(\tau_L\equiv41\pmod{64}\) avoids the last exclusion in
+\eqref{eq:TwentySevenResidual}. The other three exclusions leave
+\(81-27-9-1=44\) classes modulo \(81\). They are disjoint: the first
+has residue \(2\pmod3\), whereas the latter two have residue
+\(1\pmod3\); those latter classes reduce respectively to \(7\) and
+\(4\pmod9\). Since \(2^L\) is invertible modulo \(81\), the Chinese
+remainder theorem proves infinitude,
+inclusion in \(\mathcal R_{\mathrm D}\), and the stated density.
+The source residue is \(27\pmod{1024}\), which is absent from every
+residue listed for \(\mathcal A\). Membership in the \(2075\)-cylinder
+would force \(t\equiv2\pmod8\), whereas
+\(t\equiv\tau_L\equiv41\pmod{64}\). Membership in the deep
+\(27\)-cylinder would force \(2^{49}\mid t\), whereas \(\tau_L\) is
+odd. Finally, the \(111\)-join cylinder has source residue
+\(111\pmod{1024}\). Thus \(\mathcal E_L\) misses all twenty-four
+further source families, and hence
+\(\mathcal E_L\subset\mathcal R_{\mathrm E}\).
+
+It remains to audit the current parent mechanism. After the source's two valuation blocks, its tail starts at
+\(X(t)=3^5v-1\).
+Preserving \(v\) and shortening this second odd run by \(d\) produces
+exactly the five parent forms in the statement. Every parameter in
+\(\mathcal E_L\) satisfies \(t\ge41\), and hence
+\[
+0<p_5\le p_d\le p_1=15+576t<27+1024t=n(t).
+\]
+The choice \(d=0\) instead gives \(31+1152t>n(t)\), while \(d>5\)
+would require dividing the odd number \(v\) by a positive power of two.
+After its initial \(5-d\) odd steps, that smaller parent reaches
+\[
+Y_d(t)=3^{5-d}v-1.
+\]
+Both \(X\) and \(Y_d\) are even. On a dyadic refinement
+\(t=t_0+2^Mz\), suppose fixed source and parent words have lengths
+\(h_s,h_p\) and odd-letter counts \(r_s,r_p\), respectively. Equality
+of their affine coefficients in the free parameter \(z\) requires
+\[
+\frac{36\cdot2^M3^{5+r_s}}{2^{h_s}}
+ =\frac{36\cdot2^M3^{5-d+r_p}}{2^{h_p}},
+\qquad\text{so}\qquad
+3^{d+r_s-r_p}=2^{h_s-h_p}.
+\]
+Unique factorization gives
+\[
+h_s=h_p=:h,
+\qquad r_p-r_s=d.
+\]
+The odd-modulus restrictions leave infinitely many parameters on every
+compatible dyadic refinement, by the Chinese remainder theorem. Thus an
+affine equality there really does force equality of slopes.
+If \(h=0\), then \(r_s=r_p=0\), already contradicting
+\(r_p-r_s=d>0\). For the source, the first \(L+2\) tail letters are
+\(01\,1^L\), so \(r_s=h-1\) whenever \(1\le h\le L+2\). The parent
+tail begins even, so \(r_p\le h-1=r_s\), again a contradiction. This
+proves the second assertion.
+
+For the final claim, suppose that the displayed finite cover exists and let
+\(H\) be the maximum of all direct-descent times and all source and
+parent word lengths appearing in its certificates. Choose
+\(L\ge\max\{6,H\}\). A direct-descent set cannot meet
+\(\mathcal E_L\) by the first assertion. If a collision set meets
+\(\mathcal E_L\), its dyadic congruence and the defining congruence of
+\(\mathcal E_L\) are compatible; their intersection still contains
+infinitely many parameters by the Chinese remainder theorem. The slope
+argument then contradicts its fixed collision certificate. Thus every
+\(C_i\) misses \(\mathcal E_L\), contrary to the fact that the \(C_i\)
+cover \(C\supset\mathcal E_L\).
+\end{proof}
+
+The residues \(\tau_L\) are nested and converge in \(\mathbb Z_2\) to
+\(-183/6561\). At that parameter, the time-ten affine state is \(-1\),
+the 2-adic fixed point of the odd shortcut branch. The theorem therefore
+identifies an exact method obstruction, not a divergent positive orbit:
+its nested intersection need not contain a natural parameter. Parents
+constructed after a different prefix, parameter-dependent joins not fixed
+on a finite dyadic cover, or an unbounded-depth well-founded recursion
+remain possible.
 
 \section{Terminal powers}
 
@@ -848,8 +1583,15 @@ divisibility identity, the odd-run formula, the terminal
 endpoint equation, and both directions of terminal-prefix classification
 with the endpoint exponent retained. The first-arrival and peak
 corollaries are written proofs. The complete residual recovery and
-density theorem, the general repeated-word budget, and join recovery
-above are also written proofs, not Lean declarations in these files.
+density theorem and join recovery above are also written proofs, not Lean
+declarations in these files.
+
+The separate file
+\nolinkurl{QCD.SwarmAttack.001/lean/SwarmLemma.lean} proves the
+cylinder criterion and the repeated-word divisibility criterion for every
+natural seed, finite binary word, and repetition count. It uses the one-copy
+defect transport in the proof above and includes empty words and zero seeds.
+The maximal-copy valuation formula remains a written corollary.
 The precise interfaces are indexed in the local library \cite{Library}.
 
 \bibliographystyle{amsalpha}

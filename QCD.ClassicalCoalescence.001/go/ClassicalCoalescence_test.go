@@ -3,7 +3,10 @@
 
 package main
 
-import "testing"
+import (
+	"math/big"
+	"testing"
+)
 
 // TestParentFamilies checks all displayed guards and the reduced residual membership.
 func TestParentFamilies(t *testing.T) {
@@ -90,6 +93,103 @@ func TestPairedTailWords(t *testing.T) {
 	} {
 		if _, _, _, err := VerifyPairedTails(family.drop, family.a, 1000000); err == nil {
 			t.Fatalf("accepted unsupported paired rank: %+v", family)
+		}
+	}
+}
+
+// TestDirectDescentCylinders checks all seven larger direct families.
+func TestDirectDescentCylinders(t *testing.T) {
+	count, err := VerifyDirectDescentCylinders(10000)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if count != 308 {
+		t.Fatalf("unexpected direct-cylinder residual count: %d", count)
+	}
+	for _, limit := range []int{-1, 10001} {
+		if _, err := VerifyDirectDescentCylinders(limit); err == nil {
+			t.Fatalf("accepted unsupported direct-cylinder budget: %d", limit)
+		}
+	}
+}
+
+// TestEightLetterCylinder checks the direct descent and its complete residual period.
+func TestEightLetterCylinder(t *testing.T) {
+	count, err := VerifyEightLetterCylinder(10000)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if count != 1364 {
+		t.Fatalf("unexpected eight-letter residual count: %d", count)
+	}
+	for _, limit := range []int{-1, 10001} {
+		if _, err := VerifyEightLetterCylinder(limit); err == nil {
+			t.Fatalf("accepted unsupported eight-letter budget: %d", limit)
+		}
+	}
+}
+
+// TestFurtherDirectCylinders checks the new finite dyadic certificates and periods.
+func TestFurtherDirectCylinders(t *testing.T) {
+	count, err := VerifyFurtherDirectCylinders(10000)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if count != 9174 {
+		t.Fatalf("unexpected further-cylinder density units: %d", count)
+	}
+	for _, limit := range []int{-1, 10001} {
+		if _, err := VerifyFurtherDirectCylinders(limit); err == nil {
+			t.Fatalf("accepted unsupported further-cylinder budget: %d", limit)
+		}
+	}
+}
+
+// TestDeepCertificates checks both deep descents and the 111 affine join.
+func TestDeepCertificates(t *testing.T) {
+	count2075, count27, err := VerifyDeepCertificates(10000)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if count2075 != 308 || count27 != 44 {
+		t.Fatalf("unexpected deep residual counts: %d %d", count2075, count27)
+	}
+	for _, limit := range []int{-1, 10001} {
+		if _, _, err := VerifyDeepCertificates(limit); err == nil {
+			t.Fatalf("accepted unsupported deep-certificate budget: %d", limit)
+		}
+	}
+}
+
+// TestBigDirectReducedResidual compares the unbounded guard evaluator with the word-size one.
+func TestBigDirectReducedResidual(t *testing.T) {
+	var value big.Int
+	for n := uint64(1); n <= 100000; n++ {
+		value.SetUint64(n)
+		if BigDirectReducedResidual(&value) != DirectReducedResidual(n) {
+			t.Fatalf("big residual mismatch: n=%d", n)
+		}
+	}
+}
+
+// TestLargeResiduals guards against overflow changing the odd factor of a burst numerator.
+func TestLargeResiduals(t *testing.T) {
+	for _, c := range []struct {
+		n    uint64
+		want bool
+	}{
+		{11244543069622334703, true},
+		{1<<63 - 1, true},
+		{1<<64 - 1, false},
+	} {
+		if got := SecondBurstResidual(c.n); got != c.want {
+			t.Errorf("second-burst residual at %d: got %t, want %t", c.n, got, c.want)
+		}
+		if got := FinalResidual(c.n); got != c.want {
+			t.Errorf("paired-tail residual at %d: got %t, want %t", c.n, got, c.want)
+		}
+		if got := DirectReducedResidual(c.n); got != c.want {
+			t.Errorf("direct residual at %d: got %t, want %t", c.n, got, c.want)
 		}
 	}
 }
