@@ -39,14 +39,14 @@ type Totals struct {
 	Failures uint64
 }
 
-// add accumulates a worker total into the receiver.
-func (t *Totals) add(other Totals) {
+// Add accumulates a worker total into the receiver.
+func (t *Totals) Add(other Totals) {
 	t.Checks += other.Checks
 	t.Failures += other.Failures
 }
 
-// divides reports whether d divides a. Every divisor on the grid is nonzero.
-func divides(d, a int64) bool {
+// Divides reports whether d divides a. Every divisor on the grid is nonzero.
+func Divides(d, a int64) bool {
 	return a%d == 0
 }
 
@@ -61,11 +61,11 @@ func ZeroAffineState(c, n int64, j int) int64 {
 // IsFirstHit reports whether j is the first time d divides the zero-multiplier
 // affine state. A nonpositive index is not a time.
 func IsFirstHit(d, c, n int64, j int) bool {
-	if j < 0 || !divides(d, ZeroAffineState(c, n, j)) {
+	if j < 0 || !Divides(d, ZeroAffineState(c, n, j)) {
 		return false
 	}
 	for i := 0; i < j; i++ {
-		if divides(d, ZeroAffineState(c, n, i)) {
+		if Divides(d, ZeroAffineState(c, n, i)) {
 			return false
 		}
 	}
@@ -76,10 +76,10 @@ func IsFirstHit(d, c, n int64, j int) bool {
 // The boolean is false when no time is a hit. A double miss returns no value:
 // the constant offset is not treated as a return.
 func ZeroReturn(d, c, n int64) (j int, quot int64, ok bool) {
-	if divides(d, n) {
+	if Divides(d, n) {
 		return 0, n / d, true
 	}
-	if divides(d, c) {
+	if Divides(d, c) {
 		return 1, c / d, true
 	}
 	return 0, 0, false
@@ -96,58 +96,58 @@ func PositiveSeedReturns(d, n int64) bool {
 	return ok && j >= 1 && quot == n
 }
 
-// rawStep applies one raw step at multiplier zero. Division is exact when d
-// divides n, and Go truncates toward zero.
-func rawStep(c, d, n int64) int64 {
-	if divides(d, n) {
+// RawStep applies one raw step at multiplier zero. Division is exact when d
+// Divides n, and Go truncates toward zero.
+func RawStep(c, d, n int64) int64 {
+	if Divides(d, n) {
 		return n / d
 	}
 	return c
 }
 
-// expectedHit is the case split: time 0 if d divides n, time 1 if d misses n
+// ExpectedHit is the case split: time 0 if d divides n, time 1 if d misses n
 // but divides c, and no time otherwise.
-func expectedHit(d, c, n int64, j int) bool {
+func ExpectedHit(d, c, n int64, j int) bool {
 	if j == 0 {
-		return divides(d, n)
+		return Divides(d, n)
 	}
 	if j == 1 {
-		return !divides(d, n) && divides(d, c)
+		return !Divides(d, n) && Divides(d, c)
 	}
 	return false
 }
 
-// returnAgrees checks the quotient named by the same case split.
-func returnAgrees(d, c, n int64) bool {
+// ReturnAgrees checks the quotient named by the same case split.
+func ReturnAgrees(d, c, n int64) bool {
 	j, quot, ok := ZeroReturn(d, c, n)
-	if divides(d, n) {
+	if Divides(d, n) {
 		return ok && j == 0 && quot == n/d
 	}
-	if divides(d, c) {
+	if Divides(d, c) {
 		return ok && j == 1 && quot == c/d
 	}
 	return !ok
 }
 
-// rawAgrees checks the return against the raw step. A double miss must not
+// RawAgrees checks the return against the raw step. A double miss must not
 // divide at any time through zeroJMax, and its state must be c after time 0.
-func rawAgrees(d, c, n int64) bool {
-	if divides(d, n) {
-		return rawStep(c, d, n) == n/d
+func RawAgrees(d, c, n int64) bool {
+	if Divides(d, n) {
+		return RawStep(c, d, n) == n/d
 	}
-	if divides(d, c) {
-		first := rawStep(c, d, n)
+	if Divides(d, c) {
+		first := RawStep(c, d, n)
 		if first != c {
 			return false
 		}
-		return rawStep(c, d, first) == c/d
+		return RawStep(c, d, first) == c/d
 	}
 	cur := n
 	for j := 0; j <= zeroJMax; j++ {
-		if divides(d, cur) {
+		if Divides(d, cur) {
 			return false
 		}
-		cur = rawStep(c, d, cur)
+		cur = RawStep(c, d, cur)
 		if cur != c {
 			return false
 		}
@@ -155,10 +155,10 @@ func rawAgrees(d, c, n int64) bool {
 	return true
 }
 
-// checkTuple records the state, the hit predicate, the return, and the raw
+// CheckTuple records the state, the hit predicate, the return, and the raw
 // step for one divisor, offset, and seed. A positive seed at offset zero
 // contributes one extra comparison.
-func checkTuple(d, c, n int64, total *Totals) {
+func CheckTuple(d, c, n int64, total *Totals) {
 	for j := 0; j <= zeroJMax; j++ {
 		want := n
 		if j > 0 {
@@ -169,16 +169,16 @@ func checkTuple(d, c, n int64, total *Totals) {
 			total.Failures++
 		}
 		total.Checks++
-		if IsFirstHit(d, c, n, j) != expectedHit(d, c, n, j) {
+		if IsFirstHit(d, c, n, j) != ExpectedHit(d, c, n, j) {
 			total.Failures++
 		}
 	}
 	total.Checks++
-	if !returnAgrees(d, c, n) {
+	if !ReturnAgrees(d, c, n) {
 		total.Failures++
 	}
 	total.Checks++
-	if !rawAgrees(d, c, n) {
+	if !RawAgrees(d, c, n) {
 		total.Failures++
 	}
 	if c == 0 && n > 0 {
@@ -189,8 +189,8 @@ func checkTuple(d, c, n int64, total *Totals) {
 	}
 }
 
-// sweepBetween checks every divisor and seed on a closed offset interval.
-func sweepBetween(lo, hi int64) Totals {
+// SweepBetween checks every divisor and seed on a closed offset interval.
+func SweepBetween(lo, hi int64) Totals {
 	var total Totals
 	divs := zeroDivisors[:]
 	divs = divs[:len(divs)]
@@ -198,7 +198,7 @@ func sweepBetween(lo, hi int64) Totals {
 		for i := 0; i < len(divs); i++ {
 			d := divs[i]
 			for n := int64(-zeroNAbs); n <= int64(zeroNAbs); n++ {
-				checkTuple(d, c, n, &total)
+				CheckTuple(d, c, n, &total)
 			}
 		}
 	}
@@ -235,13 +235,13 @@ func RunSweep() Totals {
 		wg.Add(1)
 		go func(idx, lo, hi int) {
 			defer wg.Done()
-			parts[idx] = sweepBetween(int64(lo), int64(hi))
+			parts[idx] = SweepBetween(int64(lo), int64(hi))
 		}(w, lo, hi)
 	}
 	wg.Wait()
 	var total Totals
 	for i := 0; i < len(parts); i++ {
-		total.add(parts[i])
+		total.Add(parts[i])
 	}
 	return total
 }

@@ -26,7 +26,7 @@ with $`\gcd(q_i,D)=1`$. Put
 
 ```math
 
-Q=\prod_iq_i,\quad K=\sum_i a_i,\quad
+s_i=\sum_{j<i}a_j,\quad Q=\prod_iq_i,\quad K=\sum_i a_i,\quad
 \Delta=D^K-Q,\quad
 w_i=D^{s_i}\prod_{j>i}q_j.
 
@@ -60,6 +60,13 @@ The two cyclic determinant terms give
 ```
 
 For $`r=1`$, the single entry is $`D^{a_0}-q_0`$, agreeing with this formula.
+
+Define the offset homomorphism by
+
+```math
+\theta:\mathbb Z^r\longrightarrow\mathbb Z/|\Delta|\mathbb Z,
+\qquad \theta(c)=\sum_iw_ic_i\pmod{|\Delta|}.
+```
 
 Here is direct **integral recovery**, without treating rational scaling as unimodular. Given integer $`c_i`$, solve the phase recurrence over $`\mathbb Q`$, starting at
 
@@ -118,7 +125,10 @@ $`\operatorname{diag}(1,\ldots,1,\vert\Delta\vert)`$. Alternatively, for $`r\ge2
 
 which are coprime. The general Smith-normal-form theorem is the standard algebraic dependency for this final terminology; the quotient calculation itself was proved directly.
 
-**Kernel example:** $`r=1,q=3,D=2,c=1,a=(1)`$. Then
+**Kernel counterexample to adding a left-hand copy of $`\mathbb Z`$:**
+The sequence $`\mathbb Z\xrightarrow{\iota}\mathbb Z^r\xrightarrow{M}\mathbb Z^r`$,
+with $`\iota(t)=t\mathbf1`$, need not be a complex.
+Take $`r=1,q=3,D=2,c=1,a=(1)`$. Then
 
 ```math
 
@@ -126,7 +136,8 @@ which are coprime. The general Smith-normal-form theorem is the standard algebra
 
 ```
 
-The asserted sequence is not even a complex at that composition.
+Thus $`M\circ\iota\ne0`$; the correct exact sequence starts with the zero
+kernel of $`M`$, as displayed above.
 
 **Integer-scaling failure:** For $`r=2,q=3,D=2,a=(1,1)`$, the claimed coordinate change includes $`x_1=(3/2)y_1`$, not an integer-lattice automorphism. Moreover $`x_r=x_0`$ becomes
 
@@ -158,7 +169,9 @@ Its Smith factors are $`2,2`$, not $`1,4`$. For $`c=(1,0)`$, the displayed weigh
 
 ## Classical exact-valuation recovery
 
-For classical positive exponents, every rotated numerator $`B_i`$ is odd and positive, and
+For $`q_i=3,D=2,c_i=1`$, let $`B_i`$ be the weighted offset sum for the
+cyclically rotated data beginning at phase $`i`$. The classical positive
+exponents make each $`B_i`$ odd and positive, and
 
 ```math
 
@@ -197,7 +210,10 @@ At $`19`$, $`v_{19}(\Delta)=2>1=v_{19}(B)`$, so closure fails already. This is a
 
 ## Offset conductor and positive recovery
 
-Under the corrected quotient isomorphism, $`[\mathbf1]`$ maps to $`N`$, so
+In the constant-multiplier case $`q_i=q`$, set $`N=\sum_iw_i`$ and let
+$`N_i`$ be the same weighted sum for the cyclically rotated exponent data
+beginning at phase $`i`$. Under the quotient isomorphism,
+$`[\mathbf1]`$ maps to $`N`$, so
 
 ```math
 
@@ -224,7 +240,8 @@ The full-offset conductor is instead
 
 ```
 
-Thus $`L`$ must be named the **unscaled conductor** if Definition 2.7 uses the full affine offset.
+Thus $`L`$ is the **unscaled conductor**. The conductor of the actual
+affine offset is $`\operatorname{ord}[c\mathbf1]`$, which can be smaller.
 
 **One-phase counterexample to $`L=1`$:**
 

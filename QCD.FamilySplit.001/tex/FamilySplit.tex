@@ -29,12 +29,13 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{The even row of a local split}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{The even row of a local split}
 
 \section*{The even row}
 
@@ -92,7 +93,11 @@ The integer \(3\) has residue \(1\) modulo \(2\), so the preceding sentence appl
 \end{proof}
 
 \begin{remark}
-Theorem~\ref{thm:even-split} is one local row. It does not treat an input congruent to \(2\) modulo \(3\), an input congruent to \(1\) modulo \(4\), or an input of the form \(2^a u-1\) with \(u\) odd. It does not classify a complement of this row, and it does not assert that every integer greater than \(1\) has a parent in any family. Theorem~\ref{thm:odd-outside} is only the obstruction to reading the even row as a cover.
+Theorem~\ref{thm:even-split} covers exactly the even integers \(n>1\).
+Some also belong to the other displayed residue families, but not every
+member of those families is covered. No classification of the odd
+complement or covering family is proved.
+Theorem~\ref{thm:odd-outside} prevents reading the even row as a cover.
 \end{remark}
 
 \end{document}

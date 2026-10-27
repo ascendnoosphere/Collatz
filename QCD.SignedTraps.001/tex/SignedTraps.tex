@@ -29,12 +29,13 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{Signed traps and the residue dichotomy}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{Signed traps and the residue dichotomy}
 
 \begin{abstract}
 The raw map sends \(n\) to \(n/d\) when \(d\mid n\) and to \(qn+c\)
@@ -333,7 +334,7 @@ With \(q=2\) and \(c=1\) the affine branch is \(2n+1\), not the classical
 \begin{remark}\label{Rem:Degenerate}
 Degenerate cases fall inside the classification. At \(q=0\) and \(c=1\) the
 seed \(2\) with divisor \(3\) is trapped and reaches the fixed point \(1\) after
-one step; at \(c=0\) every orbit reaches \(0\) and then divides, so that offset
+one step; at \(q=0\) and \(c=0\) every orbit reaches \(0\) and then divides, so that offset
 admits no trapped seed. At \(q=1\) and \(c=0\) every trapped state is fixed. At
 \(q=-1\) and \(c=0\) the reflection pair degenerates to a fixed point only at
 \(n=0\), and that value is divisible by every divisor, so it is not a trapped

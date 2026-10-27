@@ -29,15 +29,17 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{The logarithm of \(256/243\)}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{The logarithm of \(256/243\)}
 
 \begin{abstract}
-Let \(\log\) denote the natural logarithm. Then \(\log(256/243)=8\log 2-5\log 3\). If eight positive real factors have block product \(P\) satisfying \(-\log P\ge\log(256/243)\), then \(P\le 243/256\), and in particular \(P<1\). The same bound follows when each factor is at most one eighth of this gap below \(1\) on the logarithmic scale. The constant is achieved by a positive block. The comparison does not assert that the classical Collatz map reaches \(1\).
+Let \(\log\) denote the natural logarithm. Then \(\log(256/243)=8\log 2-5\log 3\). If eight positive real factors have block product \(P\) satisfying \(-\log P\ge\log(256/243)\), then \(P\le 243/256\), and in particular \(P<1\). The same bound follows if each factor \(r_i\) satisfies
+\(\log r_i\le-\frac18\log(256/243)\). The constant is achieved by a positive block. The comparison does not assert that the classical Collatz map reaches \(1\).
 \end{abstract}
 
 \section{The gap identity}

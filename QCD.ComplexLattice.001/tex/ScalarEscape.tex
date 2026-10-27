@@ -29,12 +29,13 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{Generalized Collatz Library: Scalar Off-Axis Escape on Imaginary Quadratic Orders}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{Scalar Off-Axis Escape on Imaginary Quadratic Orders}
 
 \begin{abstract}
 Let \(R=\Z[\theta]\subset\C\), where
@@ -298,25 +299,26 @@ and residue-wise quotient maps are not included.
 
 \paragraph{Formal correspondence.}
 The complete proof is in
-\texttt{QCD.ComplexLattice.001/lean/ScalarEscape.lean}.
+\texttt{QCD.\allowbreak Complex\allowbreak Lattice.\allowbreak 001/\allowbreak lean/\allowbreak Scalar\allowbreak Escape.\allowbreak lean}.
 Lemma~\ref{Lem:Guard} corresponds to
-\texttt{ScalarDivides}, \texttt{ScalarQuotient}, \texttt{ScalarUnique},
-\texttt{RingCoordinates} and \texttt{RingCoordinatesIter}.
-Lemma~\ref{Lem:Product} is \texttt{TransverseProduct} and
-\texttt{TransverseNonzero}; Lemma~\ref{Lem:Injective} is
-\texttt{NoMagnitudeReturn} and \texttt{MagnitudeInjective};
-Theorem~\ref{Thm:Escape} is \texttt{OffAxisEscape} and
-\texttt{ComplexOffAxisEscape}, using the checked complex embedding and
-norm bound from \texttt{ComplexLattice.lean}.
-Lemma~\ref{Lem:Certificate} is \texttt{CoprimeIndependent} and
-\texttt{ExponentIndependent}; the shared-support certificate is
-\texttt{TwelveEighteenIndependent}.
+\texttt{Scalar\allowbreak Divides}, \texttt{Scalar\allowbreak Quotient}, \texttt{Scalar\allowbreak Unique},
+\texttt{Ring\allowbreak Coordinates} and \texttt{Ring\allowbreak Coordinates\allowbreak Iter}.
+Lemma~\ref{Lem:Product} is \texttt{Transverse\allowbreak Product} and
+\texttt{Transverse\allowbreak Nonzero}; Lemma~\ref{Lem:Injective} is
+\texttt{No\allowbreak Magnitude\allowbreak Return} and \texttt{Magnitude\allowbreak Injective};
+Theorem~\ref{Thm:Escape} is proved by \texttt{Off\allowbreak Axis\allowbreak Escape} and
+\texttt{Complex\allowbreak Off\allowbreak Axis\allowbreak Escape}. These use the complex embedding and
+norm bound checked in \texttt{Complex\allowbreak Lattice.\allowbreak lean}.
+Lemma~\ref{Lem:Certificate} is \texttt{Coprime\allowbreak Independent} and
+\texttt{Exponent\allowbreak Independent}; the shared-support certificate is
+\texttt{Twelve\allowbreak Eighteen\allowbreak Independent}.
 Lemmas~\ref{Lem:InfiniteDivisions} and \ref{Lem:Dependent} are
-\texttt{CommonSupportBlock}, \texttt{CommonSupportIterate} and
-\texttt{DependentFiveCycle}.
-Theorem~\ref{Thm:Transfer} is \texttt{OrderTransferInverse},
-\texttt{OrderTransferRaw}, \texttt{OrderTransferIterate} and
-\texttt{OrderTransferNotMultiplicative}.
+\texttt{Common\allowbreak Support\allowbreak Block}, \texttt{Common\allowbreak Support\allowbreak Iterate} and
+\texttt{Dependent\allowbreak Five\allowbreak Cycle}.
+The proof of Theorem~\ref{Thm:Transfer} uses \texttt{Order\allowbreak Transfer\allowbreak Inverse},
+\texttt{Order\allowbreak Transfer\allowbreak Raw} and \texttt{Order\allowbreak Transfer\allowbreak Iterate}.
+The failure of multiplicativity is checked by
+\texttt{Order\allowbreak Transfer\allowbreak Not\allowbreak Multiplicative}.
 
 \paragraph{Computational scope and prior conventions.}
 The Go survey produces additional scalar-family pictures and verifies

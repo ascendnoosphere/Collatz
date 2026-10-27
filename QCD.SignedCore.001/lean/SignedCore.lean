@@ -107,19 +107,21 @@ theorem CoreEntry (A B m : ℕ) (H : ℤ → ℤ) (hA : A < m)
   intro k
   induction k using Nat.strong_induction_on with
   | h k ih =>
-    intro n hk
-    by_cases hcore : n.natAbs ≤ CoreRadius A B m
-    · exact ⟨0, by simpa [Iterate, hk] using hcore⟩
-    · have hn : CoreRadius A B m + 1 ≤ n.natAbs := by
-        have hnot : ¬ n.natAbs ≤ CoreRadius A B m := hcore
-        omega
-      have hlt : (H n).natAbs < n.natAbs :=
-        CoreMapDescent A B m H n hA (hbound n) hn
-      have hkey : (H n).natAbs < k := by rw [← hk]; exact hlt
-      obtain ⟨j, hj⟩ := ih (H n).natAbs hkey (H n) rfl
-      refine ⟨j + 1, ?_⟩
-      rw [show j + 1 = 1 + j by omega, IterateAdd]
-      simpa [Iterate] using hj
+    {
+      intro n hk
+      by_cases hcore : n.natAbs ≤ CoreRadius A B m
+      · exact ⟨0, by simpa [Iterate, hk] using hcore⟩
+      · have hn : CoreRadius A B m + 1 ≤ n.natAbs := by
+          have hnot : ¬ n.natAbs ≤ CoreRadius A B m := hcore
+          omega
+        have hlt : (H n).natAbs < n.natAbs :=
+          CoreMapDescent A B m H n hA (hbound n) hn
+        have hkey : (H n).natAbs < k := by rw [← hk]; exact hlt
+        obtain ⟨j, hj⟩ := ih (H n).natAbs hkey (H n) rfl
+        refine ⟨j + 1, ?_⟩
+        rw [show j + 1 = 1 + j by omega, IterateAdd]
+        simpa [Iterate] using hj
+    }
 
 /-- The radius stays closed under every iterate of a bound-preserving map. -/
 theorem CoreStays (A B m : ℕ) (H : ℤ → ℤ) (hA : A < m)

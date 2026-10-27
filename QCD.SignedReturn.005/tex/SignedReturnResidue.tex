@@ -29,12 +29,13 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{Residue criterion for the first affine hit}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{Residue criterion for the first affine hit}
 
 \begin{abstract}
 Let \(q\), \(c\) and \(d\) be integers with \(|d|\ge 2\), and let
@@ -75,9 +76,8 @@ and \(d\) divides \(A_{i}(n)\) for no \(i<j\).
 
 \begin{definition}\label{Def:ResidueStep}
 The residue step of the parameter record is the self-map
-\(\Map{\rho}{\Z/m\Z}{\Z/m\Z}\) given by
 \[
-\rho(r)=q r+c,
+\Map{\rho}{\Z/m\Z}{\Z/m\Z},\qquad \rho(r)=q r+c,
 \]
 where \(q\) and \(c\) are read in \(\Z/m\Z\).
 \end{definition}

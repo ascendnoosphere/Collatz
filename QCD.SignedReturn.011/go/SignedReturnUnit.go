@@ -191,15 +191,15 @@ func CoreAtSeed(cache *Cache, q, c, d, n int64, j int, offset int64) bool {
 	return ad*AbsInt(ret) <= aq*AbsInt(n)+offset
 }
 
-// unitDivisors returns the admissible divisors of the unit sweep.
-func unitDivisors() [6]int64 {
+// UnitDivisors returns the admissible divisors of the unit sweep.
+func UnitDivisors() [6]int64 {
 	return [6]int64{-5, -3, -2, 2, 3, 5}
 }
 
-// sweepSeed checks the unit identities for one seed on the full offset-time grid.
+// SweepSeed checks the unit identities for one seed on the full offset-time grid.
 // The cache must already be loaded at multiplier 1. A different load is a failure
 // and contributes no grid comparisons.
-func sweepSeed(n int64, w *Workspace, cache *Cache, total *Totals) {
+func SweepSeed(n int64, w *Workspace, cache *Cache, total *Totals) {
 	if !cache.Live || cache.Q != 1 {
 		total.Failures++
 		return
@@ -213,7 +213,7 @@ func sweepSeed(n int64, w *Workspace, cache *Cache, total *Totals) {
 			}
 		}
 	}
-	divs := unitDivisors()
+	divs := UnitDivisors()
 	ds := divs[:]
 	for di := 0; di < len(ds); di++ {
 		d := ds[di]
@@ -255,9 +255,9 @@ func DomainSize() uint64 {
 	return affine + affine*6
 }
 
-// runSeeds splits the closed seed interval across workers.
+// RunSeeds splits the closed seed interval across workers.
 // Each worker owns one workspace, one cache loaded at multiplier 1, and one totals slot.
-func runSeeds(fn func(int64, *Workspace, *Cache, *Totals)) Totals {
+func RunSeeds(fn func(int64, *Workspace, *Cache, *Totals)) Totals {
 	loAll := int64(unitNMin)
 	hiAll := int64(unitNMax)
 	count := int(hiAll - loAll + 1)
@@ -297,7 +297,7 @@ func runSeeds(fn func(int64, *Workspace, *Cache, *Totals)) Totals {
 
 // RunUnitSweep checks the unit affine form, return, and magnitude on every grid tuple.
 func RunUnitSweep() Totals {
-	return runSeeds(sweepSeed)
+	return RunSeeds(SweepSeed)
 }
 
 // main prints the number of exact comparisons and exits nonzero on a disagreement.

@@ -27,7 +27,7 @@ import Mathlib.Logic.Function.Iterate
 
 set_option autoImplicit false
 
-namespace GeneralizedCollatz
+namespace GeneralizedCollatz.RepunitCell
 
 /-- The repunit sum `G_k(q) = 1 + q + … + q^(k-1)`. -/
 def RepunitSum (q k : ℕ) : ℕ :=
@@ -51,46 +51,54 @@ theorem RepunitSumSuccMul (q k : ℕ) :
     q * RepunitSum q k + 1 = RepunitSum q (k + 1) := by
   induction k with
   | zero =>
-    { rw [RepunitSumZero, RepunitSumOne, Nat.mul_zero, Nat.zero_add] }
+    {
+      { rw [RepunitSumZero, RepunitSumOne, Nat.mul_zero, Nat.zero_add] }
+    }
   | succ k ih =>
-    { calc
-        q * RepunitSum q (k + 1) + 1
-            = q * (RepunitSum q k + q ^ k) + 1 := by
-              rw [RepunitSumSucc]
-        _ = q * RepunitSum q k + q * q ^ k + 1 := by
-              rw [Nat.mul_add]
-        _ = q * RepunitSum q k + 1 + q * q ^ k := by
-              rw [Nat.add_assoc, Nat.add_comm (q * q ^ k) 1, ← Nat.add_assoc]
-        _ = RepunitSum q (k + 1) + q * q ^ k := by
-              rw [ih]
-        _ = RepunitSum q (k + 1) + q ^ (k + 1) := by
-              rw [← Nat.pow_succ']
-        _ = RepunitSum q (k + 1 + 1) := by
-              rw [← RepunitSumSucc] }
+    {
+      { calc
+          q * RepunitSum q (k + 1) + 1
+              = q * (RepunitSum q k + q ^ k) + 1 := by
+                rw [RepunitSumSucc]
+          _ = q * RepunitSum q k + q * q ^ k + 1 := by
+                rw [Nat.mul_add]
+          _ = q * RepunitSum q k + 1 + q * q ^ k := by
+                rw [Nat.add_assoc, Nat.add_comm (q * q ^ k) 1, ← Nat.add_assoc]
+          _ = RepunitSum q (k + 1) + q * q ^ k := by
+                rw [ih]
+          _ = RepunitSum q (k + 1) + q ^ (k + 1) := by
+                rw [← Nat.pow_succ']
+          _ = RepunitSum q (k + 1 + 1) := by
+                rw [← RepunitSumSucc] }
+    }
 
 /-- The closed geometric identity `q^k = 1 + (q - 1) G_k(q)` for `q ≥ 1`. -/
 theorem RepunitSumGeom (q k : ℕ) (hq : 1 ≤ q) :
     q ^ k = 1 + (q - 1) * RepunitSum q k := by
   induction k with
   | zero =>
-    { rw [RepunitSumZero, Nat.pow_zero, Nat.mul_zero, Nat.add_zero] }
+    {
+      { rw [RepunitSumZero, Nat.pow_zero, Nat.mul_zero, Nat.add_zero] }
+    }
   | succ k ih =>
-    { rw [RepunitSumSucc, Nat.mul_add, ← Nat.add_assoc, ← ih]
-      -- Goal: `q^(k+1) = q^k + (q-1) q^k`.
-      have factor : q ^ k + (q - 1) * q ^ k = q ^ (k + 1) := by
-        { calc
-            q ^ k + (q - 1) * q ^ k
-                = 1 * q ^ k + (q - 1) * q ^ k := by
-                  rw [Nat.one_mul]
-            _ = (q - 1) * q ^ k + 1 * q ^ k := by
-                  rw [Nat.add_comm]
-            _ = ((q - 1) + 1) * q ^ k := by
-                  rw [← Nat.add_mul]
-            _ = q * q ^ k := by
-                  rw [Nat.sub_add_cancel hq]
-            _ = q ^ (k + 1) := by
-                  rw [← Nat.pow_succ'] }
-      exact factor.symm }
+    {
+      { rw [RepunitSumSucc, Nat.mul_add, ← Nat.add_assoc, ← ih]
+        -- Goal: `q^(k+1) = q^k + (q-1) q^k`.
+        have factor : q ^ k + (q - 1) * q ^ k = q ^ (k + 1) := by
+          { calc
+              q ^ k + (q - 1) * q ^ k
+                  = 1 * q ^ k + (q - 1) * q ^ k := by
+                    rw [Nat.one_mul]
+              _ = (q - 1) * q ^ k + 1 * q ^ k := by
+                    rw [Nat.add_comm]
+              _ = ((q - 1) + 1) * q ^ k := by
+                    rw [← Nat.add_mul]
+              _ = q * q ^ k := by
+                    rw [Nat.sub_add_cancel hq]
+              _ = q ^ (k + 1) := by
+                    rw [← Nat.pow_succ'] }
+        exact factor.symm }
+    }
 
 /-- The cofactor form `(q - 1) G_k(q) = q^k - 1`. -/
 theorem RepunitSumMulPred (q k : ℕ) (hq : 1 ≤ q) :
@@ -109,11 +117,7 @@ theorem RepunitSumModeq (q k : ℕ) (hq : 1 ≤ q) :
     q ^ k ≡ 1 [MOD RepunitSum q k] := by
   have geom := RepunitSumGeom q k hq
   rw [geom, Nat.add_comm]
-  have hzero :
-      (q - 1) * RepunitSum q k ≡ 0 [MOD RepunitSum q k] :=
-    Nat.modEq_zero_iff_dvd.mpr
-      ⟨q - 1, Nat.mul_comm (q - 1) (RepunitSum q k)⟩
-  simpa [Nat.zero_add] using hzero.add (Nat.ModEq.refl 1)
+  simp
 
 /-- The repunit sum splits off its constant term: `G_{k+1}(q) = 1 + q G_k(q)`. -/
 theorem RepunitSumOneAdd (q k : ℕ) :
@@ -125,9 +129,7 @@ theorem RepunitSumModBase (q k : ℕ) (hk : 0 < k) :
     RepunitSum q k ≡ 1 [MOD q] := by
   obtain ⟨t, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (by omega : k ≠ 0)
   rw [RepunitSumOneAdd, Nat.add_comm]
-  have hzero : q * RepunitSum q t ≡ 0 [MOD q] :=
-    Nat.modEq_zero_iff_dvd.mpr (Nat.dvd_mul_right q (RepunitSum q t))
-  simpa [Nat.zero_add] using hzero.add (Nat.ModEq.refl 1)
+  simp
 
 /-- For a positive number of terms, `q` is coprime to `G_k(q)`. -/
 theorem RepunitSumCoprime (q k : ℕ) (hk : 0 < k) :
@@ -142,41 +144,45 @@ theorem RepunitAffineClosed (q c k r : ℕ) :
     (fun x => q * x + c)^[k] r = q ^ k * r + c * RepunitSum q k := by
   induction k with
   | zero =>
-    { rw [Function.iterate_zero_apply, Nat.pow_zero, Nat.one_mul,
-        RepunitSumZero, Nat.mul_zero, Nat.add_zero] }
+    {
+      { rw [Function.iterate_zero_apply, Nat.pow_zero, Nat.one_mul,
+          RepunitSumZero, Nat.mul_zero, Nat.add_zero] }
+    }
   | succ k ih =>
-    { rw [Function.iterate_succ_apply', ih]
-      calc
-        q * (q ^ k * r + c * RepunitSum q k) + c
-            = q * (q ^ k * r) + q * (c * RepunitSum q k) + c := by
-              rw [Nat.mul_add]
-        _ = (q * q ^ k) * r + q * (c * RepunitSum q k) + c := by
-              conv_lhs =>
-                arg 1
-                arg 1
-                rw [← Nat.mul_assoc]
-        _ = q ^ (k + 1) * r + q * (c * RepunitSum q k) + c := by
-              rw [← Nat.pow_succ']
-        _ = q ^ (k + 1) * r + (q * c) * RepunitSum q k + c := by
-              conv_lhs =>
-                arg 1
-                arg 2
-                rw [← Nat.mul_assoc]
-        _ = q ^ (k + 1) * r + (c * q) * RepunitSum q k + c := by
-              rw [Nat.mul_comm q c]
-        _ = q ^ (k + 1) * r + c * (q * RepunitSum q k) + c := by
-              rw [Nat.mul_assoc]
-        _ = q ^ (k + 1) * r + (c * (q * RepunitSum q k) + c) := by
-              rw [Nat.add_assoc]
-        _ = q ^ (k + 1) * r + (c * (q * RepunitSum q k) + c * 1) := by
-              conv_lhs =>
-                arg 2
-                arg 2
-                rw [← Nat.mul_one c]
-        _ = q ^ (k + 1) * r + c * (q * RepunitSum q k + 1) := by
-              rw [← Nat.mul_add]
-        _ = q ^ (k + 1) * r + c * RepunitSum q (k + 1) := by
-              rw [RepunitSumSuccMul] }
+    {
+      { rw [Function.iterate_succ_apply', ih]
+        calc
+          q * (q ^ k * r + c * RepunitSum q k) + c
+              = q * (q ^ k * r) + q * (c * RepunitSum q k) + c := by
+                rw [Nat.mul_add]
+          _ = (q * q ^ k) * r + q * (c * RepunitSum q k) + c := by
+                conv_lhs =>
+                  arg 1
+                  arg 1
+                  rw [← Nat.mul_assoc]
+          _ = q ^ (k + 1) * r + q * (c * RepunitSum q k) + c := by
+                rw [← Nat.pow_succ']
+          _ = q ^ (k + 1) * r + (q * c) * RepunitSum q k + c := by
+                conv_lhs =>
+                  arg 1
+                  arg 2
+                  rw [← Nat.mul_assoc]
+          _ = q ^ (k + 1) * r + (c * q) * RepunitSum q k + c := by
+                rw [Nat.mul_comm q c]
+          _ = q ^ (k + 1) * r + c * (q * RepunitSum q k) + c := by
+                rw [Nat.mul_assoc]
+          _ = q ^ (k + 1) * r + (c * (q * RepunitSum q k) + c) := by
+                rw [Nat.add_assoc]
+          _ = q ^ (k + 1) * r + (c * (q * RepunitSum q k) + c * 1) := by
+                conv_lhs =>
+                  arg 2
+                  arg 2
+                  rw [← Nat.mul_one c]
+          _ = q ^ (k + 1) * r + c * (q * RepunitSum q k + 1) := by
+                rw [← Nat.mul_add]
+          _ = q ^ (k + 1) * r + c * RepunitSum q (k + 1) := by
+                rw [RepunitSumSuccMul] }
+    }
 
 /-- The `k`-fold affine map is the identity modulo `G_k(q)`. -/
 theorem RepunitAffineModId (q c k r : ℕ) (hq : 1 ≤ q) :
@@ -304,4 +310,4 @@ theorem DisplayedRepunitAffine (r : ℕ) :
     rw [sumEq] at h
     exact h
 
-end GeneralizedCollatz
+end GeneralizedCollatz.RepunitCell

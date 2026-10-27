@@ -10,7 +10,7 @@ The argument is induction along the chain.
 
 set_option autoImplicit false
 
-namespace GeneralizedCollatz
+namespace GeneralizedCollatz.CaptureChain
 
 /-- A legal join is a positive-length exact raw orbit segment from `n` to `m`. -/
 def LegalJoin (p : Parameters) (n m : ℤ) : Prop :=
@@ -231,4 +231,4 @@ theorem ClassicalBinaryTwoReaches :
   rw [ChainHeadCons] at hN
   exact ⟨N, hPos, hN⟩
 
-end GeneralizedCollatz
+end GeneralizedCollatz.CaptureChain

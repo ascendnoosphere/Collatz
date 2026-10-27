@@ -81,14 +81,16 @@ theorem AccessOrbitAdd (q c D j k : ℕ) :
 theorem AccessOrbitEqOffsetMulRepunit (q c D j : ℕ) :
     AccessOrbit q c D j = (c * RepunitSum q j) % D := by
   induction j with
-  | zero => simp [AccessOrbit, Iterate, RepunitSum]
+  | zero => { simp [AccessOrbit, Iterate, RepunitSum] }
   | succ j ih =>
+    {
       rw [AccessOrbitSucc, ih, AccessStep]
       have hmod : (q * ((c * RepunitSum q j) % D) + c) % D
           = (q * (c * RepunitSum q j) + c) % D :=
         (Nat.ModEq.mul_left q (Nat.mod_modEq (c * RepunitSum q j) D)).add_right c
       rw [hmod, show q * (c * RepunitSum q j) + c
           = c * (q * RepunitSum q j + 1) by ring, RepunitSumSuccMul]
+    }
 /-- The orbit returns to `0` exactly when `D` divides `c G_j(q)`. -/
 theorem AccessOrbitEqZeroIff (q c D j : ℕ) :
     AccessOrbit q c D j = 0 ↔ D ∣ c * RepunitSum q j := by
@@ -238,10 +240,12 @@ theorem AccessOrbitPeriodMul (q c D m j t : ℕ) (hq : 2 ≤ q) (hD : 0 < D)
     (hm : AccessLeast q c D m) :
     AccessOrbit q c D (j + m * t) = AccessOrbit q c D j := by
   induction t with
-  | zero => simp
+  | zero => { simp }
   | succ t ih =>
+    {
       have hstep : j + m * (t + 1) = (j + m * t) + m := by ring
       rw [hstep, AccessOrbitPeriod q c D m (j + m * t) hq hD hm, ih]
+    }
 
 /-- **Return times.** The orbit visits `0` exactly at the multiples of the
 least positive exponent. -/
@@ -347,13 +351,15 @@ terms. -/
 theorem AccessRepunitSumModeqIndex (q p j : ℕ) (h : q ≡ 1 [MOD p]) :
     RepunitSum q j ≡ j [MOD p] := by
   induction j with
-  | zero => exact Nat.ModEq.refl 0
+  | zero => { exact Nat.ModEq.refl 0 }
   | succ j ih =>
+    {
       rw [RepunitSumSucc]
       have hpow : q ^ j ≡ 1 [MOD p] := by
         have := Nat.ModEq.pow j h
         simpa using this
       simpa using ih.add hpow
+    }
 
 /-- **Prime case, multiplier not one.** If `p` is prime, `p` does not divide
 `c`, and `q` is not one modulo `p`, the accessible exponents are the

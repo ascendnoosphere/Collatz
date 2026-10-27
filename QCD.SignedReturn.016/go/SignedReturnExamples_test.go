@@ -31,7 +31,7 @@ func TestSeedFour(t *testing.T) {
 // An identically true hit predicate, or an identically true bound
 // predicate, fails this test.
 func TestSeedTwo(t *testing.T) {
-	if euclidMod(exQ*2+exC, exD) != 2 {
+	if EuclidMod(exQ*2+exC, exD) != 2 {
 		t.Fatal("residue step did not fix 2")
 	}
 	if _, _, _, ok := FirstReturn(2); ok {
@@ -72,28 +72,28 @@ func TestNegativeAndZero(t *testing.T) {
 // TestFateControls pins one seed in each of the four outcomes.
 // A classifier that sends every seed to zero fails the last three.
 func TestFateControls(t *testing.T) {
-	kind, at := classifyFate(0)
-	if kind != "zero" || at != 0 || !tailAgrees(kind, at) {
+	kind, at := ClassifyFate(0)
+	if kind != "zero" || at != 0 || !TailAgrees(kind, at) {
 		t.Fatalf("seed 0: %s %d", kind, at)
 	}
-	kind, at = classifyFate(1)
-	if kind != "one" || at != 1 || !tailAgrees(kind, at) {
+	kind, at = ClassifyFate(1)
+	if kind != "one" || at != 1 || !TailAgrees(kind, at) {
 		t.Fatalf("seed 1: %s %d", kind, at)
 	}
-	kind, at = classifyFate(-1)
-	if kind != "neg" || at != -1 || !tailAgrees(kind, at) {
+	kind, at = ClassifyFate(-1)
+	if kind != "neg" || at != -1 || !TailAgrees(kind, at) {
 		t.Fatalf("seed -1: %s %d", kind, at)
 	}
-	kind, at = classifyFate(2)
-	if kind != "unbounded" || at != 2 || !tailAgrees(kind, at) {
+	kind, at = ClassifyFate(2)
+	if kind != "unbounded" || at != 2 || !TailAgrees(kind, at) {
 		t.Fatalf("seed 2: %s %d", kind, at)
 	}
-	kind, at = classifyFate(4)
-	if kind != "one" || at != 1 || !tailAgrees(kind, at) {
+	kind, at = ClassifyFate(4)
+	if kind != "one" || at != 1 || !TailAgrees(kind, at) {
 		t.Fatalf("seed 4: %s %d", kind, at)
 	}
-	kind, at = classifyFate(-2)
-	if kind != "neg" || at != -1 || !tailAgrees(kind, at) {
+	kind, at = ClassifyFate(-2)
+	if kind != "neg" || at != -1 || !TailAgrees(kind, at) {
 		t.Fatalf("seed -2: %s %d", kind, at)
 	}
 }
@@ -116,6 +116,7 @@ func TestFatePartition(t *testing.T) {
 	}
 }
 
+// TestSweepCounts fixes the parameter grid's hit, trap and failure totals.
 func TestSweepCounts(t *testing.T) {
 	got := RunSweep()
 	if got.Checks != 122 {

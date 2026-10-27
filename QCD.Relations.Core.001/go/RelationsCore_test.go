@@ -9,15 +9,15 @@ import (
 // TestsTotalChecks is the number of bounded certificate checks the main sweep reports.
 const TestsTotalChecks = 186207
 
-// nextState advances a deterministic 64-bit linear congruential generator.
-func nextState(state uint64) uint64 {
+// NextState advances a deterministic 64-bit linear congruential generator.
+func NextState(state uint64) uint64 {
 	return state*6364136223846793005 + 1442695040888963407
 }
 
-// referenceStep recomputes one plain instruction with arbitrary-precision arithmetic. The result
+// ReferenceStep recomputes one plain instruction with arbitrary-precision arithmetic. The result
 // is compared against a machine word, so the caller keeps d, c and n small enough that the affine
 // value stays below 2^64; Uint64 then truncates nothing.
-func referenceStep(d, c, n uint64) *big.Int {
+func ReferenceStep(d, c, n uint64) *big.Int {
 	dBig := new(big.Int).SetUint64(d)
 	nBig := new(big.Int).SetUint64(n)
 	if new(big.Int).Mod(nBig, dBig).Sign() == 0 {
@@ -27,8 +27,8 @@ func referenceStep(d, c, n uint64) *big.Int {
 	return mul.Add(mul, new(big.Int).SetUint64(c))
 }
 
-// referenceReturn recomputes one return step with arbitrary-precision arithmetic.
-func referenceReturn(d, c, n uint64) *big.Int {
+// ReferenceReturn recomputes one return step with arbitrary-precision arithmetic.
+func ReferenceReturn(d, c, n uint64) *big.Int {
 	dBig := new(big.Int).SetUint64(d)
 	nBig := new(big.Int).SetUint64(n)
 	if n%d == 0 {
@@ -44,12 +44,12 @@ func referenceReturn(d, c, n uint64) *big.Int {
 func TestStepMatchesReference(t *testing.T) {
 	state := uint64(7)
 	for i := 0; i < 20000; i++ {
-		state = nextState(state)
+		state = NextState(state)
 		d := state%9 + 2
 		c := state%13 + 1
 		n := state % 5000
 		got := new(big.Int).SetUint64(CoreStep(d, c, n))
-		if got.Cmp(referenceStep(d, c, n)) != 0 {
+		if got.Cmp(ReferenceStep(d, c, n)) != 0 {
 			t.Fatalf("step mismatch: d=%d c=%d n=%d got=%s", d, c, n, got)
 		}
 	}
@@ -95,7 +95,7 @@ func TestReturnRealization(t *testing.T) {
 				if steps != 1 && steps != 2 {
 					t.Fatalf("step count: d=%d c=%d n=%d steps=%d", d, c, n, steps)
 				}
-				want := referenceReturn(d, c, n)
+				want := ReferenceReturn(d, c, n)
 				got := new(big.Int).SetUint64(CoreReturnState(d, c, n))
 				if got.Cmp(want) != 0 {
 					t.Fatalf("return mismatch: d=%d c=%d n=%d got=%s want=%s", d, c, n, got, want)
@@ -153,7 +153,7 @@ func TestReachabilityAndPeriodicity(t *testing.T) {
 func TestTrapDivergence(t *testing.T) {
 	state := uint64(11)
 	for i := 0; i < 4000; i++ {
-		state = nextState(state)
+		state = NextState(state)
 		d := state%8 + 2
 		c := state%10 + 1
 		n := state%97 + 1
@@ -166,7 +166,7 @@ func TestTrapDivergence(t *testing.T) {
 		acc := new(big.Int).SetUint64(n)
 		prev := new(big.Int).Set(acc)
 		for k := 0; k < 6; k++ {
-			acc = referenceStep(d, c, acc.Uint64())
+			acc = ReferenceStep(d, c, acc.Uint64())
 			if acc.Cmp(prev) <= 0 {
 				t.Fatalf("trap growth: d=%d c=%d n=%d k=%d", d, c, n, k)
 			}
@@ -230,7 +230,7 @@ func TestRawRealization(t *testing.T) {
 				want := new(big.Int).SetUint64(CoreReturnIterate(d, c, start, period))
 				acc := new(big.Int).SetUint64(start)
 				for k := 0; k < j; k++ {
-					acc = referenceStep(d, c, acc.Uint64())
+					acc = ReferenceStep(d, c, acc.Uint64())
 				}
 				if acc.Cmp(want) != 0 {
 					t.Fatalf("realization value: d=%d c=%d x=%d j=%d got=%s want=%s", d, c, x, j, acc, want)
@@ -240,32 +240,45 @@ func TestRawRealization(t *testing.T) {
 	}
 }
 
+// TestRawRealizationEmpty includes the identity clock and rejects inadmissible starts.
+func TestRawRealizationEmpty(t *testing.T) {
+	if j, ok := RawRealization(3, 1, 2, 0); !ok || j != 0 {
+		t.Fatalf("empty return prefix: j=%d ok=%t", j, ok)
+	}
+	if _, ok := RawRealization(3, 1, 2, -1); ok {
+		t.Fatal("negative return length accepted")
+	}
+	if _, ok := RawRealization(3, 1, rawGuard+1, 0); ok {
+		t.Fatal("start outside the guarded range accepted")
+	}
+}
+
 // TestSweepTotals pins the reported check total and the contribution of every sweep.
 func TestSweepTotals(t *testing.T) {
 	var checks, failures uint64
 	w := NewWorkspace(64)
-	sweepDomainChecks(&checks, &failures)
+	SweepDomainChecks(&checks, &failures)
 	if failures != 0 {
 		t.Fatalf("domain sweep failures: %d", failures)
 	}
 	t.Logf("domain checks: %d", checks)
 	before := checks
-	sweepCoreChecks(&checks, &failures, w)
+	SweepCoreChecks(&checks, &failures, w)
 	t.Logf("core checks: %d", checks-before)
 	before = checks
-	sweepCornerChecks(&checks, &failures)
+	SweepCornerChecks(&checks, &failures)
 	t.Logf("corner checks: %d", checks-before)
 	before = checks
-	sweepCornerClassificationChecks(&checks, &failures)
+	SweepCornerClassificationChecks(&checks, &failures)
 	t.Logf("classification checks: %d", checks-before)
 	before = checks
-	sweepPeriodicPointChecks(&checks, &failures)
+	SweepPeriodicPointChecks(&checks, &failures)
 	t.Logf("periodic checks: %d", checks-before)
 	before = checks
-	sweepExpansionChecks(&checks, &failures, w)
+	SweepExpansionChecks(&checks, &failures, w)
 	t.Logf("expansion checks: %d", checks-before)
 	before = checks
-	parallelChecks, parallelFailures := parallelCoreSweep(4, NewCache())
+	parallelChecks, parallelFailures := ParallelCoreSweep(4, NewCache())
 	checks += parallelChecks
 	failures += parallelFailures
 	t.Logf("parallel checks: %d", checks-before)
@@ -338,7 +351,7 @@ func TestCornerClassification(t *testing.T) {
 
 // TestParallelSweepAgrees recomputes the chunked sweep serially and compares totals.
 func TestParallelSweepAgrees(t *testing.T) {
-	parallelChecks, parallelFailures := parallelCoreSweep(4, NewCache())
+	parallelChecks, parallelFailures := ParallelCoreSweep(4, NewCache())
 	var serialChecks, serialFailures uint64
 	w := NewWorkspace(64)
 	for d := uint64(2); d <= 17; d++ {

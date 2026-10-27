@@ -123,8 +123,8 @@ func Divides(d, a int64) bool {
 	return a%d == 0
 }
 
-// admissibleDivisors returns the eight divisors with absolute value 2 through 5.
-func admissibleDivisors() [8]int64 {
+// AdmissibleDivisors returns the eight divisors with absolute value 2 through 5.
+func AdmissibleDivisors() [8]int64 {
 	return [8]int64{-5, -4, -3, -2, 2, 3, 4, 5}
 }
 
@@ -159,9 +159,9 @@ func IsFirstHit(pow, trap []int64, d, c, n int64, j int) bool {
 	return true
 }
 
-// checkSeed compares one seed with the closed form, the two-step repetition,
+// CheckSeed compares one seed with the closed form, the two-step repetition,
 // and the clause predicted by divisibility of n and of c-n.
-func checkSeed(pow, trap []int64, d, c, n int64, cen *Census) {
+func CheckSeed(pow, trap []int64, d, c, n int64, cen *Census) {
 	pow = pow[:len(pow)]
 	trap = trap[:len(trap)]
 	kind := ClauseOf(d, c, n)
@@ -217,17 +217,17 @@ func checkSeed(pow, trap []int64, d, c, n int64, cen *Census) {
 	}
 }
 
-// sweepRange checks every divisor and seed for offsets from cLo through cHi.
-func sweepRange(cache *Cache, cLo, cHi int64) Census {
+// SweepRange checks every divisor and seed for offsets from cLo through cHi.
+func SweepRange(cache *Cache, cLo, cHi int64) Census {
 	var cen Census
-	divs := admissibleDivisors()
+	divs := AdmissibleDivisors()
 	ds := divs[:]
 	ps := cache.Pow[:len(cache.Pow)]
 	ts := cache.Trap[:len(cache.Trap)]
 	for c := cLo; c <= cHi; c++ {
 		for n := int64(refNMin); n <= refNMax; n++ {
 			for di := 0; di < len(ds); di++ {
-				checkSeed(ps, ts, ds[di], c, n, &cen)
+				CheckSeed(ps, ts, ds[di], c, n, &cen)
 			}
 		}
 	}
@@ -262,7 +262,7 @@ func RunSweep() Census {
 		go func(idx int, lo, hi int64) {
 			defer wg.Done()
 			cache := NewCache()
-			parts[idx] = sweepRange(cache, lo, hi)
+			parts[idx] = SweepRange(cache, lo, hi)
 		}(i, lo, hi)
 	}
 	wg.Wait()

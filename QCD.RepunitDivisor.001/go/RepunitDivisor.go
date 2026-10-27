@@ -58,8 +58,8 @@ func DisplayedCache() Cache {
 	}}
 }
 
-// record stores one boolean comparison.
-func (t *Totals) record(ok bool) {
+// Record stores one boolean comparison.
+func (t *Totals) Record(ok bool) {
 	t.Checks++
 	if !ok {
 		t.Failures++
@@ -209,15 +209,15 @@ func IdentityHolds(q, k, c, D uint64) bool {
 	return true
 }
 
-// checkCell counts the arithmetic facts and both affine facts on one cell.
-func checkCell(cell Cell, w *Workspace) Totals {
+// CheckCell counts the arithmetic facts and both affine facts on one cell.
+func CheckCell(cell Cell, w *Workspace) Totals {
 	var totals Totals
 	sumOK, geomOK, dvdOK, modOK, coprimeOK, pow, sum := DivisorFacts(cell.Q, cell.K, cell.D)
-	totals.record(sumOK)
-	totals.record(geomOK)
-	totals.record(dvdOK)
-	totals.record(modOK)
-	totals.record(coprimeOK)
+	totals.Record(sumOK)
+	totals.Record(geomOK)
+	totals.Record(dvdOK)
+	totals.Record(modOK)
+	totals.Record(coprimeOK)
 	arithOK := sumOK && geomOK && dvdOK && modOK && coprimeOK
 	if cell.D == 0 {
 		return totals
@@ -225,8 +225,8 @@ func checkCell(cell Cell, w *Workspace) Totals {
 	var r uint64
 	for r = 0; r < cell.D; r++ {
 		form, cong := AffineFacts(cell.Q, cell.C, cell.K, cell.D, r, pow, sum, arithOK, w)
-		totals.record(form)
-		totals.record(cong)
+		totals.Record(form)
+		totals.Record(cong)
 	}
 	return totals
 }
@@ -243,7 +243,7 @@ func CheckDisplayed(cache Cache) Totals {
 		wg.Add(1)
 		go func(i int) {
 			defer wg.Done()
-			parts[i] = checkCell(cells[i], NewWorkspace())
+			parts[i] = CheckCell(cells[i], NewWorkspace())
 		}(i)
 	}
 	wg.Wait()

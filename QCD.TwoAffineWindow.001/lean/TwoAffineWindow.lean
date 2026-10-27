@@ -405,20 +405,5 @@ theorem UniqueOddCandidateUnique (K : ℕ) (hK : Odd K) (hK3 : 3 ≤ K)
       rw [hq, hrq]
     }
 
-/-- Positivity holds exactly when the odd candidate passes the integer test. -/
-theorem WindowPositivityIff (q K : ℕ) (hK : Odd K) (hK3 : 3 ≤ K)
-    (hq : Odd q) (hlow : q ^ 2 < 2 ^ K) (hhigh : 2 ^ K < (q + 2) ^ 2) :
-    TwoAffinePositivity q K ↔ q = UniqueOddCandidate K ∧
-      TwoAffinePositivity (UniqueOddCandidate K) K := by
-  have huniq : q = UniqueOddCandidate K :=
-    UniqueOddCandidateUnique K hK hK3 q hq hlow hhigh
-  constructor
-  · intro hpos
-    refine ⟨huniq, ?_⟩
-    rw [← huniq]
-    exact hpos
-  · intro hpass
-    rw [huniq]
-    exact hpass.2
 
 end GeneralizedCollatz

@@ -29,12 +29,13 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{An odd burst from a string of ones}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{An odd burst from a string of ones}
 
 \begin{abstract}
 The Collatz shortcut halves an even natural number and sends an odd natural number \(n\) to \((3n+1)/2\). For every natural number \(a\), including zero, the first \(a\) iterates of \(2^{a}-1\) are given by \(3^{k}2^{a-k}-1\). Those \(a\) steps are odd steps, and the state after them is \(3^{a}-1\). That arrival value is even. If \(a\ge 2\), then \(3^{a}-1>2^{a}-1\). No claim is made that an iterate equals \(1\).

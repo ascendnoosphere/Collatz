@@ -5,8 +5,8 @@ package main
 
 import "testing"
 
-// constantTrue accepts every pair. The equation does not.
-func constantTrue(uint64, uint) bool {
+// ConstantTrue accepts every pair. The equation does not.
+func ConstantTrue(uint64, uint) bool {
 	return true
 }
 
@@ -38,7 +38,7 @@ func TestRejectsConstantTrue(t *testing.T) {
 		if got {
 			t.Fatalf("control (%d, %d) satisfied the equation", p.X, p.N)
 		}
-		if constantTrue(p.X, p.N) && !got {
+		if ConstantTrue(p.X, p.N) && !got {
 			separated = true
 		}
 	}

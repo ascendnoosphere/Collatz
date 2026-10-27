@@ -6,13 +6,13 @@ import (
 	"testing"
 )
 
-// nextState advances a deterministic 64-bit linear congruential generator.
-func nextState(state uint64) uint64 {
+// NextState advances a deterministic 64-bit linear congruential generator.
+func NextState(state uint64) uint64 {
 	return state*6364136223846793005 + 1442695040888963407
 }
 
-// referenceStep recomputes one offset step with arbitrary-precision arithmetic.
-func referenceStep(c, n uint64) *big.Int {
+// ReferenceStep recomputes one offset step with arbitrary-precision arithmetic.
+func ReferenceStep(c, n uint64) *big.Int {
 	cBig, nBig := new(big.Int).SetUint64(c), new(big.Int).SetUint64(n)
 	half := new(big.Int).Rsh(nBig, 1)
 	if nBig.Bit(0) == 0 {
@@ -26,10 +26,10 @@ func referenceStep(c, n uint64) *big.Int {
 func TestStepMatchesReference(t *testing.T) {
 	state := uint64(1)
 	for i := 0; i < 20000; i++ {
-		state = nextState(state)
+		state = NextState(state)
 		c := state%1000 + 1
 		n := (state >> 10) % (1 << 40)
-		if Step(c, n) != referenceStep(c, n).Uint64() {
+		if Step(c, n) != ReferenceStep(c, n).Uint64() {
 			t.Fatalf("step mismatch at c=%d n=%d", c, n)
 		}
 	}
@@ -141,8 +141,8 @@ func TestScalingIdentity(t *testing.T) {
 				if scaled != power*plain {
 					t.Fatalf("scaling mismatch a=%d n=%d k=%d", a, n, k)
 				}
-				wantScaled := referenceStep(power, scaled)
-				wantPlain := referenceStep(1, plain)
+				wantScaled := ReferenceStep(power, scaled)
+				wantPlain := ReferenceStep(1, plain)
 				scaled = Step(power, scaled)
 				plain = Step(1, plain)
 				if wantScaled.BitLen() > 64 || wantPlain.BitLen() > 64 ||
@@ -159,7 +159,7 @@ func TestScalingIdentity(t *testing.T) {
 
 // TestParallelSweepAgrees checks that the partitioned workers reproduce a sequential count.
 func TestParallelSweepAgrees(t *testing.T) {
-	parallelChecks, parallelFailures := parallelStratumSweep(4)
+	parallelChecks, parallelFailures := ParallelStratumSweep(4)
 	var pairs uint64
 	for c := uint64(1); c <= 200; c++ {
 		for m := uint64(2); m <= c; m++ {
@@ -207,6 +207,22 @@ func TestWordBoundaries(t *testing.T) {
 	}
 	if ScalingHolds(41, 1, 0) || ScalingHolds(40, max, 1) {
 		t.Fatal("unrepresentable scaling was accepted")
+	}
+}
+
+// TestOrbitEndpoint does not evaluate the successor of the last requested state.
+func TestOrbitEndpoint(t *testing.T) {
+	ws := NewWorkspace(2)
+	max := ^uint64(0)
+	states := ws.Orbit(1, max, 1)
+	if len(states) != 1 || states[0] != max {
+		t.Fatalf("one-state orbit: %v", states)
+	}
+	if got := HalvingPrefix(max, max, 0, ws); got != max {
+		t.Fatalf("zero-length halving prefix: %d", got)
+	}
+	if got := HalvingPrefix(max, 1, 1, ws); got != 1 {
+		t.Fatalf("halving prefix evaluated the terminal odd successor: %d", got)
 	}
 }
 

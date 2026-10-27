@@ -90,8 +90,8 @@ func FillOrbit(start int64, w *Workspace) {
 	}
 }
 
-// note records one exact comparison.
-func note(checks, failures *uint64, ok bool) {
+// Note records one exact comparison.
+func Note(checks, failures *uint64, ok bool) {
 	*checks++
 	if !ok {
 		*failures++
@@ -113,14 +113,14 @@ func CheckGrid(pred func(got, want int64) bool) (checks, failures uint64) {
 				join := w.Orbit[b]
 				for a := 0; a <= SourceSteps; a++ {
 					source, ok := DoublingSource(join, a)
-					note(&checks, &failures, ok)
+					Note(&checks, &failures, ok)
 					if !ok {
 						continue
 					}
 					gotJoin := Iterate(source, a)
-					note(&checks, &failures, pred(gotJoin, join))
+					Note(&checks, &failures, pred(gotJoin, join))
 					time := ParentCertifiedTime(a, b, t)
-					note(&checks, &failures, pred(Iterate(source, time), 1))
+					Note(&checks, &failures, pred(Iterate(source, time), 1))
 				}
 			}
 		}
@@ -141,14 +141,14 @@ func CheckDecoy(pred func(got, want int64) bool) (checks, failures uint64) {
 				join := w.Orbit[b]
 				for a := 0; a <= SourceSteps; a++ {
 					source, ok := DoublingSource(join, a)
-					note(&checks, &failures, ok)
+					Note(&checks, &failures, ok)
 					if !ok {
 						continue
 					}
 					gotJoin := Iterate(source, a)
-					note(&checks, &failures, pred(gotJoin, join))
+					Note(&checks, &failures, pred(gotJoin, join))
 					time := DecoyTime(a, b, t)
-					note(&checks, &failures, pred(Iterate(source, time), 1))
+					Note(&checks, &failures, pred(Iterate(source, time), 1))
 				}
 			}
 		}

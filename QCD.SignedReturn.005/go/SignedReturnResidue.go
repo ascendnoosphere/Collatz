@@ -39,16 +39,16 @@ type Totals struct {
 	Failures uint64
 }
 
-// check records one comparison.
-func (t *Totals) check(ok bool) {
+// Check records one comparison.
+func (t *Totals) Check(ok bool) {
 	t.Checks++
 	if !ok {
 		t.Failures++
 	}
 }
 
-// add accumulates a worker total into the receiver.
-func (t *Totals) add(other Totals) {
+// Add accumulates a worker total into the receiver.
+func (t *Totals) Add(other Totals) {
 	t.Checks += other.Checks
 	t.Failures += other.Failures
 }
@@ -83,8 +83,8 @@ func (c *Cache) Load(q int64) {
 	}
 }
 
-// powInt returns q^j for a nonnegative exponent on the stated grid.
-func powInt(q int64, j int) int64 {
+// PowInt returns q^j for a nonnegative exponent on the stated grid.
+func PowInt(q int64, j int) int64 {
 	out := int64(1)
 	for i := 0; i < j; i++ {
 		out *= q
@@ -92,8 +92,8 @@ func powInt(q int64, j int) int64 {
 	return out
 }
 
-// trapSum returns U_j(q), the sum of q^0 through q^(j-1). The empty sum is 0.
-func trapSum(q int64, j int) int64 {
+// TrapSum returns U_j(q), the sum of q^0 through q^(j-1). The empty sum is 0.
+func TrapSum(q int64, j int) int64 {
 	sum := int64(0)
 	pow := int64(1)
 	for i := 0; i < j; i++ {
@@ -105,11 +105,11 @@ func trapSum(q int64, j int) int64 {
 
 // AffineValue returns q^j*n + c*U_j(q) by exact int64 arithmetic.
 func AffineValue(q, c, n int64, j int) int64 {
-	return powInt(q, j)*n + c*trapSum(q, j)
+	return PowInt(q, j)*n + c*TrapSum(q, j)
 }
 
-// absInt returns the absolute value of a signed integer on this grid.
-func absInt(n int64) int64 {
+// AbsInt returns the absolute value of a signed integer on this grid.
+func AbsInt(n int64) int64 {
 	if n < 0 {
 		return -n
 	}
@@ -154,7 +154,7 @@ func ResidueWalk(q, c, m, n int64, j int) int64 {
 // CastAgrees reports that the affine residue equals the residue walk.
 // It is false when |D| < 2, which is outside every parameter record.
 func CastAgrees(q, c, D, n int64, j int) bool {
-	m := absInt(D)
+	m := AbsInt(D)
 	if m < 2 || j < 0 {
 		return false
 	}
@@ -164,7 +164,7 @@ func CastAgrees(q, c, D, n int64, j int) bool {
 // CastIs reports that both the affine residue and the residue walk equal the
 // supplied class. A class outside [0, |D|) is rejected, as is |D| < 2.
 func CastIs(q, c, D, n int64, j int, claimed int64) bool {
-	m := absInt(D)
+	m := AbsInt(D)
 	if m < 2 || j < 0 || claimed < 0 || claimed >= m {
 		return false
 	}
@@ -177,7 +177,7 @@ func CastIs(q, c, D, n int64, j int, claimed int64) bool {
 // IsFirstHit reports that D divides the affine state at time j and at no
 // earlier time. It is false when |D| < 2.
 func IsFirstHit(q, c, D, n int64, j int) bool {
-	if j < 0 || absInt(D) < 2 {
+	if j < 0 || AbsInt(D) < 2 {
 		return false
 	}
 	for i := 0; i < j; i++ {
@@ -206,10 +206,10 @@ func ChecksPerPoint() uint64 {
 	return 7
 }
 
-// sweepDivisor checks one signed divisor for every seed and time.
+// SweepDivisor checks one signed divisor for every seed and time.
 // pow and trap are the buffers already loaded for q, sliced to their length.
-func sweepDivisor(q, c, D int64, pow, trap []int64, t *Totals) {
-	m := absInt(D)
+func SweepDivisor(q, c, D int64, pow, trap []int64, t *Totals) {
+	m := AbsInt(D)
 	ps := pow[:len(pow)]
 	ts := trap[:len(trap)]
 	for n := int64(-castNAbs); n <= castNAbs; n++ {
@@ -223,20 +223,20 @@ func sweepDivisor(q, c, D int64, pow, trap []int64, t *Totals) {
 			class := Residue(aff, m)
 			classShift := Residue(affShift, m)
 			// The affine class equals the walk, for both the seed and n+D.
-			t.check(class == res)
-			t.check(classShift == resShift)
-			t.check(CastIs(q, c, D, n, j, res))
+			t.Check(class == res)
+			t.Check(classShift == resShift)
+			t.Check(CastIs(q, c, D, n, j, res))
 			next := res + 1
 			if next == m {
 				next = 0
 			}
 			// The next class is a different residue, since m >= 2.
-			t.check(!CastIs(q, c, D, n, j, next))
-			t.check(Divides(D, aff) == (class == 0))
+			t.Check(!CastIs(q, c, D, n, j, next))
+			t.Check(Divides(D, aff) == (class == 0))
 			resFirst := res == 0 && !earlier
 			hit := IsFirstHit(q, c, D, n, j)
-			t.check(hit == resFirst)
-			t.check(IsFirstHit(q, c, D, shift, j) == hit)
+			t.Check(hit == resFirst)
+			t.Check(IsFirstHit(q, c, D, shift, j) == hit)
 			if res == 0 {
 				earlier = true
 			}
@@ -246,17 +246,17 @@ func sweepDivisor(q, c, D int64, pow, trap []int64, t *Totals) {
 	}
 }
 
-// sweepQ checks one multiplier on the whole coefficient, divisor, seed, and
+// SweepQ checks one multiplier on the whole coefficient, divisor, seed, and
 // time grid. The cache is reused and is private to the calling worker.
-func sweepQ(q int64, cache *Cache) Totals {
+func SweepQ(q int64, cache *Cache) Totals {
 	cache.Load(q)
 	var t Totals
 	ps := cache.Pow[:len(cache.Pow)]
 	ts := cache.Trap[:len(cache.Trap)]
 	for c := int64(-castCAbs); c <= castCAbs; c++ {
 		for absD := int64(castDMin); absD <= castDMax; absD++ {
-			sweepDivisor(q, c, absD, ps, ts, &t)
-			sweepDivisor(q, c, -absD, ps, ts, &t)
+			SweepDivisor(q, c, absD, ps, ts, &t)
+			SweepDivisor(q, c, -absD, ps, ts, &t)
 		}
 	}
 	return t
@@ -276,14 +276,14 @@ func RunCastSweep() Totals {
 			defer wg.Done()
 			cache := NewCache()
 			for i := worker; i < len(qs); i += castWorkers {
-				parts[i] = sweepQ(qs[i], cache)
+				parts[i] = SweepQ(qs[i], cache)
 			}
 		}(worker)
 	}
 	wg.Wait()
 	var total Totals
 	for _, part := range parts {
-		total.add(part)
+		total.Add(part)
 	}
 	return total
 }

@@ -22,11 +22,13 @@ def HomogeneousDivisionCount (word : List RawLetter) : ℕ := word.count .Divide
 theorem HomogeneousCountTotal (word : List RawLetter) :
     HomogeneousAffineCount word + HomogeneousDivisionCount word = word.length := by
   induction word with
-  | nil => simp [HomogeneousAffineCount, HomogeneousDivisionCount]
+  | nil => { simp [HomogeneousAffineCount, HomogeneousDivisionCount] }
   | cons letter word ih =>
+    {
       cases letter <;>
         simp [HomogeneousAffineCount, HomogeneousDivisionCount] at ih ⊢ <;>
         omega
+    }
 
 /-- Homogeneous raw words have zero offset and monomial numerator data. -/
 theorem HomogeneousWordData (q D : ℕ) (DAdmissible : 2 ≤ D) (word : List RawLetter) :
@@ -42,14 +44,19 @@ theorem HomogeneousWordData (q D : ℕ) (DAdmissible : 2 ≤ D) (word : List Raw
   have pC : p.C = 0 := rfl
   have pD : p.D = (D : ℤ) := rfl
   induction word with
-  | nil => simp [RawWordAffine, EmptyAffine, HomogeneousAffineCount,
-      HomogeneousDivisionCount]
+  | nil =>
+    {
+      simp [RawWordAffine, EmptyAffine, HomogeneousAffineCount,
+        HomogeneousDivisionCount]
+    }
   | cons letter word ih =>
+    {
       rcases ih with ⟨multiplier, offset, denominator⟩
       cases letter <;>
         simp [RawWordAffine, RawLetterAffine, AffineThen, HomogeneousAffineCount,
           HomogeneousDivisionCount, pQ, pC, pD, multiplier, offset, denominator,
           pow_succ', mul_comm]
+    }
 
 /-- Positive powers witness multiplicative dependence of the coefficients. -/
 def MultiplicativelyIndependent (q D : ℕ) : Prop :=
@@ -127,10 +134,12 @@ theorem PositiveHomogeneousIteratePositive (q D n k : ℕ) (qLower : 2 ≤ q)
     (DLower : 2 ≤ D) (nPositive : 0 < n) :
     0 < Iterate (PositiveHomogeneousStep q D) k n := by
   induction k with
-  | zero => simpa [Iterate] using nPositive
+  | zero => { simpa [Iterate] using nPositive }
   | succ k ih =>
+    {
       simp only [Iterate]
       exact PositiveHomogeneousStepPositive q D _ qLower DLower ih
+    }
 
 /-- Natural iteration and foundational signed raw iteration agree at every raw time. -/
 theorem PositiveHomogeneousIterateCast (q D n k : ℕ) (DLower : 2 ≤ D) :

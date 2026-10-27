@@ -1,5 +1,7 @@
 -- SPDX-License-Identifier: CC-BY-4.0
 -- Copyright (c) 2026 ascendnoosphere
+import Mathlib.Data.Nat.Notation
+import Mathlib.Data.Int.Notation
 
 /-!
 # Sign of the mirror quotient
@@ -13,13 +15,10 @@ The exponent `1` fixes `1`. The exponents `1` and `2` exchange `5` and `7`.
 Those are positive cycles of this quotient. Nothing here says that every
 positive integer reaches `1`, and the numerator `3 * n + 1` is not the one
 under consideration. A schedule that fails exact division is not given a
-sign: the exponent `3` does not divide the numerator at the seed `1`.
+sign: the denominator `2^3` does not divide the numerator at the seed `1`.
 -/
 
 set_option autoImplicit false
-
-notation "ℕ" => Nat
-notation "ℤ" => Int
 
 namespace GeneralizedCollatz
 

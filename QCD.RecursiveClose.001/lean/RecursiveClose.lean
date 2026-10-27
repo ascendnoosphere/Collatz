@@ -14,7 +14,7 @@ parent rather than producing one.
 
 set_option autoImplicit false
 
-namespace GeneralizedCollatz
+namespace GeneralizedCollatz.RecursiveClose
 
 /-- Classical shortcut: halve an even input, and send an odd input through
     `(3x+1)/2`. -/
@@ -288,4 +288,4 @@ theorem ParentPhaseNeedsOneStep :
   · rw [htime, Function.iterate_succ_apply' Shortcut 0 2,
       Function.iterate_zero_apply, ShortcutTwo]
 
-end GeneralizedCollatz
+end GeneralizedCollatz.RecursiveClose

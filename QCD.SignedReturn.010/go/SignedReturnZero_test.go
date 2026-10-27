@@ -8,8 +8,8 @@ import (
 	"testing"
 )
 
-// quoTowardZero divides with arbitrary precision, truncating toward zero.
-func quoTowardZero(a, d int64) int64 {
+// QuoTowardZero divides with arbitrary precision, truncating toward zero.
+func QuoTowardZero(a, d int64) int64 {
 	return new(big.Int).Quo(big.NewInt(a), big.NewInt(d)).Int64()
 }
 
@@ -56,7 +56,7 @@ func TestHandCases(t *testing.T) {
 	if !ok || j != 0 || quot != 1 {
 		t.Fatalf("negative seed: time %d quot %d ok %v", j, quot, ok)
 	}
-	if rawStep(6, -3, 1) != 6 || rawStep(6, -3, 6) != -2 {
+	if RawStep(6, -3, 1) != 6 || RawStep(6, -3, 6) != -2 {
 		t.Fatal("raw return disagreed with c/d")
 	}
 }
@@ -95,15 +95,15 @@ func TestConstantQuotient(t *testing.T) {
 	for i := 0; i < len(divs); i++ {
 		d := divs[i]
 		for c := int64(-zeroCAbs); c <= int64(zeroCAbs); c++ {
-			if !divides(d, c) {
+			if !Divides(d, c) {
 				continue
 			}
-			want := quoTowardZero(c, d)
+			want := QuoTowardZero(c, d)
 			if c/d != want {
 				t.Fatalf("int64 quotient c=%d d=%d", c, d)
 			}
 			for n := int64(-zeroNAbs); n <= int64(zeroNAbs); n++ {
-				if divides(d, n) {
+				if Divides(d, n) {
 					continue
 				}
 				j, quot, ok := ZeroReturn(d, c, n)
@@ -131,7 +131,7 @@ func TestTrappedNotReturn(t *testing.T) {
 // ZeroReturnGivesValue is the claim that a double miss still has a return.
 // It is false. Replacing the body by true fails TestTrappedNotReturn.
 func ZeroReturnGivesValue(d, c, n int64) bool {
-	if divides(d, n) || divides(d, c) {
+	if Divides(d, n) || Divides(d, c) {
 		return false
 	}
 	_, _, ok := ZeroReturn(d, c, n)
@@ -149,7 +149,7 @@ func TestSignedQuotients(t *testing.T) {
 	}
 	for _, row := range samples {
 		d, a, want := row[0], row[1], row[2]
-		if a/d != want || quoTowardZero(a, d) != want {
+		if a/d != want || QuoTowardZero(a, d) != want {
 			t.Fatalf("quotient d=%d a=%d", d, a)
 		}
 	}

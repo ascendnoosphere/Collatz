@@ -22,7 +22,7 @@ seed may still obey the inequality.
 
 set_option autoImplicit false
 
-namespace GeneralizedCollatz
+namespace GeneralizedCollatz.SignedReturnObstruction
 
 /-- Affine state after `j` undivided steps, with offset sum `TrapSum q j`. -/
 def AffineState (q c : ℤ) (j : ℕ) (n : ℤ) : ℤ :=
@@ -395,4 +395,4 @@ theorem ClassTrichotomy (p : Parameters) (n0 : ℤ) :
       exact hhit ⟨j, hback⟩
     }
 
-end GeneralizedCollatz
+end GeneralizedCollatz.SignedReturnObstruction

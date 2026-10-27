@@ -8,19 +8,19 @@ import (
 	"testing"
 )
 
-// bigQuotient returns the toward-zero quotient n/D as a big integer.
-func bigQuotient(D, n int64) *big.Int {
+// BigQuotient returns the toward-zero quotient n/D as a big integer.
+func BigQuotient(D, n int64) *big.Int {
 	return new(big.Int).Quo(big.NewInt(n), big.NewInt(D))
 }
 
-// bigAbsProduct returns |D| * |n/D| with arbitrary-precision arithmetic.
-func bigAbsProduct(D, n int64) *big.Int {
-	quot := bigQuotient(D, n)
+// BigAbsProduct returns |D| * |n/D| with arbitrary-precision arithmetic.
+func BigAbsProduct(D, n int64) *big.Int {
+	quot := BigQuotient(D, n)
 	return new(big.Int).Mul(new(big.Int).Abs(big.NewInt(D)), new(big.Int).Abs(quot))
 }
 
-// bigDivides reports that the big-integer remainder of n by D is zero.
-func bigDivides(D, n int64) bool {
+// BigDivides reports that the big-integer remainder of n by D is zero.
+func BigDivides(D, n int64) bool {
 	rem := new(big.Int).Rem(big.NewInt(n), big.NewInt(D))
 	return rem.Sign() == 0
 }
@@ -71,7 +71,7 @@ func TestAbsProductRejectsRemainder(t *testing.T) {
 	if !AbsProductExact(-5, -30) {
 		t.Fatal("exact quotient was rejected")
 	}
-	if abs64(-5)*abs64((-30)/(-5)) != 30 {
+	if Abs64(-5)*Abs64((-30)/(-5)) != 30 {
 		t.Fatal("hand product is not 30")
 	}
 }
@@ -109,20 +109,20 @@ func TestGridAgreesWithBig(t *testing.T) {
 			}
 		}
 		for _, D := range signedDivisors {
-			div := bigDivides(D, n)
+			div := BigDivides(D, n)
 			if Divides(D, n) != div {
 				t.Fatalf("divisibility D=%d n=%d", D, n)
 			}
 			if FirstHitAtZero(D, n) != div {
 				t.Fatalf("first hit D=%d n=%d", D, n)
 			}
-			prod := bigAbsProduct(D, n)
+			prod := BigAbsProduct(D, n)
 			wantAbs := new(big.Int).Abs(big.NewInt(n))
 			exact := prod.Cmp(wantAbs) == 0
 			if AbsProductExact(D, n) != exact {
 				t.Fatalf("absolute product D=%d n=%d", D, n)
 			}
-			quot := bigQuotient(D, n)
+			quot := BigQuotient(D, n)
 			if !quot.IsInt64() || quot.Int64() != ImmediateReturn(D, n) {
 				t.Fatalf("quotient D=%d n=%d", D, n)
 			}

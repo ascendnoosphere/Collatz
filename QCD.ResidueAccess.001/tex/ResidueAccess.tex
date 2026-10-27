@@ -29,12 +29,13 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{Residue access before division}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{Residue access before division}
 
 \begin{abstract}
 For integers \(q\ge2\), \(c\ge1\) and \(D\ge2\) the divisor slice of the raw
@@ -279,6 +280,7 @@ G_{j+1}(q)=1+qG_j(q)\equiv 1+j\pmod p .
 \end{proof}
 
 \begin{theorem}[Multiplier not one]\label{Thm:PrimeNotOne}
+\leavevmode\par
 Let \(p\) be prime, \(p\nmid c\) and \(q\not\equiv1\pmod p\). Then
 \[
 r_j=0\iff p\mid q^{j}-1
@@ -330,9 +332,9 @@ Let \(p\) be prime, \(p\nmid c\), \(\gcd(p,q)=1\) and
 
 \begin{proof}
 We first record Fermat's little theorem in the form
-\(q^{p-1}\equiv1\pmod p\). Multiplication by \(q\) permutes the nonzero
-residues modulo \(p\), because \(\gcd(q,p)=1\) and the inverse of
-multiplication by \(q\) is multiplication by the inverse of \(q\). Hence
+\(q^{p-1}\equiv1\pmod p\). Since \(\gcd(q,p)=1\), multiplication by
+\(q\) permutes the nonzero residues modulo \(p\).
+Its inverse is multiplication by the inverse of \(q\). Hence
 \[
 \prod_{x=1}^{p-1}x\equiv\prod_{x=1}^{p-1}qx=q^{p-1}\prod_{x=1}^{p-1}x
 \pmod p .
@@ -398,31 +400,51 @@ criticality ledger are likewise not formalized here.
 \begin{center}
 \begin{tabular}{ll}
 \toprule
-Statement & Lean / controls \\
+Statement & Lean declaration \\
 \midrule
-Lemma~\ref{Lem:Walk} & \texttt{AccessStep}, \texttt{AccessOrbit}, \\
- & \texttt{AccessOrbitZero}, \texttt{AccessOrbitSucc}, \texttt{AccessOrbitAdd} \\
+Lemma~\ref{Lem:Walk} & \texttt{AccessStep} \\
+ & \texttt{AccessOrbit} \\
+ & \texttt{AccessOrbitZero} \\
+ & \texttt{AccessOrbitSucc} \\
+ & \texttt{AccessOrbitAdd} \\
 Lemma~\ref{Lem:Offset} & \texttt{AccessOrbitEqOffsetMulRepunit} \\
 Corollary~\ref{Cor:ReturnCondition} & \texttt{AccessOrbitEqZeroIff} \\
 Definition~\ref{Def:Modulus} & \texttt{AccessModulus} \\
 Lemma~\ref{Lem:GcdReduction} & \texttt{AccessModulusDvdIffMul} \\
 Theorem~\ref{Thm:Criterion} & \texttt{AccessOrbitEqZeroIffModulus} \\
-Lemma~\ref{Lem:ModulusDivisor} & \texttt{AccessModulusDvdMulPred}, \texttt{AccessModulusCoprimeQ} \\
+Lemma~\ref{Lem:ModulusDivisor} & \texttt{AccessModulusDvdMulPred} \\
+ & \texttt{AccessModulusCoprimeQ} \\
 Lemma~\ref{Lem:Injectivity} & \texttt{AccessStepEqIff} \\
-Theorem~\ref{Thm:Period} & \texttt{AccessOrbitEqZeroOfLeast}, \texttt{AccessOrbitPeriod}, \\
- & \texttt{AccessOrbitPeriodMul}, \texttt{AccessOrbitEqZeroIffDvd}, \texttt{AccessIterateComm} \\
+Theorem~\ref{Thm:Period} & \texttt{AccessOrbitEqZeroOfLeast} \\
+ & \texttt{AccessOrbitPeriod} \\
+ & \texttt{AccessOrbitPeriodMul} \\
+ & \texttt{AccessOrbitEqZeroIffDvd} \\
+ & \texttt{AccessIterateComm} \\
 Lemma~\ref{Lem:Distinct} & \texttt{AccessOrbitDistinct} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Statement & Lean declaration \\
+\midrule
 Theorem~\ref{Thm:Counting} & \texttt{AccessOrbitCardLe} \\
 Theorem~\ref{Thm:Representatives} & \texttt{AccessOrbitRepresentative} \\
 Lemma~\ref{Lem:RepunitPrime} & \texttt{AccessRepunitSumModeqIndex} \\
 Theorem~\ref{Thm:PrimeNotOne} & \texttt{AccessPrimeOrbitIff} \\
 Theorem~\ref{Thm:PrimeOne} & \texttt{AccessPrimeOrbitIffIndex} \\
-Theorem~\ref{Thm:FullAccess} & \texttt{AccessPrimeFullAccess}, \texttt{AccessPrimeOrbitSurjective} \\
+Theorem~\ref{Thm:FullAccess} & \texttt{AccessPrimeFullAccess} \\
+ & \texttt{AccessPrimeOrbitSurjective} \\
 Theorem~\ref{Thm:PrimeNecessity} & \texttt{AccessPrimeNotFullAccess} \\
-Remark~\ref{Rem:Controls} & instantiates \texttt{AccessPrimeFullAccess}, \texttt{AccessOrbitEqZeroIffDvd} \\
-Remark~\ref{Rem:Scope} & non-formal scope summary of the statements above \\
 \bottomrule
 \end{tabular}
 \end{center}
+
+Remark~\ref{Rem:Controls} instantiates \texttt{AccessPrimeFullAccess}
+and \texttt{AccessOrbitEqZeroIffDvd}.
+Remark~\ref{Rem:Scope} summarizes the scope of the preceding statements.
+
 
 \end{document}

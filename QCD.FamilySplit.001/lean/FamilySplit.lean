@@ -1,5 +1,6 @@
 -- SPDX-License-Identifier: CC-BY-4.0
 -- Copyright (c) 2026 ascendnoosphere
+import Mathlib.Data.Nat.Notation
 
 /-!
 The even row of an overlapping local split.
@@ -12,9 +13,7 @@ greater than one, is asserted.
 
 set_option autoImplicit false
 
-notation "ℕ" => Nat
-
-namespace GeneralizedCollatz
+namespace GeneralizedCollatz.FamilySplit
 
 /-- Classical shortcut: halve an even input, and send an odd input to `(3n+1)/2`. -/
 def Shortcut (n : ℕ) : ℕ :=
@@ -141,4 +140,4 @@ theorem ThreeOutsideEvenFamily : ¬ EvenFamilyMember 3 := by
   have hodd : 3 % 2 = 1 := rfl
   exact OddOutsideEvenFamily 3 hodd
 
-end GeneralizedCollatz
+end GeneralizedCollatz.FamilySplit

@@ -22,7 +22,7 @@ positive integer to `1`.
 
 set_option autoImplicit false
 
-namespace GeneralizedCollatz
+namespace GeneralizedCollatz.InverseBudgetAnalysis
 
 /-- Affine branch or exact division by `D`. -/
 inductive Letter where
@@ -794,4 +794,4 @@ theorem ReplaySix :
   unfold Legal
   exact ⟨by decide, trivial⟩
 
-end GeneralizedCollatz
+end GeneralizedCollatz.InverseBudgetAnalysis

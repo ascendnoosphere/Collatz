@@ -1,3 +1,4 @@
+% SPDX-License-Identifier: CC-BY-4.0
 \documentclass[11pt,letterpaper]{article}
 
 \usepackage[T1]{fontenc}
@@ -28,12 +29,13 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{Three-Affine Closure and Exact Odd Recovery}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{Three-Affine Closure and Exact Odd Recovery}
 
 \begin{abstract}
 For positive integers \(a,b,c,q\) and integers \(x,y,z\) linked by one pass of the three affine letters \(2^{a}y=qx+1\), \(2^{b}z=qy+1\), and \(2^{c}x=qz+1\), the determinant \(\Delta=2^{a+b+c}-q^{3}\) divides the closure numerator \(B=q^{2}+q2^{a}+2^{a+b}\). The third odd state is the same quotient formed from the rotated numerator \(q^{2}+q2^{c}+2^{c+a}\). For positive odd states, we also prove the converse: a legal closure exists exactly when the multiplier is odd, the determinant is positive, and the determinant divides the closure numerator. Rotated numerators reconstruct all phases and their exact powers of two.

@@ -148,9 +148,13 @@ theorem CompressionHeightStrict (p : Parameters) (q c : ℤ) (a : ℕ)
     unfold CoefficientHeight
     cases nonzeroPair with
     | inl qNonzero =>
+      {
         exact lt_of_lt_of_le (Int.natAbs_pos.mpr qNonzero) (Nat.le_max_left _ _)
+      }
     | inr cNonzero =>
+      {
         exact lt_of_lt_of_le (Int.natAbs_pos.mpr cNonzero) (Nat.le_max_right _ _)
+      }
   have factorLarge : 1 < p.D.natAbs ^ a := by
     exact Nat.one_lt_pow (Nat.ne_of_gt aPositive)
       (lt_of_lt_of_le Nat.one_lt_two p.DAdmissible)

@@ -13,7 +13,7 @@ import (
 
 // TestParityGridMatchesIndependentLoop recomputes the parity check count.
 func TestParityGridMatchesIndependentLoop(t *testing.T) {
-	got := sweepParity()
+	got := SweepParity()
 	if got.Failures != 0 {
 		t.Fatalf("parity failures %d", got.Failures)
 	}
@@ -22,13 +22,13 @@ func TestParityGridMatchesIndependentLoop(t *testing.T) {
 		for c := uint64(1); c <= phaseRigidMaxQ; c += 2 {
 			for n := uint64(0); n <= phaseRigidMaxN; n++ {
 				if n%2 == 1 {
-					if !phaseRigidOddNumeratorEven(q, c, n) ||
-						!phaseRigidOddBranchExact(q, c, n) {
+					if !PhaseRigidOddNumeratorEven(q, c, n) ||
+						!PhaseRigidOddBranchExact(q, c, n) {
 						t.Fatalf("odd cell q=%d c=%d n=%d", q, c, n)
 					}
 					want += 2
 				} else {
-					if !phaseRigidEvenHalves(n) {
+					if !PhaseRigidEvenHalves(n) {
 						t.Fatalf("even cell n=%d", n)
 					}
 					want++
@@ -44,19 +44,19 @@ func TestParityGridMatchesIndependentLoop(t *testing.T) {
 // TestConstantTruePredicateRejected fails if the congruence ignores its inputs.
 func TestConstantTruePredicateRejected(t *testing.T) {
 	always := func(q, c, n uint64) bool { return true }
-	if phaseRigidOddNumeratorEven(3, 2, 1) {
+	if PhaseRigidOddNumeratorEven(3, 2, 1) {
 		t.Fatal("even offset satisfied the odd congruence")
 	}
-	if always(3, 2, 1) == phaseRigidOddNumeratorEven(3, 2, 1) {
+	if always(3, 2, 1) == PhaseRigidOddNumeratorEven(3, 2, 1) {
 		t.Fatal("odd congruence agreed with a constantly true predicate")
 	}
-	if phaseRigidOddNumeratorEven(3, 1, 2) {
+	if PhaseRigidOddNumeratorEven(3, 1, 2) {
 		t.Fatal("even seed satisfied the odd congruence")
 	}
-	if phaseRigidEvenHalves(1) {
+	if PhaseRigidEvenHalves(1) {
 		t.Fatal("odd integer satisfied the even halving identity")
 	}
-	if !phaseRigidOddNumeratorEven(3, 1, 1) || !phaseRigidOddBranchExact(3, 1, 1) {
+	if !PhaseRigidOddNumeratorEven(3, 1, 1) || !PhaseRigidOddBranchExact(3, 1, 1) {
 		t.Fatal("legal odd cell failed")
 	}
 }
@@ -87,7 +87,7 @@ func TestShortWords(t *testing.T) {
 // TestWitnessBelowThreeQuarters pins 4858/6487 and rejects the bound 3/4.
 func TestWitnessBelowThreeQuarters(t *testing.T) {
 	var tot Totals
-	num, den := PhaseRigidAudit(3, 1, witnessBits(), &tot)
+	num, den := PhaseRigidAudit(3, 1, WitnessBits(), &tot)
 	if tot.Failures != 0 {
 		t.Fatalf("witness failures %d", tot.Failures)
 	}

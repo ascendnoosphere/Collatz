@@ -1,3 +1,4 @@
+% SPDX-License-Identifier: CC-BY-4.0
 \documentclass[11pt,letterpaper]{article}
 
 \usepackage[T1]{fontenc}
@@ -28,15 +29,17 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{Carry energy is zero or greater than one half}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{Carry energy is zero or greater than one half}
 
 \begin{abstract}
-For odd positive integers \(q\) and \(c\), a finite base-two parity word whose odd letters are strictly contracting has a rational fixed point. The carry energy of the word is the greatest distance from a phase of that fixed point to the nearest positive integer of the prescribed parity, with a tie taken downward. That energy is either zero or greater than one half. Zero energy is exactly the case in which every phase is a positive integer of its prescribed parity.
+For odd positive integers \(q\) and \(c\), a finite base-two parity word of length \(m\), with \(r\) odd letters and
+\(q^r<2^m\), has a unique rational fixed point. The carry energy of the word is the greatest distance from a phase of that fixed point to the nearest positive integer of the prescribed parity, with a tie taken downward. That energy is either zero or greater than one half. Zero energy is exactly the case in which every phase is a positive integer of its prescribed parity.
 \end{abstract}
 
 \section{Words and energy}

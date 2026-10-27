@@ -148,13 +148,13 @@ func IsFirstHit(c *Cache, coeff, d, n int64, j int) bool {
 	return true
 }
 
-// hitDivisors returns the admissible divisors used by the first-hit sweep.
-func hitDivisors() [6]int64 {
+// HitDivisors returns the admissible divisors used by the first-hit sweep.
+func HitDivisors() [6]int64 {
 	return [6]int64{-5, -3, -2, 2, 3, 5}
 }
 
-// sweepIdentityQ checks the shift identity for one multiplier on the full grid.
-func sweepIdentityQ(q int64, w *Workspace, total *Totals) {
+// SweepIdentityQ checks the shift identity for one multiplier on the full grid.
+func SweepIdentityQ(q int64, w *Workspace, total *Totals) {
 	for j := 0; j <= shiftJMax; j++ {
 		w.Prepare(q, j)
 		for c := int64(shiftCMin); c <= shiftCMax; c++ {
@@ -173,12 +173,12 @@ func sweepIdentityQ(q int64, w *Workspace, total *Totals) {
 	}
 }
 
-// sweepHitQ checks first-hit transport for one multiplier. Each admissible
+// SweepHitQ checks first-hit transport for one multiplier. Each admissible
 // divisor, seed, shift, offset, and time contributes one comparison. A hit is
 // counted once, on the unshifted seed.
-func sweepHitQ(q int64, cache *Cache, total *Totals) {
+func SweepHitQ(q int64, cache *Cache, total *Totals) {
 	cache.Load(q)
-	divs := hitDivisors()
+	divs := HitDivisors()
 	divsSl := divs[:]
 	for di := 0; di < len(divsSl); di++ {
 		d := divsSl[di]
@@ -224,7 +224,7 @@ func IdentityDomainSize() uint64 {
 // HitDomainSize counts the first-hit tuples without evaluating the predicate.
 func HitDomainSize() uint64 {
 	var count uint64
-	divs := hitDivisors()
+	divs := HitDivisors()
 	for q := int64(hitQMin); q <= hitQMax; q++ {
 		for di := 0; di < len(divs); di++ {
 			for c := int64(hitCMin); c <= hitCMax; c++ {
@@ -241,9 +241,9 @@ func HitDomainSize() uint64 {
 	return count
 }
 
-// runChunked splits the closed multiplier interval across workers. Each worker
+// RunChunked splits the closed multiplier interval across workers. Each worker
 // owns one workspace, one cache, and one totals slot.
-func runChunked(loAll, hiAll int64, fn func(int64, *Workspace, *Cache, *Totals)) Totals {
+func RunChunked(loAll, hiAll int64, fn func(int64, *Workspace, *Cache, *Totals)) Totals {
 	count := int(hiAll - loAll + 1)
 	width := (count + shiftWorkers - 1) / shiftWorkers
 	chunks := make([]Totals, shiftWorkers)
@@ -279,15 +279,15 @@ func runChunked(loAll, hiAll int64, fn func(int64, *Workspace, *Cache, *Totals))
 
 // RunIdentitySweep checks the difference identity on every identity-grid tuple.
 func RunIdentitySweep() Totals {
-	return runChunked(shiftQMin, shiftQMax, func(q int64, w *Workspace, _ *Cache, total *Totals) {
-		sweepIdentityQ(q, w, total)
+	return RunChunked(shiftQMin, shiftQMax, func(q int64, w *Workspace, _ *Cache, total *Totals) {
+		SweepIdentityQ(q, w, total)
 	})
 }
 
 // RunHitSweep checks first-hit transport on every first-hit-grid tuple.
 func RunHitSweep() Totals {
-	return runChunked(hitQMin, hitQMax, func(q int64, _ *Workspace, cache *Cache, total *Totals) {
-		sweepHitQ(q, cache, total)
+	return RunChunked(hitQMin, hitQMax, func(q int64, _ *Workspace, cache *Cache, total *Totals) {
+		SweepHitQ(q, cache, total)
 	})
 }
 

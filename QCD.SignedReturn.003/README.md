@@ -53,13 +53,10 @@ affine state of the original parameter record, so both equalities are
 statements about that state. The absolute-value equality restores $`|a|`$,
 not a larger integer, because no positive slack is added.
 
-**DIFFICULTY DECREASE.** The decreasing resource is the number of uncancelled
-factors in the witness equation $`a=dk`$. There is one factor, $`d`$. The
-hypothesis $`d\neq 0`$ cancels it and replaces the existential witness by the
-value of the quotient. The absolute-value step is a finite case split on the
-signs of $`d`$ and $`k`$, and each case is an equality, so it adds no
-remainder child. The first-hit specialization does not induct on the time
-$`j`$. No unresolved child remains.
+**DIFFICULTY DECREASE.** Exact divisibility identifies the quotient with the
+witness $`k`$ in $`a=dk`$. Multiplicativity of absolute value then gives the
+magnitude identity. This is cancellation at a known hit, not a reduction of
+the problem of finding a hit.
 
 **PRESERVATION CONDITIONS.** The product theorems quantify over every integer
 $`d\neq 0`$ and every integer $`a`$ divisible by $`d`$, with no positivity
@@ -77,11 +74,5 @@ first-hit hypothesis; the cancellation itself uses divisibility at time $`j`$.
   not divide $`a`$, the product identities are not claimed.
 - Division by zero is excluded. The hypothesis $`d\neq 0`$ is required for
   the quotient, and a parameter record also satisfies $`|d|\ge 2`$.
-- The identity $`|d|\cdot|a/d|=|a|`$ is not the triangle inequality and is
-  not obtained by discarding a nonnegative defect.
-- No density, trap classification, core bound, or classical convergence
-  statement is proved.
-- Agreement of the two equalities for all nonzero $`d`$ with $`|d|\le 12`$ and
-  all $`a`$ with $`|a|\le 36`$, together with the rejection of a
-  non-multiple such as $`(d,a)=(4,6)`$ or $`(-5,7)`$, does not prove the
-  identities for every integer outside that set.
+- The result recovers the numerator of an exact division; it does not
+  classify the orbit or establish existence of a hit.

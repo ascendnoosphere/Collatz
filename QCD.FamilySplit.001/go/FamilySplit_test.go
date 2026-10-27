@@ -27,33 +27,19 @@ func TestConstantTruePredicateRejected(t *testing.T) {
 	}
 }
 
-// TestEvenSplitAgreesWithItself checks the membership predicate against itself.
-func TestEvenSplitAgreesWithItself(t *testing.T) {
-	if !PredicatesAgree(GridLimit, EvenSplitAt) {
-		t.Fatal("even split predicate disagreed with itself")
-	}
-}
-
-// TestThreeOutside checks that 3 is odd, its half is inexact, and its
-// shortcut is not that truncated half.
+// TestThreeOutside checks that 3 is excluded and follows the odd shortcut branch.
 func TestThreeOutside(t *testing.T) {
 	if EvenSplitAt(3) {
 		t.Fatal("3 was accepted in the even row")
 	}
-	if 3%2 != 1 {
-		t.Fatal("3 was even")
-	}
-	if 2*(3/2) == 3 {
-		t.Fatal("halving 3 was exact")
-	}
-	if Shortcut(3) != 5 || 3/2 != 1 {
-		t.Fatalf("shortcut 3 = %d, half = %d", Shortcut(3), 3/2)
+	if got := Shortcut(3); got != 5 {
+		t.Fatalf("shortcut 3 = %d, want 5", got)
 	}
 }
 
 // TestKnownEvenParents checks two even parents by direct arithmetic.
 func TestKnownEvenParents(t *testing.T) {
-	if !EvenSplitAt(2) || Shortcut(2) != 1 || 2*(2/2) != 2 {
+	if !EvenSplitAt(2) || Shortcut(2) != 1 {
 		t.Fatal("parent of 2")
 	}
 	if !EvenSplitAt(12) || Shortcut(12) != 6 {

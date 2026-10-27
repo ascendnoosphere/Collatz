@@ -29,12 +29,13 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{One division at a first hit}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{One division at a first hit}
 
 \begin{abstract}
 Let the raw step send an integer \(n\) to the exact quotient \(n/d\) when \(d\) divides \(n\), and to \(qn+c\) otherwise. If \(j\) is the first time the affine state \(q^{j}n+c\,U_{j}(q)\) is divisible by \(d\), the raw iterate at time \(j\) equals that affine state, and the next raw step equals the same state divided once by \(d\). The identification is the division-free prefix formula. It applies because a second induction shows that an earlier affine hit is an earlier raw hit, and conversely. The following step uses the division branch once and does not cancel a higher power of \(d\).

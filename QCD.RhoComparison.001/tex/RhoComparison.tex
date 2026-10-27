@@ -1,3 +1,4 @@
+% SPDX-License-Identifier: CC-BY-4.0
 \documentclass[11pt,letterpaper]{article}
 
 \usepackage[T1]{fontenc}
@@ -28,12 +29,13 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{Telescoping Weights and Mass-Ratio Bounds}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{Telescoping Weights and Mass-Ratio Bounds}
 
 \begin{abstract}
 For the positive weights $\rho(n)=1/(n(n+1))$ and $\mu(n)=2/(n(n-1))$, every integer $n\ge 3$ satisfies $2\rho(n)\le\mu(n)\le 4\rho(n)$. The same factor passes to finite or infinite positive label masses. The telescopes establish summability and the source totals; when an unresolved $\rho$-mass is positive, the corresponding quotients differ by at most a factor of $2$. The upper bound fails at $n=2$, and it fails for signed sums.
@@ -285,12 +287,28 @@ Positivity of $u_{\mu}$ follows from $u_{\mu}\ge 2u_{\rho}>0$. Lemma~\ref{lem:sc
 \qquad
 \frac{2c_{\rho}}{4u_{\rho}}=\frac{c_{\rho}/u_{\rho}}{2}.
 \end{equation*}
-For the upper bound, $c_{\mu}\le 4c_{\rho}$ and $u_{\mu}>0$ give $c_{\mu}/u_{\mu}\le(4c_{\rho})/u_{\mu}$. The inequality $2u_{\rho}\le u_{\mu}$ reverses the positive denominator, so $(4c_{\rho})/u_{\mu}\le(4c_{\rho})/(2u_{\rho})$. For the lower bound, $2c_{\rho}\le c_{\mu}$ gives $(2c_{\rho})/u_{\mu}\le c_{\mu}/u_{\mu}$, while $u_{\mu}\le 4u_{\rho}$ gives $(2c_{\rho})/(4u_{\rho})\le(2c_{\rho})/u_{\mu}$. The finite-set statement is Corollary~\ref{cor:finite} applied separately to $C$ and to $U$, together with nonnegativity of every $\rho$-value on $C$. The argument does not use disjointness of $C$ and $U$.
+For the upper bound, $c_{\mu}\le 4c_{\rho}$ and $u_{\mu}>0$ give
+$c_{\mu}/u_{\mu}\le(4c_{\rho})/u_{\mu}$.
+Since $2u_{\rho}\le u_{\mu}$ and the denominators are positive,
+\[
+\frac{4c_{\rho}}{u_{\mu}}
+\le\frac{4c_{\rho}}{2u_{\rho}}.
+\]
+For the lower bound, $2c_{\rho}\le c_{\mu}$ gives
+$(2c_{\rho})/u_{\mu}\le c_{\mu}/u_{\mu}$, while $u_{\mu}\le 4u_{\rho}$ gives
+\[
+\frac{2c_{\rho}}{4u_{\rho}}\le\frac{2c_{\rho}}{u_{\mu}}.
+\]
+The finite-set statement is Corollary~\ref{cor:finite} applied separately
+to $C$ and to $U$, together with nonnegativity of every $\rho$-value on $C$.
+The argument does not use disjointness of $C$ and $U$.
 \end{proof}
 
 \begin{corollary}
 \label{cor:infinite-quotient}
-Let $C,U\subseteq\{3,4,\ldots\}$ be possibly infinite sets, and write $c_\rho,u_\rho,c_\mu,u_\mu$ for their respective masses. If $u_\rho>0$, then
+Let $C,U\subseteq\{3,4,\ldots\}$ be possibly infinite sets.
+Write their respective masses as $c_\rho$, $u_\rho$, $c_\mu$, and $u_\mu$.
+If $u_\rho>0$, then
 \begin{equation*}
 \frac{c_\rho/u_\rho}{2}\le\frac{c_\mu}{u_\mu}
 \le2\frac{c_\rho}{u_\rho}.

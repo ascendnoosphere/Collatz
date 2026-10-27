@@ -82,13 +82,15 @@ $`(-1,1)`$. Scalar divisibility means divisibility of **both** integral
 coordinates. Nonscalar divisors use the order's multiplication table and
 are treated by [quadratic arithmetic](QCD.QuadraticArithmetic.001/README.md).
 
-Three distinct constructions appear in the [complex dynamics](QCD.ComplexDynamics.001/README.md):
+The [complex dynamics](QCD.ComplexDynamics.001/README.md) study separates:
 
 - **Raw lattice maps** retain element divisibility and division precedence.
   [Gaussian split-prime escape](QCD.GaussianDynamics.001/README.md) shows that
   equal multiplier/divisor norms need not imply periodicity.
 - **Residue-wise quotient maps** use $`(3z\pm r(z))/2`$ on nonzero residues.
   They have nonreal cycles and are not fixed-offset raw maps.
+- **Finite affine maps** on quadratic quotient rings are genuine permutations;
+  they do not arise by reducing the raw halving rule.
 - **Holomorphic polynomial models** preserve selected cycle values but can
   have different multipliers and basins. Their continuous portraits are
   not invariants of the lattice rule.
@@ -766,9 +768,37 @@ make go GOFILE=QCD.ComplexDynamics.001/go/ComplexDynamics.go
 
 The default profile is Lean. Lake builds the registered targets and their
 dependencies. TeX uses pdfLaTeX and BibTeX with `amsalpha` and removes the
-document's temporary files. Go uses `CGO_ENABLED=0`.
+document's temporary files on success or failure. Go uses `CGO_ENABLED=0`.
 
-After typesetting, check ignored generated artifacts and Markdown mathematics:
+For a full local validation pass, run:
+
+```sh
+bash Scripts/CheckAll.sh
+```
+
+This requires Git, Bash, Python 3.9 or later, Go, Lake with the pinned Lean
+toolchain, and a pdfLaTeX installation with `latexmk` and BibTeX. It checks Go
+formatting, shell syntax, diff whitespace and Markdown fixtures; runs all Go
+tests and `go vet`; builds the registered Lean targets; generates the required
+vector figures; and typesets every tracked manuscript. Figure programs run from
+temporary source copies, and only ignored PDFs are copied back, leaving tracked
+previews and data unchanged. Artifact-ignore checks run after each TeX build,
+including a failed build. The script does not rewrite sources or contact
+GitHub's API.
+Successful builds do not independently validate every written proof or theorem
+summary; the formalization scope is stated with each result.
+
+With a C toolchain available, the optional race check is:
+
+```sh
+CGO_ENABLED=1 go test -race ./...
+```
+
+The `math/big` zero-allocation tests run only without race instrumentation,
+which changes the internal pool behavior. The normal test pass retains those
+allocation assertions; the race pass checks the functional tests.
+
+The individual Markdown and artifact checks are also available separately:
 
 ```sh
 bash Scripts/CheckIgnoredPdfs.sh

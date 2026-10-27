@@ -1,3 +1,4 @@
+% SPDX-License-Identifier: CC-BY-4.0
 \documentclass[11pt,letterpaper]{article}
 
 \usepackage[T1]{fontenc}
@@ -28,12 +29,13 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{The two-affine positivity comparison}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{The two-affine positivity comparison}
 
 \begin{abstract}
 For an odd integer \(K\ge 3\) and an odd natural number \(q\), the comparison
@@ -321,19 +323,9 @@ then \(m\) is the successor of an odd integer, hence even, and the odd
 candidate is \(m-1=r\).
 \end{proof}
 
-\begin{theorem}[WindowPositivityIff]
-Let \(K\ge 3\) be odd and let \(q\) be odd. Suppose
-\[
-q^2<2^K<(q+2)^2.
-\]
-Then \(\operatorname{TwoAffinePositivity}(q,K)\) holds if and only if \(q\) is
-the odd candidate and the odd candidate itself satisfies the integer test.
-\end{theorem}
-
-\begin{proof}
-The bracket hypothesis forces \(q\) to be the odd candidate. Substituting that
-equality into the integer comparison gives both directions.
-\end{proof}
+Under the bracket hypothesis, the uniqueness theorem identifies \(q\) with
+\(\operatorname{UniqueOddCandidate}(K)\). Thus the positivity comparison
+needs to be evaluated only at that candidate.
 
 \begin{remark}
 The integer test does not assert that any orbit is cyclic. It does not assert

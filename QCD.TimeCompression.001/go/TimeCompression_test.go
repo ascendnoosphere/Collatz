@@ -9,16 +9,16 @@ import (
 	"testing"
 )
 
-// referenceStep applies the bounded signed raw map without using production code.
-func referenceStep(n, q, c, d int64) (int64, bool) {
+// ReferenceStep applies the bounded signed raw map without using production code.
+func ReferenceStep(n, q, c, d int64) (int64, bool) {
 	if n%d == 0 {
 		return n / d, false
 	}
 	return q*n + c, true
 }
 
-// referencePower computes a small nonnegative signed power.
-func referencePower(d int64, a uint64) int64 {
+// ReferencePower computes a small nonnegative signed power.
+func ReferencePower(d int64, a uint64) int64 {
 	factor := int64(1)
 	for i := uint64(0); i < a; i++ {
 		factor *= d
@@ -26,12 +26,12 @@ func referencePower(d int64, a uint64) int64 {
 	return factor
 }
 
-// referenceTrajectory expands each bounded compressed step directly.
-func referenceTrajectory(
+// ReferenceTrajectory expands each bounded compressed step directly.
+func ReferenceTrajectory(
 	n, q, c, d int64,
 	a, compressedSteps uint64,
 ) (int64, uint64, uint64) {
-	factor := referencePower(d, a)
+	factor := ReferencePower(d, a)
 	originalQ := factor * q
 	originalC := factor * c
 	state := n
@@ -40,9 +40,9 @@ func referenceTrajectory(
 	for i := uint64(0); i < compressedSteps; i++ {
 		boundary := state
 		var affine bool
-		state, affine = referenceStep(state, q, c, d)
+		state, affine = ReferenceStep(state, q, c, d)
 		if !affine {
-			raw, _ := referenceStep(boundary, originalQ, originalC, d)
+			raw, _ := ReferenceStep(boundary, originalQ, originalC, d)
 			if raw != state {
 				panic("reference division block mismatch")
 			}
@@ -50,13 +50,13 @@ func referenceTrajectory(
 			continue
 		}
 
-		raw, rawAffine := referenceStep(boundary, originalQ, originalC, d)
+		raw, rawAffine := ReferenceStep(boundary, originalQ, originalC, d)
 		if !rawAffine {
 			panic("reference affine guard mismatch")
 		}
 		for j := uint64(0); j < a; j++ {
 			var divided bool
-			raw, divided = referenceStep(raw, originalQ, originalC, d)
+			raw, divided = ReferenceStep(raw, originalQ, originalC, d)
 			if divided {
 				panic("reference forced division was not taken")
 			}
@@ -78,7 +78,7 @@ func TestExhaustiveBoundedBlocks(t *testing.T) {
 		for c := int64(-2); c <= 2; c++ {
 			for _, d := range divisors {
 				for a := uint64(0); a <= 2; a++ {
-					factor := referencePower(d, a)
+					factor := ReferencePower(d, a)
 					p, err := ParseParameters(
 						strconv.FormatInt(factor*q, 10),
 						strconv.FormatInt(factor*c, 10),
@@ -93,7 +93,7 @@ func TestExhaustiveBoundedBlocks(t *testing.T) {
 					for n := int64(-15); n <= 15; n++ {
 						for k := uint64(0); k <= 6; k++ {
 							wantState, wantRaw, wantAffine :=
-								referenceTrajectory(n, q, c, d, a, k)
+								ReferenceTrajectory(n, q, c, d, a, k)
 							seed := big.NewInt(n)
 							var certificate Certificate
 							var w Workspace

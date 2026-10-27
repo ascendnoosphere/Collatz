@@ -32,17 +32,17 @@ type Totals struct {
 	Failures      int
 }
 
-// abs64 returns the absolute value of a seed or return on this grid.
-func abs64(n int64) int64 {
+// Abs64 returns the absolute value of a seed or return on this grid.
+func Abs64(n int64) int64 {
 	if n < 0 {
 		return -n
 	}
 	return n
 }
 
-// euclidMod returns the remainder in {0,1,2} for a positive divisor.
+// EuclidMod returns the remainder in {0,1,2} for a positive divisor.
 // Go's % truncates toward zero, so a negative remainder is shifted by d.
-func euclidMod(n, d int64) int64 {
+func EuclidMod(n, d int64) int64 {
 	r := n % d
 	if r < 0 {
 		r += d
@@ -50,8 +50,8 @@ func euclidMod(n, d int64) int64 {
 	return r
 }
 
-// divides reports whether the positive divisor d divides n.
-func divides(d, n int64) bool {
+// Divides reports whether the positive divisor d divides n.
+func Divides(d, n int64) bool {
 	return n%d == 0
 }
 
@@ -59,12 +59,12 @@ func divides(d, n int64) bool {
 // The boolean is false precisely when the Euclidean remainder is 2.
 // On a hit, state is the affine value and ret is the truncating quotient.
 func FirstReturn(n int64) (j, state, ret int64, ok bool) {
-	switch euclidMod(n, exD) {
+	switch EuclidMod(n, exD) {
 	case 0:
 		return 0, n, n / exD, true
 	case 1:
 		state = exQ*n + exC
-		if !divides(exD, state) {
+		if !Divides(exD, state) {
 			return 0, 0, 0, false
 		}
 		return 1, state, state / exD, true
@@ -81,11 +81,11 @@ func SatisfiesHitBound(n int64) bool {
 	if !ok {
 		return false
 	}
-	return exD*abs64(ret) <= exQ*abs64(n)+exC
+	return exD*Abs64(ret) <= exQ*Abs64(n)+exC
 }
 
-// add folds one chunk of the grid into a running total.
-func (t *Totals) add(other Totals) {
+// Add folds one chunk of the grid into a running total.
+func (t *Totals) Add(other Totals) {
 	t.Checks += other.Checks
 	t.Hits += other.Hits
 	t.Traps += other.Traps
@@ -93,11 +93,11 @@ func (t *Totals) add(other Totals) {
 	t.Failures += other.Failures
 }
 
-// inspectSeed classifies one seed and checks the return inequality.
+// InspectSeed classifies one seed and checks the return inequality.
 // Each seed contributes two checks: the residue class, then either the
 // bound on a hit or the rejection of the bound predicate on a trap.
-func inspectSeed(n int64, tot *Totals) {
-	r := euclidMod(n, exD)
+func InspectSeed(n int64, tot *Totals) {
+	r := EuclidMod(n, exD)
 	j, state, ret, ok := FirstReturn(n)
 	tot.Checks++
 	switch r {
@@ -130,11 +130,11 @@ func inspectSeed(n int64, tot *Totals) {
 	}
 }
 
-// sweepRange classifies every seed from lo through hi, inclusive.
-func sweepRange(lo, hi int64) Totals {
+// SweepRange classifies every seed from lo through hi, inclusive.
+func SweepRange(lo, hi int64) Totals {
 	var tot Totals
 	for n := lo; n <= hi; n++ {
-		inspectSeed(n, &tot)
+		InspectSeed(n, &tot)
 	}
 	return tot
 }
@@ -157,14 +157,14 @@ func RunSweep() Totals {
 		wg.Add(1)
 		go func(idx, lo, hi int) {
 			defer wg.Done()
-			parts[idx] = sweepRange(int64(lo), int64(hi))
+			parts[idx] = SweepRange(int64(lo), int64(hi))
 		}(w, lo, hi)
 	}
 	wg.Wait()
 	var total Totals
 	parts = parts[:len(parts)]
 	for i := 0; i < len(parts); i++ {
-		total.add(parts[i])
+		total.Add(parts[i])
 	}
 	return total
 }
@@ -179,22 +179,22 @@ type FateTotals struct {
 	Failures  int
 }
 
-// rawStep is one raw successor for multiplier 2, offset 1, and divisor 3.
-func rawStep(n int64) int64 {
-	if divides(exD, n) {
+// RawStep is one raw successor for multiplier 2, offset 1, and divisor 3.
+func RawStep(n int64) int64 {
+	if Divides(exD, n) {
 		return n / exD
 	}
 	return exQ*n + exC
 }
 
-// closedForm is the undivided value 2^k*(n+1)-1.
-func closedForm(n int64, k uint) int64 {
+// ClosedForm is the undivided value 2^k*(n+1)-1.
+func ClosedForm(n int64, k uint) int64 {
 	return (int64(1)<<k)*(n+1) - 1
 }
 
-// classifyFate returns one of "zero", "one", "neg", or "unbounded".
+// ClassifyFate returns one of "zero", "one", "neg", or "unbounded".
 // The empty string reports that the bounded walk found none of the four.
-func classifyFate(n int64) (kind string, at int64) {
+func ClassifyFate(n int64) (kind string, at int64) {
 	cur := n
 	for step := 0; step < 64; step++ {
 		switch cur {
@@ -205,49 +205,49 @@ func classifyFate(n int64) (kind string, at int64) {
 		case -1:
 			return "neg", cur
 		}
-		if euclidMod(cur, exD) == 2 {
+		if EuclidMod(cur, exD) == 2 {
 			return "unbounded", cur
 		}
-		cur = rawStep(cur)
+		cur = RawStep(cur)
 	}
 	return "", n
 }
 
-// tailAgrees checks the cycle tail, or the closed form on a bad residue.
-func tailAgrees(kind string, at int64) bool {
+// TailAgrees checks the cycle tail, or the closed form on a bad residue.
+func TailAgrees(kind string, at int64) bool {
 	switch kind {
 	case "zero":
-		return rawStep(0) == 0
+		return RawStep(0) == 0
 	case "neg":
-		return rawStep(-1) == -1
+		return RawStep(-1) == -1
 	case "one":
-		return rawStep(1) == 3 && rawStep(3) == 1
+		return RawStep(1) == 3 && RawStep(3) == 1
 	case "unbounded":
-		if at == -1 || euclidMod(at, exD) != 2 {
+		if at == -1 || EuclidMod(at, exD) != 2 {
 			return false
 		}
 		cur := at
 		for k := uint(0); k <= 6; k++ {
-			if cur != closedForm(at, k) || divides(exD, cur) {
+			if cur != ClosedForm(at, k) || Divides(exD, cur) {
 				return false
 			}
 			if k < 6 {
-				cur = rawStep(cur)
+				cur = RawStep(cur)
 			}
 		}
-		return abs64(closedForm(at, 6)) > abs64(at)
+		return Abs64(ClosedForm(at, 6)) > Abs64(at)
 	default:
 		return false
 	}
 }
 
-// sweepFates classifies every seed from lo through hi, inclusive.
-func sweepFates(lo, hi int64) FateTotals {
+// SweepFates classifies every seed from lo through hi, inclusive.
+func SweepFates(lo, hi int64) FateTotals {
 	var tot FateTotals
 	for n := lo; n <= hi; n++ {
 		tot.Seeds++
-		kind, at := classifyFate(n)
-		if !tailAgrees(kind, at) {
+		kind, at := ClassifyFate(n)
+		if !TailAgrees(kind, at) {
 			tot.Failures++
 			continue
 		}
@@ -287,7 +287,7 @@ func RunFates() FateTotals {
 		wg.Add(1)
 		go func(idx, lo, hi int) {
 			defer wg.Done()
-			parts[idx] = sweepFates(int64(lo), int64(hi))
+			parts[idx] = SweepFates(int64(lo), int64(hi))
 		}(w, lo, hi)
 	}
 	wg.Wait()

@@ -8,8 +8,8 @@ import (
 	"testing"
 )
 
-// bigAbsAffine returns |q^j*n + c*U_j(q)| with arbitrary-precision arithmetic.
-func bigAbsAffine(q, c, n int64, j int) *big.Int {
+// BigAbsAffine returns |q^j*n + c*U_j(q)| with arbitrary-precision arithmetic.
+func BigAbsAffine(q, c, n int64, j int) *big.Int {
 	pow := big.NewInt(1)
 	trap := big.NewInt(0)
 	qb := big.NewInt(q)
@@ -23,12 +23,12 @@ func bigAbsAffine(q, c, n int64, j int) *big.Int {
 	return term.Abs(term)
 }
 
-// bigMajorant returns |q|^j*|n| + |c|*|U_j(q)| with arbitrary precision.
-func bigMajorant(q, c, n int64, j int) *big.Int {
+// BigMajorant returns |q|^j*|n| + |c|*|U_j(q)| with arbitrary precision.
+func BigMajorant(q, c, n int64, j int) *big.Int {
 	absQ := big.NewInt(q)
 	absQ.Abs(absQ)
 	pow := new(big.Int).Exp(absQ, big.NewInt(int64(j)), nil)
-	left := new(big.Int).Mul(pow, big.NewInt(abs64(n)))
+	left := new(big.Int).Mul(pow, big.NewInt(Abs64(n)))
 	trap := big.NewInt(0)
 	step := big.NewInt(1)
 	qb := big.NewInt(q)
@@ -37,12 +37,12 @@ func bigMajorant(q, c, n int64, j int) *big.Int {
 		step.Mul(step, qb)
 	}
 	trap.Abs(trap)
-	off := new(big.Int).Mul(big.NewInt(abs64(c)), trap)
+	off := new(big.Int).Mul(big.NewInt(Abs64(c)), trap)
 	return left.Add(left, off)
 }
 
-// int64Exact converts a big integer that is known to fit in an int64.
-func int64Exact(t *testing.T, z *big.Int) int64 {
+// Int64Exact converts a big integer that is known to fit in an int64.
+func Int64Exact(t *testing.T, z *big.Int) int64 {
 	t.Helper()
 	if !z.IsInt64() {
 		t.Fatalf("value %s does not fit in int64", z.String())
@@ -155,15 +155,15 @@ func TestCornersMatchBig(t *testing.T) {
 	for _, q := range qs {
 		w.Load(q)
 		for _, j := range js {
-			if abs64(w.Pow[j]) >= magBudget {
+			if Abs64(w.Pow[j]) >= magBudget {
 				t.Fatalf("power budget failed at q=%d j=%d", q, j)
 			}
 			for _, c := range cs {
 				for _, n := range ns {
 					left := w.TriangleLeft(c, n, j)
 					right := w.TriangleRight(c, n, j)
-					wantL := int64Exact(t, bigAbsAffine(q, c, n, j))
-					wantR := int64Exact(t, bigMajorant(q, c, n, j))
+					wantL := Int64Exact(t, BigAbsAffine(q, c, n, j))
+					wantR := Int64Exact(t, BigMajorant(q, c, n, j))
 					if left != wantL || right != wantR {
 						t.Fatalf("corner mismatch q=%d c=%d n=%d j=%d", q, c, n, j)
 					}
@@ -198,7 +198,7 @@ func TestSweepDomain(t *testing.T) {
 	if SweepDomain() != BudgetDomain()+TriangleDomain()+ReturnDomain() {
 		t.Fatal("sweep domain is not the sum of its parts")
 	}
-	got := sweepAll()
+	got := SweepAll()
 	if got.Checks != SweepDomain() || got.Failures != 0 {
 		t.Fatalf("magnitude checks %d failures %d domain %d",
 			got.Checks, got.Failures, SweepDomain())

@@ -13,7 +13,7 @@ in that lattice is not capture of the raw state `1`.
 
 set_option autoImplicit false
 
-namespace GeneralizedCollatz
+namespace GeneralizedCollatz.LatticeEntryAnalysis
 
 /-- The affine instruction `n ↦ q * n + c`, taken before any division. -/
 def AffineBranch (q c n : ℤ) : ℤ :=
@@ -206,9 +206,5 @@ theorem ClassicalParametersAreLatticeEntry (k : ℕ) :
   · exact Int.one_gcd
   · exact one_dvd ((3 : ℤ) ^ k)
 
-/-- Classical lattice entry is divisibility by `1`, not a raw hitting time of `1`. -/
-theorem ClassicalAffineEntryTrivial (k : ℕ) (n : ℤ) :
-    (1 : ℤ) ∣ Iterate (AffineBranch 3 1) k n :=
-  LatticeEntry 3 1 2 k (ClassicalParametersAreLatticeEntry k) n
 
-end GeneralizedCollatz
+end GeneralizedCollatz.LatticeEntryAnalysis

@@ -140,6 +140,12 @@ func FirstOutsideDomain(d, c, x uint64, limit int) (uint64, int) {
 // the first length j in p..2p with CoreStep iterated j times equal to the p-th return iterate, or
 // zero and false when no such length occurs or an intermediate state leaves the guarded range.
 func RawRealization(d, c, x uint64, p int) (int, bool) {
+	if p < 0 || x > rawGuard {
+		return 0, false
+	}
+	if p == 0 {
+		return 0, true
+	}
 	want := CoreReturnIterate(d, c, x, p)
 	state := x
 	for j := 1; j <= 2*p; j++ {
@@ -297,9 +303,9 @@ func (c *Cache) Seen(d, w uint64) bool {
 	return c.verified[[2]uint64{d, w}]
 }
 
-// sweepDomainChecks tests the domain characterisation, the return realisation, descent and core
+// SweepDomainChecks tests the domain characterisation, the return realisation, descent and core
 // invariance for small parameters.
-func sweepDomainChecks(checks, failures *uint64) {
+func SweepDomainChecks(checks, failures *uint64) {
 	for d := uint64(2); d <= 8; d++ {
 		for c := uint64(1); c <= 10; c++ {
 			for n := uint64(0); n <= 600; n++ {
@@ -335,8 +341,8 @@ func sweepDomainChecks(checks, failures *uint64) {
 	}
 }
 
-// sweepCoreChecks tests core reachability, periodicity in the core and trap growth.
-func sweepCoreChecks(checks, failures *uint64, w *Workspace) {
+// SweepCoreChecks tests core reachability, periodicity in the core and trap growth.
+func SweepCoreChecks(checks, failures *uint64, w *Workspace) {
 	for d := uint64(2); d <= 8; d++ {
 		for c := uint64(1); c <= 10; c++ {
 			for n := uint64(1); n <= 600; n++ {
@@ -376,9 +382,9 @@ func sweepCoreChecks(checks, failures *uint64, w *Workspace) {
 	}
 }
 
-// sweepCornerChecks tests the corner family, its traps and the raw cycle for every d from three
+// SweepCornerChecks tests the corner family, its traps and the raw cycle for every d from three
 // up, and the control checks once.
-func sweepCornerChecks(checks, failures *uint64) {
+func SweepCornerChecks(checks, failures *uint64) {
 	for d := uint64(3); d <= 40; d++ {
 		c := d + 1
 		*checks++
@@ -401,10 +407,10 @@ func sweepCornerChecks(checks, failures *uint64) {
 	}
 }
 
-// sweepExpansionChecks verifies the raw realization of every periodic core orbit whose return
+// SweepExpansionChecks verifies the raw realization of every periodic core orbit whose return
 // prefix stays in the domain, and the divergence of the first return iterate outside it
 // otherwise.
-func sweepExpansionChecks(checks, failures *uint64, w *Workspace) {
+func SweepExpansionChecks(checks, failures *uint64, w *Workspace) {
 	for d := uint64(2); d <= 10; d++ {
 		for c := uint64(1); c <= 12; c++ {
 			for x := uint64(1); x <= c; x++ {
@@ -487,9 +493,9 @@ func CycleBasinCount(d, limit uint64, budget int) uint64 {
 	return count
 }
 
-// sweepCornerClassificationChecks verifies that every bounded positive seed either reaches the
+// SweepCornerClassificationChecks verifies that every bounded positive seed either reaches the
 // corner two-cycle or leaves the domain and then grows without bound.
-func sweepCornerClassificationChecks(checks, failures *uint64) {
+func SweepCornerClassificationChecks(checks, failures *uint64) {
 	for d := uint64(3); d <= 24; d++ {
 		c := d + 1
 		for seed := uint64(1); seed <= 500; seed++ {
@@ -514,9 +520,9 @@ func sweepCornerClassificationChecks(checks, failures *uint64) {
 	}
 }
 
-// sweepPeriodicPointChecks verifies the periodic-point classification: at positive lengths only
+// SweepPeriodicPointChecks verifies the periodic-point classification: at positive lengths only
 // the two cycle states are fixed by the k-th corner iterate, and only at even lengths.
-func sweepPeriodicPointChecks(checks, failures *uint64) {
+func SweepPeriodicPointChecks(checks, failures *uint64) {
 	for d := uint64(3); d <= 12; d++ {
 		c := d + 1
 		for k := 1; k <= 8; k++ {
@@ -535,9 +541,9 @@ func sweepPeriodicPointChecks(checks, failures *uint64) {
 	}
 }
 
-// parallelCoreSweep partitions a parameter range over independent workers and returns the check
+// ParallelCoreSweep partitions a parameter range over independent workers and returns the check
 // and failure totals of the chunked sweep.
-func parallelCoreSweep(chunks int, cache *Cache) (uint64, uint64) {
+func ParallelCoreSweep(chunks int, cache *Cache) (uint64, uint64) {
 	var checks, failures uint64
 	var mu sync.Mutex
 	var group sync.WaitGroup
@@ -592,13 +598,13 @@ func parallelCoreSweep(chunks int, cache *Cache) (uint64, uint64) {
 func main() {
 	var checks, failures uint64
 	w := NewWorkspace(64)
-	sweepDomainChecks(&checks, &failures)
-	sweepCoreChecks(&checks, &failures, w)
-	sweepCornerChecks(&checks, &failures)
-	sweepCornerClassificationChecks(&checks, &failures)
-	sweepPeriodicPointChecks(&checks, &failures)
-	sweepExpansionChecks(&checks, &failures, w)
-	parallelChecks, parallelFailures := parallelCoreSweep(4, NewCache())
+	SweepDomainChecks(&checks, &failures)
+	SweepCoreChecks(&checks, &failures, w)
+	SweepCornerChecks(&checks, &failures)
+	SweepCornerClassificationChecks(&checks, &failures)
+	SweepPeriodicPointChecks(&checks, &failures)
+	SweepExpansionChecks(&checks, &failures, w)
+	parallelChecks, parallelFailures := ParallelCoreSweep(4, NewCache())
 	checks += parallelChecks
 	failures += parallelFailures
 	fmt.Printf("relation core checks: %d, failures: %d\n", checks, failures)

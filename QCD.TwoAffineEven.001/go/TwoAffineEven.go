@@ -40,12 +40,12 @@ func NewCache() *Cache {
 	return &Cache{Pow: pow}
 }
 
-// ClosureHolds reports whether q*n+1 equals pow*n, for products that fit in uint64.
+// ClosureHolds checks q*n+1 = pow*n, rejecting either side if it exceeds uint64.
 func ClosureHolds(ws *Workspace, q, n, pow uint64) bool {
 	if n == 0 {
 		return false
 	}
-	if q != 0 && n > ^uint64(0)/q {
+	if q != 0 && n > (^uint64(0)-1)/q {
 		return false
 	}
 	if pow != 0 && n > ^uint64(0)/pow {
@@ -88,8 +88,8 @@ func ExpectedChecks() uint64 {
 	return half + factors + pairs*states*mults
 }
 
-// sweepHalf checks one half exponent against every odd multiplier in range.
-func sweepHalf(ws *Workspace, cache *Cache, t uint64) (uint64, uint64) {
+// SweepHalf checks one half exponent against every odd multiplier in range.
+func SweepHalf(ws *Workspace, cache *Cache, t uint64) (uint64, uint64) {
 	var checks, failures uint64
 	pow := cache.Pow[t]
 	for q := uint64(1); q <= maxOddQ; q += 2 {
@@ -116,20 +116,20 @@ func sweepHalf(ws *Workspace, cache *Cache, t uint64) (uint64, uint64) {
 	return checks, failures
 }
 
-// sweepRange checks a contiguous interval of half exponents.
-func sweepRange(cache *Cache, lo, hi uint64) (uint64, uint64) {
+// SweepRange checks a contiguous interval of half exponents.
+func SweepRange(cache *Cache, lo, hi uint64) (uint64, uint64) {
 	ws := Workspace{}
 	var checks, failures uint64
 	for t := lo; t <= hi; t++ {
-		c, f := sweepHalf(&ws, cache, t)
+		c, f := SweepHalf(&ws, cache, t)
 		checks += c
 		failures += f
 	}
 	return checks, failures
 }
 
-// factorChecks verifies 2^{2m}-q^2 = (2^m-q)(2^m+q) for odd q below 2^m.
-func factorChecks(cache *Cache) (uint64, uint64) {
+// FactorChecks verifies 2^{2m}-q^2 = (2^m-q)(2^m+q) for odd q below 2^m.
+func FactorChecks(cache *Cache) (uint64, uint64) {
 	ws := Workspace{}
 	var checks, failures uint64
 	for m := uint64(1); m <= maxM; m++ {
@@ -146,8 +146,8 @@ func factorChecks(cache *Cache) (uint64, uint64) {
 	return checks, failures
 }
 
-// letterChecks rejects equal components at two different positive letters.
-func letterChecks(cache *Cache) (uint64, uint64) {
+// LetterChecks rejects equal components at two different positive letters.
+func LetterChecks(cache *Cache) (uint64, uint64) {
 	ws := Workspace{}
 	var checks, failures uint64
 	for a := uint64(1); a <= maxLet; a++ {
@@ -184,7 +184,7 @@ func Run(cache *Cache) (uint64, uint64) {
 			defer wg.Done()
 			lo := uint64(i)*span + 1
 			hi := lo + span - 1
-			cs[i], fs[i] = sweepRange(cache, lo, hi)
+			cs[i], fs[i] = SweepRange(cache, lo, hi)
 		}(i)
 	}
 	wg.Wait()
@@ -193,10 +193,10 @@ func Run(cache *Cache) (uint64, uint64) {
 		checks += cs[i]
 		failures += fs[i]
 	}
-	c, f := factorChecks(cache)
+	c, f := FactorChecks(cache)
 	checks += c
 	failures += f
-	c, f = letterChecks(cache)
+	c, f = LetterChecks(cache)
 	checks += c
 	failures += f
 	return checks, failures

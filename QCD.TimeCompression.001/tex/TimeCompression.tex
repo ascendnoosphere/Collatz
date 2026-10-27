@@ -24,16 +24,18 @@
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
 \newtheorem{definition}[theorem]{Definition}
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{Common-power time compression}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{Common-power time compression}
 
 \section{Common-power time compression}
 
@@ -238,9 +240,14 @@ this return is primitive, nor does forward target transport supply a converse fo
 an arbitrary target that may be met only inside a skipped block.
 
 The Go sweep compares every bounded block on the grid
-\(q,c\in\{-2,-1,0,1,2\}\), \(d\in\{-4,-3,-2,2,3,4\}\), \(0\le a\le2\),
-\(-15\le n\le15\), \(0\le k\le6\), checking endpoints, raw step counts, affine
-event counts and the clock identity. It produces 97{,}650 certificates.
+\[
+\begin{gathered}
+q,c\in\{-2,-1,0,1,2\},\qquad d\in\{-4,-3,-2,2,3,4\},\\
+0\le a\le2,\qquad -15\le n\le15,\qquad 0\le k\le6,
+\end{gathered}
+\]
+checking endpoints, raw step counts, affine event counts and the clock identity.
+It produces 97{,}650 certificates.
 Arithmetic beyond fixed-width integers and the rejected-parameter boundaries
 have separate tests. The finite sweep illustrates the identities above; it does
 not replace their proofs.

@@ -145,8 +145,8 @@ func Gcd(a, b uint64) uint64 {
 	return a
 }
 
-// addCheck records one check and, when it fails, one failure as well.
-func addCheck(t *SliceTotals, ok bool) {
+// AddCheck records one check and, when it fails, one failure as well.
+func AddCheck(t *SliceTotals, ok bool) {
 	if ok {
 		t.Checks++
 		return
@@ -155,12 +155,12 @@ func addCheck(t *SliceTotals, ok bool) {
 	t.Failures++
 }
 
-// addCheckf records one check and prints a diagnostic when it fails.
-func addCheckf(t *SliceTotals, ok bool, format string, args ...any) {
+// AddCheckf records one check and prints a diagnostic when it fails.
+func AddCheckf(t *SliceTotals, ok bool, format string, args ...any) {
 	if !ok {
 		fmt.Printf("failure: "+format+"\n", args...)
 	}
-	addCheck(t, ok)
+	AddCheck(t, ok)
 }
 
 // CycleOffsets writes the offset c = 3 (8^h - 1) / 7 and the multiplier
@@ -187,12 +187,12 @@ func (w *Workspace) FullAccessOffsets(d, k uint64) (*big.Int, *big.Int) {
 	return w.T0, w.T2
 }
 
-// sweepCycleSlice checks the first slice: for h = 0..30 the offset
+// SweepCycleSlice checks the first slice: for h = 0..30 the offset
 // c = 3 (8^h - 1) / 7 and the multiplier q = 2 c + 1 turn the seed 3 into a
 // primitive cycle of length 3 h + 1 that avoids 1. The walk verifies the
 // identity 3 q + c = 3 * 2^(3h), the closed orbit formula, minimality of the
 // return and the absence of 1.
-func sweepCycleSlice() SliceTotals {
+func SweepCycleSlice() SliceTotals {
 	var tot SliceTotals
 	w := NewWorkspace()
 	w.Divisor.SetUint64(2)
@@ -202,12 +202,12 @@ func sweepCycleSlice() SliceTotals {
 		w.G.Sub(w.Pow(8, h), BigOne)
 		w.G.Mul(w.G, BigThree)
 		w.Rem.Mod(w.G, BigSeven)
-		addCheckf(&tot, w.Rem.Sign() == 0, "7 does not divide 3 (8^%d - 1)", h)
+		AddCheckf(&tot, w.Rem.Sign() == 0, "7 does not divide 3 (8^%d - 1)", h)
 		// The affine step of 3 lands on 3 * 2^(3h).
 		w.G.Mul(q, BigThree)
 		w.G.Add(w.G, c)
 		w.T3.Lsh(BigThree, uint(3*h))
-		addCheckf(&tot, w.G.Cmp(w.T3) == 0, "identity 3q+c failed at h=%d", h)
+		AddCheckf(&tot, w.G.Cmp(w.T3) == 0, "identity 3q+c failed at h=%d", h)
 		// Walk the orbit for 3h+1 steps and compare with the closed formula.
 		w.Mult.Set(q)
 		w.Offset.Set(c)
@@ -216,30 +216,30 @@ func sweepCycleSlice() SliceTotals {
 			w.StepBig(w.Cur, w.Next)
 			w.Cur, w.Next = w.Next, w.Cur
 			w.G.Lsh(BigThree, uint(3*h+1-i))
-			addCheckf(&tot, w.Cur.Cmp(w.G) == 0,
+			AddCheckf(&tot, w.Cur.Cmp(w.G) == 0,
 				"orbit formula failed at h=%d, step %d", h, i)
-			addCheckf(&tot, w.Cur.Cmp(BigOne) != 0,
+			AddCheckf(&tot, w.Cur.Cmp(BigOne) != 0,
 				"orbit of the first slice contains 1 at h=%d, step %d", h, i)
 			if i < 3*h+1 {
-				addCheckf(&tot, w.Cur.Cmp(BigThree) != 0,
+				AddCheckf(&tot, w.Cur.Cmp(BigThree) != 0,
 					"orbit returns early at h=%d, step %d", h, i)
 			}
 		}
-		addCheckf(&tot, w.Cur.Cmp(BigThree) == 0,
+		AddCheckf(&tot, w.Cur.Cmp(BigThree) == 0,
 			"orbit of the first slice does not return at h=%d", h)
 		if h > 0 {
-			addCheckf(&tot, c.Bit(0) == 1, "offset is even at h=%d", h)
+			AddCheckf(&tot, c.Bit(0) == 1, "offset is even at h=%d", h)
 		}
 	}
 	return tot
 }
 
-// sweepFullAccess checks the third slice: for d = 2..40 and k = 2..12 the
+// SweepFullAccess checks the third slice: for d = 2..40 and k = 2..12 the
 // offset c = (d-1) (d^(k-1) - 1) and the multiplier q = (d-1) d^(k-1) + 1
 // satisfy q = d + c, q = c = 1 modulo d, the identity q (d-1) + c = (d-1) d^k,
 // and turn the seed d - 1 into a primitive cycle of length k + 1 that avoids 1
 // once d >= 3.
-func sweepFullAccess() SliceTotals {
+func SweepFullAccess() SliceTotals {
 	var tot SliceTotals
 	w := NewWorkspace()
 	for d := uint64(2); d <= fullAccessMaxD; d++ {
@@ -249,19 +249,19 @@ func sweepFullAccess() SliceTotals {
 			// The multiplier is the base plus the offset.
 			w.G.SetUint64(d)
 			w.G.Add(w.G, c)
-			addCheckf(&tot, w.G.Cmp(q) == 0, "q != d + c at d=%d k=%d", d, k)
+			AddCheckf(&tot, w.G.Cmp(q) == 0, "q != d + c at d=%d k=%d", d, k)
 			// Residues: q = c = 1 modulo d.
 			w.Rem.Mod(q, w.Divisor)
-			addCheckf(&tot, w.Rem.Cmp(BigOne) == 0, "q not 1 mod d at d=%d k=%d", d, k)
+			AddCheckf(&tot, w.Rem.Cmp(BigOne) == 0, "q not 1 mod d at d=%d k=%d", d, k)
 			w.Rem.Mod(c, w.Divisor)
-			addCheckf(&tot, w.Rem.Cmp(BigOne) == 0, "c not 1 mod d at d=%d k=%d", d, k)
+			AddCheckf(&tot, w.Rem.Cmp(BigOne) == 0, "c not 1 mod d at d=%d k=%d", d, k)
 			// The identity q (d-1) + c = (d-1) d^k.
 			w.T1.SetUint64(d - 1)
 			w.Cur.Mul(q, w.T1)
 			w.Cur.Add(w.Cur, c)
 			w.G.SetUint64(d - 1)
 			w.G.Mul(w.G, w.Pow(d, k))
-			addCheckf(&tot, w.Cur.Cmp(w.G) == 0, "full-access identity failed at d=%d k=%d", d, k)
+			AddCheckf(&tot, w.Cur.Cmp(w.G) == 0, "full-access identity failed at d=%d k=%d", d, k)
 			// The orbit from d - 1: k + 1 steps back to d - 1.
 			w.Mult.Set(q)
 			w.Offset.Set(c)
@@ -271,21 +271,21 @@ func sweepFullAccess() SliceTotals {
 				w.Cur, w.Next = w.Next, w.Cur
 				w.G.SetUint64(d - 1)
 				w.G.Mul(w.G, w.Pow(d, k+1-i))
-				addCheckf(&tot, w.Cur.Cmp(w.G) == 0,
+				AddCheckf(&tot, w.Cur.Cmp(w.G) == 0,
 					"full-access orbit failed at d=%d k=%d step %d", d, k, i)
 				if d >= 3 {
-					addCheckf(&tot, w.Cur.Cmp(BigOne) != 0,
+					AddCheckf(&tot, w.Cur.Cmp(BigOne) != 0,
 						"full-access orbit contains 1 at d=%d k=%d", d, k)
 				}
 				if i < k+1 {
-					addCheckf(&tot, w.Cur.Cmp(w.T1) != 0,
+					AddCheckf(&tot, w.Cur.Cmp(w.T1) != 0,
 						"full-access orbit returns early at d=%d k=%d step %d", d, k, i)
 				}
 			}
-			addCheckf(&tot, w.Cur.Cmp(w.T1) == 0,
+			AddCheckf(&tot, w.Cur.Cmp(w.T1) == 0,
 				"full-access orbit does not return at d=%d k=%d", d, k)
 			if d == 2 {
-				addCheckf(&tot, w.Cur.Cmp(BigOne) == 0,
+				AddCheckf(&tot, w.Cur.Cmp(BigOne) == 0,
 					"classical instance did not reach 1 at k=%d", k)
 			}
 		}
@@ -293,10 +293,10 @@ func sweepFullAccess() SliceTotals {
 	return tot
 }
 
-// sweepIntersection checks the fourth slice q = d + 1, c = d - 1 for d = 3..40:
+// SweepIntersection checks the fourth slice q = d + 1, c = d - 1 for d = 3..40:
 // over the seeds 1..599 and the times 0..24, a state reaches 1 exactly when it
 // is the corresponding power of d, and the state 1 never returns to itself.
-func sweepIntersection() SliceTotals {
+func SweepIntersection() SliceTotals {
 	var tot SliceTotals
 	w := NewWorkspace()
 	for d := uint64(3); d <= intersectionMaxD; d++ {
@@ -307,7 +307,7 @@ func sweepIntersection() SliceTotals {
 			for j := uint64(0); j <= intersectionMaxK; j++ {
 				pow := w.Pow(d, j)
 				hit := w.Cur.Cmp(BigOne) == 0
-				addCheckf(&tot, hit == (w.T0.Cmp(pow) == 0),
+				AddCheckf(&tot, hit == (w.T0.Cmp(pow) == 0),
 					"intersection equivalence failed at d=%d x=%d time=%d", d, x, j)
 				if j < intersectionMaxK {
 					w.StepBig(w.Cur, w.Next)
@@ -320,7 +320,7 @@ func sweepIntersection() SliceTotals {
 		for j := uint64(1); j <= intersectionMaxK; j++ {
 			w.StepBig(w.Cur, w.Next)
 			w.Cur, w.Next = w.Next, w.Cur
-			addCheckf(&tot, w.Cur.Cmp(BigOne) != 0,
+			AddCheckf(&tot, w.Cur.Cmp(BigOne) != 0,
 				"positive power of %d returns 1 to itself at time %d", d, j)
 		}
 	}
@@ -342,15 +342,15 @@ func sweepIntersection() SliceTotals {
 			w.Cur, w.Next = w.Next, w.Cur
 		}
 	}
-	addCheckf(&tot, reached, "d=2 control: 3 does not reach 1")
-	addCheckf(&tot, !isPower, "d=2 control: 3 is a power of 2")
+	AddCheckf(&tot, reached, "d=2 control: 3 does not reach 1")
+	AddCheckf(&tot, !isPower, "d=2 control: 3 is a power of 2")
 	return tot
 }
 
-// sweepEvenOffset checks the d = 2 slice with even offsets c = 2..20: every
+// SweepEvenOffset checks the d = 2 slice with even offsets c = 2..20: every
 // seed reaches an odd state within the reach budget, and from there the orbit
 // stays odd and strictly increases over the growth budget.
-func sweepEvenOffset() SliceTotals {
+func SweepEvenOffset() SliceTotals {
 	var tot SliceTotals
 	w := NewWorkspace()
 	w.Divisor.SetUint64(2)
@@ -365,14 +365,14 @@ func sweepEvenOffset() SliceTotals {
 				w.Cur, w.Next = w.Next, w.Cur
 				steps++
 			}
-			addCheckf(&tot, steps <= evenOffsetReach,
+			AddCheckf(&tot, steps <= evenOffsetReach,
 				"even offset c=%d seed %d did not reach an odd state", c, n)
-			addCheckf(&tot, w.Cur.Bit(0) == 1, "reached state not odd at c=%d seed %d", c, n)
+			AddCheckf(&tot, w.Cur.Bit(0) == 1, "reached state not odd at c=%d seed %d", c, n)
 			cur, nxt := w.Cur, w.Next
 			for i := uint64(0); i < evenOffsetGrowth; i++ {
 				w.StepBig(cur, nxt)
-				addCheckf(&tot, nxt.Bit(0) == 1, "growth state not odd at c=%d seed %d", c, n)
-				addCheckf(&tot, nxt.Cmp(cur) > 0,
+				AddCheckf(&tot, nxt.Bit(0) == 1, "growth state not odd at c=%d seed %d", c, n)
+				AddCheckf(&tot, nxt.Cmp(cur) > 0,
 					"growth not strict at c=%d seed %d step %d", c, n, i)
 				cur, nxt = nxt, cur
 			}
@@ -381,18 +381,18 @@ func sweepEvenOffset() SliceTotals {
 	return tot
 }
 
-// sweepOddOffset checks the d = 2 slice with odd offsets c = 1..41: the step
+// SweepOddOffset checks the d = 2 slice with odd offsets c = 1..41: the step
 // preserves the divisor gcd with c on the seeds 1..2000, every divisor of c
 // occurs as such a gcd, and for c > 1 the seed c itself avoids 1 over
 // oddOffsetCaptureSteps steps.
-func sweepOddOffset() SliceTotals {
+func SweepOddOffset() SliceTotals {
 	var tot SliceTotals
 	w := NewWorkspace()
 	for c := uint64(1); c <= oddOffsetMaxC; c += 2 {
 		q := 2*c + 1
 		for n := uint64(1); n <= oddOffsetSeeds; n++ {
 			got := Gcd(Step(2, q, c, n), c)
-			addCheckf(&tot, got == Gcd(n, c), "gcd not preserved at c=%d n=%d", c, n)
+			AddCheckf(&tot, got == Gcd(n, c), "gcd not preserved at c=%d n=%d", c, n)
 		}
 		for e := uint64(1); e <= c; e++ {
 			if c%e != 0 {
@@ -405,7 +405,7 @@ func sweepOddOffset() SliceTotals {
 					break
 				}
 			}
-			addCheckf(&tot, found != 0, "stratum %d of c=%d is not realized", e, c)
+			AddCheckf(&tot, found != 0, "stratum %d of c=%d is not realized", e, c)
 		}
 		if c > 1 {
 			w.SetParams(2, q, c)
@@ -413,7 +413,7 @@ func sweepOddOffset() SliceTotals {
 			for k := 0; k < oddOffsetCaptureSteps; k++ {
 				w.StepBig(w.Cur, w.Next)
 				w.Cur, w.Next = w.Next, w.Cur
-				addCheckf(&tot, w.Cur.Cmp(BigOne) != 0,
+				AddCheckf(&tot, w.Cur.Cmp(BigOne) != 0,
 					"seed %d of c=%d reached 1 at step %d", c, c, k+1)
 			}
 		}
@@ -425,11 +425,11 @@ func sweepOddOffset() SliceTotals {
 // certificate line and exits nonzero when any check failed.
 func main() {
 	sweeps := []func() SliceTotals{
-		sweepCycleSlice,
-		sweepFullAccess,
-		sweepIntersection,
-		sweepEvenOffset,
-		sweepOddOffset,
+		SweepCycleSlice,
+		SweepFullAccess,
+		SweepIntersection,
+		SweepEvenOffset,
+		SweepOddOffset,
 	}
 	results := make([]SliceTotals, len(sweeps))
 	var wg sync.WaitGroup

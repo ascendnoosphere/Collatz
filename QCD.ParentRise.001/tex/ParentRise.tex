@@ -1,3 +1,4 @@
+% SPDX-License-Identifier: CC-BY-4.0
 \documentclass[11pt,letterpaper]{article}
 
 \usepackage[T1]{fontenc}
@@ -28,12 +29,13 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{A parent above the seed}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{A parent above the seed}
 
 \begin{abstract}
 The shortcut that halves an even natural number and sends an odd natural number \(n\) to \((3n+1)/2\) carries \(27\) through the prefix \(27\), \(41\), \(62\), \(31\), \(47\), \(71\), \(107\), \(161\), \(242\), \(121\). Its first odd-even-even block starts at \(445\) and joins \(167\). The parent extracted from that block is \(222\). One inverse odd step is not legal at \(222\), the odd-chain ancestor is \(222\) itself after zero divisions by \(3\), and the first odd positive iterate of \(222\) appears only after one division by \(2\). That parent is strictly larger than \(27\). No claim is made that an iterate equals \(1\).

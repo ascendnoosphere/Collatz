@@ -29,12 +29,13 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{Entry into the residue lattice before division}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{Entry into the residue lattice before division}
 
 \begin{abstract}
 If \(D\) does not divide \(c\), \(\gcd(c,D)=1\), and \(c\) divides \(q^k\), then every integer seed reaches the residue lattice \(c\Z\) in \(k\) steps of the affine map \(n\mapsto qn+c\). Those steps use no division. Entry into \(c\Z\) is not capture of the state \(1\), and it is not the assertion that the classical raw map reaches \(1\).
@@ -102,7 +103,8 @@ D\mid cm\quad\Longleftrightarrow\quad D\mid m.
 \end{lemma}
 
 \begin{proof}
-If \(D\mid m\), then \(D\mid cm\). Conversely, let \(I=c\Z+D\Z\). The hypothesis \(\gcd(c,D)=1\) says that the least positive element \(g\) of \(I\) is \(1\). For any \(z\in I\), some integer \(t\) satisfies \(z-tg\ge 0\): if \(z\ge 0\), take \(t=0\); if \(z<0\), take \(t=z\), and \(g\ge 1\) gives \(z-zg=z(1-g)\ge 0\). By well-ordering of the nonnegative integers, choose \(t\) so that \(r=z-tg\) is the least such value. If \(r\ge g\), then \(z-(t+1)g=r-g\) is a smaller nonnegative value, which is impossible. Thus \(0\le r<g\). Minimality of \(g\) in \(I\) forces \(r=0\), since \(r=z-tg\in I\). Hence \(g\) divides every element of \(I\), and \(I\subseteq g\Z\). Also \(g\in I\), so \(g\Z\subseteq I\) and \(I=g\Z\). In particular \(g\in c\Z+D\Z\), and there are integers \(x,y\) with \(g=cx+Dy\). Since \(g=1\),
+If \(D\mid m\), then \(D\mid cm\). Conversely, the definition of the gcd and the hypothesis \(\gcd(c,D)=1\)
+give integers \(x,y\) such that
 \[
 cx+Dy=1.
 \]
@@ -169,18 +171,11 @@ F^{2(j+1)}(2)=F\bigl(F\bigl(F^{2j}(2)\bigr)\bigr)=F(F(2))=F(6)=2.
 One further raw step gives \(F^{2j+1}(2)=F\bigl(F^{2j}(2)\bigr)=F(2)=6\). Every natural number \(m\) has the form \(2j\) or \(2j+1\): the division identity \(m=(m/2)\cdot 2+(m\bmod 2)\) has remainder \(0\) or \(1\). Thus every raw iterate equals \(2\) or \(6\), and neither equals \(1\).
 \end{proof}
 
-\begin{lemma}
-\label{lem:classical}
-For every \(k\in\N\), the integers \(q=3\), \(c=1\), and \(D=2\) satisfy the lattice-entry hypotheses. Hence \(1\) divides \(A_{3,1}^{k}(n)\) for every \(n\in\Z\).
-\end{lemma}
-
-\begin{proof}
-Two does not divide one, and \(\gcd(1,2)=1\). The integer \(1\) divides \(3^k\). Theorem~\ref{thm:entry} gives the divisibility.
-\end{proof}
-
 \begin{remark}
 \label{rem:classical}
-Lemma~\ref{lem:classical} is divisibility by \(1\). It does not assert that any raw iterate of \(F_{3,1,2}\) equals \(1\). In particular, it does not assert that the classical raw map reaches \(1\). Theorem~\ref{thm:not-capture} separates lattice membership from that hitting statement for a different parameter triple. No orbit on \(c\Z\) is classified here, and the identity \(F_{q,c,D}(cn)=cF_{q,1,D}(n)\) is not claimed.
+For the classical parameters \((q,c,D)=(3,1,2)\), all lattice-entry
+hypotheses hold for every \(k\), but the conclusion is only divisibility
+by \(1\). This places no restriction on a state and supplies no hitting time. In particular, it does not assert that the classical raw map reaches \(1\). Theorem~\ref{thm:not-capture} separates lattice membership from that hitting statement for a different parameter triple. No orbit on \(c\Z\) is classified here, and the identity \(F_{q,c,D}(cn)=cF_{q,1,D}(n)\) is not claimed.
 \end{remark}
 
 \end{document}

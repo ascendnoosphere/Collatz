@@ -8,8 +8,8 @@ import (
 	"testing"
 )
 
-// bigAffine evaluates q^j*n + c*T_j(q) with arbitrary-precision arithmetic.
-func bigAffine(q, c, n int64, j int) *big.Int {
+// BigAffine evaluates q^j*n + c*T_j(q) with arbitrary-precision arithmetic.
+func BigAffine(q, c, n int64, j int) *big.Int {
 	pow := big.NewInt(1)
 	trap := big.NewInt(0)
 	qb := big.NewInt(q)
@@ -22,8 +22,8 @@ func bigAffine(q, c, n int64, j int) *big.Int {
 	return term.Add(term, off)
 }
 
-// int64Exact converts a big integer that is known to fit in an int64.
-func int64Exact(t *testing.T, z *big.Int) int64 {
+// Int64Exact converts a big integer that is known to fit in an int64.
+func Int64Exact(t *testing.T, z *big.Int) int64 {
 	t.Helper()
 	if !z.IsInt64() {
 		t.Fatalf("value %s does not fit in int64", z.String())
@@ -67,13 +67,13 @@ func TestNegativeShiftMatchesBig(t *testing.T) {
 					for _, tv := range ts {
 						for _, d := range ds {
 							got := AffineValue(w.Pow, w.Trap, c, n+tv*d)
-							want := int64Exact(t, bigAffine(q, c, n+tv*d, j))
+							want := Int64Exact(t, BigAffine(q, c, n+tv*d, j))
 							if got != want {
 								t.Fatalf("state mismatch q=%d c=%d n=%d t=%d d=%d j=%d",
 									q, c, n, tv, d, j)
 							}
 							diff := got - AffineValue(w.Pow, w.Trap, c, n)
-							claimed := int64Exact(t, new(big.Int).Mul(
+							claimed := Int64Exact(t, new(big.Int).Mul(
 								new(big.Int).Mul(big.NewInt(w.Pow), big.NewInt(tv)),
 								big.NewInt(d)))
 							if diff != claimed {

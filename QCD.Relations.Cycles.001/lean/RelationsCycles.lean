@@ -57,8 +57,9 @@ theorem RawStepIterateSuccLast {α : Type*} (f : α → α) (k : ℕ) (x : α) :
 theorem RawStepDivMulIterate (d q c m j : ℕ) (hd : 2 ≤ d) :
     Iterate (NatRawStep d q c) j (d ^ j * m) = m := by
   induction j with
-  | zero => simp [Iterate]
+  | zero => { simp [Iterate] }
   | succ j ih =>
+    {
       rw [RawStepIterateSucc]
       have hdvd : d ∣ d ^ (j + 1) * m := by
         refine dvd_mul_of_dvd_left ?_ m
@@ -67,6 +68,7 @@ theorem RawStepDivMulIterate (d q c m j : ℕ) (hd : 2 ≤ d) :
       rw [show d ^ (j + 1) * m = d * (d ^ j * m) by rw [pow_succ']; ring,
         Nat.mul_div_cancel_left _ (by omega : 0 < d)]
       exact ih
+    }
 
 /-- `j` divisions send `d ^ j` to `1`. -/
 theorem RawStepPowIterate (d q c j : ℕ) (hd : 2 ≤ d) :
@@ -146,22 +148,26 @@ theorem RawStepTwoEvenOffsetUnbounded (c n : ℕ) (hc : Even c) (hc1 : 1 ≤ c)
       (Iterate (NatRawStep 2 (2 * c + 1) c) j n)) := by
     intro t
     induction t with
-    | zero => simpa [Iterate] using hj
+    | zero => { simpa [Iterate] using hj }
     | succ t ih =>
+      {
         have h := RawStepTwoEvenOffsetOddOfOdd c _ hc ih
         simpa [Iterate] using h
+      }
   have hmono : ∀ t, Iterate (NatRawStep 2 (2 * c + 1) c) j n + t
       ≤ Iterate (NatRawStep 2 (2 * c + 1) c) t (Iterate (NatRawStep 2 (2 * c + 1) c) j n) := by
     intro t
     induction t with
-    | zero => simp [Iterate]
+    | zero => { simp [Iterate] }
     | succ t ih =>
+      {
         have h := hstep _ (hodd t)
         have hlast : NatRawStep 2 (2 * c + 1) c
             (Iterate (NatRawStep 2 (2 * c + 1) c) t (Iterate (NatRawStep 2 (2 * c + 1) c) j n))
             = Iterate (NatRawStep 2 (2 * c + 1) c) (t + 1)
               (Iterate (NatRawStep 2 (2 * c + 1) c) j n) := rfl
         omega
+      }
   intro M
   refine ⟨j + M, ?_⟩
   rw [IterateAdd]
@@ -194,9 +200,11 @@ theorem RawStepTwoOddOffsetGcd (c n : ℕ) (hc : Odd c) :
 theorem RawStepTwoOddOffsetGcdIterate (c n k : ℕ) (hc : Odd c) :
     Nat.gcd (Iterate (NatRawStep 2 (2 * c + 1) c) k n) c = Nat.gcd n c := by
   induction k with
-  | zero => simp [Iterate]
+  | zero => { simp [Iterate] }
   | succ k ih =>
+    {
       rw [RawStepIterateSuccLast, RawStepTwoOddOffsetGcd c _ hc, ih]
+    }
 
 /-- For odd `c > 1` the seed `c` never reaches `1`. -/
 theorem RawStepTwoOddOffsetSeedNoCapture (c k : ℕ) (hc : Odd c) (hc1 : 1 < c) :
@@ -234,14 +242,16 @@ theorem RawStepTwoOddOffsetManyCycles (c : ℕ) (hc : Odd c) (hc1 : 1 ≤ c)
 /-- Seven divides `8 ^ h - 1`. -/
 theorem SevenDvdEightPowSubOne (h : ℕ) : 7 ∣ 8 ^ h - 1 := by
   induction h with
-  | zero => simp
+  | zero => { simp }
   | succ h ih =>
+    {
       have hpow : 8 ^ (h + 1) - 1 = 8 * (8 ^ h - 1) + 7 := by
         have : 1 ≤ 8 ^ h := Nat.one_le_pow h 8 (by norm_num)
         rw [pow_succ]
         omega
       rw [hpow]
       exact Nat.dvd_add (dvd_mul_of_dvd_right ih 8) (by norm_num)
+    }
 
 /-- The offset `3 (8 ^ h - 1) / 7` of the second slice. -/
 def CycleC (h : ℕ) : ℕ := 3 * (8 ^ h - 1) / 7
@@ -275,8 +285,9 @@ theorem CycleAffineStep (h : ℕ) :
 theorem CycleIterateFormula (h j : ℕ) (hj : j ≤ 3 * h) :
     Iterate (NatRawStep 2 (CycleQ h) (CycleC h)) (j + 1) 3 = 3 * 2 ^ (3 * h - j) := by
   induction j with
-  | zero => simpa [Iterate] using CycleAffineStep h
+  | zero => { simpa [Iterate] using CycleAffineStep h }
   | succ j ih =>
+    {
       have hj' : j ≤ 3 * h := by omega
       have hprev := ih hj'
       have hexp : 1 ≤ 3 * h - j := by omega
@@ -289,6 +300,7 @@ theorem CycleIterateFormula (h j : ℕ) (hj : j ≤ 3 * h) :
       rw [RawStepOfDvd 2 (CycleQ h) (CycleC h) _ h2, hfact,
         Nat.mul_div_cancel_left _ (by norm_num : 0 < 2)]
       rw [show 3 * h - (j + 1) = 3 * h - j - 1 by omega]
+    }
 
 /-- The seed `3` returns to itself after `3 h + 1` steps. -/
 theorem CycleReturns (h : ℕ) :
@@ -320,10 +332,12 @@ theorem CycleAvoidsOne (h : ℕ) :
   have hred : Iterate (NatRawStep 2 (CycleQ h) (CycleC h)) ((3 * h + 1) * (j / (3 * h + 1))) 3
       = 3 := by
     induction j / (3 * h + 1) with
-    | zero => simp [Iterate]
+    | zero => { simp [Iterate] }
     | succ a ih =>
+      {
         rw [show (3 * h + 1) * (a + 1) = (3 * h + 1) * a + (3 * h + 1) by ring]
         rw [IterateAdd, ih, hper]
+      }
   have hsplit : (3 * h + 1) * (j / (3 * h + 1)) + j % (3 * h + 1) = j := by
     have := Nat.div_add_mod j (3 * h + 1)
     omega
@@ -399,11 +413,14 @@ theorem FullAccessIterateFormula (d k j : ℕ) (hd : 2 ≤ d) (hk : 2 ≤ k) (hj
       = (d - 1) * d ^ (k - j) := by
   induction j with
   | zero =>
+    {
       change NatRawStep d (FullAccessQ d k) (FullAccessC d k) (d - 1)
         = (d - 1) * d ^ k
       rw [RawStepOfNotDvd d _ _ _ (FullAccessNotDvd d hd)]
       exact FullAccessIdentity d k hd hk
+    }
   | succ j ih =>
+    {
       have hj' : j ≤ k := by omega
       have hprev := ih hj'
       have hexp : 1 ≤ k - j := by omega
@@ -417,6 +434,7 @@ theorem FullAccessIterateFormula (d k j : ℕ) (hd : 2 ≤ d) (hk : 2 ≤ k) (hj
         ring
       rw [hfact, Nat.mul_div_cancel_left _ (by omega : 0 < d)]
       rw [show k - (j + 1) = k - j - 1 by omega]
+    }
 
 /-- The seed `d - 1` returns to itself after `k + 1` steps. -/
 theorem FullAccessReturns (d k : ℕ) (hd : 2 ≤ d) (hk : 2 ≤ k) :
@@ -449,10 +467,12 @@ theorem FullAccessAvoidsOne (d k : ℕ) (hd : 3 ≤ d) (hk : 2 ≤ k) :
   have hred : Iterate (NatRawStep d (FullAccessQ d k) (FullAccessC d k))
       ((k + 1) * (j / (k + 1))) (d - 1) = d - 1 := by
     induction j / (k + 1) with
-    | zero => simp [Iterate]
+    | zero => { simp [Iterate] }
     | succ a ih =>
+      {
         rw [show (k + 1) * (a + 1) = (k + 1) * a + (k + 1) by ring]
         rw [IterateAdd, ih, hper]
+      }
   have hsplit : (k + 1) * (j / (k + 1)) + j % (k + 1) = j := by
     have := Nat.div_add_mod j (k + 1)
     omega
@@ -542,8 +562,9 @@ theorem RawStepIntersectionPredecessor (d x m : ℕ) (hd : 3 ≤ d)
 theorem RawStepIntersectionIteratePow (d k t x : ℕ) (hd : 3 ≤ d) (hx : 1 ≤ x)
     (h : Iterate (NatRawStep d (d + 1) (d - 1)) k x = d ^ t) : x = d ^ (k + t) := by
   induction k generalizing x t with
-  | zero => simpa [Iterate] using h
+  | zero => { simpa [Iterate] using h }
   | succ k ih =>
+    {
       have hstep : NatRawStep d (d + 1) (d - 1)
           (Iterate (NatRawStep d (d + 1) (d - 1)) k x) = d ^ t := h
       have hkey : Iterate (NatRawStep d (d + 1) (d - 1)) k x = d ^ (t + 1) :=
@@ -552,6 +573,7 @@ theorem RawStepIntersectionIteratePow (d k t x : ℕ) (hd : 3 ≤ d) (hx : 1 ≤
       rw [hxpow]
       congr 1
       omega
+    }
 
 /-- On the intersection slice, `x` reaches `1` only from a power of `d`. -/
 theorem RawStepIntersectionReachesOne (d k x : ℕ) (hd : 3 ≤ d) (hx : 1 ≤ x)

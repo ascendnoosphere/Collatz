@@ -1,3 +1,4 @@
+% SPDX-License-Identifier: CC-BY-4.0
 \documentclass[11pt,letterpaper]{article}
 
 \usepackage[T1]{fontenc}
@@ -28,12 +29,13 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{Homogeneous Scalar Dynamics on Quadratic Lattices}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{Homogeneous Scalar Dynamics on Quadratic Lattices}
 
 \begin{abstract}
 For signed scalar coefficients of magnitude at least two and zero offset, the raw map on every specified imaginary quadratic coordinate order has a complete escape--periodicity dichotomy. Multiplicatively independent magnitudes force every nonzero seed to escape in complex norm. Dependent magnitudes give a finite coordinate box containing the entire orbit, hence eventual periodicity. The coordinate gcd is the exact positive homogeneous factor; its reconstruction retains the original division guard and every raw tick.
@@ -149,12 +151,12 @@ The dependent signed classification concerns the actual finite rectangle, not ju
 
 \section{Formal correspondence}
 
-The active file \texttt{QCD.ComplexLattice.001/lean/HomogeneousLattice.lean}
+The active file \texttt{QCD.\allowbreak Complex\allowbreak Lattice.\allowbreak 001/\allowbreak lean/\allowbreak Homogeneous\allowbreak Lattice.\allowbreak lean}
 proves the content guard, its scalar recursion, the coordinate reconstruction identity, full-sequence height escape, and bounded dependent coordinates.
-Its final declarations \texttt{RingIndependentEscape} and
-\texttt{RingDependentEventuallyPeriodic} recover the actual quadratic ring and complex norm.
+Its final declarations \texttt{Ring\allowbreak Independent\allowbreak Escape} and
+\texttt{Ring\allowbreak Dependent\allowbreak Eventually\allowbreak Periodic} recover the actual quadratic ring and complex norm.
 The positive content classification is the one in
-\texttt{QCD.Homogeneous.001} and \texttt{QCD.Homogeneous.002}.
+\texttt{QCD.\allowbreak Homogeneous.\allowbreak 001} and \texttt{QCD.\allowbreak Homogeneous.\allowbreak 002}.
 These are same-clock scalar dynamical statements; they do not identify the multiplication tables of different quadratic orders.
 
 \end{document}

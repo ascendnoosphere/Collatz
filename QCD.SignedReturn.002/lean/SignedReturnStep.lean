@@ -18,7 +18,7 @@ not define a later return.
 
 set_option autoImplicit false
 
-namespace GeneralizedCollatz
+namespace GeneralizedCollatz.SignedReturnStep
 
 /-- The affine state of multiplier `q`, offset `c`, time `j` and seed `n`. -/
 def AffineState (q c : ℤ) (j : ℕ) (n : ℤ) : ℤ :=
@@ -149,4 +149,4 @@ theorem FirstHitStep (p : Parameters) (n : ℤ) (j : ℕ) (h : IsFirstHit p n j)
   show Iterate (RawStep p) j n / p.D = AffineState p.Q p.C j n / p.D
   rw [heq]
 
-end GeneralizedCollatz
+end GeneralizedCollatz.SignedReturnStep

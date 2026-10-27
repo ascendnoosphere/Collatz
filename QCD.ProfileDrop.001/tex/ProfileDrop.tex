@@ -1,3 +1,4 @@
+% SPDX-License-Identifier: CC-BY-4.0
 \documentclass[11pt,letterpaper]{article}
 
 \usepackage[T1]{fontenc}
@@ -29,12 +30,13 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{Generalized Collatz Library: Division-Free Escape and Zero-Avoiding Residue Cycles}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{Division-Free Escape and Zero-Avoiding Residue Cycles}
 
 \begin{abstract}
 Let \(q,c,d\in\Z\) satisfy \(|q|\ge 2\) and \(|d|\ge 2\). Write \(A(n)=qn+c\) and \(z(n)=(q-1)n+c\). Until division by \(d\), the displacement is multiplied by \(q\), while the residue follows a finite affine map modulo \(|d|\). Some positive seed has a division-free raw orbit whose absolute values tend to infinity if and only if that residue map has a cycle avoiding \(0\). The converse cycle extraction needs only the first \(|d|\) states. If no such cycle exists, every integer seed has a divisible state at an index smaller than \(|d|\).
@@ -324,8 +326,8 @@ used only to rule out divisibility by \(d\).
 \begin{lemma}[Residue arithmetic]
 For \(m\ge1\), equality of the residues of \(x,y\in\Z\) is equivalent to
 \(m\mid x-y\). A representative \(0\le r<m\) reduces to itself.
-The corresponding formal results are \texttt{ResidueEqOfDvdDifference},
-\texttt{ResidueEqualityDivides}, and \texttt{ResidueRepresentative}.
+The corresponding formal results are \texttt{Residue\allowbreak Eq\allowbreak Of\allowbreak Dvd\allowbreak Difference},
+\texttt{Residue\allowbreak Equality\allowbreak Divides}, and \texttt{Residue\allowbreak Representative}.
 \end{lemma}
 
 \begin{proof}
@@ -336,8 +338,8 @@ Taking \(x=r\) gives the representative statement.
 The formal forward implication also permits \(m=0\): then
 \(0\mid x-y\) means \(x=y\), so their formal residues are equal.
 The remaining basic formal statements are
-\texttt{ResidueCast}, \texttt{ResidueLt}, \texttt{ResidueZeroIff}, and
-\texttt{NatAbsDividesIff}. They say respectively that the natural
+\texttt{Residue\allowbreak Cast}, \texttt{Residue\allowbreak Lt}, \texttt{Residue\allowbreak Zero\allowbreak Iff}, and
+\texttt{Nat\allowbreak Abs\allowbreak Divides\allowbreak Iff}. They say respectively that the natural
 representative casts to the integer remainder, that it is less than
 positive \(m\), that it is zero exactly when \(m\mid x\), and that
 \(|d|\mid x\) is equivalent to \(d\mid x\). The first three follow
@@ -352,8 +354,8 @@ For \(x,y\in\Z\) and \(j\in\N\),
  A^j(x)-A^j(y)=q^j(x-y),\qquad
  A^{j+1}(0)-A^j(0)=q^j c.
 \]
-These are \texttt{AffineIterDifference} and
-\texttt{AffineIterZeroIncrement}.
+These are \texttt{Affine\allowbreak Iter\allowbreak Difference} and
+\texttt{Affine\allowbreak Iter\allowbreak Zero\allowbreak Increment}.
 \end{lemma}
 
 \begin{proof}
@@ -386,8 +388,8 @@ Let \(m\ge1\) and suppose \(m\mid q^k\). Put
 \[
  f^k(r)=s,\qquad f(s)=s.
 \]
-These are \texttt{NilpotentResidueCollapse} and
-\texttt{NilpotentResidueFixed}.
+These are \texttt{Nilpotent\allowbreak Residue\allowbreak Collapse} and
+\texttt{Nilpotent\allowbreak Residue\allowbreak Fixed}.
 \end{lemma}
 
 \begin{proof}
@@ -401,7 +403,7 @@ Residue compatibility now gives \(f(s)=s\).
 \begin{lemma}[Fixed and divisible iterates]
 If \(f(r)=r\), then \(f^j(r)=r\) for every \(j\in\N\).
 If \(m\mid c\), then \(m\mid A^j(0)\) for every \(j\in\N\).
-These are \texttt{FixedResidueIter} and \texttt{AffineZeroDivisible}.
+These are \texttt{Fixed\allowbreak Residue\allowbreak Iter} and \texttt{Affine\allowbreak Zero\allowbreak Divisible}.
 \end{lemma}
 
 \begin{proof}
@@ -418,9 +420,9 @@ For \(m\ge2\), a zero-avoiding cycle exists if and only if
 \(m\nmid c\).
 \end{theorem}
 
-The zero-access equivalence is \texttt{NilpotentAllReachZeroIff}.
+The zero-access equivalence is \texttt{Nilpotent\allowbreak All\allowbreak Reach\allowbreak Zero\allowbreak Iff}.
 
-The cycle equivalence is \texttt{NilpotentCycleIff}.
+The cycle equivalence is \texttt{Nilpotent\allowbreak Cycle\allowbreak Iff}.
 
 \begin{proof}
 If \(m\mid c\), then the common residue at time \(k\) is zero
@@ -457,7 +459,7 @@ division-free raw orbit whose absolute values tend to infinity.
 
 \begin{proof}
 The nilpotent theorem supplies a nonzero fixed cycle modulo \(m\).
-Apply \texttt{LocalCycleEscape} to that cycle.
+Apply \texttt{Local\allowbreak Cycle\allowbreak Escape} to that cycle.
 \end{proof}
 
 \begin{theorem}[UnitDivisibleOffsetCycle]
@@ -470,7 +472,7 @@ The affine difference identity and divisible-iterate lemma give
 \(A^j(1)\equiv q^j\pmod m\). If this residue were zero, then
 \(m\mid |q|^j\). But \(\gcd(|q|^j,m)=1\), forcing \(m=1\),
 contrary to the assumption. Thus the residue path of \(1\) never
-reaches zero, and \texttt{CycleIffNonzeroResiduePath} extracts a cycle.
+reaches zero, and \texttt{Cycle\allowbreak Iff\allowbreak Nonzero\allowbreak Residue\allowbreak Path} extracts a cycle.
 \end{proof}
 
 \begin{corollary}[Unit-offset local escape]
@@ -480,7 +482,7 @@ division-free raw orbit with absolute values tending to infinity.
 \end{corollary}
 
 \begin{proof}
-Apply \texttt{LocalCycleEscape} to the preceding cycle.
+Apply \texttt{Local\allowbreak Cycle\allowbreak Escape} to the preceding cycle.
 \end{proof}
 
 \begin{theorem}[ModFourCycle]
@@ -506,7 +508,7 @@ raw escape for the full signed divisor \(d\).
 \end{corollary}
 
 \begin{proof}
-Use the displayed two-cycle in \texttt{LocalCycleEscape} with \(m=4\).
+Use the displayed two-cycle in \texttt{Local\allowbreak Cycle\allowbreak Escape} with \(m=4\).
 \end{proof}
 
 \begin{theorem}[CoprimeDifferenceCycle]
@@ -533,13 +535,13 @@ whose absolute values tend to infinity.
 \end{corollary}
 
 \begin{proof}
-Apply \texttt{LocalCycleEscape} to its one-state cycle.
+Apply \texttt{Local\allowbreak Cycle\allowbreak Escape} to its one-state cycle.
 \end{proof}
 
 \section{Geometric sums without a singular quotient}
 
 Define \(S_q(0)=0\) and \(S_q(n+1)=S_q(n)+q^n\).
-This is the signed integer polynomial \texttt{TrapSum}; it is never
+This is the signed integer polynomial \texttt{Trap\allowbreak Sum}; it is never
 replaced by a quotient that would be undefined at \(q=1\).
 
 \begin{lemma}[Geometric-sum identities]
@@ -553,9 +555,9 @@ For \(q\in\Z\) and \(m,n\in\N\),
 Also \(S_1(n)=n\).
 \end{lemma}
 
-The formal identities are \texttt{TrapSumEqSum}, \texttt{TrapSumAdd},
-and \texttt{TrapSumMul}. The two imported identities are
-\texttt{TrapSumMulSubOne} and \texttt{TrapSumOne}.
+The formal identities are \texttt{Trap\allowbreak Sum\allowbreak Eq\allowbreak Sum}, \texttt{Trap\allowbreak Sum\allowbreak Add},
+and \texttt{Trap\allowbreak Sum\allowbreak Mul}. The two imported identities are
+\texttt{Trap\allowbreak Sum\allowbreak Mul\allowbreak Sub\allowbreak One} and \texttt{Trap\allowbreak Sum\allowbreak One}.
 
 \begin{proof}
 The finite-sum formula follows by induction from the defining recurrence.
@@ -575,8 +577,8 @@ For all \(q,c,x\in\Z\) and \(n\in\N\),
  A^n(x)=q^nx+cS_q(n),\qquad
  A^n(x)-x=S_q(n)z(x).
 \]
-These are \texttt{AffineIterPolynomial} and
-\texttt{AffineIterDisplacement}.
+These are \texttt{Affine\allowbreak Iter\allowbreak Polynomial} and
+\texttt{Affine\allowbreak Iter\allowbreak Displacement}.
 \end{lemma}
 
 \begin{proof}
@@ -614,8 +616,8 @@ For an odd prime \(p\) with \(p\mid q-1\),
 If \(4\mid q-1\), then \(\nu_2(S_q(2))=1\).
 \end{lemma}
 
-The formal names are \texttt{TrapSumOddPrimeLift} and
-\texttt{TrapSumTwoLift}.
+The formal names are \texttt{Trap\allowbreak Sum\allowbreak Odd\allowbreak Prime\allowbreak Lift} and
+\texttt{Trap\allowbreak Sum\allowbreak Two\allowbreak Lift}.
 
 \begin{proof}
 In the odd-prime case write \(q=1+pt\). For \(0\le i<p\),
@@ -640,8 +642,8 @@ In the odd-prime case,
 Under \(4\mid q-1\), \(\nu_2(S_q(2^a))=a\).
 \end{theorem}
 
-The formal names are \texttt{TrapSumOddPrimePower} and
-\texttt{TrapSumTwoPower}.
+The formal names are \texttt{Trap\allowbreak Sum\allowbreak Odd\allowbreak Prime\allowbreak Power} and
+\texttt{Trap\allowbreak Sum\allowbreak Two\allowbreak Power}.
 
 \begin{proof}
 At \(a=0\), \(S_q(1)=1\) has multiplicity zero.
@@ -666,9 +668,9 @@ For an odd prime \(p\) with \(p\mid q-1\),
 If \(4\mid q-1\), then \(\nu_2(S_q(n))=\nu_2(n)\).
 \end{theorem}
 
-The odd-prime identity is \texttt{TrapSumOddPrimeMultiplicity}.
+The odd-prime identity is \texttt{Trap\allowbreak Sum\allowbreak Odd\allowbreak Prime\allowbreak Multiplicity}.
 
-The binary identity is \texttt{TrapSumTwoMultiplicity}.
+The binary identity is \texttt{Trap\allowbreak Sum\allowbreak Two\allowbreak Multiplicity}.
 
 \begin{proof}
 At \(q=1\), use \(S_1(n)=n\); this branch avoids any cancellation
@@ -788,7 +790,7 @@ same-time Chinese-remainder assembly over arbitrary composite moduli.
 \section{Fixed raw precision and exact division transfer}
 
 The corresponding formal statements are in
-\texttt{QCD.ProfileDrop.001/lean/ProfilePrecision.lean}
+\texttt{QCD.\allowbreak Profile\allowbreak Drop.\allowbreak 001/\allowbreak lean/\allowbreak Profile\allowbreak Precision.\allowbreak lean}
 \cite{LibraryPrecision26}. This section concerns a fixed positive
 integer divisor \(d\ge2\); it imposes no restrictions on \(q,c\in\Z\).
 

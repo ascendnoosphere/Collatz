@@ -1,3 +1,4 @@
+% SPDX-License-Identifier: CC-BY-4.0
 \documentclass[11pt,letterpaper]{article}
 
 \usepackage[T1]{fontenc}
@@ -28,12 +29,13 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{Arithmetic phase rigidity}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{Arithmetic phase rigidity}
 
 \begin{abstract}
 For odd positive integers \(q\) and \(c\), the base-two branches \(x\mapsto x/2\) and \(x\mapsto(qx+c)/2\) send an integer of the corresponding parity to an integer. If a rational and its image both lie at distance strictly less than \(2/(q+2)\) from integers of those parities, the integer branch lands on the next integer. Two solutions of the same affine fixed-point equation then agree whenever the multiplier and the denominator differ. The argument is a congruence and a linear subtraction. It does not continue the branches off the integers, and it does not exclude a defect of zero.

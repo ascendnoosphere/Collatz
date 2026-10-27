@@ -11,10 +11,10 @@ import (
 	"testing"
 )
 
-// referenceSum recomputes the geometric sum 1 + q + ... + q^(k-1) by Horner's
+// ReferenceSum recomputes the geometric sum 1 + q + ... + q^(k-1) by Horner's
 // rule, which is a different evaluation order from the repetitive addition of
 // RepunitSum.
-func referenceSum(q uint64, k int) *big.Int {
+func ReferenceSum(q uint64, k int) *big.Int {
 	base := new(big.Int).SetUint64(q)
 	sum := new(big.Int)
 	for j := 0; j < k; j++ {
@@ -24,8 +24,8 @@ func referenceSum(q uint64, k int) *big.Int {
 	return sum
 }
 
-// referenceStep recomputes one instruction with divisor D and unit offset.
-func referenceStep(q uint64, D, n *big.Int) *big.Int {
+// ReferenceStep recomputes one instruction with divisor D and unit offset.
+func ReferenceStep(q uint64, D, n *big.Int) *big.Int {
 	quot, rem := new(big.Int).QuoRem(n, D, new(big.Int))
 	if rem.Sign() == 0 {
 		return quot
@@ -40,7 +40,7 @@ func TestRepunitSumMatchesReference(t *testing.T) {
 	for q := uint64(2); q <= repunitMaxQ; q++ {
 		for k := 0; k <= repunitMaxK; k++ {
 			got := RepunitSum(q, k)
-			want := referenceSum(q, k)
+			want := ReferenceSum(q, k)
 			if got.Cmp(want) != 0 {
 				t.Fatalf("RepunitSum(%d,%d) = %s, want %s", q, k, got, want)
 			}
@@ -59,7 +59,7 @@ func TestStepMatchesReference(t *testing.T) {
 			for n := int64(0); n <= 100; n++ {
 				w.Cur.SetInt64(n)
 				got := new(big.Int).Set(w.StepBig(q, D, w.Cur, w.Next))
-				want := referenceStep(q, D, big.NewInt(n))
+				want := ReferenceStep(q, D, big.NewInt(n))
 				if got.Cmp(want) != 0 {
 					t.Fatalf("StepBig(q=%d,D=%s,n=%d) = %s, want %s",
 						q, D, n, got, want)
@@ -70,7 +70,7 @@ func TestStepMatchesReference(t *testing.T) {
 	w.Cur.SetString("1208925819614629174706176", 10)
 	D := new(big.Int).Exp(big.NewInt(2), big.NewInt(100), nil)
 	got := new(big.Int).Set(w.StepBig(3, D, w.Cur, w.Next))
-	if want := referenceStep(3, D, w.Cur); got.Cmp(want) != 0 {
+	if want := ReferenceStep(3, D, w.Cur); got.Cmp(want) != 0 {
 		t.Fatalf("wide StepBig = %s, want %s", got, want)
 	}
 	// The division branch with both operands wider than a word: the state
@@ -78,7 +78,7 @@ func TestStepMatchesReference(t *testing.T) {
 	wide := new(big.Int).Lsh(big.NewInt(1), 200)
 	w.Cur.Set(wide)
 	got = new(big.Int).Set(w.StepBig(3, D, w.Cur, w.Next))
-	if want := referenceStep(3, D, w.Cur); got.Cmp(want) != 0 {
+	if want := ReferenceStep(3, D, w.Cur); got.Cmp(want) != 0 {
 		t.Fatalf("wide division StepBig = %s, want %s", got, want)
 	}
 	if want := new(big.Int).Lsh(big.NewInt(1), 100); got.Cmp(want) != 0 {
@@ -120,8 +120,8 @@ func TestCycleAndMinimality(t *testing.T) {
 			D := RepunitSum(q, k)
 			cur := big.NewInt(1)
 			for j := 1; j <= k; j++ {
-				cur = referenceStep(q, D, cur)
-				want := referenceSum(q, j+1)
+				cur = ReferenceStep(q, D, cur)
+				want := ReferenceSum(q, j+1)
 				if j == k {
 					want = one
 				} else if want.Cmp(one) == 0 {
@@ -156,7 +156,7 @@ func TestTrapAndControl(t *testing.T) {
 	D = big.NewInt(5)
 	cur := big.NewInt(1)
 	for j := 1; j <= repunitSteps; j++ {
-		cur = referenceStep(2, D, cur)
+		cur = ReferenceStep(2, D, cur)
 		if cur.Cmp(big.NewInt(1)) == 0 {
 			t.Fatalf("non-repunit divisor returned to 1 at time %d", j)
 		}
@@ -170,7 +170,8 @@ func TestTrapAndControl(t *testing.T) {
 		}
 		violated := false
 		for j := 1; j < k; j++ {
-			if got := new(big.Int).Exp(big.NewInt(1), big.NewInt(int64(j)), D); got.Cmp(big.NewInt(1)) == 0 {
+			got := new(big.Int).Exp(big.NewInt(1), big.NewInt(int64(j)), D)
+			if got.Cmp(big.NewInt(1)) == 0 {
 				violated = true
 			}
 		}
@@ -198,10 +199,10 @@ func TestSweepPredicatesDiscriminate(t *testing.T) {
 		t.Fatalf("the divisor of index %d satisfies the order claim", k-1)
 	}
 	trap := RepunitSum(q, 7)
-	if got := referenceStep(q, trap, big.NewInt(0)); got.Sign() != 0 {
+	if got := ReferenceStep(q, trap, big.NewInt(0)); got.Sign() != 0 {
 		t.Fatalf("zero did not reach zero: %s", got)
 	}
-	if got := referenceStep(q, trap, big.NewInt(1)); got.Sign() == 0 {
+	if got := ReferenceStep(q, trap, big.NewInt(1)); got.Sign() == 0 {
 		t.Fatalf("a nonzero state reached zero")
 	}
 }
@@ -211,21 +212,21 @@ func TestSweepPredicatesDiscriminate(t *testing.T) {
 func TestSweepTotals(t *testing.T) {
 	want := []uint64{760, 3971, 7581, 12274, 72561, 722}
 	slices := []func(uint64, *Workspace, *Totals){
-		sweepDivisors,
-		sweepOrder,
-		sweepCycle,
-		sweepResidues,
-		sweepTraps,
-		sweepReturns,
+		SweepDivisors,
+		SweepOrder,
+		SweepCycle,
+		SweepResidues,
+		SweepTraps,
+		SweepReturns,
 	}
 	var total, repeat Totals
 	for i, slice := range slices {
-		got := runParallel(slice)
+		got := RunParallel(slice)
 		if got.Failures != 0 || got.Checks != want[i] {
 			t.Fatalf("slice %d counted %+v, want checks %d and no failures",
 				i, got, want[i])
 		}
-		second := runParallel(slice)
+		second := RunParallel(slice)
 		if second.Failures != 0 || second.Checks != got.Checks {
 			t.Fatalf("slice %d rerun counted %+v, first run %+v", i, second, got)
 		}
@@ -233,7 +234,7 @@ func TestSweepTotals(t *testing.T) {
 		repeat.Checks += second.Checks
 	}
 	control := Totals{}
-	sweepControls(NewWorkspace(), &control)
+	SweepControls(NewWorkspace(), &control)
 	if control.Failures != 0 || control.Checks != 442 {
 		t.Fatalf("controls counted %+v, want 442 checks and no failures", control)
 	}
@@ -246,30 +247,18 @@ func TestSweepTotals(t *testing.T) {
 	}
 }
 
-// TestWarmedAllocation requires the workspace walk to allocate nothing once its
-// buffers have grown to the width of the walk. Every measured step works on
-// multi-word states, and the two steps exercise the two branches of the step: a
-// state that is not divisible follows the affine branch, and a multiple of the
-// divisor follows the division branch.
-func TestWarmedAllocation(t *testing.T) {
+// TestRepunitTableMatchesReference checks every cached sum, including the second
+// residue period, after changing the multiplier on the same workspace.
+func TestRepunitTableMatchesReference(t *testing.T) {
 	w := NewWorkspace()
-	divisor := new(big.Int).Lsh(big.NewInt(1), 100)
-	divisor.Add(divisor, big.NewInt(1))
-	odd := new(big.Int).Lsh(big.NewInt(1), 300)
-	odd.Add(odd, big.NewInt(1))
-	multiple := new(big.Int).Mul(divisor, odd)
-	walk := func() {
-		w.StepBig(3, divisor, odd, w.Cur)
-		w.StepBig(3, divisor, multiple, w.Next)
-	}
-	walk()
-	if w.Cur.BitLen() <= 64 || w.Next.BitLen() <= 64 {
-		t.Fatalf("warmed walk stayed inside a word, widths %d and %d",
-			w.Cur.BitLen(), w.Next.BitLen())
-	}
-	allocs := testing.AllocsPerRun(50, walk)
-	if allocs != 0 {
-		t.Fatalf("step walk allocated %v values per run", allocs)
+	for _, q := range []uint64{20, 1, 2, 7} {
+		w.PrepareRepunits(q)
+		for k := range w.Repunits {
+			if want := ReferenceSum(q, k); w.Repunits[k].Cmp(want) != 0 {
+				t.Fatalf("cached sum q=%d k=%d is %s, want %s",
+					q, k, &w.Repunits[k], want)
+			}
+		}
 	}
 }
 

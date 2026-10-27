@@ -12,9 +12,9 @@ import (
 	"testing"
 )
 
-// referenceRepunit returns 1 + q + ... + q^(j-1) by summation of powers, an
+// ReferenceRepunit returns 1 + q + ... + q^(j-1) by summation of powers, an
 // independent route to the running-product helper used by the sweeps.
-func referenceRepunit(q, j uint64) *big.Int {
+func ReferenceRepunit(q, j uint64) *big.Int {
 	sum := new(big.Int)
 	power := big.NewInt(1)
 	base := new(big.Int).SetUint64(q)
@@ -25,8 +25,8 @@ func referenceRepunit(q, j uint64) *big.Int {
 	return sum
 }
 
-// referenceOrbit returns the residue orbit of zero by matrix-free iteration.
-func referenceOrbit(q, c, D, j uint64) uint64 {
+// ReferenceOrbit returns the residue orbit of zero by matrix-free iteration.
+func ReferenceOrbit(q, c, D, j uint64) uint64 {
 	r := uint64(0)
 	for i := uint64(0); i < j; i++ {
 		r = (q*r + c) % D
@@ -34,9 +34,9 @@ func referenceOrbit(q, c, D, j uint64) uint64 {
 	return r
 }
 
-// referenceModulus computes D*(q-1)/gcd(c, D*(q-1)) without the production
+// ReferenceModulus computes D*(q-1)/gcd(c, D*(q-1)) without the production
 // helper.
-func referenceModulus(q, c, D uint64) uint64 {
+func ReferenceModulus(q, c, D uint64) uint64 {
 	top := new(big.Int).Mul(big.NewInt(int64(D)), big.NewInt(int64(q-1)))
 	g := new(big.Int).GCD(nil, nil, big.NewInt(int64(c)), top)
 	quot := new(big.Int).Quo(top, g)
@@ -52,16 +52,16 @@ func TestOrbitFormulaMatchesReference(t *testing.T) {
 		for c := uint64(1); c <= 6; c++ {
 			for D := uint64(2); D <= 12; D++ {
 				for j := uint64(0); j <= 12; j++ {
-					sum := referenceRepunit(q, j)
+					sum := ReferenceRepunit(q, j)
 					sum.Mul(sum, new(big.Int).SetUint64(c))
 					sum.Mod(sum, new(big.Int).SetUint64(D))
-					if sum.Uint64() != referenceOrbit(q, c, D, j) {
+					if sum.Uint64() != ReferenceOrbit(q, c, D, j) {
 						t.Fatalf("formula q=%d c=%d D=%d j=%d: %v", q, c, D, j, sum)
 					}
-					if got := AccessOrbitU64(q, c, D, j); got != referenceOrbit(q, c, D, j) {
+					if got := AccessOrbitU64(q, c, D, j); got != ReferenceOrbit(q, c, D, j) {
 						t.Fatalf("production orbit q=%d c=%d D=%d j=%d: %d", q, c, D, j, got)
 					}
-					if exact := RepunitSumBig(work, q, j); exact.Cmp(referenceRepunit(q, j)) != 0 {
+					if exact := RepunitSumBig(work, q, j); exact.Cmp(ReferenceRepunit(q, j)) != 0 {
 						t.Fatalf("production repunit q=%d j=%d: %v", q, j, exact)
 					}
 					cases++
@@ -80,7 +80,7 @@ func TestCriterionMatchesReference(t *testing.T) {
 	for q := uint64(2); q <= 12; q++ {
 		for c := uint64(1); c <= 6; c++ {
 			for D := uint64(2); D <= 12; D++ {
-				M := referenceModulus(q, c, D)
+				M := ReferenceModulus(q, c, D)
 				if got := AccessModulusU64(q, c, D); got != M {
 					t.Fatalf("production modulus q=%d c=%d D=%d: %d want %d", q, c, D, got, M)
 				}
@@ -93,7 +93,7 @@ func TestCriterionMatchesReference(t *testing.T) {
 					power.Sub(power, big.NewInt(1))
 					rem := new(big.Int).Mod(power, new(big.Int).SetUint64(M))
 					want := rem.Sign() == 0
-					got := referenceOrbit(q, c, D, j) == 0
+					got := ReferenceOrbit(q, c, D, j) == 0
 					if got != want {
 						t.Fatalf("criterion q=%d c=%d D=%d j=%d: orbit %v, modulus %v",
 							q, c, D, j, got, want)
@@ -117,7 +117,7 @@ func TestOrderIsMinimal(t *testing.T) {
 				if Gcd(q, D) != 1 {
 					continue
 				}
-				M := referenceModulus(q, c, D)
+				M := ReferenceModulus(q, c, D)
 				m := uint64(0)
 				for j := uint64(1); j <= M+1 && m == 0; j++ {
 					power := new(big.Int).Exp(new(big.Int).SetUint64(q),
@@ -138,11 +138,11 @@ func TestOrderIsMinimal(t *testing.T) {
 				if m > D {
 					t.Fatalf("order exceeds D q=%d c=%d D=%d M=%d m=%d", q, c, D, M, m)
 				}
-				if referenceOrbit(q, c, D, m) != 0 {
+				if ReferenceOrbit(q, c, D, m) != 0 {
 					t.Fatalf("orbit not returned at the order q=%d c=%d D=%d m=%d", q, c, D, m)
 				}
 				for j := uint64(1); j < m; j++ {
-					if referenceOrbit(q, c, D, j) == 0 {
+					if ReferenceOrbit(q, c, D, j) == 0 {
 						t.Fatalf("early return q=%d c=%d D=%d j=%d", q, c, D, j)
 					}
 				}
@@ -159,11 +159,11 @@ func TestTrapResidueModuloThree(t *testing.T) {
 		t.Fatalf("residue two should be fixed, got %d", got)
 	}
 	for j := uint64(0); j <= 20; j++ {
-		if got := referenceOrbit(2, 1, 3, j); got == 2 {
+		if got := ReferenceOrbit(2, 1, 3, j); got == 2 {
 			t.Fatalf("orbit reached the trap at j=%d", j)
 		}
 	}
-	if referenceOrbit(2, 1, 3, 1) != 1 || referenceOrbit(2, 1, 3, 2) != 0 {
+	if ReferenceOrbit(2, 1, 3, 1) != 1 || ReferenceOrbit(2, 1, 3, 2) != 0 {
 		t.Fatal("access cycle modulo three is not zero, one")
 	}
 }
@@ -200,7 +200,7 @@ func TestPrimeNonOneMissesResidues(t *testing.T) {
 				continue
 			}
 			for c := uint64(1); c < p; c++ {
-				M := referenceModulus(q, c, p)
+				M := ReferenceModulus(q, c, p)
 				m := uint64(0)
 				for j := uint64(1); j <= p && m == 0; j++ {
 					power := new(big.Int).Exp(new(big.Int).SetUint64(q),
@@ -243,7 +243,7 @@ func TestExamplesAndSliceValues(t *testing.T) {
 		{2, 7, 3, 1, 1}, {2, 7, 3, 2, 0},
 	}
 	for _, v := range values {
-		if got := referenceOrbit(v.q, v.c, v.D, v.j); got != v.want {
+		if got := ReferenceOrbit(v.q, v.c, v.D, v.j); got != v.want {
 			t.Fatalf("orbit q=%d c=%d D=%d j=%d: got %d want %d",
 				v.q, v.c, v.D, v.j, got, v.want)
 		}
@@ -255,10 +255,10 @@ func TestExamplesAndSliceValues(t *testing.T) {
 	for D := uint64(3); D <= 13; D++ {
 		for c := uint64(1); c < D; c++ {
 			q := D - 1
-			if referenceOrbit(q, c, D, 1) == 0 {
+			if ReferenceOrbit(q, c, D, 1) == 0 {
 				t.Fatalf("early return q=%d c=%d D=%d", q, c, D)
 			}
-			if referenceOrbit(q, c, D, 2) != 0 {
+			if ReferenceOrbit(q, c, D, 2) != 0 {
 				t.Fatalf("no return at two q=%d c=%d D=%d", q, c, D)
 			}
 			if AccessOrbitU64(q, c, D, 2) != 0 || AccessOrbitU64(q, c, D, 1) == 0 {
@@ -271,27 +271,27 @@ func TestExamplesAndSliceValues(t *testing.T) {
 // TestSweepTotals pins the per-slice certificate counts and the total, so a
 // silent change of bounds or of a sweep body fails the test.
 func TestSweepTotals(t *testing.T) {
-	formula := sweepFormula()
+	formula := SweepFormula()
 	if formula.Checks != 133308 || formula.Failures != 0 {
 		t.Fatalf("formula slice: %d checks, %d failures", formula.Checks, formula.Failures)
 	}
-	criterion := sweepCriterion()
+	criterion := SweepCriterion()
 	if criterion.Checks != 126960 || criterion.Failures != 0 {
 		t.Fatalf("criterion slice: %d checks, %d failures", criterion.Checks, criterion.Failures)
 	}
-	order := sweepOrder()
+	order := SweepOrder()
 	if order.Checks != 103467 || order.Failures != 0 {
 		t.Fatalf("order slice: %d checks, %d failures", order.Checks, order.Failures)
 	}
-	full := sweepFullAccess()
+	full := SweepFullAccess()
 	if full.Checks != 1433 || full.Failures != 0 {
 		t.Fatalf("full-access slice: %d checks, %d failures", full.Checks, full.Failures)
 	}
-	nonone := sweepPrimeNonOne()
+	nonone := SweepPrimeNonOne()
 	if nonone.Checks != 2044 || nonone.Failures != 0 {
 		t.Fatalf("prime non-one slice: %d checks, %d failures", nonone.Checks, nonone.Failures)
 	}
-	examples := sweepExamples()
+	examples := SweepExamples()
 	if examples.Checks != 88 || examples.Failures != 0 {
 		t.Fatalf("example slice: %d checks, %d failures", examples.Checks, examples.Failures)
 	}
@@ -334,7 +334,7 @@ func TestDocumentedRanges(t *testing.T) {
 // to minus one, so the order of two is eighty and the multiplication reaches
 // two machine words.
 func TestWarmedOrbitAllocation(t *testing.T) {
-	warm := referenceOrbit(23, 11, 24, 20)
+	warm := ReferenceOrbit(23, 11, 24, 20)
 	if warm >= 24 {
 		t.Fatalf("reference orbit left the residue range: %d", warm)
 	}

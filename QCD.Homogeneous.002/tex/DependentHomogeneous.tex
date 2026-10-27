@@ -24,16 +24,18 @@
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
 \newtheorem{definition}[theorem]{Definition}
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{Dependent homogeneous raw maps}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{Dependent homogeneous raw maps}
 
 \begin{abstract}
 Let $q,D\geq2$ and let the positive homogeneous raw map divide by $D$ when
@@ -49,6 +51,7 @@ $qDn$.  The proof reconstructs every integer state at the original raw clock.
 \section{Raw dynamics and the target}
 
 \begin{definition}[Positive homogeneous raw map]
+\leavevmode\par
 For $q,D\in\N$ with $q,D\geq2$, define
 \[
  T_{q,D}(n)=

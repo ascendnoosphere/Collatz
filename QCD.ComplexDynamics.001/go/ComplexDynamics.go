@@ -948,7 +948,8 @@ func TwistedCycle(lam, a []int, p int) (int, int, int) {
 			panic("local-system multiplier must be a nonzero field element")
 		}
 		h = h * l % p
-		b = int(Mod(int64(l*b+a[j]), p))
+		offset := int(Mod(int64(a[j]), p))
+		b = (l*b + offset) % p
 	}
 	dim := 0
 	if h == 1 {

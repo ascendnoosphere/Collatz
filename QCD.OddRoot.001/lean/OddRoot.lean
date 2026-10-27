@@ -17,7 +17,7 @@ classical Collatz trajectory reaches `1`, and `R` itself may be divisible by `3`
 
 set_option autoImplicit false
 
-namespace GeneralizedCollatz
+namespace GeneralizedCollatz.OddRootAnalysis
 
 /-- The `3`-adic valuation of the translate `z + 1`. -/
 def OddValuation (z : ℤ) : ℕ :=
@@ -585,4 +585,4 @@ theorem OddRootNegFour : OddRoot (-4) = -3 ∧ -4 < OddRoot (-4) := by
     decide
   exact ⟨hroot, by rw [hroot]; decide⟩
 
-end GeneralizedCollatz
+end GeneralizedCollatz.OddRootAnalysis

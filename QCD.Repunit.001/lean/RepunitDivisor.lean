@@ -71,26 +71,31 @@ affine event at the offset one. -/
 theorem RepunitSumSuccMul (q k : ℕ) :
     q * RepunitSum q k + 1 = RepunitSum q (k + 1) := by
   induction k with
-  | zero => simp [RepunitSum]
+  | zero => { simp [RepunitSum] }
   | succ k ih =>
+    {
       rw [RepunitSumSucc, RepunitSumSucc, ← ih]
       ring
+    }
 
 /-- The repunit sum splits by index blocks: `S_{j+k} = S_j + q^j S_k`. -/
 theorem RepunitSumAdd (q j k : ℕ) :
     RepunitSum q (j + k) = RepunitSum q j + q ^ j * RepunitSum q k := by
   induction k with
-  | zero => simp [RepunitSum]
+  | zero => { simp [RepunitSum] }
   | succ k ih =>
+    {
       rw [Nat.add_succ, RepunitSumSucc, RepunitSumSucc, ih, pow_add]
       ring
+    }
 
 /-- The repunit sum satisfies `(q - 1) S_k = q^k - 1`. -/
 theorem RepunitSumMulPred (q k : ℕ) (hq : 1 ≤ q) :
     (q - 1) * RepunitSum q k = q ^ k - 1 := by
   induction k with
-  | zero => simp [RepunitSum]
+  | zero => { simp [RepunitSum] }
   | succ k ih =>
+    {
       have hpow : (q - 1) * q ^ k + q ^ k = q ^ (k + 1) := by
         calc (q - 1) * q ^ k + q ^ k
             = ((q - 1) + 1) * q ^ k := by rw [Nat.add_mul, one_mul]
@@ -100,6 +105,7 @@ theorem RepunitSumMulPred (q k : ℕ) (hq : 1 ≤ q) :
       rw [RepunitSumSucc, Nat.mul_add, ih]
       have hkpos : 1 ≤ q ^ k := Nat.one_le_pow k q hq
       omega
+    }
 
 /-- The powers of `q` return to one modulo the repunit sum. -/
 theorem RepunitSumModeq (q k : ℕ) (hq : 1 ≤ q) :
@@ -126,10 +132,12 @@ theorem RepunitSumEqPowAdd (q k : ℕ) (hk : 1 ≤ k) :
 theorem RepunitSumOneLe (q k : ℕ) (hk : 0 < k) : 1 ≤ RepunitSum q k := by
   obtain ⟨j, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (by omega : k ≠ 0)
   induction j with
-  | zero => simp [RepunitSum]
+  | zero => { simp [RepunitSum] }
   | succ j ih =>
+    {
       rw [RepunitSumSucc]
       exact le_trans (ih (by omega)) (Nat.le_add_right _ _)
+    }
 
 /-- A repunit sum with one term is positive. -/
 theorem RepunitSumPos (q k : ℕ) (hk : 0 < k) : 0 < RepunitSum q k :=
@@ -158,14 +166,16 @@ of `k` terms is at most `q^k`. -/
 theorem RepunitSumSuccLePow (q k : ℕ) (hq : 2 ≤ q) :
     RepunitSum q k + 1 ≤ q ^ k := by
   induction k with
-  | zero => simp [RepunitSum]
+  | zero => { simp [RepunitSum] }
   | succ k ih =>
+    {
       rw [RepunitSumSucc]
       calc RepunitSum q k + q ^ k + 1 = (RepunitSum q k + 1) + q ^ k := by ring
         _ ≤ q ^ k + q ^ k := Nat.add_le_add_right ih _
         _ = 2 * q ^ k := by ring
         _ ≤ q * q ^ k := Nat.mul_le_mul_right _ hq
         _ = q ^ (k + 1) := by rw [pow_succ, mul_comm]
+    }
 
 /-- The repunit sum is strictly below the corresponding power. -/
 theorem RepunitSumLtPow (q k : ℕ) (hq : 2 ≤ q) :
@@ -195,8 +205,8 @@ theorem RepunitStepZero (q D : ℕ) : RepunitStep q D 0 = 0 := by
 theorem RepunitStepIterateZero (q D j : ℕ) :
     Iterate (RepunitStep q D) j 0 = 0 := by
   induction j with
-  | zero => rfl
-  | succ j ih => rw [RepunitIterateSuccLast, ih, RepunitStepZero]
+  | zero => { rfl }
+  | succ j ih => { rw [RepunitIterateSuccLast, ih, RepunitStepZero] }
 
 /-- Zero is the only state that maps to zero. -/
 theorem RepunitStepEqZero {q D n : ℕ} (h : RepunitStep q D n = 0) : n = 0 := by
@@ -214,10 +224,12 @@ theorem RepunitResidueIterateZero (q k j : ℕ) :
     Iterate (RepunitResidue q (RepunitSum q k)) j 0
       = RepunitSum q j % RepunitSum q k := by
   induction j with
-  | zero => simp [Iterate, RepunitSum]
+  | zero => { simp [Iterate, RepunitSum] }
   | succ j ih =>
+    {
       rw [RepunitIterateSuccLast, ih, RepunitResidue, ← RepunitSumSuccMul]
       simp only [Nat.mul_mod, Nat.add_mod, Nat.mod_mod]
+    }
 
 /-- The residue walk from zero is periodic with period `k`. -/
 theorem RepunitResidueIteratePeriod (q k j : ℕ) :
@@ -242,14 +254,16 @@ after `j < k` steps the state is `S_{j+1}`. -/
 theorem RepunitStepIterateOne (q k j : ℕ) (hq : 2 ≤ q) (hj : j < k) :
     Iterate (RepunitStep q (RepunitSum q k)) j 1 = RepunitSum q (j + 1) := by
   induction j with
-  | zero => simp [Iterate, RepunitSum]
+  | zero => { simp [Iterate, RepunitSum] }
   | succ j ih =>
+    {
       rw [RepunitIterateSuccLast, ih (by omega)]
       have hlt : RepunitSum q (j + 1) < RepunitSum q k :=
         (RepunitSumStrictMono q hq) (by omega)
       have hpos : 0 < RepunitSum q (j + 1) := RepunitSumPos q (j + 1) (by omega)
       rw [RepunitStepOfNotDvd q (RepunitSum q k) (RepunitSum q (j + 1))
         (Nat.not_dvd_of_pos_of_lt hpos hlt), RepunitSumSuccMul]
+    }
 
 /-- The orbit of one returns to one after exactly `k` steps: the cycle
 `1 -> S_2 -> ... -> S_k -> 1`. -/

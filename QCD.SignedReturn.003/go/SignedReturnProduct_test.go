@@ -58,7 +58,7 @@ func TestSignedProducts(t *testing.T) {
 		if r.A/r.D != r.Q || r.D*r.Q != r.A {
 			t.Fatalf("hand quotient failed D=%d a=%d", r.D, r.A)
 		}
-		if absInt(r.D)*absInt(r.Q) != absInt(r.A) {
+		if AbsInt(r.D)*AbsInt(r.Q) != AbsInt(r.A) {
 			t.Fatalf("hand absolute product failed D=%d a=%d", r.D, r.A)
 		}
 		if !ProductExact(r.D, r.A) || !AbsProductExact(r.D, r.A) {
@@ -77,9 +77,9 @@ func TestAbsProductIsEquality(t *testing.T) {
 	if !w.Exact || w.Quot != -3 {
 		t.Fatalf("expected quotient -3, got exact=%v quot=%d", w.Exact, w.Quot)
 	}
-	got := absInt(w.D) * absInt(w.Quot)
-	if got != absInt(a) {
-		t.Fatalf("absolute product %d, want %d", got, absInt(a))
+	got := AbsInt(w.D) * AbsInt(w.Quot)
+	if got != AbsInt(a) {
+		t.Fatalf("absolute product %d, want %d", got, AbsInt(a))
 	}
 	if !AbsProductExact(D, a) {
 		t.Fatal("absolute predicate rejected a negative divisor")

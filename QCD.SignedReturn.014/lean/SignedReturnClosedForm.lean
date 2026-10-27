@@ -16,7 +16,7 @@ factor `|q| - 1`. The factor `|q| - 1` is not `|q - 1|` when `q` is negative:
 
 set_option autoImplicit false
 
-namespace GeneralizedCollatz
+namespace GeneralizedCollatz.SignedReturnClosedForm
 
 /-- The affine state of multiplier `q`, offset `c`, time `j` and seed `n`. -/
 def AffineState (q c : ℤ) (j : ℕ) (n : ℤ) : ℤ :=
@@ -395,4 +395,4 @@ theorem GeometricAbs (q : ℤ) (j : ℕ) (hq : 2 ≤ q.natAbs) :
       exact le_of_eq (GeometricAbsNonneg q j hq2)
     }
 
-end GeneralizedCollatz
+end GeneralizedCollatz.SignedReturnClosedForm

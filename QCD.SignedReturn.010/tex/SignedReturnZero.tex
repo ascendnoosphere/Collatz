@@ -29,12 +29,13 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{Returns for a zero multiplier}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{Returns for a zero multiplier}
 
 \begin{abstract}
 With multiplier zero, the affine state at time zero is the seed, and the affine state at every positive time is the offset. The signed divisor meets that itinerary at time zero when it divides the seed, and at time one when it misses the seed but divides the offset. The raw return is then \(n/d\) or \(c/d\), respectively. If the divisor misses both integers, no time is a first hit. The constant continuation is a trap, not a return.

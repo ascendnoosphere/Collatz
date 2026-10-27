@@ -66,7 +66,9 @@ func (w *Workspace) Orbit(c, seed uint64, horizon int) []uint64 {
 	state := seed
 	for i := 0; i < horizon; i++ {
 		w.orbit = append(w.orbit, state)
-		state = Step(c, state)
+		if i+1 < horizon {
+			state = Step(c, state)
+		}
 	}
 	return w.orbit
 }
@@ -210,8 +212,8 @@ func ScalingHolds(a, n uint64, k int) bool {
 	return true
 }
 
-// sweepStratumChecks tests one step and whole orbits for every divisor coprime to six.
-func sweepStratumChecks(checks, failures *uint64, cache *Cache, ws *Workspace) {
+// SweepStratumChecks tests one step and whole orbits for every divisor coprime to six.
+func SweepStratumChecks(checks, failures *uint64, cache *Cache, ws *Workspace) {
 	for c := uint64(1); c <= 200; c++ {
 		for m := uint64(2); m <= c; m++ {
 			if c%m != 0 || Gcd(m, 6) != 1 {
@@ -238,8 +240,8 @@ func sweepStratumChecks(checks, failures *uint64, cache *Cache, ws *Workspace) {
 	}
 }
 
-// sweepCycleChecks tests the cycle and its avoidance by coprime seeds.
-func sweepCycleChecks(checks, failures *uint64, ws *Workspace) {
+// SweepCycleChecks tests the cycle and its avoidance by coprime seeds.
+func SweepCycleChecks(checks, failures *uint64, ws *Workspace) {
 	for c := uint64(1); c <= 400; c++ {
 		if c%2 == 0 {
 			continue
@@ -262,8 +264,8 @@ func sweepCycleChecks(checks, failures *uint64, ws *Workspace) {
 	}
 }
 
-// sweepDensityChecks tests the multiplicity bound on a bounded rectangle of parameters.
-func sweepDensityChecks(checks, failures *uint64) {
+// SweepDensityChecks tests the multiplicity bound on a bounded rectangle of parameters.
+func SweepDensityChecks(checks, failures *uint64) {
 	for m := uint64(1); m <= 64; m++ {
 		for n := uint64(0); n <= 2000; n++ {
 			*checks++
@@ -275,8 +277,8 @@ func sweepDensityChecks(checks, failures *uint64) {
 	}
 }
 
-// sweepEvenOffsetChecks tests the dyadic prefix and unbounded growth for even offsets.
-func sweepEvenOffsetChecks(checks, failures *uint64, ws *Workspace) {
+// SweepEvenOffsetChecks tests the dyadic prefix and unbounded growth for even offsets.
+func SweepEvenOffsetChecks(checks, failures *uint64, ws *Workspace) {
 	for _, c := range []uint64{2, 4, 6, 30, 64, 1000} {
 		for v := 1; v <= 16; v++ {
 			for u := uint64(1); u <= 41; u += 2 {
@@ -295,8 +297,8 @@ func sweepEvenOffsetChecks(checks, failures *uint64, ws *Workspace) {
 	}
 }
 
-// sweepScalingChecks tests the scaled instances c = 3^a.
-func sweepScalingChecks(checks, failures *uint64) {
+// SweepScalingChecks tests the scaled instances c = 3^a.
+func SweepScalingChecks(checks, failures *uint64) {
 	for a := uint64(1); a <= 8; a++ {
 		for n := uint64(1); n <= 200; n++ {
 			*checks++
@@ -308,8 +310,8 @@ func sweepScalingChecks(checks, failures *uint64) {
 	}
 }
 
-// parallelStratumSweep partitions a modulus range over four independent workers.
-func parallelStratumSweep(chunks int) (uint64, uint64) {
+// ParallelStratumSweep partitions a modulus range over four independent workers.
+func ParallelStratumSweep(chunks int) (uint64, uint64) {
 	var checks, failures uint64
 	var mu sync.Mutex
 	var group sync.WaitGroup
@@ -353,12 +355,12 @@ func main() {
 	var checks, failures uint64
 	cache := NewCache()
 	ws := NewWorkspace(128)
-	sweepStratumChecks(&checks, &failures, cache, ws)
-	sweepCycleChecks(&checks, &failures, ws)
-	sweepDensityChecks(&checks, &failures)
-	sweepEvenOffsetChecks(&checks, &failures, ws)
-	sweepScalingChecks(&checks, &failures)
-	parallelChecks, parallelFailures := parallelStratumSweep(4)
+	SweepStratumChecks(&checks, &failures, cache, ws)
+	SweepCycleChecks(&checks, &failures, ws)
+	SweepDensityChecks(&checks, &failures)
+	SweepEvenOffsetChecks(&checks, &failures, ws)
+	SweepScalingChecks(&checks, &failures)
+	parallelChecks, parallelFailures := ParallelStratumSweep(4)
 	checks += parallelChecks
 	failures += parallelFailures
 	fmt.Printf("offset obstruction checks: %d, failures: %d\n", checks, failures)

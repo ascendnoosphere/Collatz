@@ -16,7 +16,7 @@ selects the least raw division time by `Nat.find`.
 
 set_option autoImplicit false
 
-namespace GeneralizedCollatz
+namespace GeneralizedCollatz.SignedReturnDichotomy
 
 /-- The affine state of multiplier `q`, offset `c`, time `j` and seed `n`. -/
 def AffineState (q c : ℤ) (j : ℕ) (n : ℤ) : ℤ :=
@@ -152,4 +152,4 @@ theorem ExistsHitIffNotTrapped (p : Parameters) (n : ℤ) :
       rw [← heqi]
       exact hraw i hi
 
-end GeneralizedCollatz
+end GeneralizedCollatz.SignedReturnDichotomy

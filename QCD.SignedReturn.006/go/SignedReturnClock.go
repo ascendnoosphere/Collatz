@@ -33,40 +33,40 @@ type Totals struct {
 	Hits     uint64
 }
 
-// check records one comparison.
-func (t *Totals) check(ok bool) {
+// Check records one comparison.
+func (t *Totals) Check(ok bool) {
 	t.Checks++
 	if !ok {
 		t.Failures++
 	}
 }
 
-// add accumulates a worker total into the receiver.
-func (t *Totals) add(other Totals) {
+// Add accumulates a worker total into the receiver.
+func (t *Totals) Add(other Totals) {
 	t.Checks += other.Checks
 	t.Failures += other.Failures
 	t.Hits += other.Hits
 }
 
-// modulusAbs returns |D|. The argument is a stated modulus, never zero,
+// ModulusAbs returns |D|. The argument is a stated modulus, never zero,
 // and never the most negative int64.
-func modulusAbs(D int64) int64 {
+func ModulusAbs(D int64) int64 {
 	if D < 0 {
 		return -D
 	}
 	return D
 }
 
-// affineStep applies one affine branch q*cur+c.
-func affineStep(q, c, cur int64) int64 {
+// AffineStep applies one affine branch q*cur+c.
+func AffineStep(q, c, cur int64) int64 {
 	return q*cur + c
 }
 
-// affineAt returns A_j(q,c,n) by iterating the affine branch from n.
-func affineAt(q, c, n int64, j int) int64 {
+// AffineAt returns A_j(q,c,n) by iterating the affine branch from n.
+func AffineAt(q, c, n int64, j int) int64 {
 	cur := n
 	for i := 0; i < j; i++ {
-		cur = affineStep(q, c, cur)
+		cur = AffineStep(q, c, cur)
 	}
 	return cur
 }
@@ -79,7 +79,7 @@ func IsFirstHit(q, c, D, n int64, j int) bool {
 		if cur%D == 0 {
 			return false
 		}
-		cur = affineStep(q, c, cur)
+		cur = AffineStep(q, c, cur)
 	}
 	return cur%D == 0
 }
@@ -90,13 +90,13 @@ func FirstHitBelowModulus(q, c, D, n int64, j int) bool {
 	if !IsFirstHit(q, c, D, n, j) {
 		return false
 	}
-	return j < int(modulusAbs(D))
+	return j < int(ModulusAbs(D))
 }
 
-// sweepModulus checks every residue triple at modulus m. Times run through
+// SweepModulus checks every residue triple at modulus m. Times run through
 // 0, ..., m, so a first hit at time m is a clock failure. Each triple
 // contributes at most one hit.
-func sweepModulus(m int64) Totals {
+func SweepModulus(m int64) Totals {
 	var t Totals
 	limit := int(m)
 	for q := int64(0); q < m; q++ {
@@ -105,9 +105,9 @@ func sweepModulus(m int64) Totals {
 				for j := 0; j <= limit; j++ {
 					hit := IsFirstHit(q, c, m, n, j)
 					below := FirstHitBelowModulus(q, c, m, n, j)
-					t.check(below == (hit && j < limit))
+					t.Check(below == (hit && j < limit))
 					if hit {
-						t.check(j < limit)
+						t.Check(j < limit)
 						t.Hits++
 					}
 				}
@@ -117,8 +117,8 @@ func sweepModulus(m int64) Totals {
 	return t
 }
 
-// sweepClock splits the moduli 2, ..., 15 across workers and sums totals.
-func sweepClock() Totals {
+// SweepClock splits the moduli 2, ..., 15 across workers and sums totals.
+func SweepClock() Totals {
 	count := modulusMax - modulusMin + 1
 	parts := make([]Totals, count)
 	var wg sync.WaitGroup
@@ -127,14 +127,14 @@ func sweepClock() Totals {
 		go func(worker int) {
 			defer wg.Done()
 			for i := worker; i < count; i += clockWorkers {
-				parts[i] = sweepModulus(int64(modulusMin + i))
+				parts[i] = SweepModulus(int64(modulusMin + i))
 			}
 		}(worker)
 	}
 	wg.Wait()
 	var total Totals
 	for _, part := range parts {
-		total.add(part)
+		total.Add(part)
 	}
 	return total
 }
@@ -142,7 +142,7 @@ func sweepClock() Totals {
 // main prints the number of comparisons and the number of first hits.
 // It exits nonzero when a first hit is not strictly below its modulus.
 func main() {
-	total := sweepClock()
+	total := SweepClock()
 	fmt.Printf("clock checks: %d, hits: %d, failures: %d\n",
 		total.Checks, total.Hits, total.Failures)
 	if total.Failures != 0 {

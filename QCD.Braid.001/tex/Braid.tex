@@ -1,3 +1,4 @@
+% SPDX-License-Identifier: CC-BY-4.0
 \documentclass[11pt,letterpaper]{article}
 
 \usepackage[T1]{fontenc}
@@ -28,12 +29,13 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{Saturated braid modulo \(D^2\)}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{Saturated braid modulo \(D^2\)}
 
 \begin{abstract}
 If \(q=D+1\) and \(D\) does not divide \(n\), the two-step state \((D+1)\bigl((1-D)n\bigr)\) is congruent to \(n\) modulo \(D^2\). On the saturated family \(q^{a+b}u\equiv c\pmod{D^2}\), the source word of \(a\) divided affine steps and two exact divisions meets the parent word of \(a+b-1\) divided affine steps, one exact division, and one divided affine step. For a coprime slope, an unsaturated pair of positive affine length forces \(q^a\) to divide \(c(D-1)(q-D-1)\). The divisibility does not produce a pair, and the undivided second iterate is not the two-step state.
@@ -400,6 +402,6 @@ and
 The differences are \(1-28=-27=9\cdot(-3)\) and \(1-64=-63=9\cdot(-7)\). The seeds and gates expand as written. The terminal numerators are \(27=9\cdot 3\) and \(63=9\cdot 7\). Neither \(20\) nor \(47\) is a multiple of \(3\).
 \end{proof}
 
-The first block is the saturated pair with \(a=1\), \(b=0\), and \(u=7\). The second is the saturated pair with \(a=1\), \(b=1\), and \(u=4\). Theorem~\ref{thm:divisibility} is one direction only: Theorem~\ref{thm:missed-pair} is a divisibility with no pair, and Theorem~\ref{thm:five} is a coefficient that forbids every pair. No parent is asserted to be positive, and none of these statements says that the classical Collatz map reaches \(1\).
+The first block is the saturated pair with \(a=1\), \(b=0\), and \(u=7\). The second is the saturated pair with \(a=1\), \(b=1\), and \(u=4\). Theorem~\ref{thm:divisibility} is one direction only: Theorem~\ref{thm:missed-pair} shows that the necessary divisibility does not certify the specified pair, and Theorem~\ref{thm:five} is a coefficient that forbids every pair. No parent is asserted to be positive, and none of these statements says that the classical Collatz map reaches \(1\).
 
 \end{document}

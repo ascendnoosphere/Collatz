@@ -29,13 +29,14 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{The repunit sum}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 
 \maketitle
+\section*{The repunit sum}
 
 \noindent
 This document studies the raw map
@@ -251,23 +252,60 @@ above, not a replacement for them.
 \centering
 \begin{tabular}{ll}
 \toprule
-Statement & Lean / controls \\
+Statement & Lean declaration \\
 \midrule
-Definition of \(S_k\), \(T\), \(\rho\), \(R\) &
-\texttt{RepunitSum}, \texttt{RepunitStep}, \texttt{RepunitResidue}, \texttt{RepunitReturn} \\
-Lemma~\ref{Lem:RepunitBasic} & \texttt{RepunitSumZero}, \texttt{RepunitSumSucc}, \texttt{RepunitSumOne}, \texttt{RepunitSumSuccMul}, \texttt{RepunitSumAdd}, \texttt{RepunitSumEqPowAdd} \\
-Lemma~\ref{Lem:DivisorIdentity} & \texttt{RepunitSumMulPred}, \texttt{RepunitSumDvdPred} \\
-Theorem~\ref{Thm:Order} & \texttt{RepunitSumModeq}, \texttt{RepunitSumModeqOrder} \\
-Lemma~\ref{Lem:Growth} & \texttt{RepunitSumOneLe}, \texttt{RepunitSumPos}, \texttt{RepunitSumLtSucc}, \texttt{RepunitSumStrictMono}, \texttt{RepunitSumSuccLePow}, \texttt{RepunitSumLtPow} \\
-Lemma~\ref{Lem:StepBranch} & \texttt{RepunitStepOfDvd}, \texttt{RepunitStepOfNotDvd}, \texttt{RepunitIterateSuccLast}, \texttt{RepunitStepZero}, \texttt{RepunitStepIterateZero} \\
-Theorem~\ref{Thm:Trap} & \texttt{RepunitStepEqZero} \\
-Theorem~\ref{Thm:Cycle} & \texttt{RepunitStepIterateOne}, \texttt{RepunitStepIterateOneCycle}, \texttt{RepunitStepIterateOneNe} \\
-Theorem~\ref{Thm:Return} & \texttt{RepunitReturnFixesOne} \\
-Theorem~\ref{Thm:ResidueWalk} & \texttt{RepunitResidueIterateZero}, \texttt{RepunitResidueIteratePeriod}, \texttt{RepunitResidueIterateInjective} \\
-Remark~\ref{Rem:Controls} & control slice of \texttt{go/RepunitDivisor.go}; boundary statements above \\
-Remark~\ref{Rem:Scope} & scope remarks for the statements above \\
+Definition of \(S_k\), \(T\), \(\rho\), \(R\) & \texttt{RepunitSum} \\
+ & \texttt{RepunitStep} \\
+ & \texttt{RepunitResidue} \\
+ & \texttt{RepunitReturn} \\
+Lemma~\ref{Lem:RepunitBasic} & \texttt{RepunitSumZero} \\
+ & \texttt{RepunitSumSucc} \\
+ & \texttt{RepunitSumOne} \\
+ & \texttt{RepunitSumSuccMul} \\
+ & \texttt{RepunitSumAdd} \\
+ & \texttt{RepunitSumEqPowAdd} \\
+Lemma~\ref{Lem:DivisorIdentity} & \texttt{RepunitSumMulPred} \\
+ & \texttt{RepunitSumDvdPred} \\
+Theorem~\ref{Thm:Order} & \texttt{RepunitSumModeq} \\
+ & \texttt{RepunitSumModeqOrder} \\
+Lemma~\ref{Lem:Growth} & \texttt{RepunitSumOneLe} \\
+ & \texttt{RepunitSumPos} \\
+ & \texttt{RepunitSumLtSucc} \\
+ & \texttt{RepunitSumStrictMono} \\
+ & \texttt{RepunitSumSuccLePow} \\
+ & \texttt{RepunitSumLtPow} \\
 \bottomrule
 \end{tabular}
+\caption{Lean declarations corresponding to the numbered statements.}
 \end{table}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ll}
+\toprule
+Statement & Lean declaration \\
+\midrule
+Lemma~\ref{Lem:StepBranch} & \texttt{RepunitStepOfDvd} \\
+ & \texttt{RepunitStepOfNotDvd} \\
+ & \texttt{RepunitIterateSuccLast} \\
+ & \texttt{RepunitStepZero} \\
+ & \texttt{RepunitStepIterateZero} \\
+Theorem~\ref{Thm:Trap} & \texttt{RepunitStepEqZero} \\
+Theorem~\ref{Thm:Cycle} & \texttt{RepunitStepIterateOne} \\
+ & \texttt{RepunitStepIterateOneCycle} \\
+ & \texttt{RepunitStepIterateOneNe} \\
+Theorem~\ref{Thm:Return} & \texttt{RepunitReturnFixesOne} \\
+Theorem~\ref{Thm:ResidueWalk} & \texttt{RepunitResidueIterateZero} \\
+ & \texttt{RepunitResidueIteratePeriod} \\
+ & \texttt{RepunitResidueIterateInjective} \\
+\bottomrule
+\end{tabular}
+\caption{Lean correspondence, continued.}
+\end{table}
+
+Remark~\ref{Rem:Controls} corresponds to the control slice of
+\texttt{go/RepunitDivisor.go} and the boundary statements above.
+Remark~\ref{Rem:Scope} records the scope of the preceding statements.
+
 
 \end{document}

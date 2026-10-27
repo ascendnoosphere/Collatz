@@ -97,8 +97,8 @@ func HasGCDBarrier(p *Parameters, w *Workspace) (bool, error) {
 	return w.Remainder.Sign() != 0, nil
 }
 
-// rawStepValidated computes one alias-safe instruction after validation.
-func rawStepValidated(dst, n *big.Int, p *Parameters, w *Workspace) {
+// RawStepValidated computes one alias-safe instruction after validation.
+func RawStepValidated(dst, n *big.Int, p *Parameters, w *Workspace) {
 	w.Remainder.Mod(n, &p.D)
 	if w.Remainder.Sign() == 0 {
 		dst.Quo(n, &p.D)
@@ -119,7 +119,7 @@ func RawStep(dst, n *big.Int, p *Parameters, w *Workspace) error {
 	if n.Sign() <= 0 {
 		return errors.New("the state must be positive")
 	}
-	rawStepValidated(dst, n, p, w)
+	RawStepValidated(dst, n, p, w)
 	return nil
 }
 
@@ -152,8 +152,8 @@ func StripInitialDivisions(dst, seed *big.Int, p *Parameters, w *Workspace) (
 	}
 }
 
-// affineTailFormulaValidated evaluates the closed form after validation.
-func affineTailFormulaValidated(
+// AffineTailFormulaValidated evaluates the closed form after validation.
+func AffineTailFormulaValidated(
 	dst, anchor *big.Int,
 	tailSteps uint64,
 	p *Parameters,
@@ -181,7 +181,7 @@ func AffineTailFormula(dst, anchor *big.Int, tailSteps uint64, p *Parameters, w 
 	if anchor.Sign() <= 0 {
 		return errors.New("the anchor must be positive")
 	}
-	affineTailFormulaValidated(dst, anchor, tailSteps, p, w)
+	AffineTailFormulaValidated(dst, anchor, tailSteps, p, w)
 	return nil
 }
 
@@ -229,7 +229,7 @@ func CheckEscape(p *Parameters, seed *big.Int, tailSteps uint64, w *Workspace) (
 		}
 		w.Temp.Mul(&p.Q, &w.Formula)
 		w.Formula.Add(&w.Temp, &p.C)
-		rawStepValidated(&w.State, &w.State, p, w)
+		RawStepValidated(&w.State, &w.State, p, w)
 	}
 	certificate.FinalState.Set(&w.State)
 	certificate.FormulaState.Set(&w.Formula)

@@ -22,7 +22,7 @@ odd integer, and it does not assert that the classical map reaches `1`.
 
 set_option autoImplicit false
 
-namespace GeneralizedCollatz
+namespace GeneralizedCollatz.Ancestral
 
 /-- One inverse odd step `(2y - 1) / 3` on the integers. -/
 def InverseOdd (y : ℤ) : ℤ := (2 * y - 1) / 3
@@ -37,14 +37,16 @@ def SuccessorHalf (y : ℤ) : ℤ := (y + 1) / 2 - 1
 /-- A positive power of two does not vanish in `ℤ`. -/
 theorem AncestralJoinTwoPowNeZero (n : ℕ) : (2 : ℤ) ^ n ≠ 0 := by
   induction n with
-  | zero =>
+  | zero => {
       decide
-  | succ n ih =>
+    }
+  | succ n ih => {
       rw [pow_succ]
       intro hzero
       rcases Int.mul_eq_zero.mp hzero with hpow | htwo
       · exact ih hpow
       · exact absurd htwo (by decide)
+    }
 
 /-- An odd integer is not divisible by `2`. -/
 theorem AncestralJoinOddNotTwoDvd (u : ℤ) (hu : Odd u) : ¬ (2 : ℤ) ∣ u := by
@@ -73,9 +75,12 @@ theorem AncestralJoinInverseClosed (a b : ℕ) (u : ℤ) :
   intro k
   induction k with
   | zero =>
+    {
       intro _
       rfl
+    }
   | succ k ih =>
+    {
       intro hk
       have hkLe : k ≤ b := Nat.le_of_succ_le hk
       have ihk := ih hkLe
@@ -104,6 +109,7 @@ theorem AncestralJoinInverseClosed (a b : ℕ) (u : ℤ) :
       rw [hExp, pow_succ (3 : ℤ) (b - (k + 1))]
       rw [hBin, pow_succ (2 : ℤ) (a + k)]
       ring
+    }
 
 /-- The first inverse odd step is an exact division by `3` when `b ≥ 1`. -/
 theorem AncestralJoinFirstDivisible (a b : ℕ) (u : ℤ) (hb : 1 ≤ b) :
@@ -217,4 +223,4 @@ theorem AncestralJoin (a b : ℕ) (u z : ℤ) (ha : 1 ≤ a) (hb : 1 ≤ b)
   rw [hiter]
   exact hhalf
 
-end GeneralizedCollatz
+end GeneralizedCollatz.Ancestral

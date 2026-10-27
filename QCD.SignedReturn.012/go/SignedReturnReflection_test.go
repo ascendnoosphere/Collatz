@@ -151,7 +151,7 @@ func TestCheckSeedAllocatesNothing(t *testing.T) {
 	var cen Census
 	allocs := testing.AllocsPerRun(100, func() {
 		cen = Census{}
-		checkSeed(ps, ts, 3, -2, 5, &cen)
+		CheckSeed(ps, ts, 3, -2, 5, &cen)
 	})
 	if allocs != 0 {
 		t.Fatalf("allocations %f", allocs)

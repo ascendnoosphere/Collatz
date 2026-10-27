@@ -28,7 +28,7 @@ classification.
 
 set_option autoImplicit false
 
-namespace GeneralizedCollatz
+namespace GeneralizedCollatz.OneExcursion
 
 /-- Odd step `(3n + 1) / 2`, even step `n / 2`. -/
 def Shortcut (n : ℕ) : ℕ :=
@@ -128,17 +128,21 @@ theorem TwoCoeffPosOfLe (a : ℕ) (ha : a ≤ 3) : 0 < TwoCoeff a := by
 theorem TwoCoeffNegOfGe (a : ℕ) (ha : 4 ≤ a) : TwoCoeff a < 0 := by
   induction a with
   | zero =>
-    { omega }
+    {
+      { omega }
+    }
   | succ a ih =>
-    { by_cases hlt : a < 4
-      · have h4 : a + 1 = 4 := by omega
-        rw [h4, TwoCoeffFour]
-        decide
-      · have hge : 4 ≤ a := by omega
-        have hltC : TwoCoeff a < 0 := ih hge
-        rw [TwoCoeffSucc]
-        have hpow : 0 < (3 : ℤ) ^ a := Int.pow_pos (by decide)
-        linarith }
+    {
+      { by_cases hlt : a < 4
+        · have h4 : a + 1 = 4 := by omega
+          rw [h4, TwoCoeffFour]
+          decide
+        · have hge : 4 ≤ a := by omega
+          have hltC : TwoCoeff a < 0 := ih hge
+          rw [TwoCoeffSucc]
+          have hpow : 0 < (3 : ℤ) ^ a := Int.pow_pos (by decide)
+          linarith }
+    }
 
 /-- Positivity of the half coefficient is exactly the range `a ≤ 3`. -/
 theorem TwoCoeffPosIff (a : ℕ) : 0 < TwoCoeff a ↔ a ≤ 3 := by
@@ -176,9 +180,13 @@ theorem OneCoeffNegIff (a : ℕ) : OneCoeff a < 0 ↔ 3 ≤ a := by
 theorem IntPowNat (b a : ℕ) : ((b ^ a : ℕ) : ℤ) = (b : ℤ) ^ a := by
   induction a with
   | zero =>
-    { simp }
+    {
+      { simp }
+    }
   | succ a ih =>
-    { rw [Nat.pow_succ, Int.natCast_mul, ih, Int.pow_succ] }
+    {
+      { rw [Nat.pow_succ, Int.natCast_mul, ih, Int.pow_succ] }
+    }
 
 /-- The quarter comparison is the signed coefficient inequality. -/
 theorem OneBranchComparison (a u : ℕ) (hu : 0 < u) (hx : 1 ≤ 2 ^ a * u) :
@@ -342,31 +350,35 @@ theorem HighValuationExcluded (a u : ℕ) (ha : 4 ≤ a) (hu : 0 < u) :
 theorem FourThreePowGe (a : ℕ) (ha : 2 ≤ a) : 9 * 2 ^ a ≤ 4 * 3 ^ a := by
   induction a with
   | zero =>
-    { omega }
+    {
+      { omega }
+    }
   | succ a ih =>
-    { by_cases hge : 2 ≤ a
-      · have hih := ih hge
-        have hstep : 9 * 2 ^ (a + 1) = 2 * (9 * 2 ^ a) := by
-          rw [Nat.pow_succ]
+    {
+      { by_cases hge : 2 ≤ a
+        · have hih := ih hge
+          have hstep : 9 * 2 ^ (a + 1) = 2 * (9 * 2 ^ a) := by
+            rw [Nat.pow_succ]
+            calc
+              9 * (2 ^ a * 2) = 9 * 2 ^ a * 2 := by rw [← Nat.mul_assoc]
+              _ = 2 * (9 * 2 ^ a) := by rw [Nat.mul_comm]
+          have h8 : 2 * (4 * 3 ^ a) = 8 * 3 ^ a := by
+            calc
+              2 * (4 * 3 ^ a) = (2 * 4) * 3 ^ a := by rw [Nat.mul_assoc]
+              _ = 8 * 3 ^ a := by norm_num
+          have h12 : 12 * 3 ^ a = 4 * 3 ^ (a + 1) := by
+            have hsplit : 12 = 4 * 3 := by norm_num
+            rw [hsplit, Nat.mul_assoc, Nat.mul_comm 3 (3 ^ a), ← Nat.pow_succ]
           calc
-            9 * (2 ^ a * 2) = 9 * 2 ^ a * 2 := by rw [← Nat.mul_assoc]
-            _ = 2 * (9 * 2 ^ a) := by rw [Nat.mul_comm]
-        have h8 : 2 * (4 * 3 ^ a) = 8 * 3 ^ a := by
-          calc
-            2 * (4 * 3 ^ a) = (2 * 4) * 3 ^ a := by rw [Nat.mul_assoc]
-            _ = 8 * 3 ^ a := by norm_num
-        have h12 : 12 * 3 ^ a = 4 * 3 ^ (a + 1) := by
-          have hsplit : 12 = 4 * 3 := by norm_num
-          rw [hsplit, Nat.mul_assoc, Nat.mul_comm 3 (3 ^ a), ← Nat.pow_succ]
-        calc
-          9 * 2 ^ (a + 1) = 2 * (9 * 2 ^ a) := hstep
-          _ ≤ 2 * (4 * 3 ^ a) := Nat.mul_le_mul_left 2 hih
-          _ = 8 * 3 ^ a := h8
-          _ ≤ 12 * 3 ^ a := Nat.mul_le_mul_right (3 ^ a) (by decide)
-          _ = 4 * 3 ^ (a + 1) := h12
-      · have h2 : a + 1 = 2 := by omega
-        rw [h2]
-        norm_num }
+            9 * 2 ^ (a + 1) = 2 * (9 * 2 ^ a) := hstep
+            _ ≤ 2 * (4 * 3 ^ a) := Nat.mul_le_mul_left 2 hih
+            _ = 8 * 3 ^ a := h8
+            _ ≤ 12 * 3 ^ a := Nat.mul_le_mul_right (3 ^ a) (by decide)
+            _ = 4 * 3 ^ (a + 1) := h12
+        · have h2 : a + 1 = 2 := by omega
+          rw [h2]
+          norm_num }
+    }
 
 /-- Restoring the two subtracted blocks identifies the growth slack. -/
 theorem GrowthRearrangement (A B u : ℕ) (hgap : 9 * B ≤ 4 * A)
@@ -424,9 +436,13 @@ theorem SingleEvenFromOdd (a u : ℕ) (hu : u % 2 = 1) :
   have h3 : 3 ^ a % 2 = 1 := by
     induction a with
     | zero =>
-      { simp }
+      {
+        { simp }
+      }
     | succ a ih =>
-      { rw [Nat.pow_succ, Nat.mul_mod, ih] }
+      {
+        { rw [Nat.pow_succ, Nat.mul_mod, ih] }
+      }
   have hprod : 3 ^ a * u % 2 = 1 := by
     rw [Nat.mul_mod, h3, hu]
   have hge : 1 ≤ 3 ^ a * u := by
@@ -512,25 +528,29 @@ theorem NineEighthsChain (k : ℕ) (x : ℕ → ℕ)
     9 ^ k * (x 0 + 1) ≤ 8 ^ k * (x k + 1) := by
   induction k with
   | zero =>
-    { simp }
+    {
+      { simp }
+    }
   | succ k ih =>
-    { have hprev : ∀ i, i < k → 9 * (x i + 1) ≤ 8 * (x (i + 1) + 1) := by
-        intro i hi
-        exact hstep i (Nat.lt_trans hi (Nat.lt_succ_self k))
-      have hih := ih hprev
-      have hk := hstep k (Nat.lt_succ_self k)
-      have hmul : 8 ^ k * (9 * (x k + 1)) ≤ 8 ^ k * (8 * (x (k + 1) + 1)) :=
-        Nat.mul_le_mul_left (8 ^ k) hk
-      calc
-        9 ^ (k + 1) * (x 0 + 1) = 9 * 9 ^ k * (x 0 + 1) := by
-          rw [Nat.pow_succ, Nat.mul_assoc, Nat.mul_left_comm, ← Nat.mul_assoc]
-        _ = 9 * (9 ^ k * (x 0 + 1)) := by rw [Nat.mul_assoc]
-        _ ≤ 9 * (8 ^ k * (x k + 1)) := Nat.mul_le_mul_left 9 hih
-        _ = 8 ^ k * (9 * (x k + 1)) := by ac_rfl
-        _ ≤ 8 ^ k * (8 * (x (k + 1) + 1)) := hmul
-        _ = 8 ^ (k + 1) * (x (k + 1) + 1) := by
-          rw [Nat.pow_succ]
-          ac_rfl }
+    {
+      { have hprev : ∀ i, i < k → 9 * (x i + 1) ≤ 8 * (x (i + 1) + 1) := by
+          intro i hi
+          exact hstep i (Nat.lt_trans hi (Nat.lt_succ_self k))
+        have hih := ih hprev
+        have hk := hstep k (Nat.lt_succ_self k)
+        have hmul : 8 ^ k * (9 * (x k + 1)) ≤ 8 ^ k * (8 * (x (k + 1) + 1)) :=
+          Nat.mul_le_mul_left (8 ^ k) hk
+        calc
+          9 ^ (k + 1) * (x 0 + 1) = 9 * 9 ^ k * (x 0 + 1) := by
+            rw [Nat.pow_succ, Nat.mul_assoc, Nat.mul_left_comm, ← Nat.mul_assoc]
+          _ = 9 * (9 ^ k * (x 0 + 1)) := by rw [Nat.mul_assoc]
+          _ ≤ 9 * (8 ^ k * (x k + 1)) := Nat.mul_le_mul_left 9 hih
+          _ = 8 ^ k * (9 * (x k + 1)) := by ac_rfl
+          _ ≤ 8 ^ k * (8 * (x (k + 1) + 1)) := hmul
+          _ = 8 ^ (k + 1) * (x (k + 1) + 1) := by
+            rw [Nat.pow_succ]
+            ac_rfl }
+    }
 
 /-- If the exit is at most `2 n` and `9 ^ k ≥ 2 * 8 ^ k`, the chain breaks. -/
 theorem LocalParentBlocked (k n y : ℕ)
@@ -618,14 +638,18 @@ theorem ThreePowModFour (a : ℕ) :
     3 ^ a % 4 = if a % 2 = 0 then 1 else 3 := by
   induction a with
   | zero =>
-    { simp }
+    {
+      { simp }
+    }
   | succ a ih =>
-    { rw [Nat.pow_succ, Nat.mul_mod, ih]
-      rcases Nat.mod_two_eq_zero_or_one a with h0 | h1
-      · have hsucc : (a + 1) % 2 = 1 := by omega
-        simp [h0, hsucc]
-      · have hsucc : (a + 1) % 2 = 0 := by omega
-        simp [h1, hsucc] }
+    {
+      { rw [Nat.pow_succ, Nat.mul_mod, ih]
+        rcases Nat.mod_two_eq_zero_or_one a with h0 | h1
+        · have hsucc : (a + 1) % 2 = 1 := by omega
+          simp [h0, hsucc]
+        · have hsucc : (a + 1) % 2 = 0 := by omega
+          simp [h1, hsucc] }
+    }
 
 /-- A residual odd part makes the weight congruent to three modulo four. -/
 theorem ResidualWeightModFour (a u : ℕ) (hu : u % 4 = ResidualResidue a) :
@@ -755,25 +779,29 @@ theorem RunIterate (a u : ℕ) (hu : u % 2 = 1) :
   intro j
   induction j with
   | zero =>
-    { intro _
-      simp [IterShortcut, pow_zero] }
+    {
+      { intro _
+        simp [IterShortcut, pow_zero] }
+    }
   | succ j ih =>
-    { intro hj
-      have hj' : j ≤ a := Nat.le_of_succ_le hj
-      have hlt : j < a := hj
-      have hb : 1 ≤ a - j := by
-        have hpos : 0 < a - j := Nat.sub_pos_of_lt hlt
-        omega
-      have hih := ih hj'
-      rw [IterShortcutSucc, hih]
-      have hcomm : 3 ^ j * 2 ^ (a - j) * u = 2 ^ (a - j) * 3 ^ j * u := by
-        rw [Nat.mul_comm (3 ^ j) (2 ^ (a - j))]
-      rw [hcomm]
-      have hstep := OddShortcutStep (a - j) j u hb hu
-      rw [hstep]
-      have hsub : (a - j) - 1 = a - (j + 1) := by omega
-      rw [hsub]
-      rw [Nat.mul_comm (2 ^ (a - (j + 1))) (3 ^ (j + 1))] }
+    {
+      { intro hj
+        have hj' : j ≤ a := Nat.le_of_succ_le hj
+        have hlt : j < a := hj
+        have hb : 1 ≤ a - j := by
+          have hpos : 0 < a - j := Nat.sub_pos_of_lt hlt
+          omega
+        have hih := ih hj'
+        rw [IterShortcutSucc, hih]
+        have hcomm : 3 ^ j * 2 ^ (a - j) * u = 2 ^ (a - j) * 3 ^ j * u := by
+          rw [Nat.mul_comm (3 ^ j) (2 ^ (a - j))]
+        rw [hcomm]
+        have hstep := OddShortcutStep (a - j) j u hb hu
+        rw [hstep]
+        have hsub : (a - j) - 1 = a - (j + 1) := by omega
+        rw [hsub]
+        rw [Nat.mul_comm (2 ^ (a - (j + 1))) (3 ^ (j + 1))] }
+    }
 
 /-- A residual seed reaches its single-even exit in `a + 1` shortcuts. -/
 theorem ReachSingleEvenExit (a u : ℕ) (hu : u % 2 = 1)
@@ -976,10 +1004,14 @@ theorem ThreeFreeSuccessor (a u : ℕ) (ha : 1 ≤ a) : ¬ 3 ∣ 3 ^ a * u + 1 :
   have hpow : 3 ^ a % 3 = 0 := by
     cases a with
     | zero =>
-      { omega }
+      {
+        { omega }
+      }
     | succ a =>
-      { rw [Nat.pow_succ, Nat.mul_mod]
-        norm_num }
+      {
+        { rw [Nat.pow_succ, Nat.mul_mod]
+          norm_num }
+      }
   rw [Nat.add_mod, Nat.mul_mod, hpow] at hmod
   norm_num at hmod
 
@@ -1000,12 +1032,16 @@ theorem ThreePowerLe (a u a' u' : ℕ) (hu : ¬ 3 ∣ u) (hle : a ≤ a')
   have hk0 : k = 0 := by
     cases k with
     | zero =>
-      { rfl }
+      {
+        { rfl }
+      }
     | succ k =>
-      { have hdvd : 3 ∣ u := by
-          rw [hmul, Nat.pow_succ]
-          exact ⟨3 ^ k * u', by ac_rfl⟩
-        exact absurd hdvd hu }
+      {
+        { have hdvd : 3 ∣ u := by
+            rw [hmul, Nat.pow_succ]
+            exact ⟨3 ^ k * u', by ac_rfl⟩
+          exact absurd hdvd hu }
+      }
   have ha : a' = a := by
     rw [hk, hk0, Nat.add_zero]
   have huu : u = u' := by
@@ -1017,10 +1053,14 @@ theorem ThreePowerUnique (a u a' u' : ℕ) (hu : ¬ 3 ∣ u) (hu' : ¬ 3 ∣ u')
     (h : 3 ^ a * u = 3 ^ a' * u') : a = a' ∧ u = u' := by
   cases Nat.le_total a a' with
   | inl hle =>
-    { exact ThreePowerLe a u a' u' hu hle h }
+    {
+      { exact ThreePowerLe a u a' u' hu hle h }
+    }
   | inr hge =>
-    { have hswap := ThreePowerLe a' u' a u hu' hge h.symm
-      exact ⟨hswap.1.symm, hswap.2.symm⟩ }
+    {
+      { have hswap := ThreePowerLe a' u' a u hu' hge h.symm
+        exact ⟨hswap.1.symm, hswap.2.symm⟩ }
+    }
 
 /-- The seed `75 = 2 ^ 2 * 19 - 1` exits at `85` and meets the parent `64`. -/
 theorem ExampleSeventyFive :
@@ -1029,4 +1069,4 @@ theorem ExampleSeventyFive :
       64 = (3 * 85 + 1) / 4 ∧ 64 < 75 := by
   decide
 
-end GeneralizedCollatz
+end GeneralizedCollatz.OneExcursion

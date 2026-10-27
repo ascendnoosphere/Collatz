@@ -32,7 +32,8 @@ func TestDiscoverExclusions(t *testing.T) {
 	WriteFixture(t, root, "Readable.md", "argument")
 	WriteFixture(t, root, ".pi/Private.md", "must not be read")
 	WriteFixture(t, root, "Nested/__pycache__/Cache.pyc", "must not be read")
-	if err := os.Symlink(filepath.Join(root, "Readable.md"), filepath.Join(root, "Link")); err != nil {
+	target := filepath.Join(root, "Readable.md")
+	if err := os.Symlink(target, filepath.Join(root, "Link")); err != nil {
 		t.Fatal(err)
 	}
 	artifacts, exclusions, err := Discover(root)

@@ -17,7 +17,7 @@ described.
 
 set_option autoImplicit false
 
-namespace GeneralizedCollatz
+namespace GeneralizedCollatz.SignedReturnPrefix
 
 /-- The affine state of multiplier `q`, offset `c`, time `j` and seed `n`. -/
 def AffineState (q c : ℤ) (j : ℕ) (n : ℤ) : ℤ :=
@@ -514,4 +514,4 @@ theorem TwoOneThreeBound (n : ℤ) (j : ℕ)
       exact absurd h (hnever j)
     }
 
-end GeneralizedCollatz
+end GeneralizedCollatz.SignedReturnPrefix

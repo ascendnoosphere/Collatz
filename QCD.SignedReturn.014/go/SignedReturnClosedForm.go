@@ -31,22 +31,22 @@ type Totals struct {
 	Failures uint64
 }
 
-// check records one comparison.
-func (t *Totals) check(ok bool) {
+// Check records one comparison.
+func (t *Totals) Check(ok bool) {
 	t.Checks++
 	if !ok {
 		t.Failures++
 	}
 }
 
-// add accumulates a worker total into the receiver.
-func (t *Totals) add(other Totals) {
+// Add accumulates a worker total into the receiver.
+func (t *Totals) Add(other Totals) {
 	t.Checks += other.Checks
 	t.Failures += other.Failures
 }
 
-// powInt returns q^j by repeated multiplication. The exponent is nonnegative.
-func powInt(q int64, j int) int64 {
+// PowInt returns q^j by repeated multiplication. The exponent is nonnegative.
+func PowInt(q int64, j int) int64 {
 	out := int64(1)
 	for i := 0; i < j; i++ {
 		out *= q
@@ -54,8 +54,8 @@ func powInt(q int64, j int) int64 {
 	return out
 }
 
-// trapSum returns U_j(q), with U_0(q) = 0 and U_{j+1}(q) = q*U_j(q)+1.
-func trapSum(q int64, j int) int64 {
+// TrapSum returns U_j(q), with U_0(q) = 0 and U_{j+1}(q) = q*U_j(q)+1.
+func TrapSum(q int64, j int) int64 {
 	sum := int64(0)
 	for i := 0; i < j; i++ {
 		sum = q*sum + 1
@@ -63,8 +63,8 @@ func trapSum(q int64, j int) int64 {
 	return sum
 }
 
-// abs64 returns the absolute value. The stated grid never meets MinInt64.
-func abs64(n int64) int64 {
+// Abs64 returns the absolute value. The stated grid never meets MinInt64.
+func Abs64(n int64) int64 {
 	if n < 0 {
 		return -n
 	}
@@ -78,8 +78,8 @@ func PositiveClosedFormHolds(q int64, j int) bool {
 	if q < 2 {
 		return false
 	}
-	sum := trapSum(q, j)
-	pow := powInt(q, j)
+	sum := TrapSum(q, j)
+	pow := PowInt(q, j)
 	if sum < 0 {
 		return false
 	}
@@ -94,51 +94,51 @@ func PositiveClosedFormHolds(q int64, j int) bool {
 // GeometricAbsHolds is the bound (|q|-1)*|U_j(q)| ≤ |q|^j-1 for |q| ≥ 2.
 // It returns false when |q| < 2, so a constant-true replacement is rejected.
 func GeometricAbsHolds(q int64, j int) bool {
-	r := abs64(q)
+	r := Abs64(q)
 	if r < 2 {
 		return false
 	}
-	pow := powInt(r, j)
-	return (r-1)*abs64(trapSum(q, j)) <= pow-1
+	pow := PowInt(r, j)
+	return (r-1)*Abs64(TrapSum(q, j)) <= pow-1
 }
 
-// positiveRepunitEqualsAbs is the false formula |U_j(q)| = (|q|^j-1)/(|q|-1).
+// PositiveRepunitEqualsAbs is the false formula |U_j(q)| = (|q|^j-1)/(|q|-1).
 // It is a negative control, not a claimed identity.
-func positiveRepunitEqualsAbs(q int64, j int) bool {
-	r := abs64(q)
+func PositiveRepunitEqualsAbs(q int64, j int) bool {
+	r := Abs64(q)
 	if r < 2 {
 		return false
 	}
-	pow := powInt(r, j)
+	pow := PowInt(r, j)
 	den := r - 1
 	if (pow-1)%den != 0 {
 		return false
 	}
-	return abs64(trapSum(q, j)) == (pow-1)/den
+	return Abs64(TrapSum(q, j)) == (pow-1)/den
 }
 
-// sweepQ checks one multiplier at every time up to gridMaxJ.
+// SweepQ checks one multiplier at every time up to gridMaxJ.
 // The positive quotient is tested only for q ≥ 2. The absolute bound is
 // tested only for |q| ≥ 2. Below those thresholds the predicates must refuse.
-func sweepQ(q int64) Totals {
+func SweepQ(q int64) Totals {
 	var t Totals
 	for j := 0; j <= gridMaxJ; j++ {
 		if q >= 2 {
-			t.check(PositiveClosedFormHolds(q, j))
+			t.Check(PositiveClosedFormHolds(q, j))
 		} else {
-			t.check(!PositiveClosedFormHolds(q, j))
+			t.Check(!PositiveClosedFormHolds(q, j))
 		}
-		if abs64(q) >= 2 {
-			t.check(GeometricAbsHolds(q, j))
+		if Abs64(q) >= 2 {
+			t.Check(GeometricAbsHolds(q, j))
 		} else {
-			t.check(!GeometricAbsHolds(q, j))
+			t.Check(!GeometricAbsHolds(q, j))
 		}
 	}
 	return t
 }
 
-// sweepClosedForm splits the multiplier range across workers.
-func sweepClosedForm() Totals {
+// SweepClosedForm splits the multiplier range across workers.
+func SweepClosedForm() Totals {
 	qs := make([]int64, 0, gridQMax-gridQMin+1)
 	for q := int64(gridQMin); q <= gridQMax; q++ {
 		qs = append(qs, q)
@@ -150,36 +150,36 @@ func sweepClosedForm() Totals {
 		go func(worker int) {
 			defer wg.Done()
 			for i := worker; i < len(qs); i += gridWorkers {
-				parts[i] = sweepQ(qs[i])
+				parts[i] = SweepQ(qs[i])
 			}
 		}(worker)
 	}
 	wg.Wait()
 	var total Totals
 	for _, part := range parts {
-		total.add(part)
+		total.Add(part)
 	}
 	return total
 }
 
-// printTrapSums writes U_j(q) for every multiplier and time on the grid.
-func printTrapSums() {
+// PrintTrapSums writes U_j(q) for every multiplier and time on the grid.
+func PrintTrapSums() {
 	for q := int64(gridQMin); q <= gridQMax; q++ {
 		for j := 0; j <= gridMaxJ; j++ {
-			fmt.Printf("trap q=%d j=%d sum=%d\n", q, j, trapSum(q, j))
+			fmt.Printf("trap q=%d j=%d sum=%d\n", q, j, TrapSum(q, j))
 		}
 	}
 }
 
 // main prints the offset sums, the hand check at q=-2 and j=2, and the count.
 func main() {
-	printTrapSums()
-	sum := trapSum(-2, 2)
-	signed := (powInt(-2, 2) - 1) / ((-2) - 1)
-	repunit := (powInt(2, 2) - 1) / (2 - 1)
+	PrintTrapSums()
+	sum := TrapSum(-2, 2)
+	signed := (PowInt(-2, 2) - 1) / ((-2) - 1)
+	repunit := (PowInt(2, 2) - 1) / (2 - 1)
 	fmt.Printf("neg-two check: sum=%d signedQuotient=%d positiveRepunit=%d\n",
 		sum, signed, repunit)
-	total := sweepClosedForm()
+	total := SweepClosedForm()
 	fmt.Printf("closed-form checks: %d, failures: %d\n",
 		total.Checks, total.Failures)
 	if total.Failures != 0 {

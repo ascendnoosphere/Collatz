@@ -13,6 +13,7 @@ from tempfile import TemporaryDirectory
 from types import SimpleNamespace
 from unittest.mock import patch
 import json
+import os
 import sys
 
 source = Path(sys.argv[1]).read_text(encoding="utf-8")
@@ -100,10 +101,10 @@ def InstallEvidenceAlias(kind, output, sentinel):
         output.parent.rename(external)
         output.parent.symlink_to(external, target_is_directory=True)
     elif kind == 'hardlink-manifest':
-        (output / 'MathPayloads.json').hardlink_to(sentinel)
+        os.link(sentinel, output / 'MathPayloads.json')
     elif kind == 'hardlink-cache':
         (output / 'Family').mkdir()
-        (output / 'Family' / 'README.md.html').hardlink_to(sentinel)
+        os.link(sentinel, output / 'Family' / 'README.md.html')
     else:
         raise AssertionError('unknown evidence fixture: ' + kind)
 

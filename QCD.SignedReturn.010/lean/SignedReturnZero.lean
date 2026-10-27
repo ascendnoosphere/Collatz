@@ -18,7 +18,7 @@ first hit: the constant continuation is a trap, not a return.
 
 set_option autoImplicit false
 
-namespace GeneralizedCollatz
+namespace GeneralizedCollatz.SignedReturnZero
 
 /-- The affine state of multiplier `q`, offset `c`, time `j` and seed `n`. -/
 def AffineState (q c : ℤ) (j : ℕ) (n : ℤ) : ℤ :=
@@ -158,4 +158,4 @@ theorem ZeroHitCases (p : Parameters) (n : ℤ) (hq : p.Q = 0) :
         exact absurd hhit.1 hnc
       }
 
-end GeneralizedCollatz
+end GeneralizedCollatz.SignedReturnZero

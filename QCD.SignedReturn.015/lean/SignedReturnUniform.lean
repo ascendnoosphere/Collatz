@@ -41,7 +41,7 @@ every seed hits.
 
 set_option autoImplicit false
 
-namespace GeneralizedCollatz
+namespace GeneralizedCollatz.SignedReturnUniform
 
 /-- Affine state after `j` undivided steps, with offset sum `TrapSum q j`. -/
 def AffineState (q c : ℤ) (j : ℕ) (n : ℤ) : ℤ :=
@@ -91,7 +91,7 @@ def EarlyMissDecidable (p : Parameters) (n : ℤ) :
                 })
 
 /-- First hits are decidable because divisibility of one integer is. -/
-instance firstHitDecidable (p : Parameters) (n : ℤ) :
+instance FirstHitDecidable (p : Parameters) (n : ℤ) :
     DecidablePred (IsFirstHit p n) :=
   fun j =>
     if hd : p.D ∣ AffineState p.Q p.C j n then
@@ -1080,88 +1080,90 @@ theorem SharedTwoPositiveReachesOne (n : ℕ) (hn : 0 < n) :
     ∃ k : ℕ, Iterate (RawStep SharedTwo) k (n : ℤ) = 1 := by
   induction n using Nat.strong_induction_on with
   | _ n ih =>
-    by_cases h1 : n = 1
-    · {
-        subst h1
-        exact ⟨0, by simp [Iterate]⟩
-      }
-    · {
-        have hlt : 1 < n := by omega
-        by_cases hdiv : SharedTwo.D ∣ (n : ℤ)
-        · {
-            have h2 : (2 : ℤ) ∣ (n : ℤ) := by simpa [SharedTwo] using hdiv
-            have hnat : 2 ∣ n := Int.natCast_dvd_natCast.mp h2
-            obtain ⟨m, hm⟩ := hnat
-            have hmpos : 0 < m := by omega
-            have hmlt : m < n := by omega
-            obtain ⟨k, hk⟩ := ih m hmlt hmpos
-            refine ⟨1 + k, ?_⟩
-            have hstep := SharedTwoEvenStep (n : ℤ) hdiv
-            have hquot : (n : ℤ) / 2 = m := by
-              have hn2 : (n : ℤ) = 2 * m := by exact_mod_cast hm
-              rw [hn2]
-              exact Int.mul_ediv_cancel_left (m : ℤ) (by decide)
-            have hbase :
-                Iterate (RawStep SharedTwo) (1 + k) (n : ℤ) =
-                  Iterate (RawStep SharedTwo) k
-                    (RawStep SharedTwo (n : ℤ)) := by
-              rw [IterateAdd]
-              simp [Iterate]
-            rw [hbase, hstep, hquot]
-            exact hk
-          }
-        · {
-            have htwo := SharedTwoOddTwoStep (n : ℤ) hdiv
-            have h2 : ¬ (2 : ℤ) ∣ (n : ℤ) := by simpa [SharedTwo] using hdiv
-            have hmod : ((n : ℤ) + 1) % 2 = 0 := by
-              rcases Int.emod_two_eq_zero_or_one (n : ℤ) with h0 | h1
-              · {
-                  exact False.elim
-                    (h2 (Int.dvd_iff_emod_eq_zero.mpr h0))
-                }
-              · {
-                  rw [Int.add_emod, h1]
-                  decide
-                }
-            have hdvd : (2 : ℤ) ∣ (n : ℤ) + 1 :=
-              Int.dvd_iff_emod_eq_zero.mpr hmod
-            have hcast : ((n + 1 : ℕ) : ℤ) = (n : ℤ) + 1 := by
-              omega
-            have hdiv1 : SharedTwo.D ∣ ((n + 1 : ℕ) : ℤ) := by
-              rw [hcast]
-              simpa [SharedTwo] using hdvd
-            let m : ℕ := (n + 1) / 2
-            have hmpos : 0 < m := by omega
-            have hmlt : m < n := by omega
-            obtain ⟨k, hk⟩ := ih m hmlt hmpos
-            have hhalf := SharedTwoEvenStep ((n + 1 : ℕ) : ℤ) hdiv1
-            have hnat : 2 ∣ n + 1 := by
-              have hcast2 : (2 : ℤ) ∣ ((n + 1 : ℕ) : ℤ) := by
-                rw [hcast]
-                exact hdvd
-              exact Int.natCast_dvd_natCast.mp hcast2
-            have hquot : ((n + 1 : ℕ) : ℤ) / 2 = m := by
-              have hn2 : ((n + 1 : ℕ) : ℤ) = 2 * m := by
-                have hmul : n + 1 = m * 2 := by
-                  dsimp [m]
-                  exact (Nat.div_mul_cancel hnat).symm
-                exact_mod_cast hmul.trans (Nat.mul_comm m 2)
-              rw [hn2]
-              exact Int.mul_ediv_cancel_left (m : ℤ) (by decide)
-            refine ⟨3 + k, ?_⟩
-            rw [IterateAdd]
-            have hthree :
-                Iterate (RawStep SharedTwo) 3 (n : ℤ) = (m : ℤ) := by
-              have hrec :
-                  Iterate (RawStep SharedTwo) 3 (n : ℤ) =
-                    RawStep SharedTwo
-                      (Iterate (RawStep SharedTwo) 2 (n : ℤ)) := by
+    {
+      by_cases h1 : n = 1
+      · {
+          subst h1
+          exact ⟨0, by simp [Iterate]⟩
+        }
+      · {
+          have hlt : 1 < n := by omega
+          by_cases hdiv : SharedTwo.D ∣ (n : ℤ)
+          · {
+              have h2 : (2 : ℤ) ∣ (n : ℤ) := by simpa [SharedTwo] using hdiv
+              have hnat : 2 ∣ n := Int.natCast_dvd_natCast.mp h2
+              obtain ⟨m, hm⟩ := hnat
+              have hmpos : 0 < m := by omega
+              have hmlt : m < n := by omega
+              obtain ⟨k, hk⟩ := ih m hmlt hmpos
+              refine ⟨1 + k, ?_⟩
+              have hstep := SharedTwoEvenStep (n : ℤ) hdiv
+              have hquot : (n : ℤ) / 2 = m := by
+                have hn2 : (n : ℤ) = 2 * m := by exact_mod_cast hm
+                rw [hn2]
+                exact Int.mul_ediv_cancel_left (m : ℤ) (by decide)
+              have hbase :
+                  Iterate (RawStep SharedTwo) (1 + k) (n : ℤ) =
+                    Iterate (RawStep SharedTwo) k
+                      (RawStep SharedTwo (n : ℤ)) := by
+                rw [IterateAdd]
                 simp [Iterate]
-              rw [hrec, htwo, ← hcast, hhalf, hquot]
-            rw [hthree]
-            exact hk
-          }
-      }
+              rw [hbase, hstep, hquot]
+              exact hk
+            }
+          · {
+              have htwo := SharedTwoOddTwoStep (n : ℤ) hdiv
+              have h2 : ¬ (2 : ℤ) ∣ (n : ℤ) := by simpa [SharedTwo] using hdiv
+              have hmod : ((n : ℤ) + 1) % 2 = 0 := by
+                rcases Int.emod_two_eq_zero_or_one (n : ℤ) with h0 | h1
+                · {
+                    exact False.elim
+                      (h2 (Int.dvd_iff_emod_eq_zero.mpr h0))
+                  }
+                · {
+                    rw [Int.add_emod, h1]
+                    decide
+                  }
+              have hdvd : (2 : ℤ) ∣ (n : ℤ) + 1 :=
+                Int.dvd_iff_emod_eq_zero.mpr hmod
+              have hcast : ((n + 1 : ℕ) : ℤ) = (n : ℤ) + 1 := by
+                omega
+              have hdiv1 : SharedTwo.D ∣ ((n + 1 : ℕ) : ℤ) := by
+                rw [hcast]
+                simpa [SharedTwo] using hdvd
+              let m : ℕ := (n + 1) / 2
+              have hmpos : 0 < m := by omega
+              have hmlt : m < n := by omega
+              obtain ⟨k, hk⟩ := ih m hmlt hmpos
+              have hhalf := SharedTwoEvenStep ((n + 1 : ℕ) : ℤ) hdiv1
+              have hnat : 2 ∣ n + 1 := by
+                have hcast2 : (2 : ℤ) ∣ ((n + 1 : ℕ) : ℤ) := by
+                  rw [hcast]
+                  exact hdvd
+                exact Int.natCast_dvd_natCast.mp hcast2
+              have hquot : ((n + 1 : ℕ) : ℤ) / 2 = m := by
+                have hn2 : ((n + 1 : ℕ) : ℤ) = 2 * m := by
+                  have hmul : n + 1 = m * 2 := by
+                    dsimp [m]
+                    exact (Nat.div_mul_cancel hnat).symm
+                  exact_mod_cast hmul.trans (Nat.mul_comm m 2)
+                rw [hn2]
+                exact Int.mul_ediv_cancel_left (m : ℤ) (by decide)
+              refine ⟨3 + k, ?_⟩
+              rw [IterateAdd]
+              have hthree :
+                  Iterate (RawStep SharedTwo) 3 (n : ℤ) = (m : ℤ) := by
+                have hrec :
+                    Iterate (RawStep SharedTwo) 3 (n : ℤ) =
+                      RawStep SharedTwo
+                        (Iterate (RawStep SharedTwo) 2 (n : ℤ)) := by
+                  simp [Iterate]
+                rw [hrec, htwo, ← hcast, hhalf, hquot]
+              rw [hthree]
+              exact hk
+            }
+        }
+    }
 
 /-- A positive seed of `(2,2,2)` reaches `1` in at most `3(|n|-1)` steps. -/
 theorem SharedTwoPositiveTime (n : ℕ) (hn : 0 < n) :
@@ -1169,100 +1171,102 @@ theorem SharedTwoPositiveTime (n : ℕ) (hn : 0 < n) :
       Iterate (RawStep SharedTwo) k (n : ℤ) = 1 := by
   induction n using Nat.strong_induction_on with
   | _ n ih =>
-    by_cases h1 : n = 1
-    · {
-        subst h1
-        exact ⟨0, by omega, by simp [Iterate]⟩
-      }
-    · {
-        have hlt : 1 < n := by omega
-        by_cases hdiv : SharedTwo.D ∣ (n : ℤ)
-        · {
-            have h2 : (2 : ℤ) ∣ (n : ℤ) := by simpa [SharedTwo] using hdiv
-            have hnat : 2 ∣ n := Int.natCast_dvd_natCast.mp h2
-            obtain ⟨m, hm⟩ := hnat
-            have hmpos : 0 < m := by omega
-            have hmlt : m < n := by omega
-            obtain ⟨k, hkle, hk⟩ := ih m hmlt hmpos
-            refine ⟨1 + k, ?_, ?_⟩
-            · {
-                have hmhalf : m ≤ n / 2 := by
-                  have hmul : n = m * 2 := by
-                    rw [hm]
-                    exact Nat.mul_comm 2 m
+    {
+      by_cases h1 : n = 1
+      · {
+          subst h1
+          exact ⟨0, by omega, by simp [Iterate]⟩
+        }
+      · {
+          have hlt : 1 < n := by omega
+          by_cases hdiv : SharedTwo.D ∣ (n : ℤ)
+          · {
+              have h2 : (2 : ℤ) ∣ (n : ℤ) := by simpa [SharedTwo] using hdiv
+              have hnat : 2 ∣ n := Int.natCast_dvd_natCast.mp h2
+              obtain ⟨m, hm⟩ := hnat
+              have hmpos : 0 < m := by omega
+              have hmlt : m < n := by omega
+              obtain ⟨k, hkle, hk⟩ := ih m hmlt hmpos
+              refine ⟨1 + k, ?_, ?_⟩
+              · {
+                  have hmhalf : m ≤ n / 2 := by
+                    have hmul : n = m * 2 := by
+                      rw [hm]
+                      exact Nat.mul_comm 2 m
+                    omega
                   omega
-                omega
-              }
-            · {
-                have hstep := SharedTwoEvenStep (n : ℤ) hdiv
-                have hquot : (n : ℤ) / 2 = m := by
-                  have hn2 : (n : ℤ) = 2 * m := by exact_mod_cast hm
-                  rw [hn2]
-                  exact Int.mul_ediv_cancel_left (m : ℤ) (by decide)
-                rw [IterateAdd]
-                simp [Iterate, hstep, hquot]
-                exact hk
-              }
-          }
-        · {
-            have htwo := SharedTwoOddTwoStep (n : ℤ) hdiv
-            have h2 : ¬ (2 : ℤ) ∣ (n : ℤ) := by simpa [SharedTwo] using hdiv
-            have hmod : ((n : ℤ) + 1) % 2 = 0 := by
-              rcases Int.emod_two_eq_zero_or_one (n : ℤ) with h0 | h1m
-              · {
-                  exact False.elim
-                    (h2 (Int.dvd_iff_emod_eq_zero.mpr h0))
                 }
               · {
-                  rw [Int.add_emod, h1m]
-                  decide
+                  have hstep := SharedTwoEvenStep (n : ℤ) hdiv
+                  have hquot : (n : ℤ) / 2 = m := by
+                    have hn2 : (n : ℤ) = 2 * m := by exact_mod_cast hm
+                    rw [hn2]
+                    exact Int.mul_ediv_cancel_left (m : ℤ) (by decide)
+                  rw [IterateAdd]
+                  simp [Iterate, hstep, hquot]
+                  exact hk
                 }
-            have hdvd : (2 : ℤ) ∣ (n : ℤ) + 1 :=
-              Int.dvd_iff_emod_eq_zero.mpr hmod
-            have hcast : ((n + 1 : ℕ) : ℤ) = (n : ℤ) + 1 := by omega
-            have hdiv1 : SharedTwo.D ∣ ((n + 1 : ℕ) : ℤ) := by
-              rw [hcast]
-              simpa [SharedTwo] using hdvd
-            let m : ℕ := (n + 1) / 2
-            have hmpos : 0 < m := by omega
-            have hmlt : m < n := by omega
-            obtain ⟨k, hkle, hk⟩ := ih m hmlt hmpos
-            have hhalf := SharedTwoEvenStep ((n + 1 : ℕ) : ℤ) hdiv1
-            have hnat1 : 2 ∣ n + 1 := by
-              have hcast2 : (2 : ℤ) ∣ ((n + 1 : ℕ) : ℤ) := by
+            }
+          · {
+              have htwo := SharedTwoOddTwoStep (n : ℤ) hdiv
+              have h2 : ¬ (2 : ℤ) ∣ (n : ℤ) := by simpa [SharedTwo] using hdiv
+              have hmod : ((n : ℤ) + 1) % 2 = 0 := by
+                rcases Int.emod_two_eq_zero_or_one (n : ℤ) with h0 | h1m
+                · {
+                    exact False.elim
+                      (h2 (Int.dvd_iff_emod_eq_zero.mpr h0))
+                  }
+                · {
+                    rw [Int.add_emod, h1m]
+                    decide
+                  }
+              have hdvd : (2 : ℤ) ∣ (n : ℤ) + 1 :=
+                Int.dvd_iff_emod_eq_zero.mpr hmod
+              have hcast : ((n + 1 : ℕ) : ℤ) = (n : ℤ) + 1 := by omega
+              have hdiv1 : SharedTwo.D ∣ ((n + 1 : ℕ) : ℤ) := by
                 rw [hcast]
-                exact hdvd
-              exact Int.natCast_dvd_natCast.mp hcast2
-            have hquot : ((n + 1 : ℕ) : ℤ) / 2 = m := by
-              have hn2 : ((n + 1 : ℕ) : ℤ) = 2 * m := by
-                have hmul : n + 1 = m * 2 := by
-                  dsimp [m]
-                  exact (Nat.div_mul_cancel hnat1).symm
-                exact_mod_cast hmul.trans (Nat.mul_comm m 2)
-              rw [hn2]
-              exact Int.mul_ediv_cancel_left (m : ℤ) (by decide)
-            refine ⟨3 + k, ?_, ?_⟩
-            · {
-                have hmhalf : 2 * m ≤ n + 1 := by
-                  dsimp [m]
-                  exact Nat.mul_div_le (n + 1) 2
-                omega
-              }
-            · {
-                rw [IterateAdd]
-                have hthree :
-                    Iterate (RawStep SharedTwo) 3 (n : ℤ) = (m : ℤ) := by
-                  have hrec :
-                      Iterate (RawStep SharedTwo) 3 (n : ℤ) =
-                        RawStep SharedTwo
-                          (Iterate (RawStep SharedTwo) 2 (n : ℤ)) := by
-                    simp [Iterate]
-                  rw [hrec, htwo, ← hcast, hhalf, hquot]
-                rw [hthree]
-                exact hk
-              }
-          }
-      }
+                simpa [SharedTwo] using hdvd
+              let m : ℕ := (n + 1) / 2
+              have hmpos : 0 < m := by omega
+              have hmlt : m < n := by omega
+              obtain ⟨k, hkle, hk⟩ := ih m hmlt hmpos
+              have hhalf := SharedTwoEvenStep ((n + 1 : ℕ) : ℤ) hdiv1
+              have hnat1 : 2 ∣ n + 1 := by
+                have hcast2 : (2 : ℤ) ∣ ((n + 1 : ℕ) : ℤ) := by
+                  rw [hcast]
+                  exact hdvd
+                exact Int.natCast_dvd_natCast.mp hcast2
+              have hquot : ((n + 1 : ℕ) : ℤ) / 2 = m := by
+                have hn2 : ((n + 1 : ℕ) : ℤ) = 2 * m := by
+                  have hmul : n + 1 = m * 2 := by
+                    dsimp [m]
+                    exact (Nat.div_mul_cancel hnat1).symm
+                  exact_mod_cast hmul.trans (Nat.mul_comm m 2)
+                rw [hn2]
+                exact Int.mul_ediv_cancel_left (m : ℤ) (by decide)
+              refine ⟨3 + k, ?_, ?_⟩
+              · {
+                  have hmhalf : 2 * m ≤ n + 1 := by
+                    dsimp [m]
+                    exact Nat.mul_div_le (n + 1) 2
+                  omega
+                }
+              · {
+                  rw [IterateAdd]
+                  have hthree :
+                      Iterate (RawStep SharedTwo) 3 (n : ℤ) = (m : ℤ) := by
+                    have hrec :
+                        Iterate (RawStep SharedTwo) 3 (n : ℤ) =
+                          RawStep SharedTwo
+                            (Iterate (RawStep SharedTwo) 2 (n : ℤ)) := by
+                      simp [Iterate]
+                    rw [hrec, htwo, ← hcast, hhalf, hquot]
+                  rw [hthree]
+                  exact hk
+                }
+            }
+        }
+    }
 
 /-- The seed `-1` of `(2,2,2)` steps to `0`. -/
 theorem SharedTwoNegOneStep : RawStep SharedTwo (-1) = 0 := by
@@ -1279,92 +1283,94 @@ theorem SharedTwoNegativeReachesZero (n : ℤ) (hn : n < 0) :
   intro N
   induction N using Nat.strong_induction_on with
   | _ N ih =>
-    intro n hN hn
-    by_cases h1 : n = -1
-    · {
-        subst h1
-        exact ⟨1, by simp [Iterate, SharedTwoNegOneStep]⟩
-      }
-    · {
-        have hle : n ≤ -2 := by omega
-        by_cases hdiv : SharedTwo.D ∣ n
-        · {
-            have hstep := SharedTwoEvenStep n hdiv
-            have h2 : (2 : ℤ) ∣ n := by simpa [SharedTwo] using hdiv
-            obtain ⟨m, hm⟩ := h2
-            have hquot : n / 2 = m := by
-              rw [hm]
-              exact Int.mul_ediv_cancel_left m (by decide)
-            have hmneg : m < 0 := by
-              have hle' : 2 * m ≤ -2 := by rw [← hm]; exact hle
-              omega
-            have hneg : n / 2 < 0 := by rw [hquot]; exact hmneg
-            have hsmall : (n / 2).natAbs < N := by
-              rw [← hN, hquot, hm]
-              have hnn : 0 ≤ -m := by omega
-              have hnn2 : 0 ≤ -(2 * m) := by omega
-              have habs : (m.natAbs : ℤ) = -m := by
-                rw [← Int.natAbs_neg]
-                exact Int.natAbs_of_nonneg hnn
-              have htwo : ((2 * m).natAbs : ℤ) = -(2 * m) := by
-                rw [← Int.natAbs_neg]
-                exact Int.natAbs_of_nonneg hnn2
-              have hpos : 0 < m.natAbs := by
-                have hne : m ≠ 0 := by omega
-                exact Nat.pos_of_ne_zero (by
-                  intro hz
-                  have : (m.natAbs : ℤ) = 0 := by exact_mod_cast hz
-                  rw [habs] at this
-                  omega)
-              have hcast : ((2 * m).natAbs : ℤ) = 2 * (m.natAbs : ℤ) := by
-                rw [htwo, habs]
-                ring
-              have hlt : (m.natAbs : ℤ) < 2 * (m.natAbs : ℤ) := by
+    {
+      intro n hN hn
+      by_cases h1 : n = -1
+      · {
+          subst h1
+          exact ⟨1, by simp [Iterate, SharedTwoNegOneStep]⟩
+        }
+      · {
+          have hle : n ≤ -2 := by omega
+          by_cases hdiv : SharedTwo.D ∣ n
+          · {
+              have hstep := SharedTwoEvenStep n hdiv
+              have h2 : (2 : ℤ) ∣ n := by simpa [SharedTwo] using hdiv
+              obtain ⟨m, hm⟩ := h2
+              have hquot : n / 2 = m := by
+                rw [hm]
+                exact Int.mul_ediv_cancel_left m (by decide)
+              have hmneg : m < 0 := by
+                have hle' : 2 * m ≤ -2 := by rw [← hm]; exact hle
                 omega
-              have hcmp : m.natAbs < (2 * m).natAbs := by
-                exact_mod_cast (show (m.natAbs : ℤ) < ((2 * m).natAbs : ℤ) by
-                  rw [hcast]
-                  exact hlt)
-              exact hcmp
-            obtain ⟨k, hk⟩ :=
-              ih (n / 2).natAbs hsmall (n / 2) rfl hneg
-            refine ⟨1 + k, ?_⟩
-            have hbase :
-                Iterate (RawStep SharedTwo) (1 + k) n =
-                  Iterate (RawStep SharedTwo) k (RawStep SharedTwo n) := by
-              rw [IterateAdd]
-              simp [Iterate]
-            rw [hbase, hstep]
-            exact hk
-          }
-        · {
-            have htwo := SharedTwoOddTwoStep n hdiv
-            have hnext : n + 1 < 0 := by omega
-            have hsmall : (n + 1).natAbs < N := by
-              rw [← hN]
-              have hnn : 0 ≤ -n := by omega
-              have hnn1 : 0 ≤ -(n + 1) := by omega
-              have habs : (n.natAbs : ℤ) = -n := by
-                rw [← Int.natAbs_neg]
-                exact Int.natAbs_of_nonneg hnn
-              have hnextabs : ((n + 1).natAbs : ℤ) = -(n + 1) := by
-                rw [← Int.natAbs_neg]
-                exact Int.natAbs_of_nonneg hnn1
-              have hcmp : (n + 1).natAbs + 1 = n.natAbs := by
-                have hcast :
-                    ((n + 1).natAbs : ℤ) + 1 = (n.natAbs : ℤ) := by
-                  rw [hnextabs, habs]
+              have hneg : n / 2 < 0 := by rw [hquot]; exact hmneg
+              have hsmall : (n / 2).natAbs < N := by
+                rw [← hN, hquot, hm]
+                have hnn : 0 ≤ -m := by omega
+                have hnn2 : 0 ≤ -(2 * m) := by omega
+                have habs : (m.natAbs : ℤ) = -m := by
+                  rw [← Int.natAbs_neg]
+                  exact Int.natAbs_of_nonneg hnn
+                have htwo : ((2 * m).natAbs : ℤ) = -(2 * m) := by
+                  rw [← Int.natAbs_neg]
+                  exact Int.natAbs_of_nonneg hnn2
+                have hpos : 0 < m.natAbs := by
+                  have hne : m ≠ 0 := by omega
+                  exact Nat.pos_of_ne_zero (by
+                    intro hz
+                    have : (m.natAbs : ℤ) = 0 := by exact_mod_cast hz
+                    rw [habs] at this
+                    omega)
+                have hcast : ((2 * m).natAbs : ℤ) = 2 * (m.natAbs : ℤ) := by
+                  rw [htwo, habs]
                   ring
-                exact_mod_cast hcast
-              omega
-            obtain ⟨k, hk⟩ := ih (n + 1).natAbs hsmall (n + 1) rfl hnext
-            refine ⟨2 + k, ?_⟩
-            rw [IterateAdd]
-            have htwo' : Iterate (RawStep SharedTwo) 2 n = n + 1 := htwo
-            rw [htwo']
-            exact hk
-          }
-      }
+                have hlt : (m.natAbs : ℤ) < 2 * (m.natAbs : ℤ) := by
+                  omega
+                have hcmp : m.natAbs < (2 * m).natAbs := by
+                  exact_mod_cast (show (m.natAbs : ℤ) < ((2 * m).natAbs : ℤ) by
+                    rw [hcast]
+                    exact hlt)
+                exact hcmp
+              obtain ⟨k, hk⟩ :=
+                ih (n / 2).natAbs hsmall (n / 2) rfl hneg
+              refine ⟨1 + k, ?_⟩
+              have hbase :
+                  Iterate (RawStep SharedTwo) (1 + k) n =
+                    Iterate (RawStep SharedTwo) k (RawStep SharedTwo n) := by
+                rw [IterateAdd]
+                simp [Iterate]
+              rw [hbase, hstep]
+              exact hk
+            }
+          · {
+              have htwo := SharedTwoOddTwoStep n hdiv
+              have hnext : n + 1 < 0 := by omega
+              have hsmall : (n + 1).natAbs < N := by
+                rw [← hN]
+                have hnn : 0 ≤ -n := by omega
+                have hnn1 : 0 ≤ -(n + 1) := by omega
+                have habs : (n.natAbs : ℤ) = -n := by
+                  rw [← Int.natAbs_neg]
+                  exact Int.natAbs_of_nonneg hnn
+                have hnextabs : ((n + 1).natAbs : ℤ) = -(n + 1) := by
+                  rw [← Int.natAbs_neg]
+                  exact Int.natAbs_of_nonneg hnn1
+                have hcmp : (n + 1).natAbs + 1 = n.natAbs := by
+                  have hcast :
+                      ((n + 1).natAbs : ℤ) + 1 = (n.natAbs : ℤ) := by
+                    rw [hnextabs, habs]
+                    ring
+                  exact_mod_cast hcast
+                omega
+              obtain ⟨k, hk⟩ := ih (n + 1).natAbs hsmall (n + 1) rfl hnext
+              refine ⟨2 + k, ?_⟩
+              rw [IterateAdd]
+              have htwo' : Iterate (RawStep SharedTwo) 2 n = n + 1 := htwo
+              rw [htwo']
+              exact hk
+            }
+        }
+    }
 
 /-- A negative seed of `(2,2,2)` reaches `0` in at most `2|n|` steps. -/
 theorem SharedTwoNegativeTime (n : ℤ) (hn : n < 0) :
@@ -1376,93 +1382,95 @@ theorem SharedTwoNegativeTime (n : ℤ) (hn : n < 0) :
   intro N
   induction N using Nat.strong_induction_on with
   | _ N ih =>
-    intro n hN hn
-    by_cases h1 : n = -1
-    · {
-        subst h1
-        refine ⟨1, ?_, by simp [Iterate, SharedTwoNegOneStep]⟩
-        have hN1 : N = 1 := by
-          have habs : ((-1 : ℤ).natAbs) = 1 := by decide
-          rw [← hN, habs]
-        omega
-      }
-    · {
-        have hle : n ≤ -2 := by omega
-        by_cases hdiv : SharedTwo.D ∣ n
-        · {
-            have hstep := SharedTwoEvenStep n hdiv
-            have h2 : (2 : ℤ) ∣ n := by simpa [SharedTwo] using hdiv
-            obtain ⟨m, hm⟩ := h2
-            have hquot : n / 2 = m := by
-              rw [hm]
-              exact Int.mul_ediv_cancel_left m (by decide)
-            have hmneg : m < 0 := by
-              have hle' : 2 * m ≤ -2 := by rw [← hm]; exact hle
-              omega
-            have hneg : n / 2 < 0 := by rw [hquot]; exact hmneg
-            have hsmall : (n / 2).natAbs < N := by
-              rw [← hN, hquot, hm]
-              have hnn : 0 ≤ -m := by omega
-              have hnn2 : 0 ≤ -(2 * m) := by omega
-              have habs : (m.natAbs : ℤ) = -m := by
-                rw [← Int.natAbs_neg]
-                exact Int.natAbs_of_nonneg hnn
-              have htwo : ((2 * m).natAbs : ℤ) = -(2 * m) := by
-                rw [← Int.natAbs_neg]
-                exact Int.natAbs_of_nonneg hnn2
-              have hcast : ((2 * m).natAbs : ℤ) = 2 * (m.natAbs : ℤ) := by
-                rw [htwo, habs]
-                ring
-              have hlt : (m.natAbs : ℤ) < 2 * (m.natAbs : ℤ) := by omega
-              exact_mod_cast (show (m.natAbs : ℤ) < ((2 * m).natAbs : ℤ) by
-                rw [hcast]
-                exact hlt)
-            obtain ⟨k, hkle, hk⟩ :=
-              ih (n / 2).natAbs hsmall (n / 2) rfl hneg
-            refine ⟨1 + k, ?_, ?_⟩
-            · {
-                have hltN : (n / 2).natAbs ≤ N - 1 := by omega
+    {
+      intro n hN hn
+      by_cases h1 : n = -1
+      · {
+          subst h1
+          refine ⟨1, ?_, by simp [Iterate, SharedTwoNegOneStep]⟩
+          have hN1 : N = 1 := by
+            have habs : ((-1 : ℤ).natAbs) = 1 := by decide
+            rw [← hN, habs]
+          omega
+        }
+      · {
+          have hle : n ≤ -2 := by omega
+          by_cases hdiv : SharedTwo.D ∣ n
+          · {
+              have hstep := SharedTwoEvenStep n hdiv
+              have h2 : (2 : ℤ) ∣ n := by simpa [SharedTwo] using hdiv
+              obtain ⟨m, hm⟩ := h2
+              have hquot : n / 2 = m := by
+                rw [hm]
+                exact Int.mul_ediv_cancel_left m (by decide)
+              have hmneg : m < 0 := by
+                have hle' : 2 * m ≤ -2 := by rw [← hm]; exact hle
                 omega
-              }
-            · {
-                rw [IterateAdd]
-                simp [Iterate, hstep]
-                exact hk
-              }
-          }
-        · {
-            have htwo := SharedTwoOddTwoStep n hdiv
-            have hnext : n + 1 < 0 := by omega
-            have hsmall : (n + 1).natAbs < N := by
-              rw [← hN]
-              have hnn : 0 ≤ -n := by omega
-              have hnn1 : 0 ≤ -(n + 1) := by omega
-              have habs : (n.natAbs : ℤ) = -n := by
-                rw [← Int.natAbs_neg]
-                exact Int.natAbs_of_nonneg hnn
-              have hnextabs : ((n + 1).natAbs : ℤ) = -(n + 1) := by
-                rw [← Int.natAbs_neg]
-                exact Int.natAbs_of_nonneg hnn1
-              have hcmp : (n + 1).natAbs + 1 = n.natAbs := by
-                have hcast :
-                    ((n + 1).natAbs : ℤ) + 1 = (n.natAbs : ℤ) := by
-                  rw [hnextabs, habs]
+              have hneg : n / 2 < 0 := by rw [hquot]; exact hmneg
+              have hsmall : (n / 2).natAbs < N := by
+                rw [← hN, hquot, hm]
+                have hnn : 0 ≤ -m := by omega
+                have hnn2 : 0 ≤ -(2 * m) := by omega
+                have habs : (m.natAbs : ℤ) = -m := by
+                  rw [← Int.natAbs_neg]
+                  exact Int.natAbs_of_nonneg hnn
+                have htwo : ((2 * m).natAbs : ℤ) = -(2 * m) := by
+                  rw [← Int.natAbs_neg]
+                  exact Int.natAbs_of_nonneg hnn2
+                have hcast : ((2 * m).natAbs : ℤ) = 2 * (m.natAbs : ℤ) := by
+                  rw [htwo, habs]
                   ring
-                exact_mod_cast hcast
-              omega
-            obtain ⟨k, hkle, hk⟩ :=
-              ih (n + 1).natAbs hsmall (n + 1) rfl hnext
-            refine ⟨2 + k, ?_, ?_⟩
-            · {
-                have hltN : (n + 1).natAbs ≤ N - 1 := by omega
+                have hlt : (m.natAbs : ℤ) < 2 * (m.natAbs : ℤ) := by omega
+                exact_mod_cast (show (m.natAbs : ℤ) < ((2 * m).natAbs : ℤ) by
+                  rw [hcast]
+                  exact hlt)
+              obtain ⟨k, hkle, hk⟩ :=
+                ih (n / 2).natAbs hsmall (n / 2) rfl hneg
+              refine ⟨1 + k, ?_, ?_⟩
+              · {
+                  have hltN : (n / 2).natAbs ≤ N - 1 := by omega
+                  omega
+                }
+              · {
+                  rw [IterateAdd]
+                  simp [Iterate, hstep]
+                  exact hk
+                }
+            }
+          · {
+              have htwo := SharedTwoOddTwoStep n hdiv
+              have hnext : n + 1 < 0 := by omega
+              have hsmall : (n + 1).natAbs < N := by
+                rw [← hN]
+                have hnn : 0 ≤ -n := by omega
+                have hnn1 : 0 ≤ -(n + 1) := by omega
+                have habs : (n.natAbs : ℤ) = -n := by
+                  rw [← Int.natAbs_neg]
+                  exact Int.natAbs_of_nonneg hnn
+                have hnextabs : ((n + 1).natAbs : ℤ) = -(n + 1) := by
+                  rw [← Int.natAbs_neg]
+                  exact Int.natAbs_of_nonneg hnn1
+                have hcmp : (n + 1).natAbs + 1 = n.natAbs := by
+                  have hcast :
+                      ((n + 1).natAbs : ℤ) + 1 = (n.natAbs : ℤ) := by
+                    rw [hnextabs, habs]
+                    ring
+                  exact_mod_cast hcast
                 omega
-              }
-            · {
-                rw [IterateAdd, htwo]
-                exact hk
-              }
-          }
-      }
+              obtain ⟨k, hkle, hk⟩ :=
+                ih (n + 1).natAbs hsmall (n + 1) rfl hnext
+              refine ⟨2 + k, ?_, ?_⟩
+              · {
+                  have hltN : (n + 1).natAbs ≤ N - 1 := by omega
+                  omega
+                }
+              · {
+                  rw [IterateAdd, htwo]
+                  exact hk
+                }
+            }
+        }
+    }
 
 /-- Every seed of `(2,2,2)` enters `{0,1,2,4}` within `3|n|` steps. -/
 theorem SharedTwoEntry (n : ℤ) :
@@ -2122,49 +2130,51 @@ theorem TwoEnters (p : Parameters) (hQ : p.Q = 1) (hD : p.D = 2)
   intro m
   induction m using Nat.strong_induction_on with
   | _ m ih =>
-    intro x hm
-    by_cases hx0 : 0 ≤ x
-    · {
-        by_cases hxC : x ≤ p.C
-        · {
-            exact ⟨0, by simpa [Iterate] using ⟨hx0, hxC⟩⟩
-          }
-        · {
-            have habove : p.C < x := by omega
-            have hdrop := TwoDropsAbove p hQ hD hpos hcop x habove
-            have hlt : (R x).natAbs < m := by
-              have hR : ((R x).natAbs : ℤ) = R x := by
-                simpa [R] using Int.natAbs_of_nonneg hdrop.1
-              have hx : (x.natAbs : ℤ) = x :=
-                Int.natAbs_of_nonneg hx0
-              have hZ : ((R x).natAbs : ℤ) < (x.natAbs : ℤ) := by
-                rw [hR, hx]
-                simpa [R] using hdrop.2
-              have hnat : (R x).natAbs < x.natAbs := by exact_mod_cast hZ
-              rwa [hm] at hnat
-            obtain ⟨t, ht⟩ := ih (R x).natAbs hlt (R x) rfl
-            refine ⟨t + 1, ?_⟩
-            have hidx : 1 + t = t + 1 := by omega
-            rw [← hidx, IterateAdd]
-            simpa [Iterate] using ht
-          }
-      }
-    · {
-        have hxneg : x < 0 := by omega
-        rcases TwoNegativeStep p hQ hD hpos hcop x hxneg with hshell | hlt
-        · {
-            exact ⟨1, by simpa [Iterate] using hshell⟩
-          }
-        · {
-            have hltm : (R x).natAbs < m := by
-              simpa [R, hm] using hlt
-            obtain ⟨t, ht⟩ := ih (R x).natAbs hltm (R x) rfl
-            refine ⟨t + 1, ?_⟩
-            have hidx : 1 + t = t + 1 := by omega
-            rw [← hidx, IterateAdd]
-            simpa [Iterate] using ht
-          }
-      }
+    {
+      intro x hm
+      by_cases hx0 : 0 ≤ x
+      · {
+          by_cases hxC : x ≤ p.C
+          · {
+              exact ⟨0, by simpa [Iterate] using ⟨hx0, hxC⟩⟩
+            }
+          · {
+              have habove : p.C < x := by omega
+              have hdrop := TwoDropsAbove p hQ hD hpos hcop x habove
+              have hlt : (R x).natAbs < m := by
+                have hR : ((R x).natAbs : ℤ) = R x := by
+                  simpa [R] using Int.natAbs_of_nonneg hdrop.1
+                have hx : (x.natAbs : ℤ) = x :=
+                  Int.natAbs_of_nonneg hx0
+                have hZ : ((R x).natAbs : ℤ) < (x.natAbs : ℤ) := by
+                  rw [hR, hx]
+                  simpa [R] using hdrop.2
+                have hnat : (R x).natAbs < x.natAbs := by exact_mod_cast hZ
+                rwa [hm] at hnat
+              obtain ⟨t, ht⟩ := ih (R x).natAbs hlt (R x) rfl
+              refine ⟨t + 1, ?_⟩
+              have hidx : 1 + t = t + 1 := by omega
+              rw [← hidx, IterateAdd]
+              simpa [Iterate] using ht
+            }
+        }
+      · {
+          have hxneg : x < 0 := by omega
+          rcases TwoNegativeStep p hQ hD hpos hcop x hxneg with hshell | hlt
+          · {
+              exact ⟨1, by simpa [Iterate] using hshell⟩
+            }
+          · {
+              have hltm : (R x).natAbs < m := by
+                simpa [R, hm] using hlt
+              obtain ⟨t, ht⟩ := ih (R x).natAbs hltm (R x) rfl
+              refine ⟨t + 1, ?_⟩
+              have hidx : 1 + t = t + 1 := by omega
+              rw [← hidx, IterateAdd]
+              simpa [Iterate] using ht
+            }
+        }
+    }
 
 /-- A shell seed begins a period of length at most `max(c - 1, 1)`. -/
 theorem TwoPositivePeriod (p : Parameters) (hQ : p.Q = 1) (hD : p.D = 2)
@@ -3900,10 +3910,7 @@ theorem NegTwoCycleShell (p : Parameters) (hQ : p.Q = 1) (hD : p.D = -2)
     · {
         refine ⟨Iterate R (k - 1) x, ?_, ?_, ?_⟩
         · {
-            have h0 : Iterate R 0 x = x := by
-              simp [Iterate]
-            rw [← h0]
-            simpa [z, hi0] using hmax 0 hk
+            simp [z, hi0, Iterate]
           }
         · {
             have hk1 : k - 1 + 1 = k := by omega
@@ -4941,7 +4948,7 @@ theorem NegTwoSharpPeriod (p : Parameters) (hQ : p.Q = 1) (hD : p.D = -2)
           omega
         }
       · {
-          push_neg at hdist
+          push Not at hdist
           obtain ⟨i, j, hi, hj, hne, heq⟩ := hdist
           have hord : i < j ∨ j < i := by omega
           rcases hord with hij | hji
@@ -5592,7 +5599,7 @@ theorem NegTwoPowerDelaySharp (p : Parameters) (hQ : p.Q = 1)
       · {
           have htE : t = e ∨ t = e + 1 := by omega
           refine ⟨0, ?_⟩
-          simp [R, Nat.add_zero]
+          simp
           rcases htE with htE | htE
           · {
               rw [htE, hatE]
@@ -6169,30 +6176,32 @@ theorem ZeroOffsetFactor (d n : ℤ) (hd : 2 ≤ d.natAbs) (hn : n ≠ 0) :
   intro N
   induction N using Nat.strong_induction_on with
   | _ N ih =>
-    intro n hN hn
-    by_cases hdiv : d ∣ n
-    · {
-        obtain ⟨q, hq⟩ := hdiv
-        have hqne : q ≠ 0 := by
-          intro h0
-          apply hn
-          rw [hq, h0]
+    {
+      intro n hN hn
+      by_cases hdiv : d ∣ n
+      · {
+          obtain ⟨q, hq⟩ := hdiv
+          have hqne : q ≠ 0 := by
+            intro h0
+            apply hn
+            rw [hq, h0]
+            ring
+          have hsmall : q.natAbs < N := by
+            rw [← hN, hq, Int.natAbs_mul]
+            have hqpos : 1 ≤ q.natAbs := by
+              exact Nat.one_le_iff_ne_zero.mpr (Int.natAbs_ne_zero.mpr hqne)
+            have hge : 2 * q.natAbs ≤ d.natAbs * q.natAbs := by
+              exact Nat.mul_le_mul_right q.natAbs hd
+            omega
+          obtain ⟨a, m, hm, hmiss⟩ := ih q.natAbs hsmall q rfl hqne
+          refine ⟨a + 1, m, ?_, hmiss⟩
+          rw [hq, hm, pow_succ']
           ring
-        have hsmall : q.natAbs < N := by
-          rw [← hN, hq, Int.natAbs_mul]
-          have hqpos : 1 ≤ q.natAbs := by
-            exact Nat.one_le_iff_ne_zero.mpr (Int.natAbs_ne_zero.mpr hqne)
-          have hge : 2 * q.natAbs ≤ d.natAbs * q.natAbs := by
-            exact Nat.mul_le_mul_right q.natAbs hd
-          omega
-        obtain ⟨a, m, hm, hmiss⟩ := ih q.natAbs hsmall q rfl hqne
-        refine ⟨a + 1, m, ?_, hmiss⟩
-        rw [hq, hm, pow_succ']
-        ring
-      }
-    · {
-        exact ⟨0, n, by simp, hdiv⟩
-      }
+        }
+      · {
+          exact ⟨0, n, by simp, hdiv⟩
+        }
+    }
 
 /-- Every nonzero seed eventually alternates. -/
 theorem ZeroOffsetEventuallyAlternates (d n : ℤ)
@@ -7009,33 +7018,35 @@ theorem CoreEntryTime (A B m : ℕ) (H : ℤ → ℤ) (hA : A < m)
   intro k
   induction k using Nat.strong_induction_on with
   | h k ih =>
-    intro n hk
-    by_cases hcore : n.natAbs ≤ CoreRadius A B m
-    · {
-        exact ⟨0, Nat.zero_le _, by simpa [Iterate, hk] using hcore⟩
-      }
-    · {
-        have hn : CoreRadius A B m + 1 ≤ n.natAbs := by omega
-        have hlt : (H n).natAbs < n.natAbs :=
-          CoreMapDescent A B m H n hA (hbound n) hn
-        have hkey : (H n).natAbs < k := by
-          rw [← hk]
-          exact hlt
-        obtain ⟨t, ht, henter⟩ :=
-          ih (H n).natAbs hkey (H n) rfl
-        refine ⟨t + 1, ?_, ?_⟩
-        · {
-            have hstep : t + 1 ≤ (H n).natAbs + 1 :=
-              Nat.add_le_add_right ht 1
-            have hdrop : (H n).natAbs + 1 ≤ n.natAbs := by
-              rw [hk]
-              omega
-            exact le_trans hstep hdrop
-          }
-        · {
-            simpa [Iterate, Nat.add_comm] using henter
-          }
-      }
+    {
+      intro n hk
+      by_cases hcore : n.natAbs ≤ CoreRadius A B m
+      · {
+          exact ⟨0, Nat.zero_le _, by simpa [Iterate, hk] using hcore⟩
+        }
+      · {
+          have hn : CoreRadius A B m + 1 ≤ n.natAbs := by omega
+          have hlt : (H n).natAbs < n.natAbs :=
+            CoreMapDescent A B m H n hA (hbound n) hn
+          have hkey : (H n).natAbs < k := by
+            rw [← hk]
+            exact hlt
+          obtain ⟨t, ht, henter⟩ :=
+            ih (H n).natAbs hkey (H n) rfl
+          refine ⟨t + 1, ?_, ?_⟩
+          · {
+              have hstep : t + 1 ≤ (H n).natAbs + 1 :=
+                Nat.add_le_add_right ht 1
+              have hdrop : (H n).natAbs + 1 ≤ n.natAbs := by
+                rw [hk]
+                omega
+              exact le_trans hstep hdrop
+            }
+          · {
+              simpa [Iterate, Nat.add_comm] using henter
+            }
+        }
+    }
 
 /-- The return enters its radius within `|n|` steps. -/
 theorem FirstReturnEntryTime (p : Parameters)
@@ -8160,18 +8171,20 @@ theorem IterateReturnGcd (H : ℤ → ℤ) (n : ℤ) (a b : ℕ)
     Iterate H (Nat.gcd a b) n = n := by
   induction a using Nat.strong_induction_on generalizing b with
   | h a ih =>
-    by_cases hzero : a = 0
-    · {
-        rw [hzero, Nat.gcd_zero_left]
-        exact hb
-      }
-    · {
-        have hmod := IterateReturnMod H n a b (Nat.pos_of_ne_zero hzero) ha hb
-        have hlt : b % a < a := Nat.mod_lt b (Nat.pos_of_ne_zero hzero)
-        have hgcd : Nat.gcd a b = Nat.gcd (b % a) a := Nat.gcd_rec a b
-        rw [hgcd]
-        exact ih (b % a) hlt hmod ha
-      }
+    {
+      by_cases hzero : a = 0
+      · {
+          rw [hzero, Nat.gcd_zero_left]
+          exact hb
+        }
+      · {
+          have hmod := IterateReturnMod H n a b (Nat.pos_of_ne_zero hzero) ha hb
+          have hlt : b % a < a := Nat.mod_lt b (Nat.pos_of_ne_zero hzero)
+          have hgcd : Nat.gcd a b = Nat.gcd (b % a) a := Nat.gcd_rec a b
+          rw [hgcd]
+          exact ih (b % a) hlt hmod ha
+        }
+    }
 
 /-- Every positive period is a multiple of a period of length at most `2|c|+1`. -/
 theorem UnitOffsetPeriodDivides (p : Parameters) (hQ : p.Q = 1)
@@ -8222,17 +8235,19 @@ theorem IterateLeastReturn (H : ℤ → ℤ) (n : ℤ) (k : ℕ)
   intro k hk hret
   induction k using Nat.strong_induction_on with
   | h k ih =>
-    by_cases hsmall : ∃ t, 0 < t ∧ t < k ∧ Iterate H t n = n
-    · {
-        obtain ⟨t, ht, hlt, hret'⟩ := hsmall
-        obtain ⟨d, hd, hle, hretd, hmin⟩ := ih t hlt ht hret'
-        exact ⟨d, hd, Nat.le_trans hle (Nat.le_of_lt hlt), hretd, hmin⟩
-      }
-    · {
-        refine ⟨k, hk, le_rfl, hret, ?_⟩
-        intro t ht hlt hret'
-        exact hsmall ⟨t, ht, hlt, hret'⟩
-      }
+    {
+      by_cases hsmall : ∃ t, 0 < t ∧ t < k ∧ Iterate H t n = n
+      · {
+          obtain ⟨t, ht, hlt, hret'⟩ := hsmall
+          obtain ⟨d, hd, hle, hretd, hmin⟩ := ih t hlt ht hret'
+          exact ⟨d, hd, Nat.le_trans hle (Nat.le_of_lt hlt), hretd, hmin⟩
+        }
+      · {
+          refine ⟨k, hk, le_rfl, hret, ?_⟩
+          intro t ht hlt hret'
+          exact hsmall ⟨t, ht, hlt, hret'⟩
+        }
+    }
 
 /-- The least positive period of a coprime unit return has length at most `2|c|+1`. -/
 theorem UnitOffsetMinimalPeriod (p : Parameters) (hQ : p.Q = 1)
@@ -9179,51 +9194,53 @@ theorem UnitOffsetLargeLog (p : Parameters) (hQ : p.Q = 1)
   intro a
   induction a using Nat.strongRecOn with
   | ind a ih =>
-    intro x hx
-    by_cases hsmall : a ≤ 1
-    · {
-        refine ⟨0, ?_, ?_⟩
-        · {
-            have : Nat.log 2 a = 0 := by omega
-            omega
-          }
-        · {
-            simpa [hx] using hsmall
-          }
-      }
-    · {
-        have hx2 : 2 ≤ x.natAbs := by omega
-        have hhalf := UnitOffsetLargeHalves p hQ hcop hd hc x hx2
-        have hlt : (H x).natAbs < a := by
-          rw [← hx] at hhalf
-          omega
-        obtain ⟨t, ht, hshell⟩ := ih (H x).natAbs hlt (H x) rfl
-        refine ⟨t + 1, ?_, ?_⟩
-        · {
-            have htwo : 2 * (H x).natAbs ≤ a := by
-              rw [← hx] at hhalf
+    {
+      intro x hx
+      by_cases hsmall : a ≤ 1
+      · {
+          refine ⟨0, ?_, ?_⟩
+          · {
+              have : Nat.log 2 a = 0 := by omega
               omega
-            have hlog : Nat.log 2 (H x).natAbs + 1 ≤ Nat.log 2 a := by
-              by_cases hz : (H x).natAbs = 0
-              · {
-                  rw [hz]
-                  have : 1 ≤ Nat.log 2 a := by omega
-                  omega
-                }
-              · {
-                  have hpow := Nat.pow_log_le_self 2 (by omega : 1 ≤ (H x).natAbs)
-                  have hcmp : 2 ^ (Nat.log 2 (H x).natAbs + 1) ≤ a := by
-                    rw [Nat.pow_succ]
-                    omega
-                  exact Nat.le_log_of_pow_le (by decide) hcmp
-                }
+            }
+          · {
+              simpa [hx] using hsmall
+            }
+        }
+      · {
+          have hx2 : 2 ≤ x.natAbs := by omega
+          have hhalf := UnitOffsetLargeHalves p hQ hcop hd hc x hx2
+          have hlt : (H x).natAbs < a := by
+            rw [← hx] at hhalf
             omega
-          }
-        · {
-            rw [Iterate]
-            simpa [IterateAdd] using hshell
-          }
-      }
+          obtain ⟨t, ht, hshell⟩ := ih (H x).natAbs hlt (H x) rfl
+          refine ⟨t + 1, ?_, ?_⟩
+          · {
+              have htwo : 2 * (H x).natAbs ≤ a := by
+                rw [← hx] at hhalf
+                omega
+              have hlog : Nat.log 2 (H x).natAbs + 1 ≤ Nat.log 2 a := by
+                by_cases hz : (H x).natAbs = 0
+                · {
+                    rw [hz]
+                    have : 1 ≤ Nat.log 2 a := by omega
+                    omega
+                  }
+                · {
+                    have hpow := Nat.pow_log_le_self 2 (by omega : 1 ≤ (H x).natAbs)
+                    have hcmp : 2 ^ (Nat.log 2 (H x).natAbs + 1) ≤ a := by
+                      rw [Nat.pow_succ]
+                      omega
+                    exact Nat.le_log_of_pow_le (by decide) hcmp
+                  }
+              omega
+            }
+          · {
+              rw [Iterate]
+              simpa [IterateAdd] using hshell
+            }
+        }
+    }
 
 /-- For `|d|=2`, one return is at most the average of `|n|` and `|c|`. -/
 theorem UnitOffsetTwoAverage (p : Parameters) (hQ : p.Q = 1)
@@ -9281,35 +9298,37 @@ theorem UnitOffsetTwoExcessLog (p : Parameters) (hQ : p.Q = 1)
   intro e
   induction e using Nat.strongRecOn with
   | ind e ih =>
-    intro x hx he
-    have havg := UnitOffsetTwoExcess p hQ hcop hd x (by omega)
-    by_cases hshell : (H x).natAbs ≤ N
-    · {
-        refine ⟨1, by omega, ?_⟩
-        simpa [Iterate] using hshell
-      }
-    · {
-        have he' : (H x).natAbs = N + ((H x).natAbs - N) := by omega
-        have hlt : (H x).natAbs - N < e := by omega
-        obtain ⟨t, ht, hsmall⟩ :=
-          ih ((H x).natAbs - N) hlt (H x) he' (by omega)
-        refine ⟨t + 1, ?_, ?_⟩
-        · {
-            have htwo : 2 * ((H x).natAbs - N) ≤ e := by omega
-            have hlog : Nat.log 2 ((H x).natAbs - N) + 1 ≤ Nat.log 2 e := by
-              have hpow :=
-                Nat.pow_log_le_self 2 (by omega : 1 ≤ (H x).natAbs - N)
-              have hcmp : 2 ^ (Nat.log 2 ((H x).natAbs - N) + 1) ≤ e := by
-                rw [Nat.pow_succ]
-                omega
-              exact Nat.le_log_of_pow_le (by decide) hcmp
-            omega
-          }
-        · {
-            rw [Iterate]
-            simpa [IterateAdd] using hsmall
-          }
-      }
+    {
+      intro x hx he
+      have havg := UnitOffsetTwoExcess p hQ hcop hd x (by omega)
+      by_cases hshell : (H x).natAbs ≤ N
+      · {
+          refine ⟨1, by omega, ?_⟩
+          simpa [Iterate] using hshell
+        }
+      · {
+          have he' : (H x).natAbs = N + ((H x).natAbs - N) := by omega
+          have hlt : (H x).natAbs - N < e := by omega
+          obtain ⟨t, ht, hsmall⟩ :=
+            ih ((H x).natAbs - N) hlt (H x) he' (by omega)
+          refine ⟨t + 1, ?_, ?_⟩
+          · {
+              have htwo : 2 * ((H x).natAbs - N) ≤ e := by omega
+              have hlog : Nat.log 2 ((H x).natAbs - N) + 1 ≤ Nat.log 2 e := by
+                have hpow :=
+                  Nat.pow_log_le_self 2 (by omega : 1 ≤ (H x).natAbs - N)
+                have hcmp : 2 ^ (Nat.log 2 ((H x).natAbs - N) + 1) ≤ e := by
+                  rw [Nat.pow_succ]
+                  omega
+                exact Nat.le_log_of_pow_le (by decide) hcmp
+              omega
+            }
+          · {
+              rw [Iterate]
+              simpa [IterateAdd] using hsmall
+            }
+        }
+    }
 
 /-- If `|n|≤2^k`, a `|d|=2` return reaches absolute value at most `1` in `k` steps. -/
 theorem UnitOffsetTwoPower (p : Parameters) (hQ : p.Q = 1)
@@ -11339,6 +11358,7 @@ theorem UnitOffsetOddReturnBound (p : Parameters) (hQ : p.Q = 1)
   rw [habs]
   exact Nat.mul_le_mul_left _ hweight
 
+/-- Iterating the affine branch with multiplier and offset one adds the elapsed ticks. -/
 theorem OneOffsetState (n : ℤ) (j : ℕ) :
     AffineState 1 1 j n = n + j := by
   simp [AffineState, TrapSumOne, one_pow]
@@ -11485,8 +11505,8 @@ theorem OneOffsetDescent (p : Parameters)
     rw [hstate'] at hdvd
     rcases (by
         cases p.D with
-        | ofNat _ => exact Or.inl rfl
-        | negSucc _ => exact Or.inr rfl :
+        | ofNat _ => { exact Or.inl rfl }
+        | negSucc _ => { exact Or.inr rfl : }
         p.D = (p.D.natAbs : ℤ) ∨ p.D = -((p.D.natAbs : ℤ))) with
       | inl hp => rwa [hp] at hdvd
       | inr hn =>
@@ -11496,8 +11516,8 @@ theorem OneOffsetDescent (p : Parameters)
       (n + ((-n) % (p.D.natAbs : ℤ)).toNat).natAbs / p.D.natAbs := by
     rcases (by
         cases p.D with
-        | ofNat _ => exact Or.inl rfl
-        | negSucc _ => exact Or.inr rfl :
+        | ofNat _ => { exact Or.inl rfl }
+        | negSucc _ => { exact Or.inr rfl : }
         p.D = (p.D.natAbs : ℤ) ∨ p.D = -((p.D.natAbs : ℤ))) with
       | inl hp =>
           rw [hp]
@@ -11531,28 +11551,30 @@ theorem OneOffsetEnters (p : Parameters)
   intro k
   induction k using Nat.strong_induction_on with
   | h k ih =>
-    intro n hk
-    by_cases hsmall : n.natAbs ≤ 1
-    · {
-        exact ⟨0, Nat.zero_le _, by simpa [Iterate, hk] using hsmall⟩
-      }
-    · {
-        have hbig : 2 ≤ n.natAbs := by omega
-        have hdrop := OneOffsetDescent p hQ hC hm n hbig
-        have hkey : (H n).natAbs < k := by
-          rw [← hk]
-          exact hdrop
-        obtain ⟨t, ht, henter⟩ := ih (H n).natAbs hkey (H n) rfl
-        refine ⟨t + 1, ?_, ?_⟩
-        · {
-            have hstep : t + 1 ≤ (H n).natAbs + 1 :=
-              Nat.add_le_add_right ht 1
-            omega
-          }
-        · {
-            simpa [Iterate, Nat.add_comm] using henter
-          }
-      }
+    {
+      intro n hk
+      by_cases hsmall : n.natAbs ≤ 1
+      · {
+          exact ⟨0, Nat.zero_le _, by simpa [Iterate, hk] using hsmall⟩
+        }
+      · {
+          have hbig : 2 ≤ n.natAbs := by omega
+          have hdrop := OneOffsetDescent p hQ hC hm n hbig
+          have hkey : (H n).natAbs < k := by
+            rw [← hk]
+            exact hdrop
+          obtain ⟨t, ht, henter⟩ := ih (H n).natAbs hkey (H n) rfl
+          refine ⟨t + 1, ?_, ?_⟩
+          · {
+              have hstep : t + 1 ≤ (H n).natAbs + 1 :=
+                Nat.add_le_add_right ht 1
+              omega
+            }
+          · {
+              simpa [Iterate, Nat.add_comm] using henter
+            }
+        }
+    }
 
 /-- The `(1,1)` shell of radius `1` is invariant. -/
 theorem OneOffsetShell (p : Parameters)
@@ -11605,8 +11627,8 @@ theorem OneOffsetShell (p : Parameters)
       rw [hnum]
       rcases (by
           cases p.D with
-          | ofNat _ => exact Or.inl rfl
-          | negSucc _ => exact Or.inr rfl :
+          | ofNat _ => { exact Or.inl rfl }
+          | negSucc _ => { exact Or.inr rfl : }
           p.D = (p.D.natAbs : ℤ) ∨ p.D = -((p.D.natAbs : ℤ))) with
         | inl hp =>
             rw [hp]
@@ -11916,8 +11938,8 @@ theorem OneOffsetSize (p : Parameters)
     rw [H, hquot, htime]
     rcases (by
         cases p.D with
-        | ofNat _ => exact Or.inl rfl
-        | negSucc _ => exact Or.inr rfl :
+        | ofNat _ => { exact Or.inl rfl }
+        | negSucc _ => { exact Or.inr rfl : }
         p.D = (p.D.natAbs : ℤ) ∨ p.D = -((p.D.natAbs : ℤ))) with
       | inl hp =>
           rw [hp]
@@ -12184,114 +12206,116 @@ theorem OneOneTwoEnters (p : Parameters)
   intro k
   induction k using Nat.strong_induction_on with
   | h k ih =>
-    intro n hk
-    by_cases hsmall : n.natAbs ≤ 1
-    · {
-        have htri : n = -1 ∨ n = 0 ∨ n = 1 := by
-          omega
-        rcases htri with hneg | hzero | hone
-        · {
-            have hquot := OneOneTwoQuotient p hQ hC hD n
-            have hodd : ¬ (2 : ℤ) ∣ n := by
-              rw [hneg]
+    {
+      intro n hk
+      by_cases hsmall : n.natAbs ≤ 1
+      · {
+          have htri : n = -1 ∨ n = 0 ∨ n = 1 := by
+            omega
+          rcases htri with hneg | hzero | hone
+          · {
+              have hquot := OneOneTwoQuotient p hQ hC hD n
+              have hodd : ¬ (2 : ℤ) ∣ n := by
+                rw [hneg]
+                decide
+              rw [if_neg hodd] at hquot
+              refine ⟨1, by omega, ?_⟩
+              rw [show (1 : ℕ) = 0 + 1 by omega, Iterate]
+              rw [hquot, hneg]
               decide
-            rw [if_neg hodd] at hquot
-            refine ⟨1, by omega, ?_⟩
-            rw [show (1 : ℕ) = 0 + 1 by omega, Iterate]
-            rw [hquot, hneg]
-            decide
-          }
-        · {
-            exact ⟨0, Nat.zero_le _, Or.inl (by simpa [Iterate, hzero])⟩
-          }
-        · {
-            exact ⟨0, Nat.zero_le _, Or.inr (by simpa [Iterate, hone])⟩
-          }
-      }
-    · {
-        have hbig : 2 ≤ n.natAbs := by omega
-        have hquot := OneOneTwoQuotient p hQ hC hD n
-        have hdrop : (H n).natAbs < n.natAbs := by
-          by_cases hdiv : (2 : ℤ) ∣ n
-          · {
-              rw [if_pos hdiv] at hquot
-              have hhalf : (n / 2).natAbs = n.natAbs / 2 := by
-                obtain ⟨m, hm⟩ := hdiv
-                have hm2 : n = m * 2 := by rw [hm]; ring
-                rw [hm2, Int.mul_ediv_cancel _ (by decide : (2 : ℤ) ≠ 0)]
-                rw [Int.natAbs_mul, show (2 : ℤ).natAbs = 2 by decide]
-                omega
-              rw [hquot, hhalf]
-              omega
             }
           · {
-              rw [if_neg hdiv] at hquot
-              have hmod : n % 2 = 1 := by
-                have hne : n % 2 ≠ 0 := by
-                  intro hz
-                  exact hdiv (Int.dvd_of_emod_eq_zero hz)
-                have hlt : n % 2 < 2 :=
-                  Int.emod_lt_of_pos n (by decide)
-                have hge : 0 ≤ n % 2 :=
-                  Int.emod_nonneg n (by decide)
-                omega
-              have hsplit := Int.emod_add_mul_ediv n 2
-              have habs : ((n + 1) / 2).natAbs < n.natAbs := by
-                have hrewrite : n + 1 = 2 * (n / 2) + 2 := by
-                  rw [← hsplit, hmod]
-                  ring
-                have hquot2 : (n + 1) / 2 = n / 2 + 1 := by
-                  rw [hrewrite]
-                  exact Int.add_mul_ediv_right (n / 2) 1 (by decide)
-                -- The odd seed is at least 3 in absolute value.
-                have h3 : 3 ≤ n.natAbs := by
-                  have hnot2 : n.natAbs ≠ 2 := by
-                    intro h2
-                    have hsign : n = 2 ∨ n = -2 := by
-                      have : n = (n.natAbs : ℤ) ∨
-                          n = -((n.natAbs : ℤ)) := by
-                        cases n with
-                        | ofNat _ => left; rfl
-                        | negSucc _ => right; rfl
-                      rw [h2] at this
-                      exact this
-                    rcases hsign with hp | hn
-                    · exact hdiv (by rw [hp]; exact ⟨1, by decide⟩)
-                    · exact hdiv (by rw [hn]; exact ⟨-1, by decide⟩)
-                  omega
-                rw [hquot2]
-                -- |n/2 + 1| is strictly smaller than |n| for |n|≥3.
-                have hbound : (n / 2 + 1).natAbs ≤ (n.natAbs + 1) / 2 := by
-                  have hle : (n / 2).natAbs ≤ n.natAbs / 2 :=
-                    Int.natAbs_ediv_le_natAbs_div_natAbs n 2
-                  -- Not always |a+1| ≤ |a|+1 is enough, then compare.
-                  have hone : (n / 2 + 1).natAbs ≤ (n / 2).natAbs + 1 :=
-                    Int.natAbs_add_le (n / 2) 1
-                  have h1 : (1 : ℤ).natAbs = 1 := by decide
-                  rw [h1] at hone
-                  omega
-                omega
-              rw [hquot]
-              exact habs
+              exact ⟨0, Nat.zero_le _, Or.inl (by simpa [Iterate, hzero])⟩
             }
-        have hkey : (H n).natAbs < k := by
-          rw [← hk]
-          exact hdrop
-        obtain ⟨t, ht, henter⟩ :=
-          ih (H n).natAbs hkey (H n) rfl
-        refine ⟨t + 1, ?_, ?_⟩
-        · {
-            have hstep : t + 1 ≤ (H n).natAbs + 1 :=
-              Nat.add_le_add_right ht 1
-            have hlt : (H n).natAbs + 1 ≤ n.natAbs := by
-              rw [hk]
-              omega
-            exact le_trans hstep hlt
-          }
-        · {
-            simpa [Iterate, Nat.add_comm, H] using henter
-          }
-      }
+          · {
+              exact ⟨0, Nat.zero_le _, Or.inr (by simpa [Iterate, hone])⟩
+            }
+        }
+      · {
+          have hbig : 2 ≤ n.natAbs := by omega
+          have hquot := OneOneTwoQuotient p hQ hC hD n
+          have hdrop : (H n).natAbs < n.natAbs := by
+            by_cases hdiv : (2 : ℤ) ∣ n
+            · {
+                rw [if_pos hdiv] at hquot
+                have hhalf : (n / 2).natAbs = n.natAbs / 2 := by
+                  obtain ⟨m, hm⟩ := hdiv
+                  have hm2 : n = m * 2 := by rw [hm]; ring
+                  rw [hm2, Int.mul_ediv_cancel _ (by decide : (2 : ℤ) ≠ 0)]
+                  rw [Int.natAbs_mul, show (2 : ℤ).natAbs = 2 by decide]
+                  omega
+                rw [hquot, hhalf]
+                omega
+              }
+            · {
+                rw [if_neg hdiv] at hquot
+                have hmod : n % 2 = 1 := by
+                  have hne : n % 2 ≠ 0 := by
+                    intro hz
+                    exact hdiv (Int.dvd_of_emod_eq_zero hz)
+                  have hlt : n % 2 < 2 :=
+                    Int.emod_lt_of_pos n (by decide)
+                  have hge : 0 ≤ n % 2 :=
+                    Int.emod_nonneg n (by decide)
+                  omega
+                have hsplit := Int.emod_add_mul_ediv n 2
+                have habs : ((n + 1) / 2).natAbs < n.natAbs := by
+                  have hrewrite : n + 1 = 2 * (n / 2) + 2 := by
+                    rw [← hsplit, hmod]
+                    ring
+                  have hquot2 : (n + 1) / 2 = n / 2 + 1 := by
+                    rw [hrewrite]
+                    exact Int.add_mul_ediv_right (n / 2) 1 (by decide)
+                  -- The odd seed is at least 3 in absolute value.
+                  have h3 : 3 ≤ n.natAbs := by
+                    have hnot2 : n.natAbs ≠ 2 := by
+                      intro h2
+                      have hsign : n = 2 ∨ n = -2 := by
+                        have : n = (n.natAbs : ℤ) ∨
+                            n = -((n.natAbs : ℤ)) := by
+                          cases n with
+                          | ofNat _ => { left; rfl }
+                          | negSucc _ => { right; rfl }
+                        rw [h2] at this
+                        exact this
+                      rcases hsign with hp | hn
+                      · exact hdiv (by rw [hp]; exact ⟨1, by decide⟩)
+                      · exact hdiv (by rw [hn]; exact ⟨-1, by decide⟩)
+                    omega
+                  rw [hquot2]
+                  -- |n/2 + 1| is strictly smaller than |n| for |n|≥3.
+                  have hbound : (n / 2 + 1).natAbs ≤ (n.natAbs + 1) / 2 := by
+                    have hle : (n / 2).natAbs ≤ n.natAbs / 2 :=
+                      Int.natAbs_ediv_le_natAbs_div_natAbs n 2
+                    -- Not always |a+1| ≤ |a|+1 is enough, then compare.
+                    have hone : (n / 2 + 1).natAbs ≤ (n / 2).natAbs + 1 :=
+                      Int.natAbs_add_le (n / 2) 1
+                    have h1 : (1 : ℤ).natAbs = 1 := by decide
+                    rw [h1] at hone
+                    omega
+                  omega
+                rw [hquot]
+                exact habs
+              }
+          have hkey : (H n).natAbs < k := by
+            rw [← hk]
+            exact hdrop
+          obtain ⟨t, ht, henter⟩ :=
+            ih (H n).natAbs hkey (H n) rfl
+          refine ⟨t + 1, ?_, ?_⟩
+          · {
+              have hstep : t + 1 ≤ (H n).natAbs + 1 :=
+                Nat.add_le_add_right ht 1
+              have hlt : (H n).natAbs + 1 ≤ n.natAbs := by
+                rw [hk]
+                omega
+              exact le_trans hstep hlt
+            }
+          · {
+              simpa [Iterate, Nat.add_comm, H] using henter
+            }
+        }
+    }
 
 /-- A nonnegative seed has a nonnegative `(1,1,2)` return. -/
 theorem OneOneTwoNonneg (p : Parameters)
@@ -12510,36 +12534,38 @@ theorem UnitOffsetExcessLog (p : Parameters) (hQ : p.Q = 1)
   intro e
   induction e using Nat.strongRecOn with
   | ind e ih =>
-    intro x hx he
-    have hstep := UnitOffsetExcess p hQ hcop hd x (by omega)
-    by_cases hshell : (H x).natAbs ≤ N
-    · {
-        refine ⟨1, by omega, ?_⟩
-        simpa [Iterate] using hshell
-      }
-    · {
-        have he' : (H x).natAbs = N + ((H x).natAbs - N) := by omega
-        have hlt : (H x).natAbs - N < e := by omega
-        obtain ⟨t, ht, hsmall⟩ :=
-          ih ((H x).natAbs - N) hlt (H x) he' (by omega)
-        refine ⟨t + 1, ?_, ?_⟩
-        · {
-            have hmul : m * ((H x).natAbs - N) ≤ e := by omega
-            have hlog :
-                Nat.log m ((H x).natAbs - N) + 1 ≤ Nat.log m e := by
-              have hpow :=
-                Nat.pow_log_le_self m (by omega : 1 ≤ (H x).natAbs - N)
-              have hcmp : m ^ (Nat.log m ((H x).natAbs - N) + 1) ≤ e := by
-                rw [Nat.pow_succ]
-                omega
-              exact Nat.le_log_of_pow_le hd hcmp
-            omega
-          }
-        · {
-            rw [Iterate]
-            simpa [IterateAdd] using hsmall
-          }
-      }
+    {
+      intro x hx he
+      have hstep := UnitOffsetExcess p hQ hcop hd x (by omega)
+      by_cases hshell : (H x).natAbs ≤ N
+      · {
+          refine ⟨1, by omega, ?_⟩
+          simpa [Iterate] using hshell
+        }
+      · {
+          have he' : (H x).natAbs = N + ((H x).natAbs - N) := by omega
+          have hlt : (H x).natAbs - N < e := by omega
+          obtain ⟨t, ht, hsmall⟩ :=
+            ih ((H x).natAbs - N) hlt (H x) he' (by omega)
+          refine ⟨t + 1, ?_, ?_⟩
+          · {
+              have hmul : m * ((H x).natAbs - N) ≤ e := by omega
+              have hlog :
+                  Nat.log m ((H x).natAbs - N) + 1 ≤ Nat.log m e := by
+                have hpow :=
+                  Nat.pow_log_le_self m (by omega : 1 ≤ (H x).natAbs - N)
+                have hcmp : m ^ (Nat.log m ((H x).natAbs - N) + 1) ≤ e := by
+                  rw [Nat.pow_succ]
+                  omega
+                exact Nat.le_log_of_pow_le hd hcmp
+              omega
+            }
+          · {
+              rw [Iterate]
+              simpa [IterateAdd] using hsmall
+            }
+        }
+    }
 
 /-- An excess of one enters the shell at the logarithmic time `1`. -/
 theorem UnitOffsetExcessOne (p : Parameters) (hQ : p.Q = 1)
@@ -13415,4 +13441,4 @@ neither alternative. `ClassMissesHasNoHit` is the missed-class half.
 `OddTranslationNotEvery` is the instance `Q = 2`, `C = 1`, `D = 2`.
 -/
 
-end GeneralizedCollatz
+end GeneralizedCollatz.SignedReturnUniform

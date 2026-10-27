@@ -55,12 +55,9 @@ of $`d`$, so the universal quantifier over earlier times survives in both
 directions. The raw seed and the raw clock are not replaced by residue
 representatives.
 
-**DIFFICULTY DECREASE.** The unresolved comparisons are indexed by the time
-$`i\in\mathbb{N}`$. One application of distributivity removes that entire
-family: after the identity, no time-indexed divisibility comparison remains
-open. The decreasing resource is the number of open comparisons, which falls
-from a family indexed by $`\mathbb{N}`$ to zero. There is no residual child
-indexed by time, and the proof does not recurse on $`j`$.
+**DIFFICULTY DECREASE.** The identity proves congruence at every time in one
+calculation, eliminating separate divisibility comparisons. It does not decide
+whether a hit exists.
 
 **PRESERVATION CONDITIONS.** The algebraic identity quantifies over all
 integers $`q,c,n,t,d`$ and all natural numbers $`j`$, with no positivity,
@@ -78,7 +75,4 @@ statement about raw iterates.
   a large state.
 - Equality of a raw iterate with the affine state is not proved. That
   equality needs a division-free prefix and is not a consequence of the shift.
-- No return map, core bound, trap classification, density, or classical
-  convergence statement is proved.
-- Agreement of the difference identity on a finite set of integers is not a
-  proof for every integer. The proof is the identity above.
+- The result transports first-hit times; it does not classify raw orbits.

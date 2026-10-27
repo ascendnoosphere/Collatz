@@ -8,8 +8,8 @@ import (
 	"testing"
 )
 
-// referenceStep computes the raw map without using production arithmetic buffers.
-func referenceStep(n, q, c, d *big.Int) *big.Int {
+// ReferenceStep computes the raw map without using production arithmetic buffers.
+func ReferenceStep(n, q, c, d *big.Int) *big.Int {
 	remainder := new(big.Int).Mod(new(big.Int).Set(n), d)
 	if remainder.Sign() == 0 {
 		return new(big.Int).Quo(new(big.Int).Set(n), d)
@@ -17,8 +17,8 @@ func referenceStep(n, q, c, d *big.Int) *big.Int {
 	return new(big.Int).Add(new(big.Int).Mul(q, n), c)
 }
 
-// referenceCertificate follows the raw map through the initial divisions and affine tail.
-func referenceCertificate(seed *big.Int, tailSteps uint64, p *Parameters) (
+// ReferenceCertificate follows the raw map through the initial divisions and affine tail.
+func ReferenceCertificate(seed *big.Int, tailSteps uint64, p *Parameters) (
 	uint64,
 	*big.Int,
 	*big.Int,
@@ -26,18 +26,18 @@ func referenceCertificate(seed *big.Int, tailSteps uint64, p *Parameters) (
 	state := new(big.Int).Set(seed)
 	var divisions uint64
 	for new(big.Int).Mod(new(big.Int).Set(state), &p.D).Sign() == 0 {
-		state = referenceStep(state, &p.Q, &p.C, &p.D)
+		state = ReferenceStep(state, &p.Q, &p.C, &p.D)
 		divisions++
 	}
 	anchor := new(big.Int).Set(state)
 	for j := uint64(0); j < tailSteps; j++ {
-		state = referenceStep(state, &p.Q, &p.C, &p.D)
+		state = ReferenceStep(state, &p.Q, &p.C, &p.D)
 	}
 	return divisions, anchor, state
 }
 
-// referenceFormula evaluates the affine tail without production helpers.
-func referenceFormula(anchor *big.Int, tailSteps uint64, p *Parameters) *big.Int {
+// ReferenceFormula evaluates the affine tail without production helpers.
+func ReferenceFormula(anchor *big.Int, tailSteps uint64, p *Parameters) *big.Int {
 	exponent := new(big.Int).SetUint64(tailSteps)
 	power := new(big.Int).Exp(&p.Q, exponent, nil)
 	geometric := new(big.Int).Sub(new(big.Int).Set(power), big.NewInt(1))
@@ -78,8 +78,8 @@ func TestExhaustiveSmallBarriers(t *testing.T) {
 						t.Fatalf("q=%d c=%d d=%d seed=%d: %v", q, c, d, seedValue, err)
 					}
 					wantDivisions, wantAnchor, wantFinal :=
-						referenceCertificate(seed, 12, &p)
-					wantFormula := referenceFormula(wantAnchor, 12, &p)
+						ReferenceCertificate(seed, 12, &p)
+					wantFormula := ReferenceFormula(wantAnchor, 12, &p)
 					if certificate.InitialDivisions != wantDivisions ||
 						certificate.Anchor.Cmp(wantAnchor) != 0 ||
 						certificate.FinalState.Cmp(wantFinal) != 0 ||
@@ -132,7 +132,7 @@ func TestLargeIntegers(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	wantDivisions, wantAnchor, wantFinal := referenceCertificate(seed, 7, &p)
+	wantDivisions, wantAnchor, wantFinal := ReferenceCertificate(seed, 7, &p)
 	if wantDivisions != 4 || certificate.InitialDivisions != wantDivisions ||
 		certificate.Anchor.Cmp(wantAnchor) != 0 || certificate.FinalState.Cmp(wantFinal) != 0 {
 		t.Fatal("large-integer certificate mismatch")

@@ -40,31 +40,31 @@ type Totals struct {
 	Failures uint64
 }
 
-// check records one comparison.
-func (t *Totals) check(ok bool) {
+// Check records one comparison.
+func (t *Totals) Check(ok bool) {
 	t.Checks++
 	if !ok {
 		t.Failures++
 	}
 }
 
-// add accumulates a worker total into the receiver.
-func (t *Totals) add(other Totals) {
+// Add accumulates a worker total into the receiver.
+func (t *Totals) Add(other Totals) {
 	t.Checks += other.Checks
 	t.Failures += other.Failures
 }
 
-// absInt returns the absolute value of a grid integer. The grid excludes
+// AbsInt returns the absolute value of a grid integer. The grid excludes
 // the most negative int64, so the negation does not overflow.
-func absInt(v int64) int64 {
+func AbsInt(v int64) int64 {
 	if v < 0 {
 		return -v
 	}
 	return v
 }
 
-// powInt returns q^j for a nonnegative exponent on the stated grid.
-func powInt(q int64, j int) int64 {
+// PowInt returns q^j for a nonnegative exponent on the stated grid.
+func PowInt(q int64, j int) int64 {
 	out := int64(1)
 	for i := 0; i < j; i++ {
 		out *= q
@@ -72,8 +72,8 @@ func powInt(q int64, j int) int64 {
 	return out
 }
 
-// trapSum returns U_j(q), the sum of q^0 through q^(j-1), with U_0(q) = 0.
-func trapSum(q int64, j int) int64 {
+// TrapSum returns U_j(q), the sum of q^0 through q^(j-1), with U_0(q) = 0.
+func TrapSum(q int64, j int) int64 {
 	sum := int64(0)
 	pow := int64(1)
 	for i := 0; i < j; i++ {
@@ -83,31 +83,31 @@ func trapSum(q int64, j int) int64 {
 	return sum
 }
 
-// affineState returns q^j*n + c*U_j(q).
-func affineState(q, c int64, j int, n int64) int64 {
-	return powInt(q, j)*n + c*trapSum(q, j)
+// AffineState returns q^j*n + c*U_j(q).
+func AffineState(q, c int64, j int, n int64) int64 {
+	return PowInt(q, j)*n + c*TrapSum(q, j)
 }
 
-// rawStep applies one raw step. Go truncation toward zero is exact division
+// RawStep applies one raw step. Go truncation toward zero is exact division
 // when D divides n. The caller must not pass a zero divisor.
-func rawStep(q, c, D, n int64) int64 {
+func RawStep(q, c, D, n int64) int64 {
 	if n%D == 0 {
 		return n / D
 	}
 	return q*n + c
 }
 
-// rawAt returns the raw state at time j. The time is the decision length.
-func rawAt(q, c, D, n int64, j int) int64 {
+// RawAt returns the raw state at time j. The time is the decision length.
+func RawAt(q, c, D, n int64, j int) int64 {
 	cur := n
 	for i := 0; i < j; i++ {
-		cur = rawStep(q, c, D, cur)
+		cur = RawStep(q, c, D, cur)
 	}
 	return cur
 }
 
-// modNorm returns the residue of n modulo m in 0..m-1. The modulus is positive.
-func modNorm(n, m int64) int64 {
+// ModNorm returns the residue of n modulo m in 0..m-1. The modulus is positive.
+func ModNorm(n, m int64) int64 {
 	r := n % m
 	if r < 0 {
 		r += m
@@ -115,11 +115,11 @@ func modNorm(n, m int64) int64 {
 	return r
 }
 
-// leastRaw returns the least time in 0..|D|-1 at which D divides the raw
+// LeastRaw returns the least time in 0..|D|-1 at which D divides the raw
 // state, or -1 when no such time exists. It returns -2 when |D| is outside
 // the decision range, including D = 0.
-func leastRaw(q, c, D, n int64) int {
-	m := absInt(D)
+func LeastRaw(q, c, D, n int64) int {
+	m := AbsInt(D)
 	if D == 0 || m < 2 || m > dichMaxM {
 		return -2
 	}
@@ -129,22 +129,22 @@ func leastRaw(q, c, D, n int64) int {
 			return j
 		}
 		if j+1 < int(m) {
-			cur = rawStep(q, c, D, cur)
+			cur = RawStep(q, c, D, cur)
 		}
 	}
 	return -1
 }
 
-// leastAffine returns the least time in 0..|D|-1 at which D divides the
+// LeastAffine returns the least time in 0..|D|-1 at which D divides the
 // affine state, or -1 when no such time exists. It returns -2 when |D| is
 // outside the decision range, including D = 0.
-func leastAffine(q, c, D, n int64) int {
-	m := absInt(D)
+func LeastAffine(q, c, D, n int64) int {
+	m := AbsInt(D)
 	if D == 0 || m < 2 || m > dichMaxM {
 		return -2
 	}
 	for j := 0; j < int(m); j++ {
-		if affineState(q, c, j, n)%D == 0 {
+		if AffineState(q, c, j, n)%D == 0 {
 			return j
 		}
 	}
@@ -158,11 +158,11 @@ func IsFirstHit(q, c, D, n int64, j int) bool {
 	if D == 0 || j < 0 {
 		return false
 	}
-	if affineState(q, c, j, n)%D != 0 {
+	if AffineState(q, c, j, n)%D != 0 {
 		return false
 	}
 	for i := 0; i < j; i++ {
-		if affineState(q, c, i, n)%D == 0 {
+		if AffineState(q, c, i, n)%D == 0 {
 			return false
 		}
 	}
@@ -174,7 +174,7 @@ func IsFirstHit(q, c, D, n int64, j int) bool {
 // residues agree, and each of those raw states equals the affine state. It
 // is false when |D| is outside 2..dichMaxM, and false when a division occurs.
 func IsTrapped(q, c, D, n int64) bool {
-	m := absInt(D)
+	m := AbsInt(D)
 	if D == 0 || m < 2 || m > dichMaxM {
 		return false
 	}
@@ -182,21 +182,21 @@ func IsTrapped(q, c, D, n int64) bool {
 	cur := n
 	collision := false
 	for i := 0; i < int(m); i++ {
-		if cur%D == 0 || modNorm(cur, m) == 0 {
+		if cur%D == 0 || ModNorm(cur, m) == 0 {
 			return false
 		}
-		r := modNorm(cur, m)
+		r := ModNorm(cur, m)
 		for k := 0; k < i; k++ {
 			if res[k] == r {
 				collision = true
 			}
 		}
 		res[i] = r
-		if affineState(q, c, i, n) != cur {
+		if AffineState(q, c, i, n) != cur {
 			return false
 		}
 		if i+1 < int(m) {
-			cur = rawStep(q, c, D, cur)
+			cur = RawStep(q, c, D, cur)
 		}
 	}
 	return collision
@@ -207,12 +207,12 @@ func IsTrapped(q, c, D, n int64) bool {
 // hit exactly when the seed is not trapped. It is false when |D| is outside
 // 2..dichMaxM, so a constant-true replacement fails that input.
 func ExistsHitIffNotTrapped(q, c, D, n int64) bool {
-	m := absInt(D)
+	m := AbsInt(D)
 	if D == 0 || m < 2 || m > dichMaxM {
 		return false
 	}
-	rawJ := leastRaw(q, c, D, n)
-	affJ := leastAffine(q, c, D, n)
+	rawJ := LeastRaw(q, c, D, n)
+	affJ := LeastAffine(q, c, D, n)
 	if rawJ != affJ {
 		return false
 	}
@@ -235,33 +235,33 @@ func ExpectedChecks() uint64 {
 	return nQ * nC * nD * nN * dichPerSeed
 }
 
-// sweepQ checks one multiplier on the whole offset, divisor, and seed grid.
+// SweepQ checks one multiplier on the whole offset, divisor, and seed grid.
 // Each seed contributes dichPerSeed comparisons: the two least times agree,
 // trapping agrees with absence of a raw division, the first-hit predicate
 // agrees with that time, and the equivalence predicate accepts the seed.
-func sweepQ(q int64) Totals {
+func SweepQ(q int64) Totals {
 	var t Totals
 	for c := int64(-dichAbsC); c <= dichAbsC; c++ {
 		for _, D := range dichDivisors {
 			for n := int64(-dichAbsN); n <= dichAbsN; n++ {
-				rawJ := leastRaw(q, c, D, n)
-				affJ := leastAffine(q, c, D, n)
-				t.check(rawJ == affJ)
-				t.check(IsTrapped(q, c, D, n) == (rawJ < 0))
+				rawJ := LeastRaw(q, c, D, n)
+				affJ := LeastAffine(q, c, D, n)
+				t.Check(rawJ == affJ)
+				t.Check(IsTrapped(q, c, D, n) == (rawJ < 0))
 				if rawJ < 0 {
-					t.check(!IsFirstHit(q, c, D, n, 0))
+					t.Check(!IsFirstHit(q, c, D, n, 0))
 				} else {
-					t.check(IsFirstHit(q, c, D, n, rawJ))
+					t.Check(IsFirstHit(q, c, D, n, rawJ))
 				}
-				t.check(ExistsHitIffNotTrapped(q, c, D, n))
+				t.Check(ExistsHitIffNotTrapped(q, c, D, n))
 			}
 		}
 	}
 	return t
 }
 
-// sweepDichotomy splits the multiplier range across workers and sums totals.
-func sweepDichotomy() Totals {
+// SweepDichotomy splits the multiplier range across workers and sums totals.
+func SweepDichotomy() Totals {
 	nQ := 2*dichAbsQ + 1
 	qs := make([]int64, 0, nQ)
 	for q := int64(-dichAbsQ); q <= dichAbsQ; q++ {
@@ -274,21 +274,21 @@ func sweepDichotomy() Totals {
 		go func(worker int) {
 			defer wg.Done()
 			for i := worker; i < len(qs); i += dichWorkers {
-				parts[i] = sweepQ(qs[i])
+				parts[i] = SweepQ(qs[i])
 			}
 		}(worker)
 	}
 	wg.Wait()
 	var total Totals
 	for _, part := range parts {
-		total.add(part)
+		total.Add(part)
 	}
 	return total
 }
 
 // main prints the number of comparisons and exits nonzero on a disagreement.
 func main() {
-	total := sweepDichotomy()
+	total := SweepDichotomy()
 	fmt.Printf("dichotomy checks: %d, failures: %d\n", total.Checks, total.Failures)
 	if total.Failures != 0 {
 		os.Exit(1)

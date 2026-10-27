@@ -32,22 +32,22 @@ type Totals struct {
 	Failures uint64
 }
 
-// check records one comparison.
-func (t *Totals) check(ok bool) {
+// Check records one comparison.
+func (t *Totals) Check(ok bool) {
 	t.Checks++
 	if !ok {
 		t.Failures++
 	}
 }
 
-// add accumulates a worker total into the receiver.
-func (t *Totals) add(other Totals) {
+// Add accumulates a worker total into the receiver.
+func (t *Totals) Add(other Totals) {
 	t.Checks += other.Checks
 	t.Failures += other.Failures
 }
 
-// absInt returns the absolute value of an integer on the stated grid.
-func absInt(x int64) int64 {
+// AbsInt returns the absolute value of an integer on the stated grid.
+func AbsInt(x int64) int64 {
 	if x < 0 {
 		return -x
 	}
@@ -61,11 +61,6 @@ type Workspace struct {
 	A     int64
 	Quot  int64
 	Exact bool
-}
-
-// NewWorkspace returns an empty divisor-state workspace.
-func NewWorkspace() *Workspace {
-	return &Workspace{}
 }
 
 // Load stores D and a. When D is zero or the remainder is nonzero, Exact is
@@ -102,7 +97,7 @@ func (w *Workspace) AbsProductOK() bool {
 	if !w.Exact {
 		return false
 	}
-	return absInt(w.D)*absInt(w.Quot) == absInt(w.A)
+	return AbsInt(w.D)*AbsInt(w.Quot) == AbsInt(w.A)
 }
 
 // ProductExact is the signed product predicate. It is false for a zero
@@ -143,10 +138,10 @@ func NewCache() *Cache {
 	return &Cache{Divisors: divisors, States: states}
 }
 
-// sweepRange checks every pair from the two slices. An exact pair contributes
+// SweepRange checks every pair from the two slices. An exact pair contributes
 // the product equality and the absolute-value equality. Any other pair
 // contributes two rejections. The quotient of a rejection stays zero.
-func sweepRange(divs, states []int64) Totals {
+func SweepRange(divs, states []int64) Totals {
 	divs = divs[:len(divs)]
 	states = states[:len(states)]
 	var t Totals
@@ -156,20 +151,20 @@ func sweepRange(divs, states []int64) Totals {
 		for j := 0; j < len(divs); j++ {
 			w.Load(divs[j], a)
 			if w.Exact {
-				t.check(w.ProductOK())
-				t.check(w.AbsProductOK())
+				t.Check(w.ProductOK())
+				t.Check(w.AbsProductOK())
 			} else {
-				t.check(w.Quot == 0)
-				t.check(!w.ProductOK())
-				t.check(!w.AbsProductOK())
+				t.Check(w.Quot == 0)
+				t.Check(!w.ProductOK())
+				t.Check(!w.AbsProductOK())
 			}
 		}
 	}
 	return t
 }
 
-// sweepProduct splits the state list across workers and sums their totals.
-func sweepProduct(cache *Cache) Totals {
+// SweepProduct splits the state list across workers and sums their totals.
+func SweepProduct(cache *Cache) Totals {
 	states := cache.States
 	n := len(states)
 	width := (n + productWorkers - 1) / productWorkers
@@ -187,20 +182,20 @@ func sweepProduct(cache *Cache) Totals {
 		wg.Add(1)
 		go func(idx, begin, end int) {
 			defer wg.Done()
-			parts[idx] = sweepRange(cache.Divisors, states[begin:end])
+			parts[idx] = SweepRange(cache.Divisors, states[begin:end])
 		}(i, begin, end)
 	}
 	wg.Wait()
 	var total Totals
 	for i := 0; i < len(parts); i++ {
-		total.add(parts[i])
+		total.Add(parts[i])
 	}
 	return total
 }
 
 // main prints the number of comparisons and exits nonzero on a disagreement.
 func main() {
-	total := sweepProduct(NewCache())
+	total := SweepProduct(NewCache())
 	fmt.Printf("product checks: %d, failures: %d\n", total.Checks, total.Failures)
 	if total.Failures != 0 {
 		os.Exit(1)

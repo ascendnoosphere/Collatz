@@ -8,9 +8,9 @@ import (
 	"testing"
 )
 
-// referenceOffset returns U_j(q) from the closed form (q^j-1)/(q-1), with the
+// ReferenceOffset returns U_j(q) from the closed form (q^j-1)/(q-1), with the
 // two degenerate cases U_0(q) = 0 and U_j(1) = j. The quotient is exact.
-func referenceOffset(q int64, j int) *big.Int {
+func ReferenceOffset(q int64, j int) *big.Int {
 	if j == 0 {
 		return big.NewInt(0)
 	}
@@ -22,16 +22,16 @@ func referenceOffset(q int64, j int) *big.Int {
 	return num.Quo(num, big.NewInt(q-1))
 }
 
-// referenceAffine returns q^j*n + c*U_j(q) with big-integer arithmetic.
-func referenceAffine(q, c int64, j int, n int64) *big.Int {
+// ReferenceAffine returns q^j*n + c*U_j(q) with big-integer arithmetic.
+func ReferenceAffine(q, c int64, j int, n int64) *big.Int {
 	pow := new(big.Int).Exp(big.NewInt(q), big.NewInt(int64(j)), nil)
 	term := new(big.Int).Mul(pow, big.NewInt(n))
-	offset := new(big.Int).Mul(big.NewInt(c), referenceOffset(q, j))
+	offset := new(big.Int).Mul(big.NewInt(c), ReferenceOffset(q, j))
 	return term.Add(term, offset)
 }
 
-// referenceStep applies one raw step with big-integer truncation toward zero.
-func referenceStep(q, c, D int64, n *big.Int) *big.Int {
+// ReferenceStep applies one raw step with big-integer truncation toward zero.
+func ReferenceStep(q, c, D int64, n *big.Int) *big.Int {
 	bigD := big.NewInt(D)
 	if new(big.Int).Rem(n, bigD).Sign() == 0 {
 		return new(big.Int).Quo(n, bigD)
@@ -40,42 +40,42 @@ func referenceStep(q, c, D int64, n *big.Int) *big.Int {
 	return out.Add(out, big.NewInt(c))
 }
 
-// referenceRaw returns the raw state at time j.
-func referenceRaw(q, c, D, n int64, j int) *big.Int {
+// ReferenceRaw returns the raw state at time j.
+func ReferenceRaw(q, c, D, n int64, j int) *big.Int {
 	cur := big.NewInt(n)
 	for i := 0; i < j; i++ {
-		cur = referenceStep(q, c, D, cur)
+		cur = ReferenceStep(q, c, D, cur)
 	}
 	return cur
 }
 
-// referenceRawClean reports that no raw state before time j is divisible.
-func referenceRawClean(q, c, D, n int64, j int) bool {
+// ReferenceRawClean reports that no raw state before time j is divisible.
+func ReferenceRawClean(q, c, D, n int64, j int) bool {
 	cur := big.NewInt(n)
 	bigD := big.NewInt(D)
 	for i := 0; i < j; i++ {
 		if new(big.Int).Rem(cur, bigD).Sign() == 0 {
 			return false
 		}
-		cur = referenceStep(q, c, D, cur)
+		cur = ReferenceStep(q, c, D, cur)
 	}
 	return true
 }
 
-// referenceAffineClean reports that no affine state before time j is divisible.
-func referenceAffineClean(q, c, D, n int64, j int) bool {
+// ReferenceAffineClean reports that no affine state before time j is divisible.
+func ReferenceAffineClean(q, c, D, n int64, j int) bool {
 	bigD := big.NewInt(D)
 	for i := 0; i < j; i++ {
-		if new(big.Int).Rem(referenceAffine(q, c, i, n), bigD).Sign() == 0 {
+		if new(big.Int).Rem(ReferenceAffine(q, c, i, n), bigD).Sign() == 0 {
 			return false
 		}
 	}
 	return true
 }
 
-// referenceEqual reports whether the raw state and the affine state agree.
-func referenceEqual(q, c, D, n int64, j int) bool {
-	return referenceRaw(q, c, D, n, j).Cmp(referenceAffine(q, c, j, n)) == 0
+// ReferenceEqual reports whether the raw state and the affine state agree.
+func ReferenceEqual(q, c, D, n int64, j int) bool {
+	return ReferenceRaw(q, c, D, n, j).Cmp(ReferenceAffine(q, c, j, n)) == 0
 }
 
 // TestHandPrefixes locks the two sides to integers computed by hand, including
@@ -83,23 +83,23 @@ func referenceEqual(q, c, D, n int64, j int) bool {
 func TestHandPrefixes(t *testing.T) {
 	clean := []int64{1, 3}
 	for j, want := range clean {
-		if rawIterate(2, 1, 3, 1, j) != want || affineState(2, 1, j, 1) != want {
+		if RawIterate(2, 1, 3, 1, j) != want || AffineState(2, 1, j, 1) != want {
 			t.Fatalf("clean prefix at %d is not %d", j, want)
 		}
 		if !PrefixAgrees(2, 1, 3, 1, j) || !AffinePrefixAgrees(2, 1, 3, 1, j) {
 			t.Fatalf("clean prefix at %d rejected", j)
 		}
 	}
-	if rawIterate(2, 1, 3, 1, 2) != 1 || affineState(2, 1, 2, 1) != 7 {
+	if RawIterate(2, 1, 3, 1, 2) != 1 || AffineState(2, 1, 2, 1) != 7 {
 		t.Fatal("post-division states are not 1 and 7")
 	}
 	neg := []int64{-4, 11, -19, 41, -79, 161, -319}
 	for j, want := range neg {
-		if rawIterate(-2, 3, -5, -4, j) != want {
-			t.Fatalf("negative raw prefix at %d: got %d", j, rawIterate(-2, 3, -5, -4, j))
+		if RawIterate(-2, 3, -5, -4, j) != want {
+			t.Fatalf("negative raw prefix at %d: got %d", j, RawIterate(-2, 3, -5, -4, j))
 		}
-		if affineState(-2, 3, j, -4) != want {
-			t.Fatalf("negative affine prefix at %d: got %d", j, affineState(-2, 3, j, -4))
+		if AffineState(-2, 3, j, -4) != want {
+			t.Fatalf("negative affine prefix at %d: got %d", j, AffineState(-2, 3, j, -4))
 		}
 	}
 }
@@ -116,7 +116,7 @@ func TestPredicateRejectsDividedPrefix(t *testing.T) {
 	if PrefixAgrees(0, 2, 2, 1, 2) || AffinePrefixAgrees(0, 2, 2, 1, 2) {
 		t.Fatal("zero multiplier accepted the time after division")
 	}
-	if rawIterate(0, 2, 2, 1, 2) == affineState(0, 2, 2, 1) {
+	if RawIterate(0, 2, 2, 1, 2) == AffineState(0, 2, 2, 1) {
 		t.Fatal("zero-multiplier sides agree after division")
 	}
 }
@@ -130,8 +130,8 @@ func TestGridMatchesClosedForm(t *testing.T) {
 			for _, D := range prefixDivisors {
 				for n := int64(-prefixAbsSeed); n <= prefixAbsSeed; n++ {
 					for j := 0; j <= prefixMaxJ; j++ {
-						gotAff := big.NewInt(affineState(q, c, j, n))
-						wantAff := referenceAffine(q, c, j, n)
+						gotAff := big.NewInt(AffineState(q, c, j, n))
+						wantAff := ReferenceAffine(q, c, j, n)
 						if gotAff.Cmp(wantAff) != 0 {
 							t.Fatalf("affine q=%d c=%d j=%d n=%d", q, c, j, n)
 						}
@@ -139,17 +139,17 @@ func TestGridMatchesClosedForm(t *testing.T) {
 							t.Fatalf("affine left the documented bound at %d %d %d %d",
 								q, c, j, n)
 						}
-						gotRaw := big.NewInt(rawIterate(q, c, D, n, j))
-						if gotRaw.Cmp(referenceRaw(q, c, D, n, j)) != 0 {
+						gotRaw := big.NewInt(RawIterate(q, c, D, n, j))
+						if gotRaw.Cmp(ReferenceRaw(q, c, D, n, j)) != 0 {
 							t.Fatalf("raw q=%d c=%d D=%d n=%d j=%d", q, c, D, n, j)
 						}
-						rawClean := referenceRawClean(q, c, D, n, j)
-						affClean := referenceAffineClean(q, c, D, n, j)
-						equal := referenceEqual(q, c, D, n, j)
-						if rawClean != rawPrefixClean(q, c, D, n, j) {
+						rawClean := ReferenceRawClean(q, c, D, n, j)
+						affClean := ReferenceAffineClean(q, c, D, n, j)
+						equal := ReferenceEqual(q, c, D, n, j)
+						if rawClean != RawPrefixClean(q, c, D, n, j) {
 							t.Fatalf("raw guard q=%d c=%d D=%d n=%d j=%d", q, c, D, n, j)
 						}
-						if affClean != affinePrefixClean(q, c, D, n, j) {
+						if affClean != AffinePrefixClean(q, c, D, n, j) {
 							t.Fatalf("affine guard q=%d c=%d D=%d n=%d j=%d", q, c, D, n, j)
 						}
 						if PrefixAgrees(q, c, D, n, j) != (rawClean && equal) {
@@ -183,7 +183,7 @@ func TestGridMatchesClosedForm(t *testing.T) {
 			}
 		}
 	}
-	total := sweepPrefix()
+	total := SweepPrefix()
 	if total.Failures != 0 {
 		t.Fatalf("sweep failures: %d", total.Failures)
 	}

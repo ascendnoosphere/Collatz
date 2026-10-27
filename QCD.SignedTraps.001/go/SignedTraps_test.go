@@ -8,9 +8,9 @@ import (
 	"testing"
 )
 
-// referenceSum recomputes the offset sum from the closed form with exact
+// ReferenceSum recomputes the offset sum from the closed form with exact
 // big-integer arithmetic, independently of the iteration of TrapSumInt.
-func referenceSum(q int64, j int) *big.Int {
+func ReferenceSum(q int64, j int) *big.Int {
 	pow := new(big.Int).Exp(big.NewInt(q), big.NewInt(int64(j)), nil)
 	if q == 1 {
 		return big.NewInt(int64(j))
@@ -20,9 +20,9 @@ func referenceSum(q int64, j int) *big.Int {
 	return num.Quo(num, den)
 }
 
-// referenceStep applies one raw step with big-integer arithmetic, so it is
+// ReferenceStep applies one raw step with big-integer arithmetic, so it is
 // independent of the int64 step of the certificate.
-func referenceStep(q, c, D, n int64) *big.Int {
+func ReferenceStep(q, c, D, n int64) *big.Int {
 	bigD := big.NewInt(D)
 	bigN := big.NewInt(n)
 	rem := new(big.Int).Rem(bigN, bigD)
@@ -38,7 +38,7 @@ func referenceStep(q, c, D, n int64) *big.Int {
 func TestTrapSumMatchesReference(t *testing.T) {
 	for q := int64(-signedTrapMaxQ); q <= signedTrapMaxQ; q++ {
 		for j := 0; j <= signedTrapMaxJ; j++ {
-			want := referenceSum(q, j)
+			want := ReferenceSum(q, j)
 			if !want.IsInt64() {
 				t.Fatalf("reference sum overflows int64 at q=%d j=%d", q, j)
 			}
@@ -53,12 +53,12 @@ func TestTrapSumMatchesReference(t *testing.T) {
 // reference over signed divisors, signed states and both branches, including
 // exact multiples of the divisor and the divisor one.
 func TestStepMatchesReference(t *testing.T) {
-	divisors := append([]int64{1, -1, 4, -4}, signedDivisorList()...)
+	divisors := append([]int64{1, -1, 4, -4}, SignedDivisorList()...)
 	for _, D := range divisors {
 		for q := int64(-4); q <= 4; q++ {
 			for c := int64(-4); c <= 4; c++ {
 				for n := int64(-30); n <= 30; n++ {
-					want := referenceStep(q, c, D, n)
+					want := ReferenceStep(q, c, D, n)
 					if !want.IsInt64() {
 						t.Fatalf("reference step overflows at %d %d %d %d", q, c, D, n)
 					}
@@ -105,15 +105,15 @@ func TestResidueStepInRange(t *testing.T) {
 // reflection pair, and an expanding multiplier escapes.
 func TestOrbitBranches(t *testing.T) {
 	w := NewWorkspace()
-	orbit := fillOrbit(w.Orbit, 2, 1, 3, 9)
+	orbit := FillOrbit(w.Orbit, 2, 1, 3, 9)
 	want := []int64{9, 3, 1, 3, 1}
 	for i, value := range want {
 		if orbit[i] != value {
 			t.Fatalf("orbit at %d: got %d, want %d", i, orbit[i], value)
 		}
 	}
-	orbit = fillOrbit(w.Orbit, 0, 1, 3, 2)
-	if orbit[0] != 2 || !divisionFree(orbit, 3) {
+	orbit = FillOrbit(w.Orbit, 0, 1, 3, 2)
+	if orbit[0] != 2 || !DivisionFree(orbit, 3) {
 		t.Fatalf("zero-multiplier seed 2 is not the trapped walk of 2")
 	}
 	for j := 1; j < len(orbit); j++ {
@@ -121,8 +121,8 @@ func TestOrbitBranches(t *testing.T) {
 			t.Fatalf("trapped zero-multiplier walk at %d: got %d", j, orbit[j])
 		}
 	}
-	orbit = fillOrbit(w.Orbit, 0, 0, 3, 7)
-	if orbit[0] != 7 || divisionFree(orbit, 3) {
+	orbit = FillOrbit(w.Orbit, 0, 0, 3, 7)
+	if orbit[0] != 7 || DivisionFree(orbit, 3) {
 		t.Fatalf("zero-offset walk of 7 was treated as trapped")
 	}
 	for j := 1; j < len(orbit); j++ {
@@ -130,7 +130,7 @@ func TestOrbitBranches(t *testing.T) {
 			t.Fatalf("zero-multiplier walk at %d: got %d", j, orbit[j])
 		}
 	}
-	orbit = fillOrbit(w.Orbit, -1, 0, 7, 5)
+	orbit = FillOrbit(w.Orbit, -1, 0, 7, 5)
 	for j := 0; j < len(orbit); j++ {
 		want := int64(5)
 		if j%2 == 1 {
@@ -140,8 +140,8 @@ func TestOrbitBranches(t *testing.T) {
 			t.Fatalf("reflection walk at %d: got %d, want %d", j, orbit[j], want)
 		}
 	}
-	orbit = fillOrbit(w.Orbit, 2, -4, 3, 25)
-	if !divisionFree(orbit, 3) || !escapes(orbit) {
+	orbit = FillOrbit(w.Orbit, 2, -4, 3, 25)
+	if !DivisionFree(orbit, 3) || !Escapes(orbit) {
 		t.Fatalf("expanding walk of (2,-4,3,25) neither clean nor escaping")
 	}
 	if orbit[signedHorizon] != 352321540 {
@@ -153,25 +153,25 @@ func TestOrbitBranches(t *testing.T) {
 // sweeps to require a second zero-failure pass.
 func TestSweepTotals(t *testing.T) {
 	sum := Totals{}
-	sweepTrapSum(&sum)
+	SweepTrapSum(&sum)
 	if sum.Checks != 1010 || sum.Failures != 0 {
 		t.Fatalf("offset sums: %d checks, %d failures", sum.Checks, sum.Failures)
 	}
-	itinerary := runMultiplierSweep(sweepItineraryQ)
+	itinerary := RunMultiplierSweep(SweepItineraryQ)
 	if itinerary.Checks != 99872 || itinerary.Failures != 0 {
 		t.Fatalf("itinerary: %d checks, %d failures", itinerary.Checks, itinerary.Failures)
 	}
-	classes := runMultiplierSweep(classificationQ)
+	classes := RunMultiplierSweep(ClassificationQ)
 	if classes.Checks != 18464 || classes.Failures != 0 {
 		t.Fatalf("classification: %d checks, %d failures", classes.Checks, classes.Failures)
 	}
 	residues := Totals{}
-	sweepResidues(&residues)
+	SweepResidues(&residues)
 	if residues.Checks != 6237 || residues.Failures != 0 {
 		t.Fatalf("residues: %d checks, %d failures", residues.Checks, residues.Failures)
 	}
 	controls := Totals{}
-	sweepControls(NewWorkspace(), &controls)
+	SweepControls(NewWorkspace(), &controls)
 	if controls.Checks != 125 || controls.Failures != 0 {
 		t.Fatalf("controls: %d checks, %d failures", controls.Checks, controls.Failures)
 	}
@@ -180,13 +180,13 @@ func TestSweepTotals(t *testing.T) {
 		t.Fatalf("printed total: got %d, want 125708", total)
 	}
 	repeatSum := Totals{}
-	sweepTrapSum(&repeatSum)
-	repeatWalks := runMultiplierSweep(sweepItineraryQ)
-	repeatClass := runMultiplierSweep(classificationQ)
+	SweepTrapSum(&repeatSum)
+	repeatWalks := RunMultiplierSweep(SweepItineraryQ)
+	repeatClass := RunMultiplierSweep(ClassificationQ)
 	repeatResidues := Totals{}
-	sweepResidues(&repeatResidues)
+	SweepResidues(&repeatResidues)
 	repeatControls := Totals{}
-	sweepControls(NewWorkspace(), &repeatControls)
+	SweepControls(NewWorkspace(), &repeatControls)
 	if repeatSum.Failures+repeatWalks.Failures+repeatClass.Failures+
 		repeatResidues.Failures+repeatControls.Failures != 0 {
 		t.Fatalf("second pass reported a failure")
@@ -198,7 +198,7 @@ func TestSweepTotals(t *testing.T) {
 func TestWarmedAllocation(t *testing.T) {
 	w := NewWorkspace()
 	walk := func() {
-		orbit := fillOrbit(w.Orbit, 2, 1, 5, 11)
+		orbit := FillOrbit(w.Orbit, 2, 1, 5, 11)
 		if len(orbit) != signedHorizon+1 {
 			t.Fatalf("walk length %d", len(orbit))
 		}
@@ -225,8 +225,8 @@ func TestDocumentedRanges(t *testing.T) {
 		t.Fatalf("orbit bound %s reached the documented range", orbitBound)
 	}
 	w := NewWorkspace()
-	orbit := fillOrbit(w.Orbit, 2, -4, -5, -1)
-	if !divisionFree(orbit, 5) || !escapes(orbit) {
+	orbit := FillOrbit(w.Orbit, 2, -4, -5, -1)
+	if !DivisionFree(orbit, 5) || !Escapes(orbit) {
 		t.Fatalf("expanding walk of (2,-4,-5,-1) neither clean nor escaping")
 	}
 }

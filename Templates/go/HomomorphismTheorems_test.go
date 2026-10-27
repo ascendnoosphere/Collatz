@@ -128,6 +128,21 @@ func TestFitConstant(t *testing.T) {
 	ExpectPanic(t, func() { FitConstant([]float64{math.Inf(1)}) })
 }
 
+// TestFitConstantExtremeData keeps finite observations finite before squaring residuals.
+func TestFitConstantExtremeData(t *testing.T) {
+	for _, data := range [][]float64{
+		{1e200, 1e200}, {math.MaxFloat64, math.MaxFloat64},
+		{-math.MaxFloat64, -math.MaxFloat64}, {0, 0},
+	} {
+		if got := FitConstant(data); math.IsNaN(got) || math.IsInf(got, 0) || got != data[0] {
+			t.Errorf("constant fit: got %g, want %g", got, data[0])
+		}
+	}
+	if got := FitConstant([]float64{-math.MaxFloat64, math.MaxFloat64}); math.IsNaN(got) || math.IsInf(got, 0) || math.Abs(got/math.MaxFloat64) > 1e-6 {
+		t.Errorf("symmetric extreme observations: got %g, want zero", got)
+	}
+}
+
 // TestMathLabels checks every needed glyph and the layout metrics used for alignment.
 func TestMathLabels(t *testing.T) {
 	p := plot.New()

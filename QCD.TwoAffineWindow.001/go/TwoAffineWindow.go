@@ -40,8 +40,8 @@ type Workspace struct {
 // GridPredicate reports a boolean at one odd grid cell.
 type GridPredicate func(q, K uint64, w *Workspace) (bool, error)
 
-// prepare stores the fixed coefficients once.
-func (w *Workspace) prepare() {
+// Prepare stores the fixed coefficients once.
+func (w *Workspace) Prepare() {
 	if w.Two.Sign() != 0 {
 		return
 	}
@@ -52,8 +52,8 @@ func (w *Workspace) prepare() {
 	w.Nine.SetInt64(9)
 }
 
-// validatePair accepts only an odd exponent at least 3 and an odd q.
-func validatePair(q, K uint64) error {
+// ValidatePair accepts only an odd exponent at least 3 and an odd q.
+func ValidatePair(q, K uint64) error {
 	if K < 3 || K%2 == 0 {
 		return errors.New("K must be an odd integer at least 3")
 	}
@@ -63,24 +63,24 @@ func validatePair(q, K uint64) error {
 	return nil
 }
 
-// powTwo writes 2^K into out.
-func powTwo(out *big.Int, K uint64) {
+// PowTwo writes 2^K into out.
+func PowTwo(out *big.Int, K uint64) {
 	out.SetUint64(1)
 	out.Lsh(out, uint(K))
 }
 
-// clearedSquare writes (3q+1)^2 into out.
-func clearedSquare(out *big.Int, q uint64, w *Workspace) {
-	w.prepare()
+// ClearedSquare writes (3q+1)^2 into out.
+func ClearedSquare(out *big.Int, q uint64, w *Workspace) {
+	w.Prepare()
 	w.Tmp.SetUint64(q)
 	w.Tmp.Mul(&w.Three, &w.Tmp)
 	w.Tmp.Add(&w.Tmp, &w.One)
 	out.Mul(&w.Tmp, &w.Tmp)
 }
 
-// expandedSquare writes 9q^2+6q+1 into out.
-func expandedSquare(out *big.Int, q uint64, w *Workspace) {
-	w.prepare()
+// ExpandedSquare writes 9q^2+6q+1 into out.
+func ExpandedSquare(out *big.Int, q uint64, w *Workspace) {
+	w.Prepare()
 	w.Tmp.SetUint64(q)
 	w.Acc.Mul(&w.Tmp, &w.Tmp)
 	w.Acc.Mul(&w.Nine, &w.Acc)
@@ -99,36 +99,36 @@ func SquaresMatch(q uint64, w *Workspace) (bool, error) {
 	if w == nil {
 		return false, errors.New("workspace is required")
 	}
-	w.prepare()
-	clearedSquare(&w.Left, q, w)
-	expandedSquare(&w.Right, q, w)
+	w.Prepare()
+	ClearedSquare(&w.Left, q, w)
+	ExpandedSquare(&w.Right, q, w)
 	return w.Left.Cmp(&w.Right) == 0, nil
 }
 
-// ninePowTwo writes 9*2^K into out.
-func ninePowTwo(out *big.Int, K uint64, w *Workspace) {
-	w.prepare()
-	powTwo(&w.Pow, K)
+// NinePowTwo writes 9*2^K into out.
+func NinePowTwo(out *big.Int, K uint64, w *Workspace) {
+	w.Prepare()
+	PowTwo(&w.Pow, K)
 	out.Mul(&w.Nine, &w.Pow)
 }
 
 // Decide reports whether 9*2^K is at most (3q+1)^2.
 func Decide(q, K uint64, w *Workspace) (bool, error) {
-	if err := validatePair(q, K); err != nil {
+	if err := ValidatePair(q, K); err != nil {
 		return false, err
 	}
 	if w == nil {
 		return false, errors.New("workspace is required")
 	}
-	w.prepare()
-	ninePowTwo(&w.Left, K, w)
-	clearedSquare(&w.Right, q, w)
+	w.Prepare()
+	NinePowTwo(&w.Left, K, w)
+	ClearedSquare(&w.Right, q, w)
 	return w.Left.Cmp(&w.Right) <= 0, nil
 }
 
-// integerSqrt writes the greatest integer whose square is at most pow2.
-func integerSqrt(root, pow2 *big.Int, w *Workspace) {
-	w.prepare()
+// IntegerSqrt writes the greatest integer whose square is at most pow2.
+func IntegerSqrt(root, pow2 *big.Int, w *Workspace) {
+	w.Prepare()
 	w.Lo.SetInt64(0)
 	w.Hi.Set(pow2)
 	for w.Lo.Cmp(&w.Hi) < 0 {
@@ -153,17 +153,17 @@ func FloorOf(K uint64, w *Workspace) (uint64, error) {
 	if w == nil {
 		return 0, errors.New("workspace is required")
 	}
-	w.prepare()
-	powTwo(&w.Pow, K)
-	integerSqrt(&w.Root, &w.Pow, w)
+	w.Prepare()
+	PowTwo(&w.Pow, K)
+	IntegerSqrt(&w.Root, &w.Pow, w)
 	if !w.Root.IsUint64() {
 		return 0, errors.New("floor square root exceeds uint64")
 	}
 	return w.Root.Uint64(), nil
 }
 
-// squareBracket checks root^2 < 2^K < (root+1)^2 against the stored power.
-func squareBracket(root uint64, w *Workspace) error {
+// SquareBracket checks root^2 < 2^K < (root+1)^2 against the stored power.
+func SquareBracket(root uint64, w *Workspace) error {
 	if root == ^uint64(0) {
 		return errors.New("successor of the floor does not fit")
 	}
@@ -191,8 +191,8 @@ func OddCandidate(root uint64) (uint64, bool, error) {
 	return root, false, nil
 }
 
-// candidateBranch checks the even-floor failure or the odd-floor identity.
-func candidateBranch(K, root uint64, w *Workspace) error {
+// CandidateBranch checks the even-floor failure or the odd-floor identity.
+func CandidateBranch(K, root uint64, w *Workspace) error {
 	q, evenFloor, err := OddCandidate(root)
 	if err != nil {
 		return err
@@ -258,11 +258,11 @@ func AuditWindow(w *Workspace) (uint64, error) {
 		if err != nil {
 			return n, err
 		}
-		if err := squareBracket(root, w); err != nil {
+		if err := SquareBracket(root, w); err != nil {
 			return n, err
 		}
 		n++
-		if err := candidateBranch(K, root, w); err != nil {
+		if err := CandidateBranch(K, root, w); err != nil {
 			return n, err
 		}
 		n++

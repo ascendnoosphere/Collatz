@@ -135,8 +135,8 @@ theorem ConjugationAffineOrbit (R : Type*) [CommRing R] (a b : R)
       AffineOrbit (Conjugation R a b q) (Conjugation R a b c)
         (Conjugation R a b z) j := by
   induction j with
-  | zero => rfl
-  | succ j ih => simp only [AffineOrbit, map_add, map_mul, ih]
+  | zero => { rfl }
+  | succ j ih => { simp only [AffineOrbit, map_add, map_mul, ih] }
 
 /-- Ramification gives a nonzero Gaussian nilpotent; this quotient cannot be a field. -/
 theorem GaussianRamified :

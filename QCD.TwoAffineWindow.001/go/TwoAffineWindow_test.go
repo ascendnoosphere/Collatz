@@ -7,8 +7,8 @@ import (
 	"testing"
 )
 
-// alwaysTrue ignores the arithmetic and reports success at every positive cell.
-func alwaysTrue(q, K uint64, w *Workspace) (bool, error) {
+// AlwaysTrue ignores the arithmetic and reports success at every positive cell.
+func AlwaysTrue(q, K uint64, w *Workspace) (bool, error) {
 	if w == nil || q == 0 || K == 0 {
 		return false, errors.New("cell is missing")
 	}
@@ -18,7 +18,7 @@ func alwaysTrue(q, K uint64, w *Workspace) (bool, error) {
 // TestConstantPredicateRejected fails a predicate with no false cell.
 func TestConstantPredicateRejected(t *testing.T) {
 	var w Workspace
-	_, err := AuditGrid(alwaysTrue, &w)
+	_, err := AuditGrid(AlwaysTrue, &w)
 	if err == nil {
 		t.Fatal("constant true predicate was accepted")
 	}

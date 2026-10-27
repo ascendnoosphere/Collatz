@@ -5,8 +5,8 @@ package main
 
 import "testing"
 
-// constantTrue accepts every lane. The congruence does not.
-func constantTrue(Lane) bool {
+// ConstantTrue accepts every lane. The congruence does not.
+func ConstantTrue(Lane) bool {
 	return true
 }
 
@@ -81,7 +81,7 @@ func TestRejectsConstantTrue(t *testing.T) {
 		if got {
 			t.Fatalf("control (%d, %d, %d) satisfied the congruence", lane.K, lane.Q, lane.A)
 		}
-		if constantTrue(lane) && !got {
+		if ConstantTrue(lane) && !got {
 			separated = true
 		}
 	}

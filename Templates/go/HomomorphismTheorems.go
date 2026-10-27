@@ -187,15 +187,28 @@ func (c *Cache) AsFloat(src []int) []float64 {
 	return out
 }
 
-// FitConstant fits a least-squares constant to finite, nonempty data via Gonum optimize.
+// FitConstant fits a least-squares constant after scaling finite, nonempty data.
+// Invalid observations or optimizer failure panic rather than terminate the process.
 func FitConstant(xs []float64) float64 {
 	if len(xs) == 0 {
 		panic("FitConstant: nonempty data required")
 	}
+	scale := 0.0
 	for _, x := range xs {
 		if math.IsNaN(x) || math.IsInf(x, 0) {
 			panic("FitConstant: finite data required")
 		}
+		scale = math.Max(scale, math.Abs(x))
+	}
+	if scale == 0 {
+		return 0
+	}
+	// Normalize before subtraction and squaring; even opposite extreme values stay finite.
+	mean, low, high := 0.0, 1.0, -1.0
+	for i, value := range xs {
+		x := value / scale
+		mean += (x - mean) / float64(i+1)
+		low, high = math.Min(low, x), math.Max(high, x)
 	}
 	problem := optimize.Problem{
 		// The minimizer of this quadratic should equal the arithmetic mean.
@@ -205,17 +218,18 @@ func FitConstant(xs []float64) float64 {
 			ys := xs
 			ys = ys[:len(ys)]
 			for i := 0; i < len(ys); i++ {
-				d := ys[i] - mu
-				s += d * d
+				d := ys[i]/scale - mu
+				s += d * d / float64(len(ys))
 			}
 			return s
 		},
 	}
-	res, err := optimize.Minimize(problem, []float64{0}, nil, nil)
+	res, err := optimize.Minimize(problem, []float64{mean}, nil, nil)
 	if err != nil {
-		log.Fatal(err)
+		panic(fmt.Sprintf("FitConstant: %v", err))
 	}
-	return res.X[0]
+	// A least-squares mean lies in the data interval; avoid rescaling a rounded overshoot.
+	return math.Max(low, math.Min(high, res.X[0])) * scale
 }
 
 // AddLatinModernFace parses an OpenType face into a local font collection.

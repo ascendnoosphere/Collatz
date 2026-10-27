@@ -21,7 +21,7 @@ and every construction that produces a large state.
 
 set_option autoImplicit false
 
-namespace GeneralizedCollatz
+namespace GeneralizedCollatz.SignedReturnShift
 
 /-- Affine state after `j` undivided steps, with offset sum `TrapSum q j`. -/
 def AffineState (q c : ℤ) (j : ℕ) (n : ℤ) : ℤ :=
@@ -100,4 +100,4 @@ theorem FirstHitShift (p : Parameters) (n t : ℤ) (j : ℕ) :
       exact hearly i hi ((AffineDivisibilityShift p n t i).mp hdiv)
     }
 
-end GeneralizedCollatz
+end GeneralizedCollatz.SignedReturnShift

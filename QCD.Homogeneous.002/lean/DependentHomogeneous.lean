@@ -32,13 +32,15 @@ theorem ExponentIterateFormula (u v k j : ℕ) (uPos : 0 < u) (vPos : 0 < v)
     (kBound : k < u + v) :
     (ExponentStep u v)^[j] k = (k + j * u) % (u + v) := by
   induction j with
-  | zero => simpa using (Nat.mod_eq_of_lt kBound).symm
+  | zero => { simpa using (Nat.mod_eq_of_lt kBound).symm }
   | succ j inductionHypothesis =>
+    {
       rw [Function.iterate_succ_apply', inductionHypothesis]
       rw [ExponentStepEqMod u v _ uPos vPos (Nat.mod_lt _ (by omega))]
       rw [Nat.mod_add_mod, Nat.succ_mul]
       congr 1
       omega
+    }
 
 end GeneralizedCollatz
 
@@ -158,12 +160,16 @@ theorem NatIterateRepresentation (p : DependentParams) {n j : ℕ} (nPositive : 
       (Nat.ne_of_gt nPositive)
   induction j with
   | zero =>
+    {
       simp only [Function.iterate_zero_apply]
       exact (Nat.divMaxPow_mul_pow_padicValNat p.Base n).symm
+    }
   | succ j inductionHypothesis =>
+    {
       rw [Function.iterate_succ_apply' p.NatStep, inductionHypothesis]
       rw [Function.iterate_succ_apply' (ExponentStep p.U p.V)]
       exact NatStepRepresentation p factorPositive factorFree
+    }
 
 end GeneralizedCollatz.DependentParams
 
@@ -174,6 +180,7 @@ theorem ExponentEventuallyBound (u v k : ℕ) (uPositive : 0 < u) (vPositive : 0
     ∃ s, (ExponentStep u v)^[s] k < u + v := by
   induction k using Nat.strong_induction_on with
   | h k inductionHypothesis =>
+    {
       by_cases inCore : k < u + v
       · exact ⟨0, by simpa⟩
       · have divisionExponent : v ≤ k := by omega
@@ -183,6 +190,7 @@ theorem ExponentEventuallyBound (u v k : ℕ) (uPositive : 0 < u) (vPositive : 0
         rw [Function.iterate_succ_apply]
         rw [ExponentStep, if_pos divisionExponent]
         exact exponentBound
+    }
 
 end GeneralizedCollatz
 
@@ -246,10 +254,12 @@ theorem ExponentIterateBound (u v k j : ℕ) (_uPositive : 0 < u) (vPositive : 0
     omega
   have intervalBound : u + v ≤ bound := Nat.le_max_right _ _
   induction j with
-  | zero => exact initialBound
+  | zero => { exact initialBound }
   | succ j inductionHypothesis =>
+    {
       rw [Function.iterate_succ_apply']
       exact ExponentStepBelowBound u v _ bound vPositive inductionHypothesis intervalBound
+    }
 
 end GeneralizedCollatz
 

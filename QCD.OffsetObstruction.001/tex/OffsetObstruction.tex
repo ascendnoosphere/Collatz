@@ -29,12 +29,13 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{Gcd strata of a positive offset}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{Gcd strata of a positive offset}
 
 \section*{Gcd strata of the positive offset map}
 
@@ -56,7 +57,8 @@ listed in Theorem~\ref{Thm:OffsetCycle}.
 
 \section{The map and its strata}
 
-\begin{lemma}[Division preserves the gcd with a coprime modulus]\label{Lem:OffsetTwoMulGcd}
+\begin{lemma}[Gcd under division]\label{Lem:OffsetTwoMulGcd}
+\leavevmode\par
 If $\gcd(m,2)=1$, then for every $k\in\N$,
 \[
  \gcd(2k,m)=\gcd(k,m).
@@ -73,7 +75,8 @@ Conversely $e\mid k$ and $e\mid m$, hence $e\mid 2k$ and $e\mid m$, so
 $e\mid d$. By antisymmetry of divisibility, $d=e$.
 \end{proof}
 
-\begin{theorem}[One step preserves the gcd with a divisor of the offset]\label{Thm:OffsetStepGcd}
+\begin{theorem}[One-step gcd preservation]\label{Thm:OffsetStepGcd}
+\leavevmode\par
 Let $m\mid c$ and $\gcd(m,6)=1$. For every $n\in\N$,
 \[
  \gcd(C(n),m)=\gcd(n,m).
@@ -101,7 +104,9 @@ $m\mid c$ we get $e\mid c$. Hence $e\mid 3n+c$, and with $e\mid m$ this gives
 $e\mid d$.
 
 Antisymmetry of divisibility yields $d=e$, that is,
-$\gcd(C(n),m)=\gcd(n,m)$.
+\[
+\gcd(C(n),m)=\gcd(n,m).
+\]
 \end{proof}
 
 \begin{corollary}[Orbits stay in their stratum]\label{Cor:OffsetOrbitStratum}
@@ -159,7 +164,8 @@ lie in one stratum containing the cycle; it is not an estimate of a basin
 beyond that stratum.
 \end{remark}
 
-\begin{theorem}[Coprime seeds never reach the cycle]\label{Thm:OffsetCoprimeSeedAvoidsCycle}
+\begin{theorem}[Coprime-seed exclusion]\label{Thm:OffsetCoprimeSeedAvoidsCycle}
+\leavevmode\par
 Let $m\mid c$, $\gcd(m,6)=1$, $m>1$, and let $n$ satisfy $\gcd(n,m)=1$. Then
 for every $k\in\N$,
 \[
@@ -278,7 +284,8 @@ $C^{v}(2^{v}u)=u$. Composing,
 $C^{v+1}(2^{v+1}u)=C^{v}(C(2^{v+1}u))=C^{v}(2^{v}u)=u$.
 \end{proof}
 
-\begin{theorem}[Even offsets are unbounded from every positive seed]\label{Thm:OffsetEvenOffsetUnbounded}
+\begin{theorem}[Even-offset unboundedness]\label{Thm:OffsetEvenOffsetUnbounded}
+\leavevmode\par
 Let $2\mid c$ and $n>0$. For every bound $B\in\N$ there is $k\in\N$ with
 \[
  B<C^{k}(n).
@@ -376,30 +383,33 @@ Every statement above is formalized in \texttt{lean/OffsetObstruction.lean}.
 The correspondence is listed in Table~\ref{Table:OffsetObstructionLean}.
 
 \begin{table}[htbp]
- \centering
- \begin{tabular}{lll}
- \toprule
- Result & Statement & Lean declaration \\
- \midrule
- Lemma~\ref{Lem:OffsetTwoMulGcd} & gcd under doubling & \texttt{OffsetTwoMulGcd} \\
- Theorem~\ref{Thm:OffsetStepGcd} & one step preserves the stratum & \texttt{OffsetStepGcd} \\
- Corollary~\ref{Cor:OffsetOrbitStratum} & orbits stay in the stratum & \texttt{OffsetOrbitStratum} \\
- Theorem~\ref{Thm:OffsetCycle} & odd three-step cycle & \texttt{OffsetCycleStepSelf}, \texttt{OffsetCycleStepFour}, \texttt{OffsetCycleStepTwo}, \texttt{OffsetCycle} \\
- Theorem~\ref{Thm:OffsetCoprimeSeedAvoidsCycle} & coprime seeds avoid the cycle & \texttt{OffsetCoprimeSeedAvoidsCycle} \\
- Lemma~\ref{Lem:OffsetMultipleCountLe} & counting multiples below $N$ & \texttt{OffsetMultipleCountLe} \\
- Theorem~\ref{Thm:OffsetMultipleDensity} & density at most $1/m$ & \texttt{OffsetMultipleDensity} \\
- Theorem~\ref{Thm:OffsetEvenOffsetOddStep} & odd states grow, stay odd & \texttt{OffsetEvenOffsetOddStep} \\
- Corollary~\ref{Cor:OffsetEvenOffsetOddPersist} & oddness persists & \texttt{OffsetEvenOffsetOddPersist} \\
- Theorem~\ref{Thm:OffsetEvenOffsetGrowthLower} & linear growth & \texttt{OffsetEvenOffsetGrowthLower} \\
- Lemma~\ref{Lem:OffsetHalvePrefix} & exact dyadic prefix & \texttt{OffsetHalvePrefix} \\
- Theorem~\ref{Thm:OffsetEvenOffsetUnbounded} & unbounded even offsets & \texttt{OffsetEvenOffsetUnbounded} \\
- Theorem~\ref{Thm:OffsetStepScaling} & one-step scaling & \texttt{OffsetStepScaling} \\
- Corollary~\ref{Cor:OffsetIterateScaling} & iterated scaling & \texttt{OffsetIterateScaling} \\
- Theorem~\ref{Thm:OffsetIterateSuccFirst} & one step later & \texttt{OffsetIterateSuccFirst} \\
- \bottomrule
- \end{tabular}
- \caption{Correspondence between the numbered statements and the Lean module.}
- \label{Table:OffsetObstructionLean}
+\centering
+\begin{tabular}{ll}
+\toprule
+Statement & Lean declaration \\
+\midrule
+Lemma~\ref{Lem:OffsetTwoMulGcd} & \texttt{OffsetTwoMulGcd} \\
+Theorem~\ref{Thm:OffsetStepGcd} & \texttt{OffsetStepGcd} \\
+Corollary~\ref{Cor:OffsetOrbitStratum} & \texttt{OffsetOrbitStratum} \\
+Theorem~\ref{Thm:OffsetCycle} & \texttt{OffsetCycleStepSelf} \\
+ & \texttt{OffsetCycleStepFour} \\
+ & \texttt{OffsetCycleStepTwo} \\
+ & \texttt{OffsetCycle} \\
+Theorem~\ref{Thm:OffsetCoprimeSeedAvoidsCycle} & \texttt{OffsetCoprimeSeedAvoidsCycle} \\
+Lemma~\ref{Lem:OffsetMultipleCountLe} & \texttt{OffsetMultipleCountLe} \\
+Theorem~\ref{Thm:OffsetMultipleDensity} & \texttt{OffsetMultipleDensity} \\
+Theorem~\ref{Thm:OffsetEvenOffsetOddStep} & \texttt{OffsetEvenOffsetOddStep} \\
+Corollary~\ref{Cor:OffsetEvenOffsetOddPersist} & \texttt{OffsetEvenOffsetOddPersist} \\
+Theorem~\ref{Thm:OffsetEvenOffsetGrowthLower} & \texttt{OffsetEvenOffsetGrowthLower} \\
+Lemma~\ref{Lem:OffsetHalvePrefix} & \texttt{OffsetHalvePrefix} \\
+Theorem~\ref{Thm:OffsetEvenOffsetUnbounded} & \texttt{OffsetEvenOffsetUnbounded} \\
+Theorem~\ref{Thm:OffsetStepScaling} & \texttt{OffsetStepScaling} \\
+Corollary~\ref{Cor:OffsetIterateScaling} & \texttt{OffsetIterateScaling} \\
+Theorem~\ref{Thm:OffsetIterateSuccFirst} & \texttt{OffsetIterateSuccFirst} \\
+\bottomrule
+\end{tabular}
+\caption{Correspondence between the numbered statements and the Lean module.}
+\label{Table:OffsetObstructionLean}
 \end{table}
 
 The finite verifier in \texttt{go/OffsetObstruction.go} checks the one-step

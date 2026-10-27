@@ -42,18 +42,18 @@ type Totals struct {
 	Bools    *[]bool
 }
 
-// check records one comparison.
-func (t *Totals) check(ok bool) {
+// Check records one comparison.
+func (t *Totals) Check(ok bool) {
 	t.Checks++
 	if !ok {
 		t.Failures++
 	}
 }
 
-// observe records one comparison and, when requested, its integers and truth
+// Observe records one comparison and, when requested, its integers and truth
 // value.
-func (t *Totals) observe(left, right int64, ok bool) {
-	t.check(ok)
+func (t *Totals) Observe(left, right int64, ok bool) {
+	t.Check(ok)
 	if t.Values != nil {
 		*t.Values = append(*t.Values, [2]int64{left, right})
 	}
@@ -67,52 +67,52 @@ func CoreRadiusInt(A, B, m int64) int64 {
 	return B / (m - A)
 }
 
-// absInt returns the absolute value of a nonnegative or negative seed on the
+// AbsInt returns the absolute value of a nonnegative or negative seed on the
 // documented grid.
-func absInt(n int64) int64 {
+func AbsInt(n int64) int64 {
 	if n < 0 {
 		return -n
 	}
 	return n
 }
 
-// checkTriple checks the room, descent, invariance and quotient-map statements
+// CheckTriple checks the room, descent, invariance and quotient-map statements
 // for one admissible triple. The comparison m*hmag <= A*|n|+B is the division
 // identity for the nonnegative floor quotient, not a separate estimate.
 // Strict quotient contraction is reached only when N <= coreMapMax-1.
-func checkTriple(A, B, m int64, t *Totals) {
+func CheckTriple(A, B, m int64, t *Totals) {
 	N := CoreRadiusInt(A, B, m)
 	gap := m - A
-	t.observe(B, gap*(N+1), B < gap*(N+1))
+	t.Observe(B, gap*(N+1), B < gap*(N+1))
 	for n := int64(0); n <= coreMaxN; n++ {
 		if n >= N+1 {
 			left, right := A*n+B, m*n
-			t.observe(left, right, left < right)
+			t.Observe(left, right, left < right)
 		} else {
 			left, right := A*n+B, m*(N+1)
-			t.observe(left, right, left < right)
+			t.Observe(left, right, left < right)
 		}
 	}
 	for n := int64(-coreMapMax); n <= coreMapMax; n++ {
-		mag := absInt(n)
+		mag := AbsInt(n)
 		sum := A*mag + B
 		hmag := sum / m
-		t.observe(m*hmag, sum, m*hmag <= sum)
+		t.Observe(m*hmag, sum, m*hmag <= sum)
 		if mag >= N+1 {
-			t.observe(hmag, mag, hmag < mag)
+			t.Observe(hmag, mag, hmag < mag)
 		} else {
-			t.observe(hmag, N, hmag <= N)
+			t.Observe(hmag, N, hmag <= N)
 		}
 	}
 }
 
-// sweepRange checks every triple whose first coefficient lies in [lo, hi].
-func sweepRange(lo, hi int64, t *Totals) {
+// SweepRange checks every triple whose first coefficient lies in [lo, hi].
+func SweepRange(lo, hi int64, t *Totals) {
 	for A := lo; A <= hi; A++ {
 		for gap := int64(1); gap <= coreMaxGap; gap++ {
 			m := A + gap
 			for B := int64(0); B <= coreMaxB; B++ {
-				checkTriple(A, B, m, t)
+				CheckTriple(A, B, m, t)
 			}
 		}
 	}
@@ -137,7 +137,7 @@ func SweepCore() Totals {
 		wg.Add(1)
 		go func(idx int, lo, hi int64) {
 			defer wg.Done()
-			sweepRange(lo, hi, &chunks[idx])
+			SweepRange(lo, hi, &chunks[idx])
 		}(i, lo, hi)
 	}
 	wg.Wait()
@@ -152,14 +152,14 @@ func SweepCore() Totals {
 // SweepControls checks the documented boundary triples outside the loop count.
 func SweepControls(t *Totals) {
 	N := CoreRadiusInt(2, 7, 3)
-	t.check(N == 7)
-	t.check(2*8+7 < 3*8)
-	t.check(2*7+7 < 3*(N+1))
-	t.check((2*8+7)/3 == 7)
-	t.check((2*7+7)/3 <= N)
-	t.check((2*absInt(-8)+7)/3 == 7)
-	t.check(5 < 1*(CoreRadiusInt(0, 5, 1)+1))
-	t.check(3*6+5 < 4*6)
+	t.Check(N == 7)
+	t.Check(2*8+7 < 3*8)
+	t.Check(2*7+7 < 3*(N+1))
+	t.Check((2*8+7)/3 == 7)
+	t.Check((2*7+7)/3 <= N)
+	t.Check((2*AbsInt(-8)+7)/3 == 7)
+	t.Check(5 < 1*(CoreRadiusInt(0, 5, 1)+1))
+	t.Check(3*6+5 < 4*6)
 }
 
 // main runs the grid and the controls and exits nonzero on a failure.

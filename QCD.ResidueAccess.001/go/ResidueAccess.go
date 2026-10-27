@@ -40,8 +40,8 @@ type Totals struct {
 	Failures uint64
 }
 
-// check adds one checked instance and records a failure when it does not hold.
-func (t *Totals) check(ok bool) {
+// Check adds one checked instance and records a failure when it does not hold.
+func (t *Totals) Check(ok bool) {
 	t.Checks++
 	if !ok {
 		t.Failures++
@@ -156,8 +156,8 @@ func LeastOrderBig(w *Workspace, q, M, cap uint64) (uint64, bool) {
 	return 0, false
 }
 
-// dividesBig reports whether M divides n, which the criterion uses on q^j - 1.
-func dividesBig(w *Workspace, n *big.Int, M uint64) bool {
+// DividesBig reports whether M divides n, which the criterion uses on q^j - 1.
+func DividesBig(w *Workspace, n *big.Int, M uint64) bool {
 	w.Mod.SetUint64(M)
 	w.Exp.QuoRem(n, &w.Mod, &w.Pow)
 	return w.Pow.Sign() == 0
@@ -184,9 +184,9 @@ func OrbitSetU64(q, c, D, m uint64) []bool {
 	return seen
 }
 
-// sweepFormula checks AccessOrbit j = (c * RepunitSum q j) mod D on the
+// SweepFormula checks AccessOrbit j = (c * RepunitSum q j) mod D on the
 // bounded rectangle, comparing the walking orbit with the closed form.
-func sweepFormula() Totals {
+func SweepFormula() Totals {
 	var t Totals
 	w := NewWorkspace()
 	for q := uint64(2); q <= accessMaxQ; q++ {
@@ -196,7 +196,7 @@ func sweepFormula() Totals {
 					closed := RepunitSumBig(w, q, j)
 					closed.Mul(closed, new(big.Int).SetUint64(c))
 					closed.Mod(closed, new(big.Int).SetUint64(D))
-					t.check(closed.Uint64() == AccessOrbitU64(q, c, D, j))
+					t.Check(closed.Uint64() == AccessOrbitU64(q, c, D, j))
 				}
 			}
 		}
@@ -204,9 +204,9 @@ func sweepFormula() Totals {
 	return t
 }
 
-// sweepCriterion checks AccessOrbit j = 0 iff the access modulus divides
+// SweepCriterion checks AccessOrbit j = 0 iff the access modulus divides
 // q^j - 1 on the bounded rectangle.
-func sweepCriterion() Totals {
+func SweepCriterion() Totals {
 	var t Totals
 	w := NewWorkspace()
 	for q := uint64(2); q <= accessMaxQ; q++ {
@@ -215,8 +215,8 @@ func sweepCriterion() Totals {
 				M := AccessModulusU64(q, c, D)
 				for j := uint64(1); j <= accessMaxJ; j++ {
 					zero := AccessOrbitU64(q, c, D, j) == 0
-					divides := dividesBig(w, PowSubOneBig(w, q, j), M)
-					t.check(zero == divides)
+					divides := DividesBig(w, PowSubOneBig(w, q, j), M)
+					t.Check(zero == divides)
 				}
 			}
 		}
@@ -224,13 +224,13 @@ func sweepCriterion() Totals {
 	return t
 }
 
-// sweepOrder checks that on coprime pairs the return time of the orbit is the
+// SweepOrder checks that on coprime pairs the return time of the orbit is the
 // least exponent with q^m = 1 modulo the access modulus, and that m <= D. The
 // cap is chosen above the proved bound m <= D <= accessMaxD, so the not-found
 // branch is unreachable on the swept grid and never discards an instance. The
 // early-return loop and the period loop both evaluate the orbit at exponents
 // below m; the overlapping assertions are repeated on purpose.
-func sweepOrder() Totals {
+func SweepOrder() Totals {
 	var t Totals
 	w := NewWorkspace()
 	for q := uint64(2); q <= accessMaxQ; q++ {
@@ -242,16 +242,16 @@ func sweepOrder() Totals {
 				M := ModulusByPowers(q, c, D)
 				m, found := LeastOrderBig(w, q, M, accessOrderCap)
 				if !found {
-					t.check(false)
+					t.Check(false)
 					continue
 				}
-				t.check(m <= D)
-				t.check(AccessOrbitU64(q, c, D, m) == 0)
+				t.Check(m <= D)
+				t.Check(AccessOrbitU64(q, c, D, m) == 0)
 				for s := uint64(1); s < m; s++ {
-					t.check(AccessOrbitU64(q, c, D, s) != 0)
+					t.Check(AccessOrbitU64(q, c, D, s) != 0)
 				}
 				for j := uint64(1); j <= accessMaxJ; j++ {
-					t.check((AccessOrbitU64(q, c, D, j) == 0) == (j%m == 0))
+					t.Check((AccessOrbitU64(q, c, D, j) == 0) == (j%m == 0))
 				}
 			}
 		}
@@ -259,9 +259,9 @@ func sweepOrder() Totals {
 	return t
 }
 
-// sweepFullAccess checks the prime case where the multiplier is one modulo the
+// SweepFullAccess checks the prime case where the multiplier is one modulo the
 // prime: the return time is the prime and the orbit exhausts the residues.
-func sweepFullAccess() Totals {
+func SweepFullAccess() Totals {
 	var t Totals
 	w := NewWorkspace()
 	primes := []uint64{2, 3, 5, 7, 11, 13}
@@ -273,10 +273,10 @@ func sweepFullAccess() Totals {
 			for c := uint64(1); c < p; c++ {
 				M := AccessModulusU64(q, c, p)
 				m, found := LeastOrderBig(w, q, M, accessOrderCap)
-				t.check(found && m == p)
+				t.Check(found && m == p)
 				seen := OrbitSetU64(q, c, p, p)
 				for r := uint64(0); r < p; r++ {
-					t.check(seen[r])
+					t.Check(seen[r])
 				}
 			}
 		}
@@ -284,9 +284,9 @@ func sweepFullAccess() Totals {
 	return t
 }
 
-// sweepPrimeNonOne checks the prime case where the multiplier is not one: the
+// SweepPrimeNonOne checks the prime case where the multiplier is not one: the
 // return time is smaller than the prime, so some residue is unreachable.
-func sweepPrimeNonOne() Totals {
+func SweepPrimeNonOne() Totals {
 	var t Totals
 	w := NewWorkspace()
 	primes := []uint64{2, 3, 5, 7, 11, 13}
@@ -298,7 +298,7 @@ func sweepPrimeNonOne() Totals {
 			for c := uint64(1); c < p; c++ {
 				M := AccessModulusU64(q, c, p)
 				m, found := LeastOrderBig(w, q, M, accessOrderCap)
-				t.check(found && m < p)
+				t.Check(found && m < p)
 				seen := OrbitSetU64(q, c, p, m)
 				unreached := uint64(0)
 				for r := uint64(0); r < p; r++ {
@@ -306,50 +306,50 @@ func sweepPrimeNonOne() Totals {
 						unreached++
 					}
 				}
-				t.check(unreached == p-m)
+				t.Check(unreached == p-m)
 			}
 		}
 	}
 	return t
 }
 
-// sweepExamples checks the worked examples, including
+// SweepExamples checks the worked examples, including
 // the trap residue modulo three and the two-cycle case with a non-area
 // multiplier.
-func sweepExamples() Totals {
+func SweepExamples() Totals {
 	var t Totals
 	w := NewWorkspace()
 	// (2,1,3): return time two, accessible residues 0 and 1, trap residue 2.
-	t.check(AccessOrbitU64(2, 1, 3, 0) == 0 && AccessOrbitU64(2, 1, 3, 1) == 1)
-	t.check(AccessOrbitU64(2, 1, 3, 2) == 0 && AccessOrbitU64(2, 1, 3, 3) == 1)
-	t.check(AccessStepU64(2, 1, 3, 2) == 2)
+	t.Check(AccessOrbitU64(2, 1, 3, 0) == 0 && AccessOrbitU64(2, 1, 3, 1) == 1)
+	t.Check(AccessOrbitU64(2, 1, 3, 2) == 0 && AccessOrbitU64(2, 1, 3, 3) == 1)
+	t.Check(AccessStepU64(2, 1, 3, 2) == 2)
 	// (2,1,7): return time three with accessible residues 0, 1 and 3.
-	t.check(AccessOrbitU64(2, 1, 7, 1) == 1 && AccessOrbitU64(2, 1, 7, 2) == 3)
-	t.check(AccessOrbitU64(2, 1, 7, 3) == 0)
+	t.Check(AccessOrbitU64(2, 1, 7, 1) == 1 && AccessOrbitU64(2, 1, 7, 2) == 3)
+	t.Check(AccessOrbitU64(2, 1, 7, 3) == 0)
 	// (2,1,15): return time four.
-	t.check(AccessOrbitU64(2, 1, 15, 1) == 1 && AccessOrbitU64(2, 1, 15, 2) == 3)
-	t.check(AccessOrbitU64(2, 1, 15, 3) == 7 && AccessOrbitU64(2, 1, 15, 4) == 0)
+	t.Check(AccessOrbitU64(2, 1, 15, 1) == 1 && AccessOrbitU64(2, 1, 15, 2) == 3)
+	t.Check(AccessOrbitU64(2, 1, 15, 3) == 7 && AccessOrbitU64(2, 1, 15, 4) == 0)
 	// (3,1,13): return time three.
-	t.check(AccessOrbitU64(3, 1, 13, 1) == 1 && AccessOrbitU64(3, 1, 13, 2) == 4)
-	t.check(AccessOrbitU64(3, 1, 13, 3) == 0)
+	t.Check(AccessOrbitU64(3, 1, 13, 1) == 1 && AccessOrbitU64(3, 1, 13, 2) == 4)
+	t.Check(AccessOrbitU64(3, 1, 13, 3) == 0)
 	// (3,1,2): full access modulo two, return time two.
-	t.check(AccessOrbitU64(3, 1, 2, 1) == 1 && AccessOrbitU64(3, 1, 2, 2) == 0)
+	t.Check(AccessOrbitU64(3, 1, 2, 1) == 1 && AccessOrbitU64(3, 1, 2, 2) == 0)
 	// (2,7,3): return time two with the two-cycle of residues zero and one.
-	t.check(AccessOrbitU64(2, 7, 3, 1) == 1 && AccessOrbitU64(2, 7, 3, 2) == 0)
+	t.Check(AccessOrbitU64(2, 7, 3, 1) == 1 && AccessOrbitU64(2, 7, 3, 2) == 0)
 	// Every multiplier q = D - 1 with c not divisible by D has return time two.
 	for D := uint64(3); D <= 13; D++ {
 		for c := uint64(1); c < D; c++ {
 			M := AccessModulusU64(D-1, c, D)
 			m, found := LeastOrderBig(w, D-1, M, accessOrderCap)
-			t.check(found && m == 2)
+			t.Check(found && m == 2)
 		}
 	}
 	return t
 }
 
-// parallelAccessSweep runs one per-multiplier sweep over chunked workers and
+// ParallelAccessSweep runs one per-multiplier sweep over chunked workers and
 // merges the totals.
-func parallelAccessSweep(fn func(w *Workspace, q, c, D, j uint64) bool) Totals {
+func ParallelAccessSweep(fn func(w *Workspace, q, c, D, j uint64) bool) Totals {
 	qs := make([]uint64, 0, accessMaxQ)
 	for q := uint64(2); q <= accessMaxQ; q++ {
 		qs = append(qs, q)
@@ -370,7 +370,7 @@ func parallelAccessSweep(fn func(w *Workspace, q, c, D, j uint64) bool) Totals {
 				for c := uint64(1); c <= accessMaxC; c++ {
 					for D := uint64(2); D <= accessMaxD; D++ {
 						for j := uint64(0); j <= accessMaxJ; j++ {
-							t.check(fn(w, q, c, D, j))
+							t.Check(fn(w, q, c, D, j))
 						}
 					}
 				}
@@ -391,7 +391,7 @@ func parallelAccessSweep(fn func(w *Workspace, q, c, D, j uint64) bool) Totals {
 // single check fails.
 func main() {
 	var run Totals
-	formula := parallelAccessSweep(func(w *Workspace, q, c, D, j uint64) bool {
+	formula := ParallelAccessSweep(func(w *Workspace, q, c, D, j uint64) bool {
 		closed := RepunitSumBig(w, q, j)
 		w.Exp.SetUint64(c)
 		closed.Mul(closed, &w.Exp)
@@ -403,27 +403,27 @@ func main() {
 	run.Failures += formula.Failures
 	fmt.Printf("orbit formula: %d, failures: %d\n", formula.Checks, formula.Failures)
 
-	criterion := sweepCriterion()
+	criterion := SweepCriterion()
 	run.Checks += criterion.Checks
 	run.Failures += criterion.Failures
 	fmt.Printf("modulus criterion: %d, failures: %d\n", criterion.Checks, criterion.Failures)
 
-	order := sweepOrder()
+	order := SweepOrder()
 	run.Checks += order.Checks
 	run.Failures += order.Failures
 	fmt.Printf("order and period: %d, failures: %d\n", order.Checks, order.Failures)
 
-	full := sweepFullAccess()
+	full := SweepFullAccess()
 	run.Checks += full.Checks
 	run.Failures += full.Failures
 	fmt.Printf("prime full access: %d, failures: %d\n", full.Checks, full.Failures)
 
-	nonone := sweepPrimeNonOne()
+	nonone := SweepPrimeNonOne()
 	run.Checks += nonone.Checks
 	run.Failures += nonone.Failures
 	fmt.Printf("prime non-one: %d, failures: %d\n", nonone.Checks, nonone.Failures)
 
-	examples := sweepExamples()
+	examples := SweepExamples()
 	run.Checks += examples.Checks
 	run.Failures += examples.Failures
 	fmt.Printf("worked examples: %d, failures: %d\n", examples.Checks, examples.Failures)

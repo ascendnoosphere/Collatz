@@ -38,10 +38,14 @@ type Workspace struct {
 	Cur  *big.Int
 	Next *big.Int
 	Rem  *big.Int
+	Quot *big.Int
 	Base *big.Int
+
+	Repunits [2*repunitMaxK + 1]big.Int
+	States   [repunitMaxK]big.Int
 }
 
-// NewWorkspace returns a workspace with six fresh value buffers.
+// NewWorkspace returns the arithmetic buffers and bounded state tables for one worker.
 func NewWorkspace() *Workspace {
 	return &Workspace{
 		Sum:  new(big.Int),
@@ -49,7 +53,18 @@ func NewWorkspace() *Workspace {
 		Cur:  new(big.Int),
 		Next: new(big.Int),
 		Rem:  new(big.Int),
+		Quot: new(big.Int),
 		Base: new(big.Int),
+	}
+}
+
+// PrepareRepunits fills the bounded sum table once for the current multiplier.
+func (w *Workspace) PrepareRepunits(q uint64) {
+	w.Base.SetUint64(q)
+	w.Repunits[0].SetUint64(0)
+	for k := 1; k < len(w.Repunits); k++ {
+		w.Repunits[k].Mul(&w.Repunits[k-1], w.Base)
+		w.Repunits[k].Add(&w.Repunits[k], BigOne)
 	}
 }
 
@@ -76,116 +91,117 @@ func (w *Workspace) StepBig(q uint64, D, n, out *big.Int) *big.Int {
 	return out.Add(out, BigOne)
 }
 
-// check records one failure when the condition fails.
-func (t *Totals) check(ok bool) {
+// Check records one failure when the condition fails.
+func (t *Totals) Check(ok bool) {
 	t.Checks++
 	if !ok {
 		t.Failures++
 	}
 }
 
-// sweepDivisors checks the divisor identity (q-1) S_k = q^k - 1 and the
+// SweepDivisors checks the divisor identity (q-1) S_k = q^k - 1 and the
 // divisibility S_k | q^k - 1 for every multiplier and index of the grid.
-func sweepDivisors(q uint64, _ *Workspace, t *Totals) {
-	base := new(big.Int).SetUint64(q - 1)
+func SweepDivisors(q uint64, w *Workspace, t *Totals) {
+	w.PrepareRepunits(q)
+	w.Pow.SetUint64(1)
 	for k := 1; k <= repunitMaxK; k++ {
-		sum := RepunitSum(q, k)
-		pow := new(big.Int).Exp(big.NewInt(int64(q)), big.NewInt(int64(k)), nil)
-		pow.Sub(pow, BigOne)
-		lhs := new(big.Int).Mul(base, sum)
-		t.check(lhs.Cmp(pow) == 0)
-		t.check(new(big.Int).Mod(pow, sum).Sign() == 0)
+		sum := &w.Repunits[k]
+		w.Pow.Mul(w.Pow, w.Base.SetUint64(q))
+		w.Next.Sub(w.Pow, BigOne)
+		w.Cur.Mul(w.Base.SetUint64(q-1), sum)
+		t.Check(w.Cur.Cmp(w.Next) == 0)
+		w.Quot.QuoRem(w.Next, sum, w.Rem)
+		t.Check(w.Rem.Sign() == 0)
 	}
 }
 
-// sweepOrder checks that the order of q modulo S_k is exactly k: q^k = 1 and
+// SweepOrder checks that the order of q modulo S_k is exactly k: q^k = 1 and
 // q^j is not 1 for 0 < j < k.
-func sweepOrder(q uint64, _ *Workspace, t *Totals) {
+func SweepOrder(q uint64, w *Workspace, t *Totals) {
+	w.PrepareRepunits(q)
 	for k := 2; k <= repunitMaxK; k++ {
-		sum := RepunitSum(q, k)
-		pow := new(big.Int).Exp(big.NewInt(int64(q)), big.NewInt(int64(k)), sum)
-		t.check(pow.Cmp(BigOne) == 0)
-		for j := 1; j < k; j++ {
-			pow = new(big.Int).Exp(big.NewInt(int64(q)), big.NewInt(int64(j)), sum)
-			t.check(pow.Cmp(BigOne) != 0)
+		sum := &w.Repunits[k]
+		w.Pow.SetUint64(1)
+		for j := 1; j <= k; j++ {
+			w.Next.Mul(w.Pow, w.Base)
+			w.Quot.QuoRem(w.Next, sum, w.Pow)
+			t.Check((w.Pow.Cmp(BigOne) == 0) == (j == k))
 		}
 	}
 }
 
-// sweepCycle checks the orbit of the seed 1 with divisor S_k: the state after
+// SweepCycle checks the orbit of the seed 1 with divisor S_k: the state after
 // j steps is S_(j+1) for j < k and 1 at j = k, and no earlier state is 1.
-func sweepCycle(q uint64, w *Workspace, t *Totals) {
+func SweepCycle(q uint64, w *Workspace, t *Totals) {
+	w.PrepareRepunits(q)
 	for k := 2; k <= repunitMaxK; k++ {
-		sum := RepunitSum(q, k)
+		sum := &w.Repunits[k]
 		w.Cur.SetUint64(1)
-		states := make([]*big.Int, 0, k)
 		for j := 1; j <= k; j++ {
 			w.StepBig(q, sum, w.Cur, w.Next)
 			w.Cur, w.Next = w.Next, w.Cur
-			states = append(states, new(big.Int).Set(w.Cur))
-		}
-		for j := 0; j < k; j++ {
-			want := RepunitSum(q, j+2)
-			if j == k-1 {
+			want := &w.Repunits[j+1]
+			if j == k {
 				want = BigOne
 			}
-			t.check(states[j].Cmp(want) == 0)
-			if j < k-1 {
-				t.check(states[j].Cmp(BigOne) != 0)
+			t.Check(w.Cur.Cmp(want) == 0)
+			if j < k {
+				t.Check(w.Cur.Cmp(BigOne) != 0)
 			}
 		}
 	}
 }
 
-// sweepResidues checks the residue walk from 0 modulo S_k: the state after j
+// SweepResidues checks the residue walk from 0 modulo S_k: the state after j
 // steps is S_j, the walk returns to 0 after k steps, and the first k residues
 // are pairwise distinct.
-func sweepResidues(q uint64, w *Workspace, t *Totals) {
+func SweepResidues(q uint64, w *Workspace, t *Totals) {
+	w.PrepareRepunits(q)
 	for k := 2; k <= repunitMaxK; k++ {
-		sum := RepunitSum(q, k)
+		sum := &w.Repunits[k]
 		w.Cur.SetUint64(0)
-		seen := make(map[string]bool, k)
-		for j := 1; j <= k; j++ {
-			w.Next.Mul(w.Base.SetUint64(q), w.Cur)
+		states := w.States[:k]
+		for j := 1; j <= 2*k; j++ {
+			w.Next.Mul(w.Base, w.Cur)
 			w.Next.Add(w.Next, BigOne)
-			w.Next.Mod(w.Next, sum)
-			w.Cur, w.Next = w.Next, w.Cur
-			want := RepunitSum(q, j)
-			want.Mod(want, sum)
-			t.check(w.Cur.Cmp(want) == 0)
-			t.check(!seen[w.Cur.String()])
-			seen[w.Cur.String()] = true
-		}
-		for j := k + 1; j <= 2*k; j++ {
-			w.Next.Mul(w.Base.SetUint64(q), w.Cur)
-			w.Next.Add(w.Next, BigOne)
-			w.Next.Mod(w.Next, sum)
-			w.Cur, w.Next = w.Next, w.Cur
-			want := RepunitSum(q, j)
-			want.Mod(want, sum)
-			t.check(w.Cur.Cmp(want) == 0)
+			w.Quot.QuoRem(w.Next, sum, w.Cur)
+			w.Quot.QuoRem(&w.Repunits[j], sum, w.Rem)
+			t.Check(w.Cur.Cmp(w.Rem) == 0)
+			if j <= k {
+				// Compare integers; decimal map keys would allocate on every tick.
+				fresh := true
+				for i := 0; i < j-1; i++ {
+					if states[i].Cmp(w.Cur) == 0 {
+						fresh = false
+					}
+				}
+				t.Check(fresh)
+				states[j-1].Set(w.Cur)
+			}
 		}
 		// At time 2k the walk is back at the residue 0 of the starting state.
-		t.check(w.Cur.Sign() == 0)
+		t.Check(w.Cur.Sign() == 0)
 	}
 }
 
-// sweepTraps checks that zero is the only state sent to zero by one
+// SweepTraps checks that zero is the only state sent to zero by one
 // instruction with divisor S_k and unit offset.
-func sweepTraps(q uint64, w *Workspace, t *Totals) {
+func SweepTraps(q uint64, w *Workspace, t *Totals) {
+	w.PrepareRepunits(q)
 	for k := 2; k <= repunitMaxK; k++ {
-		sum := RepunitSum(q, k)
+		sum := &w.Repunits[k]
 		for n := 0; n <= repunitSeeds; n++ {
 			w.Cur.SetUint64(uint64(n))
 			w.StepBig(q, sum, w.Cur, w.Next)
-			t.check((w.Next.Sign() == 0) == (n == 0))
+			t.Check((w.Next.Sign() == 0) == (n == 0))
 		}
 	}
 }
 
-// sweepReturns checks that the return map fixes 1: after k-1 affine events the
+// SweepReturns checks that the return map fixes 1: after k-1 affine events the
 // state is S_k, and dividing the multiple returns 1.
-func sweepReturns(q uint64, w *Workspace, t *Totals) {
+func SweepReturns(q uint64, w *Workspace, t *Totals) {
+	w.PrepareRepunits(q)
 	for k := 2; k <= repunitMaxK; k++ {
 		w.Cur.SetUint64(1)
 		w.Next.SetUint64(1)
@@ -194,47 +210,49 @@ func sweepReturns(q uint64, w *Workspace, t *Totals) {
 			w.Next.Add(w.Next, BigOne)
 			w.Cur, w.Next = w.Next, w.Cur
 		}
-		sum := RepunitSum(q, k)
-		t.check(w.Cur.Cmp(sum) == 0)
-		w.Next.Quo(w.Cur, sum)
-		t.check(w.Next.Cmp(BigOne) == 0)
+		sum := &w.Repunits[k]
+		t.Check(w.Cur.Cmp(sum) == 0)
+		w.Next.QuoRem(w.Cur, sum, w.Rem)
+		t.Check(w.Next.Cmp(BigOne) == 0)
 	}
 }
 
-// sweepControls checks the boundaries of the family. The multiplier one
+// SweepControls checks the boundaries of the family. The multiplier one
 // controls are discriminating: the repunit sum degenerates to the index, and
 // the order claim of the slice fails there because 1^j is one for every
 // 0 < j < k, which the recorded witnesses assert. The divisor one makes every
 // state fixed, and a divisor that is not a repunit sum gives no return to one
 // within the horizon.
-func sweepControls(w *Workspace, t *Totals) {
-	index := new(big.Int)
+func SweepControls(w *Workspace, t *Totals) {
+	w.PrepareRepunits(1)
 	for k := 2; k <= repunitMaxK; k++ {
-		sum := RepunitSum(1, k)
-		t.check(sum.Cmp(index.SetUint64(uint64(k))) == 0)
+		sum := &w.Repunits[k]
+		t.Check(sum.Cmp(w.Next.SetUint64(uint64(k))) == 0)
+		w.Pow.SetUint64(1)
 		for j := 1; j < k; j++ {
-			pow := new(big.Int).Exp(BigOne, big.NewInt(int64(j)), sum)
-			t.check(pow.Cmp(BigOne) == 0)
+			w.Pow.Mul(w.Pow, BigOne)
+			w.Quot.QuoRem(w.Pow, sum, w.Rem)
+			t.Check(w.Rem.Cmp(BigOne) == 0)
 		}
 	}
 	for q := uint64(2); q <= repunitMaxQ; q++ {
-		oneD := big.NewInt(1)
 		for n := uint64(0); n <= 10; n++ {
 			w.Cur.SetUint64(n)
-			w.StepBig(q, oneD, w.Cur, w.Next)
-			t.check(w.Next.Cmp(w.Cur) == 0)
+			w.StepBig(q, BigOne, w.Cur, w.Next)
+			t.Check(w.Next.Cmp(w.Cur) == 0)
 		}
 	}
 	w.Cur.SetUint64(1)
+	w.Sum.SetUint64(5)
 	for j := 0; j < repunitSteps; j++ {
-		w.StepBig(2, big.NewInt(5), w.Cur, w.Next)
+		w.StepBig(2, w.Sum, w.Cur, w.Next)
 		w.Cur, w.Next = w.Next, w.Cur
-		t.check(w.Cur.Cmp(BigOne) != 0)
+		t.Check(w.Cur.Cmp(BigOne) != 0)
 	}
 }
 
-// runParallel sweeps q = 2..repunitMaxQ in chunks and sums the totals.
-func runParallel(fn func(uint64, *Workspace, *Totals)) Totals {
+// RunParallel sweeps q = 2..repunitMaxQ in chunks and sums the totals.
+func RunParallel(fn func(uint64, *Workspace, *Totals)) Totals {
 	chunks := make([]Totals, repunitWorkers)
 	var wg sync.WaitGroup
 	width := uint64(repunitMaxQ-1+repunitWorkers-1) / repunitWorkers
@@ -271,22 +289,22 @@ func main() {
 		name string
 		run  func(uint64, *Workspace, *Totals)
 	}{
-		{"divisors", sweepDivisors},
-		{"order", sweepOrder},
-		{"cycle", sweepCycle},
-		{"residues", sweepResidues},
-		{"traps", sweepTraps},
-		{"returns", sweepReturns},
+		{"divisors", SweepDivisors},
+		{"order", SweepOrder},
+		{"cycle", SweepCycle},
+		{"residues", SweepResidues},
+		{"traps", SweepTraps},
+		{"returns", SweepReturns},
 	}
 	var total Totals
 	for _, slice := range slices {
-		got := runParallel(slice.run)
+		got := RunParallel(slice.run)
 		fmt.Printf("%-9s checks %7d failures %d\n", slice.name, got.Checks, got.Failures)
 		total.Checks += got.Checks
 		total.Failures += got.Failures
 	}
 	control := Totals{}
-	sweepControls(NewWorkspace(), &control)
+	SweepControls(NewWorkspace(), &control)
 	fmt.Printf("%-9s checks %7d failures %d\n", "controls", control.Checks, control.Failures)
 	total.Checks += control.Checks
 	total.Failures += control.Failures

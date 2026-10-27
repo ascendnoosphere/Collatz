@@ -32,8 +32,8 @@ theorem NormPos (z : GaussianInt) (hz : z ≠ 0) : 0 < Norm z := by
 /-- Powers have the corresponding exact power of squared height. -/
 theorem NormPow (z : GaussianInt) (j : ℕ) : Norm (z ^ j) = Norm z ^ j := by
   induction j with
-  | zero => simp [Norm, Zsqrtd.norm]
-  | succ j ih => rw [pow_succ, NormMul, ih, pow_succ]
+  | zero => { simp [Norm, Zsqrtd.norm] }
+  | succ j ih => { rw [pow_succ, NormMul, ih, pow_succ] }
 
 /-- Both coordinates of the complex quotient must be integral. -/
 theorem DvdCoordinates (d z : GaussianInt) (hd : d ≠ 0) :
@@ -90,8 +90,8 @@ noncomputable def RawIter (q c d z : GaussianInt) : ℕ → GaussianInt
 theorem RawIterSuccStart (q c d z : GaussianInt) (j : ℕ) :
     RawIter q c d z (j + 1) = RawIter q c d (RawBranch q c d z) j := by
   induction j with
-  | zero => rfl
-  | succ j ih => simpa only [RawIter] using congrArg (RawBranch q c d) ih
+  | zero => { rfl }
+  | succ j ih => { simpa only [RawIter] using congrArg (RawBranch q c d) ih }
 
 /-- Concatenated clocks recover the original raw trajectory exactly. -/
 theorem RawIterAdd (q c d z : GaussianInt) (r j : ℕ) :
@@ -132,29 +132,31 @@ theorem DivisionPrefix (q c d z : GaussianInt) (hd : 2 ≤ Norm d) (hz : z ≠ 0
     intro n
     induction n using Nat.strong_induction_on with
     | h n ih =>
-      intro w hn hw
-      by_cases hdiv : d ∣ w
-      · have hlt : Norm (w / d) < n := by
-          rw [← hn]
-          exact DivisionNormDrop d w hd hw hdiv
-        have hd0 : d ≠ 0 := by
-          intro h
-          subst d
-          norm_num [Norm, Zsqrtd.norm] at hd
-        have hprod : d * (w / d) = w := EuclideanDomain.mul_div_cancel' hd0 hdiv
-        have hw0 : w / d ≠ 0 := by
-          intro h
-          rw [h, mul_zero] at hprod
-          exact hw hprod.symm
-        obtain ⟨r, t, ht, hiter, hfactor⟩ := ih (Norm (w / d)) hlt (w / d) rfl hw0
-        refine ⟨r + 1, t, ht, ?_, ?_⟩
-        · rw [RawIterSuccStart]
-          simpa [RawBranch, hdiv] using hiter
-        · calc
-            w = d * (w / d) := hprod.symm
-            _ = d * (d ^ r * t) := by rw [hfactor]
-            _ = d ^ (r + 1) * t := by rw [pow_succ]; ring
-      · exact ⟨0, w, hdiv, rfl, by simp⟩
+      {
+        intro w hn hw
+        by_cases hdiv : d ∣ w
+        · have hlt : Norm (w / d) < n := by
+            rw [← hn]
+            exact DivisionNormDrop d w hd hw hdiv
+          have hd0 : d ≠ 0 := by
+            intro h
+            subst d
+            norm_num [Norm, Zsqrtd.norm] at hd
+          have hprod : d * (w / d) = w := EuclideanDomain.mul_div_cancel' hd0 hdiv
+          have hw0 : w / d ≠ 0 := by
+            intro h
+            rw [h, mul_zero] at hprod
+            exact hw hprod.symm
+          obtain ⟨r, t, ht, hiter, hfactor⟩ := ih (Norm (w / d)) hlt (w / d) rfl hw0
+          refine ⟨r + 1, t, ht, ?_, ?_⟩
+          · rw [RawIterSuccStart]
+            simpa [RawBranch, hdiv] using hiter
+          · calc
+              w = d * (w / d) := hprod.symm
+              _ = d * (d ^ r * t) := by rw [hfactor]
+              _ = d ^ (r + 1) * t := by rw [pow_succ]; ring
+        · exact ⟨0, w, hdiv, rfl, by simp⟩
+      }
   exact aux (Norm z) z rfl hz
 
 /-- The finite division prefix has an explicit integral height budget. -/
@@ -189,22 +191,26 @@ theorem CoprimePreservesAvoidance (q d a b z : GaussianInt)
 theorem CoprimePowerAvoidance (q d a b z : GaussianInt)
     (hab : a * q + b * d = 1) (hz : ¬d ∣ z) (j : ℕ) : ¬d ∣ q ^ j * z := by
   induction j with
-  | zero => simpa using hz
+  | zero => { simpa using hz }
   | succ j ih =>
+    {
       have hmul : q ^ (j + 1) * z = q * (q ^ j * z) := by rw [pow_succ]; ring
       rw [hmul]
       exact CoprimePreservesAvoidance q d a b (q ^ j * z) hab ih
+    }
 
 /-- The entire tail, not a subsequence, is the expanding homogeneous affine orbit. -/
 theorem CoprimeRawPower (q d a b z : GaussianInt)
     (hab : a * q + b * d = 1) (hz : ¬d ∣ z) (j : ℕ) :
     RawIter q 0 d z j = q ^ j * z := by
   induction j with
-  | zero => simp [RawIter]
+  | zero => { simp [RawIter] }
   | succ j ih =>
+    {
       rw [RawIter, ih, RawBranch, if_neg (CoprimePowerAvoidance q d a b z hab hz j)]
       rw [pow_succ]
       ring
+    }
 
 /-- The exact squared height of each tail iterate dominates the explicit rate 2^j. -/
 theorem CoprimeHeightBound (q d a b z : GaussianInt) (hq : 2 ≤ Norm q)
@@ -227,11 +233,13 @@ theorem CoprimeHomogeneousEscape (q d a b z : GaussianInt)
   have hp : ∀ k : ℕ, k < 2 ^ k := by
     intro k
     induction k with
-    | zero => norm_num
+    | zero => { norm_num }
     | succ k ih =>
+      {
         rw [pow_succ]
         have hpos : 0 < 2 ^ k := by positivity
         nlinarith
+      }
   intro B
   refine ⟨r + B + 1, ?_⟩
   intro j hj

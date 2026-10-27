@@ -29,12 +29,13 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{The dichotomy between a first hit and a trapped orbit}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{The dichotomy between a first hit and a trapped orbit}
 
 \begin{abstract}
 Let the raw step send an integer \(n\) to \(n/d\) when \(d\) divides \(n\), and to \(qn+c\) otherwise, where \(|d|\ge 2\). Write \(A_j(n)\) for the affine state \(q^j n+c\,U_j(q)\). A time \(j\) is a first hit when \(d\) divides \(A_j(n)\) and divides no earlier affine state. Such a time exists if and only if the raw orbit is not division-free at every time. The forward implication identifies the raw prefix with the affine prefix. The reverse implication takes the least raw time at which \(d\) divides, using the least-number operator on \(\N\) whose hypotheses are decidability of integer divisibility and existence of one divisible time.

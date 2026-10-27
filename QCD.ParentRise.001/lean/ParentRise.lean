@@ -12,7 +12,7 @@ Nothing below asserts that an iterate equals 1.
 
 set_option autoImplicit false
 
-namespace GeneralizedCollatz
+namespace GeneralizedCollatz.ParentRiseExample
 
 /-- Classical binary parameters: affine branch `3n+1`, exact division by `2`. -/
 def ClassicalBinary : Parameters where
@@ -314,4 +314,4 @@ theorem ParentRise :
   · decide
   · decide
 
-end GeneralizedCollatz
+end GeneralizedCollatz.ParentRiseExample

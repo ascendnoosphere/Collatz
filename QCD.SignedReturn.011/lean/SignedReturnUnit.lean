@@ -16,7 +16,7 @@ hitting time is left inside that term: no uniform substitute for `j` is proved.
 
 set_option autoImplicit false
 
-namespace GeneralizedCollatz
+namespace GeneralizedCollatz.SignedReturnUnit
 
 /-- Affine state after `j` undivided steps, with offset sum `TrapSum q j`. -/
 def AffineState (q c : ℤ) (j : ℕ) (n : ℤ) : ℤ :=
@@ -146,4 +146,4 @@ theorem UnitCoreAtSeed (p : Parameters) (n : ℤ) (j : ℕ)
       exact UnitMagnitude p n j hQ h
     }
 
-end GeneralizedCollatz
+end GeneralizedCollatz.SignedReturnUnit

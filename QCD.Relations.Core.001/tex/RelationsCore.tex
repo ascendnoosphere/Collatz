@@ -29,12 +29,13 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{Return cores of the multiplier \(d-1\)}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{Return cores of the multiplier \(d-1\)}
 
 \section*{Return cores of the multiplier \(d-1\) map}
 
@@ -285,8 +286,12 @@ and \(R(d)=1<d\), while \(R(d+1)=d+1\).
 \begin{theorem}[The corner cycle]\label{Thm:CornerCycle}
 Let \(d\ge3\). Then \(C(d+1)=d(d+1)\) and \(C(d(d+1))=d+1\). Consequently
 \[
- C^{2m}(d+1)=d+1,\quad C^{2m+1}(d+1)=d(d+1),\quad
- C^{2m}(d(d+1))=d(d+1),\quad C^{2m+1}(d(d+1))=d+1
+\begin{aligned}
+ C^{2m}(d+1) &= d+1,\\
+ C^{2m+1}(d+1) &= d(d+1),\\
+ C^{2m}(d(d+1)) &= d(d+1),\\
+ C^{2m+1}(d(d+1)) &= d+1.
+\end{aligned}
 \]
 for every \(m\), and every iterate of either cycle state is one of the two
 states.
@@ -389,29 +394,80 @@ statement, and the density claim remains open.
 \toprule
 Statement & Lean declaration \\
 \midrule
-Lemma~\ref{Lem:AffineBranch} & \texttt{CoreMapOfDvd}, \texttt{CoreMapOfNotDvd}, \texttt{CoreReturnOfDvd}, \texttt{CoreReturnOfNotDvd} \\
-Lemma~\ref{Lem:Residues} & \texttt{CoreMapDivisibleIff}, \texttt{CoreMapResidueIff}, \texttt{CoreDomainDivisible}, \texttt{CoreMapCast} \\
+Lemma~\ref{Lem:AffineBranch} & \texttt{CoreMapOfDvd} \\
+ & \texttt{CoreMapOfNotDvd} \\
+ & \texttt{CoreReturnOfDvd} \\
+ & \texttt{CoreReturnOfNotDvd} \\
+Lemma~\ref{Lem:Residues} & \texttt{CoreMapDivisibleIff} \\
+ & \texttt{CoreMapResidueIff} \\
+ & \texttt{CoreDomainDivisible} \\
+ & \texttt{CoreMapCast} \\
 Lemma~\ref{Lem:Free} & \texttt{CoreMapFreeIncrease} \\
 Lemma~\ref{Lem:DivDec} & \texttt{CoreMapDivisibleDecrease} \\
 Theorem~\ref{Thm:Contract} & \texttt{CoreReturnDecrease} \\
-Theorem~\ref{Thm:Core} & \texttt{CoreReturnCore}, \texttt{CoreReturnIterateCore} \\
-Theorem~\ref{Thm:Trap} & \texttt{CoreMapNotDomain}, \texttt{CoreTrapNotDomain}, \texttt{CoreTrapStrictMono}, \texttt{CoreTrapGrowth}, \texttt{CoreTrapUnbounded} \\
-Theorem~\ref{Thm:Realize} & \texttt{CoreReturnRealizeDvd}, \texttt{CoreReturnRealizeMod}, \texttt{CoreReturnRawRealization} \\
+Theorem~\ref{Thm:Core} & \texttt{CoreReturnCore} \\
+ & \texttt{CoreReturnIterateCore} \\
+Theorem~\ref{Thm:Trap} & \texttt{CoreMapNotDomain} \\
+ & \texttt{CoreTrapNotDomain} \\
+ & \texttt{CoreTrapStrictMono} \\
+ & \texttt{CoreTrapGrowth} \\
+ & \texttt{CoreTrapUnbounded} \\
+\bottomrule
+\end{tabular}
+\caption{Lean declarations carrying each statement.}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ll}
+\toprule
+Statement & Lean declaration \\
+\midrule
+Theorem~\ref{Thm:Realize} & \texttt{CoreReturnRealizeDvd} \\
+ & \texttt{CoreReturnRealizeMod} \\
+ & \texttt{CoreReturnRawRealization} \\
 Corollary~\ref{Cor:Expand} & \texttt{CoreReturnCycleRaw} \\
-Theorem~\ref{Thm:Reach} & \texttt{CoreReturnReachesCore}, \texttt{CoreReturnReachesCoreBounded} \\
+Theorem~\ref{Thm:Reach} & \texttt{CoreReturnReachesCore} \\
+ & \texttt{CoreReturnReachesCoreBounded} \\
 Theorem~\ref{Thm:Periodic} & \texttt{CoreReturnEventuallyPeriodic} \\
 Theorem~\ref{Thm:Dichotomy} & \texttt{CoreMapDichotomy} \\
 Lemma~\ref{Lem:CornerResidue} & \texttt{CoreCornerModSelf} \\
-Theorem~\ref{Thm:CornerCore} & \texttt{CoreCornerCoreStates}, \texttt{CoreCornerCoreStatesIff} \\
-Theorem~\ref{Thm:CornerValues} & \texttt{CoreReturnCornerOne}, \texttt{CoreReturnCornerD}, \texttt{CoreReturnCornerSelf}, \texttt{CoreMapCornerTrap}, \texttt{CoreReturnCornerFixedUnique} \\
-Theorem~\ref{Thm:CornerCycle} & \texttt{CoreMapCornerCycleSteps}, \texttt{CoreMapCornerCycle}, \texttt{CoreMapCornerCycleBack}, \texttt{CoreCornerCycleIterateEven}, \texttt{CoreCornerCycleIterateOdd}, \texttt{CoreCornerCycleIterateBack}, \texttt{CoreCornerCycleIterateBackOdd}, \texttt{CoreCornerCycleInvariant} \\
-Theorem~\ref{Thm:CornerClass} & \texttt{CoreCornerClassification}, \texttt{CoreCornerDomainForeverHitsCycle}, \texttt{CoreCornerIterateRealized} \\
-Theorem~\ref{Thm:CornerPeriodic} & \texttt{CoreCornerPeriodicPointCycle}, \texttt{CoreCornerPeriodicIff} \\
+\bottomrule
+\end{tabular}
+\caption{Lean correspondence, continued.}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ll}
+\toprule
+Statement & Lean declaration \\
+\midrule
+Theorem~\ref{Thm:CornerCore} & \texttt{CoreCornerCoreStates} \\
+ & \texttt{CoreCornerCoreStatesIff} \\
+Theorem~\ref{Thm:CornerValues} & \texttt{CoreReturnCornerOne} \\
+ & \texttt{CoreReturnCornerD} \\
+ & \texttt{CoreReturnCornerSelf} \\
+ & \texttt{CoreMapCornerTrap} \\
+ & \texttt{CoreReturnCornerFixedUnique} \\
+Theorem~\ref{Thm:CornerCycle} & \texttt{CoreMapCornerCycleSteps} \\
+ & \texttt{CoreMapCornerCycle} \\
+ & \texttt{CoreMapCornerCycleBack} \\
+ & \texttt{CoreCornerCycleIterateEven} \\
+ & \texttt{CoreCornerCycleIterateOdd} \\
+ & \texttt{CoreCornerCycleIterateBack} \\
+ & \texttt{CoreCornerCycleIterateBackOdd} \\
+ & \texttt{CoreCornerCycleInvariant} \\
+Theorem~\ref{Thm:CornerClass} & \texttt{CoreCornerClassification} \\
+ & \texttt{CoreCornerDomainForeverHitsCycle} \\
+ & \texttt{CoreCornerIterateRealized} \\
+Theorem~\ref{Thm:CornerPeriodic} & \texttt{CoreCornerPeriodicPointCycle} \\
+ & \texttt{CoreCornerPeriodicIff} \\
 Remark~\ref{Rem:Inaccessible} & \texttt{CoreMapNotDomain} \\
 Remark~\ref{Rem:CornerCount} & \texttt{CoreCornerPeriodicIff} \\
 \bottomrule
 \end{tabular}
-\caption{Lean declarations carrying each statement.}
+\caption{Lean correspondence, continued.}
 \end{table}
 
 \end{document}

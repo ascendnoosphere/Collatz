@@ -26,7 +26,7 @@ factor is not a closure, and no orbit is claimed to reach `1`.
 
 set_option autoImplicit false
 
-namespace GeneralizedCollatz
+namespace GeneralizedCollatz.EqualHalves
 
 /-- Number of odd letters in a chronological parity word. -/
 def OddCount (w : List Bool) : ℕ := w.count true
@@ -73,16 +73,18 @@ def WordNumerator (q : ℕ) (w : List Bool) : ℕ := WordNumeratorFrom q 0 w
 theorem WordNumeratorFromShift (q j k : ℕ) (w : List Bool) :
     WordNumeratorFrom q (j + k) w = 2 ^ k * WordNumeratorFrom q j w := by
   induction w generalizing j with
-  | nil =>
+  | nil => {
       rw [WordNumeratorFromNil, WordNumeratorFromNil, Nat.mul_zero]
-  | cons b bs ih =>
+    }
+  | cons b bs ih => {
       cases b with
-      | false =>
+      | false => {
           rw [WordNumeratorFalse, WordNumeratorFalse]
           have hidx : j + k + 1 = j + 1 + k := by omega
           rw [hidx]
           exact ih (j + 1)
-      | true =>
+        }
+      | true => {
           rw [WordNumeratorTrue, WordNumeratorTrue]
           have hidx : j + k + 1 = j + 1 + k := by omega
           rw [hidx, ih (j + 1)]
@@ -90,6 +92,8 @@ theorem WordNumeratorFromShift (q j k : ℕ) (w : List Bool) :
             rw [Nat.add_comm j k, Nat.pow_add, Nat.mul_comm]
           rw [hpow, ← Nat.mul_assoc,
             Nat.mul_comm (q ^ OddCount bs * 2 ^ j) (2 ^ k), ← Nat.mul_add]
+        }
+    }
 
 /-- The odd-letter contribution splits across a concatenation of blocks. -/
 theorem NumeratorTrueStep (a b x y z : ℕ) :
@@ -103,20 +107,26 @@ theorem WordNumeratorAppend (q j : ℕ) (U V : List Bool) :
         2 ^ (j + U.length) * WordNumerator q V := by
   induction U generalizing j with
   | nil =>
+    {
       rw [List.nil_append, List.length_nil, Nat.add_zero]
       have hshift := WordNumeratorFromShift q 0 j V
       have hidx : 0 + j = j := Nat.zero_add j
       rw [hidx] at hshift
       rw [hshift, WordNumerator, WordNumeratorFromNil, Nat.mul_zero,
         Nat.zero_add]
+    }
   | cons b bs ih =>
+    {
       cases b with
       | false =>
+        {
           rw [List.cons_append, List.length_cons, WordNumeratorFalse,
             WordNumeratorFalse]
           have hexp : j + 1 + bs.length = j + (bs.length + 1) := by omega
           rw [ih (j + 1), hexp]
+        }
       | true =>
+        {
           rw [List.cons_append, List.length_cons, WordNumeratorTrue,
             WordNumeratorTrue]
           have hc : OddCount (bs ++ V) = OddCount bs + OddCount V := by
@@ -126,6 +136,8 @@ theorem WordNumeratorAppend (q j : ℕ) (U V : List Bool) :
           exact NumeratorTrueStep (q ^ OddCount bs) (q ^ OddCount V) (2 ^ j)
             (WordNumeratorFrom q (j + 1) bs)
             (2 ^ (j + (bs.length + 1)) * WordNumerator q V)
+        }
+    }
 
 /-- Source identity: the numerator of `UV` splits by the odd count of `V`. -/
 theorem WordNumeratorConcat (q : ℕ) (U V : List Bool) :
@@ -202,9 +214,13 @@ theorem CoprimeTwoOfModOne (n : ℕ) (hn : n % 2 = 1) : Nat.Coprime n 2 := by
 theorem PowModTwoOfModOne (q r : ℕ) (hq : q % 2 = 1) : q ^ r % 2 = 1 := by
   induction r with
   | zero =>
+    {
       simp
+    }
   | succ r ih =>
+    {
       rw [Nat.pow_succ, Nat.mul_mod, ih, hq]
+    }
 
 /-- `q^r` is coprime to both half-moduli, and the half-moduli are coprime. -/
 theorem EqualHalvesCoprime (q h r : ℕ) (hq : q % 2 = 1)
@@ -248,11 +264,15 @@ theorem EqualHalvesCoprime (q h r : ℕ) (hq : q % 2 = 1)
     rw [PowModTwoOfModOne q r hq] at hsplit
     cases Nat.mod_two_eq_zero_or_one (2 ^ h - q ^ r) with
     | inl h0 =>
+      {
         have hcontra : (0 + 1) % 2 = 1 := by decide
         rw [h0, hcontra] at hsplit
         exact absurd hsplit (by decide)
+      }
     | inr h1 =>
+      {
         exact h1
+      }
   have hQ2 : Nat.Coprime (2 ^ h - q ^ r) 2 :=
     CoprimeTwoOfModOne (2 ^ h - q ^ r) hQodd
   have hmul : Nat.Coprime (2 * q ^ r) (2 ^ h - q ^ r) :=
@@ -275,6 +295,7 @@ theorem IntDvdCancel (m n : ℕ) (z : ℤ) (hcop : Nat.Coprime m n)
     (hdvd : (m : ℤ) ∣ (n : ℤ) * z) : (m : ℤ) ∣ z := by
   cases hdvd with
   | intro t ht =>
+    {
       have habs : n * z.natAbs = m * t.natAbs := by
         have hnat := congrArg Int.natAbs ht
         rw [Int.natAbs_mul, Int.natAbs_mul, Int.natAbs_natCast,
@@ -282,6 +303,7 @@ theorem IntDvdCancel (m n : ℕ) (z : ℤ) (hcop : Nat.Coprime m n)
         exact hnat
       have hdiv : m ∣ n * z.natAbs := ⟨t.natAbs, habs⟩
       exact Int.ofNat_dvd_left.mpr (hcop.dvd_of_dvd_mul_left hdiv)
+    }
 
 /-- Closure by the factored denominator is the joint vanishing of both factors.
 
@@ -345,8 +367,10 @@ theorem EqualHalvesCriterion (q h r : ℕ) (U V : List Bool) (hq : q % 2 = 1)
     · intro hdiv
       cases hdiv with
       | intro k hk =>
+        {
           refine ⟨(q ^ r : ℤ) * k, ?_⟩
           rw [hk, Int.mul_left_comm]
+        }
   have htot := EqualHalvesTotal h r U V hU hV rU rV
   have hden : 2 ^ (U ++ V).length - q ^ OddCount (U ++ V) =
       2 ^ (2 * h) - q ^ (2 * r) := by
@@ -436,4 +460,4 @@ theorem EqualHalvesNotClosed :
   rw [ExampleLeftNum, ExampleRightNum] at hsum
   exact (by decide : ¬ (2 ^ 6 - 3 ^ 2) ∣ 80 + 7) hsum
 
-end GeneralizedCollatz
+end GeneralizedCollatz.EqualHalves

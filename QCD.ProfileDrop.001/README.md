@@ -1,4 +1,4 @@
-SPDX-License-Identifier: CC-BY-4.0
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
 
 # Division-free escape and zero-avoiding residue cycles
 

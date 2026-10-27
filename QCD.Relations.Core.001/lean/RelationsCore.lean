@@ -129,10 +129,12 @@ theorem CoreMapNotDomain (d c n : ℕ) (hd : 0 < d) (h : ¬ CoreDomain d c n) :
 theorem CoreTrapNotDomain (d c n : ℕ) (hd : 0 < d) (h : ¬ CoreDomain d c n) (k : ℕ) :
     ¬ CoreDomain d c (Iterate (CoreMap d c) k n) := by
   induction k with
-  | zero => simpa [Iterate] using h
+  | zero => { simpa [Iterate] using h }
   | succ k ih =>
+    {
       rw [show Iterate (CoreMap d c) (k + 1) n = CoreMap d c (Iterate (CoreMap d c) k n) from rfl]
       exact CoreMapNotDomain d c _ hd ih
+    }
 
 /-- A trapped state strictly increases at every instruction. -/
 theorem CoreTrapStrictMono (d c n : ℕ) (hd : 2 ≤ d) (hc : 1 ≤ c) (h : ¬ CoreDomain d c n)
@@ -147,10 +149,12 @@ theorem CoreTrapGrowth (d c n : ℕ) (hd : 2 ≤ d) (hc : 1 ≤ c) (h : ¬ CoreD
     ∀ k, n + k ≤ Iterate (CoreMap d c) k n := by
   intro k
   induction k with
-  | zero => simp [Iterate]
+  | zero => { simp [Iterate] }
   | succ k ih =>
+    {
       have hstep := CoreTrapStrictMono d c n hd hc h k
       omega
+    }
 
 /-- A trapped orbit is unbounded. -/
 theorem CoreTrapUnbounded (d c n : ℕ) (hd : 2 ≤ d) (hc : 1 ≤ c) (h : ¬ CoreDomain d c n)
@@ -217,11 +221,13 @@ theorem CoreReturnIteratePositive (d c n : ℕ) (hd : 2 ≤ d) (hc : 1 ≤ c) (h
     ∀ k, 1 ≤ Iterate (CoreReturn d c) k n := by
   intro k
   induction k with
-  | zero => simpa [Iterate] using h1
+  | zero => { simpa [Iterate] using h1 }
   | succ k ih =>
+    {
       rw [show Iterate (CoreReturn d c) (k + 1) n =
         CoreReturn d c (Iterate (CoreReturn d c) k n) from rfl]
       exact CoreReturnPositive d c _ hd hc ih
+    }
 
 /-- The return map maps the core into itself. -/
 theorem CoreReturnCore (d c n : ℕ) (hd : 2 ≤ d) (hc : 1 ≤ c) (h1 : 1 ≤ n) (h2 : n ≤ c) :
@@ -246,11 +252,13 @@ theorem CoreReturnIterateCore (d c n : ℕ) (hd : 2 ≤ d) (hc : 1 ≤ c) (h1 : 
     ∀ k, 1 ≤ Iterate (CoreReturn d c) k n ∧ Iterate (CoreReturn d c) k n ≤ c := by
   intro k
   induction k with
-  | zero => simpa [Iterate] using ⟨h1, h2⟩
+  | zero => { simpa [Iterate] using ⟨h1, h2⟩ }
   | succ k ih =>
+    {
       rw [show Iterate (CoreReturn d c) (k + 1) n =
         CoreReturn d c (Iterate (CoreReturn d c) k n) from rfl]
       exact CoreReturnCore d c _ hd hc ih.1 ih.2
+    }
 
 /-- Every positive state reaches the core. -/
 theorem CoreReturnReachesCore (d c n : ℕ) (hd : 2 ≤ d) (hc : 1 ≤ c) (h1 : 1 ≤ n) :
@@ -319,8 +327,9 @@ theorem CoreReturnRawRealization (d c p x : ℕ) (hd : 2 ≤ d) (_hx : 1 ≤ x)
     (hdom : ∀ k, k < p → CoreDomain d c (Iterate (CoreReturn d c) k x)) :
     ∃ j, p ≤ j ∧ j ≤ 2 * p ∧ Iterate (CoreMap d c) j x = Iterate (CoreReturn d c) p x := by
   induction p with
-  | zero => exact ⟨0, le_rfl, by simp, by simp [Iterate]⟩
+  | zero => { exact ⟨0, le_rfl, by simp, by simp [Iterate]⟩ }
   | succ p ih =>
+    {
       obtain ⟨j, hj1, hj2, hjx⟩ := ih (fun k hk => hdom k (by omega))
       have hdomp := hdom p (by omega)
       rcases hdomp with hdvd | hres
@@ -346,6 +355,7 @@ theorem CoreReturnRawRealization (d c p x : ℕ) (hd : 2 ≤ d) (_hx : 1 ≤ x)
             _ = CoreReturn d c (Iterate (CoreReturn d c) p x) :=
                   CoreReturnRealizeModCompose d c _ (by omega) hdy hres
             _ = Iterate (CoreReturn d c) (p + 1) x := rfl
+    }
 
 /-- A return cycle whose values lie in the domain expands to a raw cycle within twice as
 many instructions. -/
@@ -531,19 +541,23 @@ theorem CoreMapCornerCycleBack (d : ℕ) (hd : 3 ≤ d) :
 theorem CoreCornerCycleIterateEven (d m : ℕ) (hd : 3 ≤ d) :
     Iterate (CoreMap d (d + 1)) (2 * m) (d + 1) = d + 1 := by
   induction m with
-  | zero => simp [Iterate]
+  | zero => { simp [Iterate] }
   | succ m ih =>
+    {
       rw [show 2 * (m + 1) = 2 * m + 2 by omega, IterateAdd, ih]
       exact CoreMapCornerCycle d hd
+    }
 
 /-- A backward corner state returns to itself after an even number of instructions. -/
 theorem CoreCornerCycleIterateBack (d m : ℕ) (hd : 3 ≤ d) :
     Iterate (CoreMap d (d + 1)) (2 * m) (d * (d + 1)) = d * (d + 1) := by
   induction m with
-  | zero => simp [Iterate]
+  | zero => { simp [Iterate] }
   | succ m ih =>
+    {
       rw [show 2 * (m + 1) = 2 * m + 2 by omega, IterateAdd, ih]
       exact CoreMapCornerCycleBack d hd
+    }
 
 /-- The corner cycle reaches `d * (d + 1)` after an odd number of instructions. -/
 theorem CoreCornerCycleIterateOdd (d m : ℕ) (hd : 3 ≤ d) :
@@ -563,8 +577,9 @@ theorem CoreCornerCycleInvariant (d y m : ℕ) (hd : 3 ≤ d)
     Iterate (CoreMap d (d + 1)) m y = d + 1 ∨
       Iterate (CoreMap d (d + 1)) m y = d * (d + 1) := by
   induction m with
-  | zero => simpa [Iterate] using hy
+  | zero => { simpa [Iterate] using hy }
   | succ m ih =>
+    {
       rw [show Iterate (CoreMap d (d + 1)) (m + 1) y =
           CoreMap d (d + 1) (Iterate (CoreMap d (d + 1)) m y) from rfl]
       rcases ih with h | h
@@ -572,6 +587,7 @@ theorem CoreCornerCycleInvariant (d y m : ℕ) (hd : 3 ≤ d)
         exact Or.inr (CoreMapCornerCycleSteps d hd).1
       · rw [h]
         exact Or.inl (CoreMapCornerCycleSteps d hd).2
+    }
 
 /-- A return iterate of a seed in the domain is a raw iterate of that seed. -/
 theorem CoreCornerIterateRealized (d x : ℕ) (hd : 3 ≤ d)
@@ -579,8 +595,9 @@ theorem CoreCornerIterateRealized (d x : ℕ) (hd : 3 ≤ d)
     CoreDomain d (d + 1) (Iterate (CoreReturn d (d + 1)) p x) ∧
       ∃ j, Iterate (CoreMap d (d + 1)) j x = Iterate (CoreReturn d (d + 1)) p x := by
   induction p with
-  | zero => exact ⟨by simpa [Iterate] using hdom 0, 0, by simp [Iterate]⟩
+  | zero => { exact ⟨by simpa [Iterate] using hdom 0, 0, by simp [Iterate]⟩ }
   | succ p ih =>
+    {
       obtain ⟨hdomP, j, hj⟩ := ih
       have hstep : ∃ j', Iterate (CoreMap d (d + 1)) j' (Iterate (CoreReturn d (d + 1)) p x) =
           CoreReturn d (d + 1) (Iterate (CoreReturn d (d + 1)) p x) := by
@@ -606,6 +623,7 @@ theorem CoreCornerIterateRealized (d x : ℕ) (hd : 3 ≤ d)
       obtain ⟨j'', hj''⟩ := hreal
       rw [← hj'']
       exact hdom j''
+    }
 
 /-- A corner orbit that never leaves the domain reaches the corner two-cycle. -/
 theorem CoreCornerDomainForeverHitsCycle (d x : ℕ) (hd : 3 ≤ d) (hx1 : 1 ≤ x)
@@ -702,9 +720,11 @@ theorem CoreCornerPeriodicPointCycle (d x k : ℕ) (hd : 3 ≤ d) (hx1 : 1 ≤ x
     have hperiod : ∀ t, Iterate (CoreMap d (d + 1)) (k * t) x = x := by
       intro t
       induction t with
-      | zero => simp [Iterate]
+      | zero => { simp [Iterate] }
       | succ t ih =>
+        {
           rw [Nat.mul_succ k t, IterateAdd, ih, hper]
+        }
     obtain ⟨t, ht⟩ : ∃ t, j ≤ k * t :=
       ⟨j + 1, by
         calc j ≤ k * j := Nat.le_mul_of_pos_left j hk

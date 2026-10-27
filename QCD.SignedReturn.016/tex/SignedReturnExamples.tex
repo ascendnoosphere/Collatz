@@ -1,3 +1,4 @@
+% SPDX-License-Identifier: CC-BY-4.0
 \documentclass[11pt,letterpaper]{article}
 
 \usepackage[T1]{fontenc}
@@ -28,12 +29,13 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{First hits for multiplier two, offset one, and divisor three}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{First hits for multiplier two, offset one, and divisor three}
 
 \begin{abstract}
 For the raw step that divides by \(3\) when the state is divisible by \(3\) and otherwise sends \(n\) to \(2n+1\), the residue of a seed modulo \(3\) decides the first hit. Remainder \(0\) hits at time zero, remainder \(1\) hits at time one, and remainder \(2\) is fixed by the undivided step, so it never hits. Every seed that does hit satisfies \(3\lvert\mathrm{return}\rvert\le 2\lvert\mathrm{seed}\rvert+1\). Seed \(2\) is a witness that not every integer has a first hit, and its raw orbit never meets a multiple of \(3\). Every orbit meets \(0\), \(1\), or \(-1\), or else the absolute values are unbounded, and exactly one of these four outcomes occurs.
@@ -213,7 +215,7 @@ If a seed \(n\) has a first hit at time \(j\), and \(r\) is the corresponding re
 \end{theorem}
 
 \begin{proof}
-Theorem~\ref{thm:tri} places \(n\) in one of the three residue classes. The third class has no first hit, so it cannot occur under the hypothesis. 
+Theorem~\ref{thm:tri} places \(n\) in one of the three residue classes. The third class has no first hit, so it cannot occur under the hypothesis.
 
 If the remainder is \(0\), then \(j=0\) by Lemma~\ref{lem:unique} and the return is \(n/3\). Lemma~\ref{lem:cancel} gives \(3\lvert n/3\rvert=\lvert n\rvert\), and Lemma~\ref{lem:num0} gives \(\lvert n\rvert\le 2\lvert n\rvert+1\).
 

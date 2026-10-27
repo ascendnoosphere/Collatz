@@ -255,6 +255,24 @@ func TestCohomology(t *testing.T) {
 	}
 }
 
+// TestTwistedCycleExtremeOffsets compares word-boundary offsets with their field residues.
+func TestTwistedCycleExtremeOffsets(t *testing.T) {
+	max := int(^uint(0) >> 1)
+	for _, p := range []int{2, 3, 5} {
+		for _, offset := range []int{max, -max - 1} {
+			lam := []int{p - 1, p - 1}
+			a := []int{1, offset}
+			h, b, dim := TwistedCycle(lam, a, p)
+			a[1] = int(Mod(int64(offset), p))
+			wantH, wantB, wantDim := TwistedCycle(lam, a, p)
+			if h != wantH || b != wantB || dim != wantDim {
+				t.Fatalf("p=%d offset=%d: (%d,%d,%d), want (%d,%d,%d)",
+					p, offset, h, b, dim, wantH, wantB, wantDim)
+			}
+		}
+	}
+}
+
 // TestJuliaViews preserves the four models and resolves the previously invisible plus basin.
 func TestJuliaViews(t *testing.T) {
 	models, views := Polynomials(), PolynomialViews()

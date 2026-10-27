@@ -94,6 +94,7 @@ def MathTokens(source):
 # GitHub transports inline TeX through two HTML layers, display TeX through one.
 # Decode fixed layer counts, never repeatedly or until a source-dependent match appears.
 class MathHTML(HTMLParser):
+    # Keep decoded text until the matching renderer closes; reject nested payloads.
     def __init__(self):
         super().__init__(convert_charrefs=True)
         self.rows = []

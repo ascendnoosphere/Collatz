@@ -512,9 +512,12 @@ theorem BraidAffineRunY (q c D : ℤ) (hD : D ≠ 0) (a : ℕ) (x : ℤ)
       q ^ a * BraidY q D c x := by
   induction a generalizing x with
   | zero =>
+    {
       unfold AffineRun
       simp [pow_zero, one_mul]
+    }
   | succ k ih =>
+    {
       rcases hleg with ⟨_, hdiv, htail⟩
       have hstep := BraidAffineY q c D x hD hdiv
       have htailY := ih (DividedAffine q c D x) htail
@@ -535,6 +538,7 @@ theorem BraidAffineRunY (q c D : ℤ) (hD : D ≠ 0) (a : ℕ) (x : ℤ)
         _ = q ^ (k + 1) * BraidY q D c x := by
           rw [pow_succ]
           ring
+    }
 
 /-- Equal legal endpoints of `A ^ a EE` and `A ^ (a - 1) EA` satisfy the relation. -/
 theorem BraidWordRelation (q c D n p : ℤ) (a : ℕ) (hD : D ≠ 0) (ha : 1 ≤ a)

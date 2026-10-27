@@ -32,11 +32,7 @@ The proof is the residue classification. Remainder $`0`$ hits at time $`0`$ with
 
 **PRESERVATION CONDITIONS.** The parameters remain multiplier $`2`$, offset $`1`$, and divisor $`3`$. The seed stays an arbitrary integer, with no positivity, boundedness, or coprimality restriction. The return is the raw step at the first hit, not a later core representative. The inequality is stated only under the hypothesis that a first hit exists. The witness against a total first-hit law is the same seed $`2`$ whose residue is fixed.
 
-## What is not claimed
-
-Not every integer has a first hit.
-
-The raw orbit of seed $`2`$ never meets a multiple of $`3`$, so that orbit does not enter a core by division.
+## Further proved results
 
 If the raw orbit meets $`1`$ or meets $`-1`$, the returns before that meeting form blocks of length one or two. Writing $`a_{0}`$ and $`a_{1}`$ for those counts,
 ```math
@@ -46,7 +42,10 @@ The length of the chain and the two block counts are the same for every minimal 
 
 Every orbit either is eventually larger than every bound, or meets $`0`$, $`1`$, or $`-1`$. In the second case every state has absolute value at most $`2\lvert n\rvert+1`$. The bound is attained: the orbit of $`1`$ contains $`3`$. The coefficient $`2`$ alone is not enough, since $`|3|>2|1|`$.
 
-The return inequality is not claimed for a seed that has no first hit.
+## Scope
+
+Seed $`2`$ has no first hit and never enters a core by division.
+The return inequality applies only to seeds with a first hit.
 
 The count inequality is not claimed for a seed whose raw orbit meets neither $`1`$ nor $`-1`$.
 

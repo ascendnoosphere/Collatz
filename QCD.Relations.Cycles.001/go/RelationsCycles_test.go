@@ -13,9 +13,9 @@ import (
 	"testing"
 )
 
-// referenceStep computes one instruction of the raw map with freshly allocated
+// ReferenceStep computes one instruction of the raw map with freshly allocated
 // math/big values, independent of the workspace buffers.
-func referenceStep(d, q, c, n int64) *big.Int {
+func ReferenceStep(d, q, c, n int64) *big.Int {
 	dBig := big.NewInt(d)
 	if new(big.Int).Mod(big.NewInt(n), dBig).Sign() == 0 {
 		return new(big.Int).Quo(big.NewInt(n), dBig)
@@ -23,9 +23,9 @@ func referenceStep(d, q, c, n int64) *big.Int {
 	return new(big.Int).Add(new(big.Int).Mul(big.NewInt(q), big.NewInt(n)), big.NewInt(c))
 }
 
-// referenceStepBig computes one raw step with full-width operands, so a walk
+// ReferenceStepBig computes one raw step with full-width operands, so a walk
 // longer than the machine word keeps exact values.
-func referenceStepBig(d, q, c, n *big.Int) *big.Int {
+func ReferenceStepBig(d, q, c, n *big.Int) *big.Int {
 	if new(big.Int).Mod(n, d).Sign() == 0 {
 		return new(big.Int).Quo(n, d)
 	}
@@ -40,7 +40,7 @@ func TestStepMatchesReference(t *testing.T) {
 			for c := uint64(0); c <= 9; c++ {
 				for n := uint64(0); n <= 40; n++ {
 					got := new(big.Int).SetUint64(Step(d, q, c, n))
-					want := referenceStep(int64(d), int64(q), int64(c), int64(n))
+					want := ReferenceStep(int64(d), int64(q), int64(c), int64(n))
 					if got.Cmp(want) != 0 {
 						t.Fatalf("Step(%d,%d,%d,%d) = %s, want %s",
 							d, q, c, n, got, want)
@@ -62,7 +62,7 @@ func TestStepBigMatchesReference(t *testing.T) {
 				for n := int64(0); n <= 60; n++ {
 					w.Cur.SetInt64(n)
 					got := w.StepBig(w.Cur, w.Next)
-					want := referenceStep(int64(d), int64(q), int64(c), n)
+					want := ReferenceStep(int64(d), int64(q), int64(c), n)
 					if got.Cmp(want) != 0 {
 						t.Fatalf("StepBig(%d,%d,%d,%d) = %s, want %s",
 							d, q, c, n, got, want)
@@ -74,13 +74,13 @@ func TestStepBigMatchesReference(t *testing.T) {
 	w.SetParams(2, 3, 1)
 	w.Cur.SetString("123456789012345678901234567890", 10)
 	got := new(big.Int).Set(w.StepBig(w.Cur, w.Next))
-	want := referenceStepBig(big.NewInt(2), big.NewInt(3), big.NewInt(1), w.Cur)
+	want := ReferenceStepBig(big.NewInt(2), big.NewInt(3), big.NewInt(1), w.Cur)
 	if got.Cmp(want) != 0 {
 		t.Fatalf("large StepBig = %s, want %s", got, want)
 	}
 	w.Cur.SetString("123456789012345678901234567891", 10)
 	got = new(big.Int).Set(w.StepBig(w.Cur, w.Next))
-	want = referenceStepBig(big.NewInt(2), big.NewInt(3), big.NewInt(1), w.Cur)
+	want = ReferenceStepBig(big.NewInt(2), big.NewInt(3), big.NewInt(1), w.Cur)
 	if got.Cmp(want) != 0 {
 		t.Fatalf("large odd StepBig = %s, want %s", got, want)
 	}
@@ -106,7 +106,7 @@ func TestCycleSliceTriples(t *testing.T) {
 			t.Fatalf("7c = 3(8^%d - 1) failed: %s vs %s", h, lhs, rhs)
 		}
 		// The affine step of 3 lands on 3 * 2^(3h).
-		top := referenceStep(2, int64(q.Uint64()), int64(c.Uint64()), 3)
+		top := ReferenceStep(2, int64(q.Uint64()), int64(c.Uint64()), 3)
 		wantTop := new(big.Int).Lsh(big.NewInt(3), uint(3*h))
 		if top.Cmp(wantTop) != 0 {
 			t.Fatalf("affine step at h=%d = %s, want %s", h, top, wantTop)
@@ -115,7 +115,7 @@ func TestCycleSliceTriples(t *testing.T) {
 		cur := big.NewInt(3)
 		length := 0
 		for length < int(4*h+4) {
-			cur = referenceStep(2, int64(q.Uint64()), int64(c.Uint64()), cur.Int64())
+			cur = ReferenceStep(2, int64(q.Uint64()), int64(c.Uint64()), cur.Int64())
 			length++
 			if cur.Cmp(big.NewInt(3)) == 0 {
 				break
@@ -217,14 +217,14 @@ func TestIntersectionEquivalence(t *testing.T) {
 				if hit != (pow.Cmp(big.NewInt(x)) == 0) {
 					t.Fatalf("equivalence failed at d=%d x=%d j=%d", d, x, j)
 				}
-				cur = referenceStepBig(dBig, qBig, cBig, cur)
+				cur = ReferenceStepBig(dBig, qBig, cBig, cur)
 			}
 		}
 	}
 	// The state 1 never returns to itself at a positive time.
 	cur := big.NewInt(1)
 	for j := 1; j <= 8; j++ {
-		cur = referenceStepBig(big.NewInt(3), big.NewInt(4), big.NewInt(2), cur)
+		cur = ReferenceStepBig(big.NewInt(3), big.NewInt(4), big.NewInt(2), cur)
 		if cur.Cmp(one) == 0 {
 			t.Fatalf("d=3 returned 1 to itself at time %d", j)
 		}
@@ -241,7 +241,7 @@ func TestIntersectionControlAtTwo(t *testing.T) {
 			reached = true
 			break
 		}
-		cur = referenceStep(2, 3, 1, cur.Int64())
+		cur = ReferenceStep(2, 3, 1, cur.Int64())
 	}
 	if !reached {
 		t.Fatalf("d=2 control: 3 did not reach 1")
@@ -265,14 +265,14 @@ func TestEvenOffsetGrowthControl(t *testing.T) {
 			cur := big.NewInt(n)
 			steps := 0
 			for cur.Bit(0) == 0 && steps <= evenOffsetReach {
-				cur = referenceStepBig(two, qBig, cBig, cur)
+				cur = ReferenceStepBig(two, qBig, cBig, cur)
 				steps++
 			}
 			if steps > evenOffsetReach || cur.Bit(0) != 1 {
 				t.Fatalf("c=%d seed %d did not reach an odd state", c, n)
 			}
 			for i := 0; i < 32; i++ {
-				next := referenceStepBig(two, qBig, cBig, cur)
+				next := ReferenceStepBig(two, qBig, cBig, cur)
 				if next.Bit(0) != 1 || next.Cmp(cur) <= 0 {
 					t.Fatalf("c=%d seed %d growth failed at step %d", c, n, i)
 				}
@@ -282,7 +282,7 @@ func TestEvenOffsetGrowthControl(t *testing.T) {
 	}
 	// With c = 0 the affine step is the identity on odd states, so the growth
 	// statement needs c >= 1.
-	if got := referenceStep(2, 1, 0, 1); got.Cmp(big.NewInt(1)) != 0 {
+	if got := ReferenceStep(2, 1, 0, 1); got.Cmp(big.NewInt(1)) != 0 {
 		t.Fatalf("c=0 control: step of 1 = %s, want 1", got)
 	}
 }
@@ -302,7 +302,7 @@ func TestOddOffsetGcdControl(t *testing.T) {
 		// sides of the divisor are compared with an independent reference.
 		for _, n := range []uint64{2, 6, 18, 5, 9} {
 			got := new(big.Int).SetUint64(Step(2, q, c, n))
-			want := referenceStep(2, int64(q), int64(c), int64(n))
+			want := ReferenceStep(2, int64(q), int64(c), int64(n))
 			if got.Cmp(want) != 0 {
 				t.Fatalf("branch case c=%d n=%d: %s, want %s", c, n, got, want)
 			}
@@ -367,11 +367,11 @@ func TestSweepTotals(t *testing.T) {
 	// Recorded in the family README; each slice is rerun below and compared.
 	wantSlices := []uint64{4370, 11935, 569964, 2600000, 43335}
 	sweeps := []func() SliceTotals{
-		sweepCycleSlice,
-		sweepFullAccess,
-		sweepIntersection,
-		sweepEvenOffset,
-		sweepOddOffset,
+		SweepCycleSlice,
+		SweepFullAccess,
+		SweepIntersection,
+		SweepEvenOffset,
+		SweepOddOffset,
 	}
 	var total, repeat SliceTotals
 	for i, sweep := range sweeps {

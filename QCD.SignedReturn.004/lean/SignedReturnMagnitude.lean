@@ -16,7 +16,7 @@ uniform core.
 
 set_option autoImplicit false
 
-namespace GeneralizedCollatz
+namespace GeneralizedCollatz.SignedReturnMagnitude
 
 /-- The affine state of multiplier `q`, offset `c`, time `j` and seed `n`. -/
 def AffineState (q c : ℤ) (j : ℕ) (n : ℤ) : ℤ :=
@@ -78,4 +78,4 @@ theorem ReturnMagnitude (p : Parameters) (n : ℤ) (j : ℕ)
   unfold AffineState
   exact AffineTriangle p.Q p.C n j
 
-end GeneralizedCollatz
+end GeneralizedCollatz.SignedReturnMagnitude

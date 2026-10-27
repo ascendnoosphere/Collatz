@@ -23,7 +23,7 @@ exponent, and every convergence statement.
 
 set_option autoImplicit false
 
-namespace GeneralizedCollatz
+namespace GeneralizedCollatz.SignedReturnResidue
 
 /-- Affine state after `j` undivided steps, with offset sum `TrapSum q j`. -/
 def AffineState (q c : ℤ) (j : ℕ) (n : ℤ) : ℤ :=
@@ -196,4 +196,4 @@ theorem FirstHitCongruent (p : Parameters) (n n' : ℤ) (j : ℕ)
       exact FirstHitOfCongruent p n' n j h.symm hhit
     }
 
-end GeneralizedCollatz
+end GeneralizedCollatz.SignedReturnResidue

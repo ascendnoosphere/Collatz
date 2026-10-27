@@ -27,7 +27,7 @@ classes obey
 
 set_option autoImplicit false
 
-namespace GeneralizedCollatz
+namespace GeneralizedCollatz.SignedReturnExamples
 
 /-- Affine state after `j` undivided steps, with offset sum `TrapSum q j`. -/
 def AffineState (q c : ℤ) (j : ℕ) (n : ℤ) : ℤ :=
@@ -9509,19 +9509,21 @@ theorem PeriodicReduce (p : Parameters) (n : ℤ) (s q m : ℕ)
       Iterate (RawStep p) (s + m % q) n := by
   induction m using Nat.strong_induction_on with
   | _ m ih =>
-    by_cases hlt : m < q
-    · {
-        rw [Nat.mod_eq_of_lt hlt]
-      }
-    · {
-        have hge : q ≤ m := by omega
-        have hsmall : m - q < m := by omega
-        have hidx : s + m = s + q + (m - q) := by omega
-        rw [hidx, hper (m - q), ih (m - q) hsmall]
-        have hmod : (m - q) % q = m % q :=
-          (Nat.mod_eq_sub_mod hge).symm
-        rw [hmod]
-      }
+    {
+      by_cases hlt : m < q
+      · {
+          rw [Nat.mod_eq_of_lt hlt]
+        }
+      · {
+          have hge : q ≤ m := by omega
+          have hsmall : m - q < m := by omega
+          have hidx : s + m = s + q + (m - q) := by omega
+          rw [hidx, hper (m - q), ih (m - q) hsmall]
+          have hmod : (m - q) % q = m % q :=
+            (Nat.mod_eq_sub_mod hge).symm
+          rw [hmod]
+        }
+    }
 
 /-- An eventually periodic orbit is bounded. -/
 theorem PeriodicBounded (p : Parameters) (n : ℤ)
@@ -10663,4 +10665,4 @@ theorem OrbitMagnitudeDichotomy (p : Parameters)
         }
     }
 
-end GeneralizedCollatz
+end GeneralizedCollatz.SignedReturnExamples

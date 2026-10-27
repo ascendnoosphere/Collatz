@@ -37,7 +37,10 @@
 \maketitle
 
 \begin{abstract}
-A reproducible survey distinguishes exact Gaussian and Eisenstein lattice maps, residue-wise quotient variants, affine permutations on finite quadratic rings, and selected holomorphic polynomial models. The raw \((3,c,2)\) nonreal escape theorem has a finite dyadic descent proof. A broader scalar theorem covers arbitrary real integral offsets and signed multiplicatively independent magnitudes, including an escaping orbit that divides infinitely often. The quotient variants have nonreal cycles. Four polynomial models preserve the same selected real orbit values but have different exact cycle multipliers. This supplies a checked obstruction to inferring Julia geometry from finite arithmetic orbit data. Their exact escape radius is proved, while the plotted pixels remain finite-time floating-point experiments. The numerical census is bounded and all conventions, clocks, fences, and unresolved classifications are retained.
+We distinguish exact Gaussian and Eisenstein lattice maps, residue-wise
+quotient variants, affine permutations on finite quadratic rings, and
+selected holomorphic polynomial models. The raw \((3,c,2)\) nonreal escape theorem has a finite dyadic descent proof. A broader scalar theorem covers arbitrary real integral offsets and signed multiplicatively independent magnitudes, including an escaping orbit that divides infinitely often. The quotient variants have nonreal cycles. Four polynomial models preserve the same selected real orbit values but have different exact cycle multipliers. Their differing multipliers show that finite arithmetic orbit data do
+not determine complex stability. Their exact escape radius is proved, while the plotted pixels remain finite-time floating-point experiments. The numerical census is bounded and all conventions, clocks, fences, and unresolved classifications are retained.
 \end{abstract}
 
 \section{Four different dynamical objects}
@@ -93,8 +96,8 @@ The four raw \((3,\pm1,2)\) rows each have \(97\) exact-cycle seeds and \(9,312\
 \section{Independent scalar families and a dependent control}
 
 The general scalar result and actual ring-to-complex recovery are proved in
-\texttt{QCD.ComplexLattice.001/tex/ScalarEscape.tex} and
-\texttt{QCD.ComplexLattice.001/lean/ScalarEscape.lean}
+\texttt{QCD.\allowbreak Complex\allowbreak Lattice.\allowbreak 001/\allowbreak tex/\allowbreak Scalar\allowbreak Escape.tex} and
+\texttt{QCD.\allowbreak Complex\allowbreak Lattice.\allowbreak 001/\allowbreak lean/\allowbreak Scalar\allowbreak Escape.lean}
 \cite{LibraryScalar26}. For
 \(q,c,d\in\Z\), \(|q|,|d|\ge2\), it assumes
 \[
@@ -134,11 +137,13 @@ Both examples and the independence minor are checked in Lean.
 Six additional scalar families each use the same \(9,409\) seeds,
 \(256\)-tick horizon and \(2^{26}\) census fence: \(56,454\) added seeds,
 \(178,771\) combined lattice seeds. The JSON stores these separately as
-\texttt{ScalarLattices}. In the Gaussian \((3,2,2)\), \((2,7,3)\),
-\((12,0,18)\), signed \((-2,-3,-3)\), and Eisenstein \((12,5,18)\)
-rows, each has \(9,312\) theorem-backed off-axis escapes. Their respective
-real-axis exact-cycle/fence-exit counts are \((7,90)\), \((19,78)\),
-\((1,96)\), \((5,92)\), and \((1,96)\). The Gaussian \((4,0,8)\)
+\texttt{ScalarLattices}. Gaussian \((12,0,18)\) has \(9,408\)
+theorem-backed escapes and one exact-cycle seed, including \(96\)
+nonzero real-axis seeds certified by the homogeneous theorem.
+The Gaussian \((3,2,2)\), \((2,7,3)\), signed \((-2,-3,-3)\),
+and Eisenstein \((12,5,18)\) rows each have \(9,312\) theorem-backed
+off-axis escapes. Their respective real-axis exact-cycle/fence-exit
+counts are \((7,90)\), \((19,78)\), \((5,92)\), and \((1,96)\). The Gaussian \((4,0,8)\)
 row has \(9,409\) cycle seeds reaching \(7,009\) marked cycles in this
 window. None of these rows has an unresolved prefix. A real-axis fence
 exit is not certified escape, and the dependent row is not an infinite
@@ -151,9 +156,9 @@ all-seed cycle enumeration.
 \includegraphics[width=.47\textwidth]{../other/GaussianDependentScalar.pdf}
 \caption{Independent shared-support scalar parameters \((12,0,18)\) on the
 left, and dependent \((4,0,8)\) on the right. Navy denotes theorem-backed
-off-axis escape; other colors identify exact reached cycles by the same
-noninjective six-color hash. The left integer-axis fence exits are not an
-escape theorem.}
+escape; for \((12,0,18)\), this includes every nonzero real-axis seed.
+Other colors identify exact reached cycles by the same noninjective
+six-color hash.}
 \end{figure}
 
 Coefficient matching between two quadratic orders is a bijective
@@ -192,7 +197,7 @@ The polynomial \(X^2+1\) has no root in \(\mathbb F_3\), whose squares are \(0,1
 
 In characteristic three, the binomial cross terms vanish, \(x^3=x,y^3=y\), and \(\bar i^3=-\bar i\). In characteristic two, squaring is additive and \(\bar\omega^2=1+\bar\omega\). These give the displayed coordinate formulas, which square to identity and fix exactly the points with \(y=0\). They are not identity on the generator.
 
-The conjugate generators are distinct roots of the defining quadratic, so each polynomial splits with two distinct roots in the generated field. A coefficient-field algebra homomorphism is determined by its generator image: it sends \(x+y\alpha\) to \(x+yf(\alpha)\). The defining polynomial requires this image to be one of its two roots. The two exhibited automorphisms therefore exhaust the group, which is the cyclic group of order two. All root choices, cardinalities, Frobenius formulas and automorphism exhaustion are checked in \texttt{ComplexFields.lean}.
+The conjugate generators are distinct roots of the defining quadratic, so each polynomial splits with two distinct roots in the generated field. A coefficient-field algebra homomorphism is determined by its generator image: it sends \(x+y\alpha\) to \(x+yf(\alpha)\). The defining polynomial requires this image to be one of its two roots. The two exhibited automorphisms therefore exhaust the group, which is the cyclic group of order two. The Lean file \texttt{Complex\allowbreak Fields.lean} checks the root choices, cardinalities, Frobenius formulas and automorphism exhaustion.
 \end{proof}
 
 % Both parameters and every tick are retained by the actual algebra automorphism.

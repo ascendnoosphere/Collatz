@@ -39,8 +39,8 @@ type Totals struct {
 	Failures uint64
 }
 
-// add accumulates a worker total into the receiver.
-func (t *Totals) add(other Totals) {
+// Add accumulates a worker total into the receiver.
+func (t *Totals) Add(other Totals) {
 	t.Checks += other.Checks
 	t.Hits += other.Hits
 	t.Misses += other.Misses
@@ -73,9 +73,9 @@ func NewCache() *Cache {
 	return &Cache{Divisors: [2]int64{-2, 2}}
 }
 
-// abs64 returns the absolute value. Callers stay away from the most
+// Abs64 returns the absolute value. Callers stay away from the most
 // negative int64.
-func abs64(x int64) int64 {
+func Abs64(x int64) int64 {
 	if x < 0 {
 		return -x
 	}
@@ -87,8 +87,8 @@ func Divides(d, n int64) bool {
 	return n%d == 0
 }
 
-// mulOK returns a*b when the product fits in int64.
-func mulOK(a, b int64) (int64, bool) {
+// MulOK returns a*b when the product fits in int64.
+func MulOK(a, b int64) (int64, bool) {
 	if a == 0 || b == 0 {
 		return 0, true
 	}
@@ -103,8 +103,8 @@ func mulOK(a, b int64) (int64, bool) {
 	return prod, true
 }
 
-// addOK returns a+b when the sum fits in int64.
-func addOK(a, b int64) (int64, bool) {
+// AddOK returns a+b when the sum fits in int64.
+func AddOK(a, b int64) (int64, bool) {
 	sum := a + b
 	if (sum > a) != (b > 0) && b != 0 {
 		return 0, false
@@ -122,11 +122,11 @@ func (w *Workspace) Load(q int64) bool {
 	for j := 0; j < len(ps); j++ {
 		ps[j] = pow
 		ts[j] = trap
-		nextPow, okPow := mulOK(pow, q)
+		nextPow, okPow := MulOK(pow, q)
 		if !okPow {
 			return false
 		}
-		nextTrap, okTrap := addOK(trap, pow)
+		nextTrap, okTrap := AddOK(trap, pow)
 		if !okTrap {
 			return false
 		}
@@ -138,24 +138,24 @@ func (w *Workspace) Load(q int64) bool {
 
 // State returns q^j*n + c*U_j(q) from the loaded buffers.
 func (w *Workspace) State(c, n int64, j int) (int64, bool) {
-	term, okTerm := mulOK(w.Pow[j], n)
+	term, okTerm := MulOK(w.Pow[j], n)
 	if !okTerm {
 		return 0, false
 	}
-	off, okOff := mulOK(c, w.Trap[j])
+	off, okOff := MulOK(c, w.Trap[j])
 	if !okOff {
 		return 0, false
 	}
-	return addOK(term, off)
+	return AddOK(term, off)
 }
 
 // ClosedState is the multiplier-one state n+c*j, with no power table.
 func ClosedState(c, n int64, j int) (int64, bool) {
-	off, ok := mulOK(c, int64(j))
+	off, ok := MulOK(c, int64(j))
 	if !ok {
 		return 0, false
 	}
-	return addOK(n, off)
+	return AddOK(n, off)
 }
 
 // IsFirstHit reports that j is the least time at which d divides the
@@ -196,10 +196,10 @@ func (w *Workspace) FirstEarly(c, d, n int64) (int, bool, bool) {
 	return 0, false, true
 }
 
-// sweepOne counts hits of one offset and divisor on an inclusive seed
+// SweepOne counts hits of one offset and divisor on an inclusive seed
 // interval. A hit after the early horizon, or a disagreement between the
 // power table and n+c*j, is a failure.
-func (w *Workspace) sweepOne(c, d, lo, hi int64) Totals {
+func (w *Workspace) SweepOne(c, d, lo, hi int64) Totals {
 	var tot Totals
 	if !w.Load(uniformQ) {
 		tot.Failures++
@@ -261,9 +261,9 @@ func Sweep(cache *Cache) Totals {
 				go func(c, d, lo, hi int64) {
 					defer wg.Done()
 					w := NewWorkspace()
-					part := w.sweepOne(c, d, lo, hi)
+					part := w.SweepOne(c, d, lo, hi)
 					mu.Lock()
-					totals.add(part)
+					totals.Add(part)
 					mu.Unlock()
 				}(c, d, lo, hi)
 			}
@@ -280,7 +280,7 @@ func PureBoundOK(d, n int64) bool {
 		return false
 	}
 	quot := n / d
-	return abs64(d)*abs64(quot) <= abs64(n)
+	return Abs64(d)*Abs64(quot) <= Abs64(n)
 }
 
 // main prints the finite hit count. A positive failure count exits nonzero.

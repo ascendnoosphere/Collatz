@@ -93,10 +93,12 @@ theorem OffsetStepGcd (c m n : ℕ) (divides : m ∣ c) (coprime : Nat.Coprime m
 theorem OffsetOrbitStratum (c m n : ℕ) (divides : m ∣ c) (coprime : Nat.Coprime m 6)
     (k : ℕ) : Nat.gcd (Iterate (OffsetStep c) k n) m = Nat.gcd n m := by
   induction k with
-  | zero => simp [Iterate]
+  | zero => { simp [Iterate] }
   | succ k horizon =>
+    {
       show Nat.gcd (OffsetStep c (Iterate (OffsetStep c) k n)) m = Nat.gcd n m
       rw [OffsetStepGcd c m _ divides coprime, horizon]
+    }
 
 /-- An odd offset returns to itself after one step through `4 * c`. -/
 theorem OffsetCycleStepSelf (c : ℕ) (odd : ¬ 2 ∣ c) : OffsetStep c c = 4 * c := by
@@ -195,29 +197,32 @@ theorem OffsetEvenOffsetOddStep (c n : ℕ) (evenOffset : 2 ∣ c) (odd : ¬ 2 �
 theorem OffsetEvenOffsetOddPersist (c n : ℕ) (evenOffset : 2 ∣ c) (odd : ¬ 2 ∣ n)
     (j : ℕ) : ¬ 2 ∣ Iterate (OffsetStep c) j n := by
   induction j with
-  | zero => simpa [Iterate] using odd
-  | succ j horizon => exact (OffsetEvenOffsetOddStep c _ evenOffset horizon).1
+  | zero => { simpa [Iterate] using odd }
+  | succ j horizon => { exact (OffsetEvenOffsetOddStep c _ evenOffset horizon).1 }
 
 /-- Along an even offset, an odd seed grows by at least one per step. -/
 theorem OffsetEvenOffsetGrowthLower (c n : ℕ) (evenOffset : 2 ∣ c) (odd : ¬ 2 ∣ n) :
     ∀ j, n + j ≤ Iterate (OffsetStep c) j n := by
   intro j
   induction j with
-  | zero => simp [Iterate]
+  | zero => { simp [Iterate] }
   | succ j horizon =>
+    {
       have persists := OffsetEvenOffsetOddPersist c n evenOffset odd j
       have grows := (OffsetEvenOffsetOddStep c _ evenOffset persists).2
       have unfold : Iterate (OffsetStep c) (j + 1) n =
           OffsetStep c (Iterate (OffsetStep c) j n) := rfl
       rw [unfold]
       omega
+    }
 
 /-- The dyadic prefix of a positive seed is consumed exactly. -/
 theorem OffsetHalvePrefix (c u : ℕ) : ∀ v, Iterate (OffsetStep c) v (2 ^ v * u) = u := by
   intro v
   induction v generalizing u with
-  | zero => simp [Iterate]
+  | zero => { simp [Iterate] }
   | succ v horizon =>
+    {
       rw [OffsetIterateSuccFirst]
       have halves : OffsetStep c (2 ^ (v + 1) * u) = 2 ^ v * u := by
         rw [OffsetStepEven c _ ⟨2 ^ v * u, by rw [pow_succ]; ring⟩]
@@ -225,6 +230,7 @@ theorem OffsetHalvePrefix (c u : ℕ) : ∀ v, Iterate (OffsetStep c) v (2 ^ v *
         exact Nat.mul_div_cancel_left (2 ^ v * u) (by omega)
       rw [halves]
       exact horizon u
+    }
 
 /-- Every orbit of an even offset is unbounded. -/
 theorem OffsetEvenOffsetUnbounded (c n : ℕ) (evenOffset : 2 ∣ c) (positive : 0 < n) :
@@ -254,9 +260,11 @@ theorem OffsetIterateScaling (a n : ℕ) :
     ∀ k, Iterate (OffsetStep (3 ^ a)) k (3 ^ a * n) = 3 ^ a * Iterate (OffsetStep 1) k n := by
   intro k
   induction k with
-  | zero => simp [Iterate]
+  | zero => { simp [Iterate] }
   | succ k horizon =>
+    {
       simp only [Iterate]
       rw [horizon, OffsetStepScaling]
+    }
 
 end GeneralizedCollatz

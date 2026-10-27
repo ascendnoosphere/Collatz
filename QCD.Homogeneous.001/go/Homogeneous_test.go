@@ -8,8 +8,8 @@ import (
 	"testing"
 )
 
-// bruteRelation searches a deliberately redundant rectangle for a test oracle.
-func bruteRelation(p *Parameters, limit uint64) bool {
+// BruteRelation searches a deliberately redundant rectangle for a test oracle.
+func BruteRelation(p *Parameters, limit uint64) bool {
 	var qPower, dPower big.Int
 	qPower.SetInt64(1)
 	for a := uint64(1); a <= limit; a++ {
@@ -25,8 +25,8 @@ func bruteRelation(p *Parameters, limit uint64) bool {
 	return false
 }
 
-// referencePrefix evaluates the raw definition without production orbit helpers.
-func referencePrefix(p *Parameters, seed *big.Int, steps uint64) (*big.Int, uint64, uint64) {
+// ReferencePrefix evaluates the raw definition without production orbit helpers.
+func ReferencePrefix(p *Parameters, seed *big.Int, steps uint64) (*big.Int, uint64, uint64) {
 	state := new(big.Int).Set(seed)
 	var remainder big.Int
 	var affines, divisions uint64
@@ -55,7 +55,7 @@ func TestDetectPowerRelationExhaustive(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			want := bruteRelation(&p, 8)
+			want := BruteRelation(&p, 8)
 			if relation.Dependent != want {
 				t.Fatalf("relation mismatch for Q=%d D=%d", q, d)
 			}
@@ -95,7 +95,7 @@ func TestIndependentPrefixes(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				wantState, wantAffines, wantDivisions := referencePrefix(&p, seed, 15)
+				wantState, wantAffines, wantDivisions := ReferencePrefix(&p, seed, 15)
 				if certificate.FinalState.Cmp(wantState) != 0 ||
 					certificate.AffineCount != wantAffines ||
 					certificate.DivisionCount != wantDivisions {

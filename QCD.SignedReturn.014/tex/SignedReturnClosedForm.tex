@@ -1,3 +1,4 @@
+% SPDX-License-Identifier: CC-BY-4.0
 \documentclass[11pt,letterpaper]{article}
 
 \usepackage[T1]{fontenc}
@@ -28,12 +29,13 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{Closed form of the signed offset sum}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{Closed form of the signed offset sum}
 
 \begin{abstract}
 For an integer multiplier \(q\) and a time \(j\in\N\), the offset sum \(U_j(q)\) is defined by \(U_0(q)=0\) and \(U_{j+1}(q)=q\,U_j(q)+1\). If \(q\ge 2\), then \((q-1)U_j(q)=q^j-1\), the quotient \((q^j-1)/(q-1)\) is an exact nonnegative integer, and it equals \(U_j(q)\). If only \(|q|\ge 2\), the same signed quotient remains exact, but the positive repunit \((|q|^j-1)/(|q|-1)\) need not equal \(|U_j(q)|\). The absolute bound that survives is \((|q|-1)\,|U_j(q)|\le |q|^j-1\).
@@ -53,10 +55,10 @@ Equivalently, \(U_{j+1}(q)=q\,U_j(q)+1\).
 The two recurrences agree. The second holds at \(j=0\) because both sides equal \(1\). If it holds at time \(j\), then
 \begin{align*}
 U_{j+2}(q)
-&=U_{j+1}(q)+q^{j+1}
-=q\,U_j(q)+1+q\cdot q^j
-=q\bigl(U_j(q)+q^j\bigr)+1
-=q\,U_{j+1}(q)+1.
+&=U_{j+1}(q)+q^{j+1}\\
+&=q\,U_j(q)+1+q\cdot q^j\\
+&=q\bigl(U_j(q)+q^j\bigr)+1\\
+&=q\,U_{j+1}(q)+1.
 \end{align*}
 
 \begin{definition}
@@ -82,10 +84,10 @@ For every \(q\in\Z\) and every \(j\in\N\),
 At \(j=0\) both sides are \(0\). If the identity holds at time \(j\), the recurrence gives
 \begin{align*}
 (q-1)U_{j+1}(q)
-&=(q-1)\bigl(q\,U_j(q)+1\bigr)
-=q\bigl((q-1)U_j(q)\bigr)+(q-1)
-=q(q^j-1)+(q-1)
-=q^{j+1}-1.
+&=(q-1)\bigl(q\,U_j(q)+1\bigr)\\
+&=q\bigl((q-1)U_j(q)\bigr)+(q-1)\\
+&=q(q^j-1)+(q-1)\\
+&=q^{j+1}-1.
 \end{align*}
 \end{proof}
 

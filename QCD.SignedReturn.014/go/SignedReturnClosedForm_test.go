@@ -10,24 +10,24 @@ import "testing"
 func TestHandOffset(t *testing.T) {
 	neg := []int64{0, 1, -1, 3, -5, 11, -21, 43, -85}
 	for j, want := range neg {
-		if trapSum(-2, j) != want {
-			t.Fatalf("trapSum(-2, %d)=%d, want %d", j, trapSum(-2, j), want)
+		if TrapSum(-2, j) != want {
+			t.Fatalf("trapSum(-2, %d)=%d, want %d", j, TrapSum(-2, j), want)
 		}
 	}
-	if trapSum(-2, 2) != -1 {
+	if TrapSum(-2, 2) != -1 {
 		t.Fatal("TrapSum(-2, 2) is not -1")
 	}
-	signed := (powInt(-2, 2) - 1) / ((-2) - 1)
-	if signed != -1 || trapSum(-2, 2) != signed {
+	signed := (PowInt(-2, 2) - 1) / ((-2) - 1)
+	if signed != -1 || TrapSum(-2, 2) != signed {
 		t.Fatal("signed quotient at q=-2, j=2 is not the offset sum")
 	}
-	if positiveRepunitEqualsAbs(-2, 2) {
+	if PositiveRepunitEqualsAbs(-2, 2) {
 		t.Fatal("absolute value matched the positive repunit")
 	}
 	pos := []int64{0, 1, 3, 7, 15, 31, 63, 127, 255}
 	for j, want := range pos {
-		if trapSum(2, j) != want {
-			t.Fatalf("trapSum(2, %d)=%d, want %d", j, trapSum(2, j), want)
+		if TrapSum(2, j) != want {
+			t.Fatalf("trapSum(2, %d)=%d, want %d", j, TrapSum(2, j), want)
 		}
 	}
 }
@@ -58,9 +58,9 @@ func TestGridAgrees(t *testing.T) {
 	var checks uint64
 	for q := int64(gridQMin); q <= gridQMax; q++ {
 		for j := 0; j <= gridMaxJ; j++ {
-			sum := trapSum(q, j)
+			sum := TrapSum(q, j)
 			if q >= 2 {
-				pow := powInt(q, j)
+				pow := PowInt(q, j)
 				num := pow - 1
 				den := q - 1
 				if num%den != 0 || sum != num/den || (q-1)*sum != num || sum < 0 {
@@ -73,9 +73,9 @@ func TestGridAgrees(t *testing.T) {
 			} else if PositiveClosedFormHolds(q, j) {
 				t.Fatalf("predicate accepted q=%d j=%d", q, j)
 			}
-			r := abs64(q)
+			r := Abs64(q)
 			if r >= 2 {
-				if (r-1)*abs64(sum) > powInt(r, j)-1 {
+				if (r-1)*Abs64(sum) > PowInt(r, j)-1 {
 					t.Fatalf("absolute bound q=%d j=%d sum=%d", q, j, sum)
 				}
 				if !GeometricAbsHolds(q, j) {

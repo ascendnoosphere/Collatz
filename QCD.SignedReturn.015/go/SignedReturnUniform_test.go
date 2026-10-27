@@ -8,10 +8,10 @@ import "testing"
 // TestSignedProductBoundary rejects the exceptional signed multiplication in either order.
 func TestSignedProductBoundary(t *testing.T) {
 	const minInt64 = -1 << 63
-	if _, ok := mulOK(-1, minInt64); ok {
+	if _, ok := MulOK(-1, minInt64); ok {
 		t.Fatal("-MinInt64 was accepted as an int64")
 	}
-	if _, ok := mulOK(minInt64, -1); ok {
+	if _, ok := MulOK(minInt64, -1); ok {
 		t.Fatal("MinInt64 times -1 was accepted as an int64")
 	}
 	w := NewWorkspace()
@@ -23,11 +23,11 @@ func TestSignedProductBoundary(t *testing.T) {
 	}
 }
 
-// expectUnitHit is the independent multiplier-one criterion for |d|=2:
+// ExpectUnitHit is the independent multiplier-one criterion for |d|=2:
 // an even seed hits at time 0, and an odd seed hits at time 1 exactly
 // when the offset is odd. Replacing the scanned predicate by true would
 // count every seed and disagree with this count.
-func expectUnitHit(c, n int64) bool {
+func ExpectUnitHit(c, n int64) bool {
 	if n%2 == 0 {
 		return true
 	}
@@ -104,7 +104,7 @@ func TestGridAgreesWithClosedCriterion(t *testing.T) {
 	for c := offsetMin; c <= offsetMax; c++ {
 		for n := seedMin; n <= seedMax; n++ {
 			// Both divisors ±2 induce the same divisibility.
-			if expectUnitHit(c, n) {
+			if ExpectUnitHit(c, n) {
 				wantHits += 2
 			} else {
 				wantMiss += 2

@@ -8,8 +8,8 @@ import (
 	"testing"
 )
 
-// bigAffine returns q^j*n + c*U_j(q) with arbitrary-precision arithmetic.
-func bigAffine(q, c, n int64, j int) *big.Int {
+// BigAffine returns q^j*n + c*U_j(q) with arbitrary-precision arithmetic.
+func BigAffine(q, c, n int64, j int) *big.Int {
 	pow := big.NewInt(1)
 	trap := big.NewInt(0)
 	qb := big.NewInt(q)
@@ -22,8 +22,8 @@ func bigAffine(q, c, n int64, j int) *big.Int {
 	return term.Add(term, off)
 }
 
-// bigResidue returns the representative of z in [0, m). The modulus is positive.
-func bigResidue(z *big.Int, m int64) int64 {
+// BigResidue returns the representative of z in [0, m). The modulus is positive.
+func BigResidue(z *big.Int, m int64) int64 {
 	mod := new(big.Int).Mod(new(big.Int).Set(z), big.NewInt(m))
 	return mod.Int64()
 }
@@ -113,7 +113,7 @@ func TestAffineResidueMatchesBig(t *testing.T) {
 				for n := int64(-castNAbs); n <= castNAbs; n++ {
 					for j := 0; j <= castJMax; j++ {
 						got := Residue(AffineValue(q, c, n, j), m)
-						want := bigResidue(bigAffine(q, c, n, j), m)
+						want := BigResidue(BigAffine(q, c, n, j), m)
 						if got != want {
 							t.Fatalf("residue q=%d c=%d m=%d n=%d j=%d", q, c, m, n, j)
 						}

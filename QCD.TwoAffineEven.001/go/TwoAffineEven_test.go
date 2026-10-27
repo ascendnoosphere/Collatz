@@ -52,6 +52,21 @@ func TestClosureArithmetic(t *testing.T) {
 	}
 }
 
+// TestClosureOverflow rejects multiplication and final-addition overflow before comparison.
+func TestClosureOverflow(t *testing.T) {
+	ws := Workspace{}
+	max := ^uint64(0)
+	if ClosureHolds(&ws, max, 1, 0) {
+		t.Fatal("overflowing q*n+1 was accepted as zero")
+	}
+	if ClosureHolds(&ws, max, 2, 1) || ClosureHolds(&ws, 1, 2, max) {
+		t.Fatal("overflowing product was accepted")
+	}
+	if !ClosureHolds(&ws, max-1, 1, max) {
+		t.Fatal("largest representable equal sides were rejected")
+	}
+}
+
 // TestSweepCount matches Run with the closed count 208383 and allows no failures.
 func TestSweepCount(t *testing.T) {
 	cache := NewCache()

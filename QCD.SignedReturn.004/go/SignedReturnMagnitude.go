@@ -39,8 +39,8 @@ type Totals struct {
 	Failures uint64
 }
 
-// add accumulates a worker total into the receiver.
-func (t *Totals) add(other Totals) {
+// Add accumulates a worker total into the receiver.
+func (t *Totals) Add(other Totals) {
 	t.Checks += other.Checks
 	t.Failures += other.Failures
 }
@@ -62,9 +62,9 @@ func NewWorkspace() *Workspace {
 	}
 }
 
-// abs64 returns the absolute value of x on the stated grid.
+// Abs64 returns the absolute value of x on the stated grid.
 // The grid never contains the most negative int64.
-func abs64(x int64) int64 {
+func Abs64(x int64) int64 {
 	if x < 0 {
 		return -x
 	}
@@ -96,18 +96,18 @@ func (w *Workspace) Affine(c, n int64, j int) int64 {
 
 // TriangleLeft returns the absolute value of the affine state.
 func (w *Workspace) TriangleLeft(c, n int64, j int) int64 {
-	return abs64(w.Affine(c, n, j))
+	return Abs64(w.Affine(c, n, j))
 }
 
 // TriangleRight returns |q|^j*|n| + |c|*|U_j(q)|.
 func (w *Workspace) TriangleRight(c, n int64, j int) int64 {
 	ps := w.Pow[:len(w.Pow)]
 	ts := w.Trap[:len(w.Trap)]
-	return abs64(ps[j])*abs64(n) + abs64(c)*abs64(ts[j])
+	return Abs64(ps[j])*Abs64(n) + Abs64(c)*Abs64(ts[j])
 }
 
-// divides reports whether d divides a in Z. Zero divides only zero.
-func divides(d, a int64) bool {
+// Divides reports whether d divides a in Z. Zero divides only zero.
+func Divides(d, a int64) bool {
 	if d == 0 {
 		return a == 0
 	}
@@ -122,11 +122,11 @@ func (w *Workspace) IsFirstHit(c, d, n int64, j int) bool {
 	if !w.Live || j < 0 || j >= len(ps) {
 		return false
 	}
-	if !divides(d, ps[j]*n+c*ts[j]) {
+	if !Divides(d, ps[j]*n+c*ts[j]) {
 		return false
 	}
 	for i := 0; i < j; i++ {
-		if divides(d, ps[i]*n+c*ts[i]) {
+		if Divides(d, ps[i]*n+c*ts[i]) {
 			return false
 		}
 	}
@@ -154,7 +154,7 @@ func (w *Workspace) ReturnMagnitudeAt(c, d, n int64, j int, left, right int64) b
 		return false
 	}
 	state := w.Affine(c, n, j)
-	gotLeft := abs64(d) * abs64(state/d)
+	gotLeft := Abs64(d) * Abs64(state/d)
 	gotRight := w.TriangleRight(c, n, j)
 	if left != gotLeft || right != gotRight {
 		return false
@@ -166,19 +166,19 @@ func (w *Workspace) ReturnMagnitudeAt(c, d, n int64, j int, left, right int64) b
 // The division is exact when d divides A, and Go truncates toward zero.
 func (w *Workspace) QuotientMagnitude(c, d, n int64, j int) int64 {
 	state := w.Affine(c, n, j)
-	return abs64(d) * abs64(state/d)
+	return Abs64(d) * Abs64(state/d)
 }
 
-// sweepQ checks one multiplier. Every coefficient, seed, and time contributes
+// SweepQ checks one multiplier. Every coefficient, seed, and time contributes
 // a triangle comparison. Every divisor contributes a return comparison, which
 // fails if a non-hit is accepted or a hit violates the recomputed bound.
-func sweepQ(q int64, w *Workspace) Totals {
+func SweepQ(q int64, w *Workspace) Totals {
 	var t Totals
 	w.Load(q)
 	ps := w.Pow[:len(w.Pow)]
 	for j := 0; j < len(ps); j++ {
 		t.Checks++
-		if abs64(ps[j]) >= magBudget {
+		if Abs64(ps[j]) >= magBudget {
 			t.Failures++
 		}
 	}
@@ -243,8 +243,8 @@ func SweepDomain() uint64 {
 	return BudgetDomain() + TriangleDomain() + ReturnDomain()
 }
 
-// sweepAll splits the multiplier range across workers and sums their totals.
-func sweepAll() Totals {
+// SweepAll splits the multiplier range across workers and sums their totals.
+func SweepAll() Totals {
 	count := magQMax - magQMin + 1
 	qs := make([]int64, 0, count)
 	for q := int64(magQMin); q <= magQMax; q++ {
@@ -258,21 +258,21 @@ func sweepAll() Totals {
 			defer wg.Done()
 			w := NewWorkspace()
 			for i := worker; i < len(qs); i += magWorkers {
-				parts[i] = sweepQ(qs[i], w)
+				parts[i] = SweepQ(qs[i], w)
 			}
 		}(worker)
 	}
 	wg.Wait()
 	var total Totals
 	for i := 0; i < len(parts); i++ {
-		total.add(parts[i])
+		total.Add(parts[i])
 	}
 	return total
 }
 
 // main prints the number of comparisons and exits nonzero on a disagreement.
 func main() {
-	total := sweepAll()
+	total := SweepAll()
 	fmt.Printf("magnitude checks: %d, failures: %d\n", total.Checks, total.Failures)
 	if total.Failures != 0 {
 		os.Exit(1)

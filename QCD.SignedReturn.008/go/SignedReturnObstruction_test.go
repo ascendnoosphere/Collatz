@@ -20,7 +20,7 @@ func TestLargeSeedBreaksBound(t *testing.T) {
 	if witnessJ < 2 {
 		t.Fatal("hit time is shorter than 2")
 	}
-	n, h, left, right, breaks := largeWitness(c)
+	n, h, left, right, breaks := LargeWitness(c)
 	if n != 1001 || h != 1004 || left != 4016 || right != 4003 || !breaks {
 		t.Fatalf("witness n=%d h=%d left=%d right=%d breaks=%t",
 			n, h, left, right, breaks)

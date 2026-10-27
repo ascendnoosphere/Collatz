@@ -16,7 +16,7 @@ product, not a triangle bound, and no nonnegative remainder is discarded.
 
 set_option autoImplicit false
 
-namespace GeneralizedCollatz
+namespace GeneralizedCollatz.SignedReturnProduct
 
 /-- The affine state of multiplier `q`, offset `c`, time `j` and seed `n`. -/
 def AffineState (q c : ℤ) (j : ℕ) (n : ℤ) : ℤ :=
@@ -71,4 +71,4 @@ theorem ReturnAbsProductFirstHit (p : Parameters) (n : ℤ) (j : ℕ)
     (AffineState p.Q p.C j n).natAbs
   exact ReturnAbsProduct p.D (AffineState p.Q p.C j n) hD hdvd
 
-end GeneralizedCollatz
+end GeneralizedCollatz.SignedReturnProduct

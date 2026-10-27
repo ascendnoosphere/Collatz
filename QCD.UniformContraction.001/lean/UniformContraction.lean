@@ -58,35 +58,37 @@ theorem UniformHalfEntry (R : ℕ) (T : ℤ → ℤ)
   intro m
   induction m using Nat.strongRecOn with
   | ind m ih =>
-    intro x hx
-    cases Nat.lt_or_ge R x.natAbs with
-    | inr hin =>
-      {
-        exact ⟨0, Nat.zero_le m, by simpa [OrbitZero] using hin⟩
-      }
-    | inl hout =>
-      {
-        have hhalf : 2 * (T x).natAbs ≤ x.natAbs := hT x hout
-        have hpos : 0 < x.natAbs := Nat.lt_of_le_of_lt (Nat.zero_le R) hout
-        -- Twice the image is at most the input, and the input is positive,
-        -- so the image is a strictly smaller natural number.
-        have hlt : (T x).natAbs < x.natAbs := by
-          have htwice : x.natAbs < 2 * x.natAbs := by
-            rw [Nat.two_mul]
-            exact Nat.lt_add_of_pos_right hpos
-          have hmul : 2 * (T x).natAbs < 2 * x.natAbs :=
-            lt_of_le_of_lt hhalf htwice
-          exact Nat.lt_of_mul_lt_mul_left hmul
-        have hm : (T x).natAbs < m := by
-          rw [← hx]
-          exact hlt
-        obtain ⟨k, hk, hent⟩ := ih (T x).natAbs hm (T x) rfl
-        have hk1 : k + 1 ≤ m := by
-          have hsucc : k + 1 ≤ (T x).natAbs + 1 := Nat.succ_le_succ hk
-          have hpred : (T x).natAbs + 1 ≤ m := Nat.succ_le_of_lt hm
-          exact Nat.le_trans hsucc hpred
-        exact ⟨k + 1, hk1, by simpa [OrbitSucc] using hent⟩
-      }
+    {
+      intro x hx
+      cases Nat.lt_or_ge R x.natAbs with
+      | inr hin =>
+        {
+          exact ⟨0, Nat.zero_le m, by simpa [OrbitZero] using hin⟩
+        }
+      | inl hout =>
+        {
+          have hhalf : 2 * (T x).natAbs ≤ x.natAbs := hT x hout
+          have hpos : 0 < x.natAbs := Nat.lt_of_le_of_lt (Nat.zero_le R) hout
+          -- Twice the image is at most the input, and the input is positive,
+          -- so the image is a strictly smaller natural number.
+          have hlt : (T x).natAbs < x.natAbs := by
+            have htwice : x.natAbs < 2 * x.natAbs := by
+              rw [Nat.two_mul]
+              exact Nat.lt_add_of_pos_right hpos
+            have hmul : 2 * (T x).natAbs < 2 * x.natAbs :=
+              lt_of_le_of_lt hhalf htwice
+            exact Nat.lt_of_mul_lt_mul_left hmul
+          have hm : (T x).natAbs < m := by
+            rw [← hx]
+            exact hlt
+          obtain ⟨k, hk, hent⟩ := ih (T x).natAbs hm (T x) rfl
+          have hk1 : k + 1 ≤ m := by
+            have hsucc : k + 1 ≤ (T x).natAbs + 1 := Nat.succ_le_succ hk
+            have hpred : (T x).natAbs + 1 ≤ m := Nat.succ_le_of_lt hm
+            exact Nat.le_trans hsucc hpred
+          exact ⟨k + 1, hk1, by simpa [OrbitSucc] using hent⟩
+        }
+    }
 
 /-- If `|n| < 2^h (R+1)`, a half-contraction enters the radius in at most `h`
 steps. This is the halving form of a finite entry budget. -/
@@ -130,28 +132,30 @@ theorem NatHalfEntry (R : ℕ) (T : ℕ → ℕ)
     ∃ k : ℕ, k ≤ n ∧ OrbitNat T k n ≤ R := by
   induction n using Nat.strongRecOn with
   | ind n ih =>
-    cases Nat.lt_or_ge R n with
-    | inr hin =>
-      {
-        exact ⟨0, Nat.zero_le n, by simpa [OrbitNatZero] using hin⟩
-      }
-    | inl hout =>
-      {
-        have hhalf : 2 * T n ≤ n := hT n hout
-        have hpos : 0 < n := Nat.lt_of_le_of_lt (Nat.zero_le R) hout
-        have hlt : T n < n := by
-          have htwice : n < 2 * n := by
-            rw [Nat.two_mul]
-            exact Nat.lt_add_of_pos_right hpos
-          have hmul : 2 * T n < 2 * n := lt_of_le_of_lt hhalf htwice
-          exact Nat.lt_of_mul_lt_mul_left hmul
-        obtain ⟨k, hk, hent⟩ := ih (T n) hlt
-        have hk1 : k + 1 ≤ n := by
-          have hsucc : k + 1 ≤ T n + 1 := Nat.succ_le_succ hk
-          have hpred : T n + 1 ≤ n := Nat.succ_le_of_lt hlt
-          exact Nat.le_trans hsucc hpred
-        exact ⟨k + 1, hk1, by simpa [OrbitNatSucc] using hent⟩
-      }
+    {
+      cases Nat.lt_or_ge R n with
+      | inr hin =>
+        {
+          exact ⟨0, Nat.zero_le n, by simpa [OrbitNatZero] using hin⟩
+        }
+      | inl hout =>
+        {
+          have hhalf : 2 * T n ≤ n := hT n hout
+          have hpos : 0 < n := Nat.lt_of_le_of_lt (Nat.zero_le R) hout
+          have hlt : T n < n := by
+            have htwice : n < 2 * n := by
+              rw [Nat.two_mul]
+              exact Nat.lt_add_of_pos_right hpos
+            have hmul : 2 * T n < 2 * n := lt_of_le_of_lt hhalf htwice
+            exact Nat.lt_of_mul_lt_mul_left hmul
+          obtain ⟨k, hk, hent⟩ := ih (T n) hlt
+          have hk1 : k + 1 ≤ n := by
+            have hsucc : k + 1 ≤ T n + 1 := Nat.succ_le_succ hk
+            have hpred : T n + 1 ≤ n := Nat.succ_le_of_lt hlt
+            exact Nat.le_trans hsucc hpred
+          exact ⟨k + 1, hk1, by simpa [OrbitNatSucc] using hent⟩
+        }
+    }
 
 /-- Fixed point of the slope-`a/d` majorant with constant term `b`. -/
 def MajorantFixedPoint (a d b : ℕ) : ℚ :=
@@ -271,25 +275,27 @@ theorem AffineMajorantEntry (a d b : ℕ) (hd : a < d) (T : ℕ → ℕ)
       (OrbitNat T k n : ℤ) ≤ Int.floor (MajorantFixedPoint a d b) := by
   induction n using Nat.strongRecOn with
   | ind n ih =>
-    cases le_or_gt (n : ℤ) (Int.floor (MajorantFixedPoint a d b)) with
-    | inl hcore =>
-      {
-        exact ⟨0, Nat.zero_le n, by simpa [OrbitNatZero] using hcore⟩
-      }
-    | inr hout =>
-      {
-        have hK : MajorantFixedPoint a d b < (n : ℚ) := (Int.floor_lt).mp hout
-        have hmaj : AffineMajorant a d b (n : ℚ) < (n : ℚ) :=
-          AffineMajorantStrictDecrease a d b n hd hK
-        have hTnq : (T n : ℚ) < (n : ℚ) := lt_of_le_of_lt (hT n) hmaj
-        have hTn : T n < n := by exact_mod_cast hTnq
-        obtain ⟨k, hk, hent⟩ := ih (T n) hTn
-        have hk1 : k + 1 ≤ n := by
-          have hsucc : k + 1 ≤ T n + 1 := Nat.succ_le_succ hk
-          have hpred : T n + 1 ≤ n := Nat.succ_le_of_lt hTn
-          exact Nat.le_trans hsucc hpred
-        exact ⟨k + 1, hk1, by simpa [OrbitNatSucc] using hent⟩
-      }
+    {
+      cases le_or_gt (n : ℤ) (Int.floor (MajorantFixedPoint a d b)) with
+      | inl hcore =>
+        {
+          exact ⟨0, Nat.zero_le n, by simpa [OrbitNatZero] using hcore⟩
+        }
+      | inr hout =>
+        {
+          have hK : MajorantFixedPoint a d b < (n : ℚ) := (Int.floor_lt).mp hout
+          have hmaj : AffineMajorant a d b (n : ℚ) < (n : ℚ) :=
+            AffineMajorantStrictDecrease a d b n hd hK
+          have hTnq : (T n : ℚ) < (n : ℚ) := lt_of_le_of_lt (hT n) hmaj
+          have hTn : T n < n := by exact_mod_cast hTnq
+          obtain ⟨k, hk, hent⟩ := ih (T n) hTn
+          have hk1 : k + 1 ≤ n := by
+            have hsucc : k + 1 ≤ T n + 1 := Nat.succ_le_succ hk
+            have hpred : T n + 1 ≤ n := Nat.succ_le_of_lt hTn
+            exact Nat.le_trans hsucc hpred
+          exact ⟨k + 1, hk1, by simpa [OrbitNatSucc] using hent⟩
+        }
+    }
 
 /-- Rational iteration of the affine majorant. -/
 def IterateMajorant (a d b : ℕ) : ℕ → ℚ → ℚ

@@ -23,7 +23,7 @@ is either `0` or greater than `1 / 2`.
 
 set_option autoImplicit false
 
-namespace GeneralizedCollatz
+namespace GeneralizedCollatz.CarryGapAnalysis
 
 /-- Residue `1` for an odd letter and `0` for an even letter. -/
 def ParityBit (odd : Bool) : ℤ :=

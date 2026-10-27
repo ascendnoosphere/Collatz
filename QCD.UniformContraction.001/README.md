@@ -1,4 +1,4 @@
-SPDX-License-Identifier: CC-BY-4.0
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
 
 # Uniform contraction outside a radius
 

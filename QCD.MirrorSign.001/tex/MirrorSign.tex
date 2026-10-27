@@ -1,3 +1,4 @@
+% SPDX-License-Identifier: CC-BY-4.0
 \documentclass[11pt,letterpaper]{article}
 
 \usepackage[T1]{fontenc}
@@ -28,12 +29,13 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{Sign of the mirror quotient}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{Sign of the mirror quotient}
 
 \begin{abstract}
 Let \(n\) be a nonzero integer and let \(v\) be a nonnegative integer. Whenever \(2^{v}\) divides \(3n-1\), the integer \((3n-1)/2^{v}\) has the sign of \(n\). An integral schedule of such quotients stays negative from a negative seed and stays positive from a positive seed. The exponent \(1\) fixes \(1\), and the exponents \(1\) and \(2\) exchange \(5\) and \(7\). The argument does not treat the numerator \(3n+1\), does not send every positive integer to \(1\), and does not exclude other positive cycles.
@@ -131,7 +133,7 @@ Let \(n<0\). If a schedule is integral at \(n\), then its final state is negativ
 \end{theorem}
 
 \begin{proof}
-Induct on the number of exponents. The empty schedule has final state \(n\), which is negative. Otherwise the first exponent \(v\) divides \(3n-1\). Theorem~\ref{thm:quotient-negative} says that the first quotient is negative. The tail schedule is integral at that quotient, by the definition of an integral schedule. The inductive hypothesis, applied to that negative integer and the tail, says that the final state is negative.
+Induct on the number of exponents. The empty schedule has final state \(n\), which is negative. Otherwise integrality gives \(2^v\mid 3n-1\) for the first exponent \(v\). Theorem~\ref{thm:quotient-negative} says that the first quotient is negative. The tail schedule is integral at that quotient, by the definition of an integral schedule. The inductive hypothesis, applied to that negative integer and the tail, says that the final state is negative.
 \end{proof}
 
 \begin{theorem}
@@ -149,7 +151,7 @@ Let \(n>0\). If a schedule is integral at \(n\), then its final state is positiv
 \end{theorem}
 
 \begin{proof}
-Induct on the number of exponents. The empty schedule has final state \(n\), which is positive. Otherwise the first exponent divides \(3n-1\). Theorem~\ref{thm:quotient-positive} says that the first quotient is positive. The tail is integral at that quotient. The inductive hypothesis gives the sign of the final state.
+Induct on the number of exponents. The empty schedule has final state \(n\), which is positive. Otherwise integrality gives \(2^v\mid 3n-1\) for the first exponent \(v\). Theorem~\ref{thm:quotient-positive} says that the first quotient is positive. The tail is integral at that quotient. The inductive hypothesis gives the sign of the final state.
 \end{proof}
 
 \begin{theorem}

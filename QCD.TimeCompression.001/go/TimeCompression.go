@@ -101,8 +101,8 @@ func ValidateParameters(p *Parameters, w *Workspace) error {
 	return nil
 }
 
-// rawStep applies one signed division-first raw step with caller-selected coefficients.
-func rawStep(q, c, d, n, out *big.Int, w *Workspace) bool {
+// RawStep applies one signed division-first raw step with caller-selected coefficients.
+func RawStep(q, c, d, n, out *big.Int, w *Workspace) bool {
 	w.Quotient.QuoRem(n, d, &w.Remainder)
 	if w.Remainder.Sign() == 0 {
 		out.Set(&w.Quotient)
@@ -113,8 +113,8 @@ func rawStep(q, c, d, n, out *big.Int, w *Workspace) bool {
 	return true
 }
 
-// advanceValidatedBlock expands a block after its immutable parameters have been checked.
-func advanceValidatedBlock(p *Parameters, n, out *big.Int, w *Workspace) (
+// AdvanceValidatedBlock expands a block after its immutable parameters have been checked.
+func AdvanceValidatedBlock(p *Parameters, n, out *big.Int, w *Workspace) (
 	uint64,
 	bool,
 	error,
@@ -152,7 +152,7 @@ func AdvanceBlock(p *Parameters, n, out *big.Int, w *Workspace) (
 	if err := ValidateParameters(p, w); err != nil {
 		return 0, false, err
 	}
-	return advanceValidatedBlock(p, n, out, w)
+	return AdvanceValidatedBlock(p, n, out, w)
 }
 
 // CompressedStep applies one raw step with the divided affine coefficients.
@@ -163,20 +163,20 @@ func CompressedStep(p *Parameters, n, out *big.Int, w *Workspace) (bool, error) 
 	if err := ValidateParameters(p, w); err != nil {
 		return false, err
 	}
-	return rawStep(&p.CompressedQ, &p.CompressedC, &p.D, n, out, w), nil
+	return RawStep(&p.CompressedQ, &p.CompressedC, &p.D, n, out, w), nil
 }
 
-// checkValidatedBlock compares one block after its immutable parameters have been checked.
-func checkValidatedBlock(p *Parameters, n *big.Int, w *Workspace) (uint64, bool, error) {
+// CheckValidatedBlock compares one block after its immutable parameters have been checked.
+func CheckValidatedBlock(p *Parameters, n *big.Int, w *Workspace) (uint64, bool, error) {
 	if n == nil {
 		return 0, false, errors.New("the boundary state is required")
 	}
 	w.Boundary.Set(n)
-	steps, affine, err := advanceValidatedBlock(p, &w.Boundary, &w.Original, w)
+	steps, affine, err := AdvanceValidatedBlock(p, &w.Boundary, &w.Original, w)
 	if err != nil {
 		return 0, false, err
 	}
-	rawStep(&p.CompressedQ, &p.CompressedC, &p.D, &w.Boundary, &w.Compressed, w)
+	RawStep(&p.CompressedQ, &p.CompressedC, &p.D, &w.Boundary, &w.Compressed, w)
 	if w.Original.Cmp(&w.Compressed) != 0 {
 		return 0, false, errors.New("expanded and compressed endpoints differ")
 	}
@@ -188,7 +188,7 @@ func CheckBlock(p *Parameters, n *big.Int, w *Workspace) (uint64, bool, error) {
 	if err := ValidateParameters(p, w); err != nil {
 		return 0, false, err
 	}
-	return checkValidatedBlock(p, n, w)
+	return CheckValidatedBlock(p, n, w)
 }
 
 // CheckTrajectory checks every block of a compressed prefix and records the exact raw clock.
@@ -209,7 +209,7 @@ func CheckTrajectory(
 	w.RawTotal.SetInt64(0)
 	affineEvents := uint64(0)
 	for i := uint64(0); i < compressedSteps; i++ {
-		steps, affine, err := checkValidatedBlock(p, &w.Boundary, w)
+		steps, affine, err := CheckValidatedBlock(p, &w.Boundary, w)
 		if err != nil {
 			return err
 		}

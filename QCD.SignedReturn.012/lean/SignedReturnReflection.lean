@@ -22,7 +22,7 @@ statement.
 
 set_option autoImplicit false
 
-namespace GeneralizedCollatz
+namespace GeneralizedCollatz.SignedReturnReflection
 
 /-- Affine state after `j` undivided steps, with offset sum `TrapSum q j`. -/
 def AffineState (q c : ℤ) (j : ℕ) (n : ℤ) : ℤ :=
@@ -506,4 +506,4 @@ theorem ReflectionHit (p : Parameters) (n : ℤ) (hq : p.Q = -1) :
         }
     }
 
-end GeneralizedCollatz
+end GeneralizedCollatz.SignedReturnReflection

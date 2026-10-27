@@ -5,8 +5,8 @@ package main
 
 import "testing"
 
-// alwaysTrue ignores its arguments.
-func alwaysTrue(uint64, uint64, uint64, uint64) bool {
+// AlwaysTrue ignores its arguments.
+func AlwaysTrue(uint64, uint64, uint64, uint64) bool {
 	return true
 }
 
@@ -31,7 +31,7 @@ func TestDisplayedCells(t *testing.T) {
 // TestConstantTruePredicateIsRejected separates the identity from a trivial predicate.
 func TestConstantTruePredicateIsRejected(t *testing.T) {
 	const q, k, c, D uint64 = 2, 2, 1, 5
-	if alwaysTrue(q, k, c, D) == IdentityHolds(q, k, c, D) {
+	if AlwaysTrue(q, k, c, D) == IdentityHolds(q, k, c, D) {
 		t.Fatal("a constantly true predicate was not rejected")
 	}
 }

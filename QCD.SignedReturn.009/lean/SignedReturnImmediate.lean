@@ -16,7 +16,7 @@ and constant `0`. No positive exponent is treated.
 
 set_option autoImplicit false
 
-namespace GeneralizedCollatz
+namespace GeneralizedCollatz.SignedReturnImmediate
 
 /-- Affine state after `j` undivided steps, with offset sum `TrapSum q j`. -/
 def AffineState (q c : ℤ) (j : ℕ) (n : ℤ) : ℤ :=
@@ -117,4 +117,4 @@ theorem ImmediateCore (p : Parameters) (n : ℤ) (hdiv : p.D ∣ n)
       exact hbound
     }
 
-end GeneralizedCollatz
+end GeneralizedCollatz.SignedReturnImmediate

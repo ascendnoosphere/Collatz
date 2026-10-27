@@ -64,23 +64,23 @@ func NewCache() *Cache {
 	return &Cache{Divisors: signedDivisors}
 }
 
-// check records one comparison.
-func (t *Totals) check(ok bool) {
+// Check records one comparison.
+func (t *Totals) Check(ok bool) {
 	t.Checks++
 	if !ok {
 		t.Failures++
 	}
 }
 
-// add accumulates a worker total into the receiver.
-func (t *Totals) add(other Totals) {
+// Add accumulates a worker total into the receiver.
+func (t *Totals) Add(other Totals) {
 	t.Checks += other.Checks
 	t.Failures += other.Failures
 }
 
-// abs64 returns the absolute value. Every call site uses a value whose
+// Abs64 returns the absolute value. Every call site uses a value whose
 // negation still fits in an int64.
-func abs64(x int64) int64 {
+func Abs64(x int64) int64 {
 	if x < 0 {
 		return -x
 	}
@@ -146,40 +146,40 @@ func ImmediateReturn(D, n int64) int64 {
 
 // AbsProductExact reports |D| * |n/D| = |n| under truncation toward zero.
 func AbsProductExact(D, n int64) bool {
-	return abs64(D)*abs64(n/D) == abs64(n)
+	return Abs64(D)*Abs64(n/D) == Abs64(n)
 }
 
 // CoreHolds reports A < |D| and |D| * |n/D| ≤ A*|n| + B. A zero divisor
 // fails the strict inequality and is not used as a quotient.
 func CoreHolds(A, B, D, n int64) bool {
-	m := abs64(D)
+	m := Abs64(D)
 	if m == 0 {
 		return false
 	}
-	return A < m && m*abs64(n/D) <= A*abs64(n)+B
+	return A < m && m*Abs64(n/D) <= A*Abs64(n)+B
 }
 
-// sweepSeeds checks every seed from lo through hi against the cached divisors.
-func sweepSeeds(lo, hi int64, divs *[6]int64, w *Workspace) Totals {
+// SweepSeeds checks every seed from lo through hi against the cached divisors.
+func SweepSeeds(lo, hi int64, divs *[6]int64, w *Workspace) Totals {
 	var total Totals
 	for n := lo; n <= hi; n++ {
 		for _, q := range zeroMultipliers {
 			for _, c := range zeroOffsets {
 				w.Prepare(q, c, 0)
-				total.check(w.Affine(n) == n)
+				total.Check(w.Affine(n) == n)
 			}
 		}
 		for _, D := range divs {
 			hit := FirstHitAtZero(D, n)
 			div := Divides(D, n)
-			total.check(hit == div)
+			total.Check(hit == div)
 			if div {
 				quot := ImmediateReturn(D, n)
-				total.check(D*quot == n)
-				total.check(AbsProductExact(D, n))
-				total.check(CoreHolds(1, 0, D, n))
+				total.Check(D*quot == n)
+				total.Check(AbsProductExact(D, n))
+				total.Check(CoreHolds(1, 0, D, n))
 			} else {
-				total.check(!AbsProductExact(D, n))
+				total.Check(!AbsProductExact(D, n))
 			}
 		}
 	}
@@ -206,13 +206,13 @@ func RunSweep(cache *Cache) Totals {
 		go func(idx int, lo, hi int64) {
 			defer wg.Done()
 			w := NewWorkspace()
-			chunks[idx] = sweepSeeds(lo, hi, &cache.Divisors, w)
+			chunks[idx] = SweepSeeds(lo, hi, &cache.Divisors, w)
 		}(i, lo, hi)
 	}
 	wg.Wait()
 	var total Totals
 	for i := 0; i < immediateWorkers; i++ {
-		total.add(chunks[i])
+		total.Add(chunks[i])
 	}
 	return total
 }

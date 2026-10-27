@@ -8,8 +8,8 @@ import (
 	"testing"
 )
 
-// bigAffine returns A_j(q,c,n) by the affine recurrence in big integers.
-func bigAffine(q, c, n int64, j int) *big.Int {
+// BigAffine returns A_j(q,c,n) by the affine recurrence in big integers.
+func BigAffine(q, c, n int64, j int) *big.Int {
 	cur := big.NewInt(n)
 	qb := big.NewInt(q)
 	cb := big.NewInt(c)
@@ -20,19 +20,19 @@ func bigAffine(q, c, n int64, j int) *big.Int {
 	return cur
 }
 
-// bigDivides reports that D divides z, with truncation toward zero.
-func bigDivides(D int64, z *big.Int) bool {
+// BigDivides reports that D divides z, with truncation toward zero.
+func BigDivides(D int64, z *big.Int) bool {
 	return new(big.Int).Rem(z, big.NewInt(D)).Sign() == 0
 }
 
-// bigIsFirstHit is the divisibility form of a first hit, read on big integers.
-func bigIsFirstHit(q, c, D, n int64, j int) bool {
+// BigIsFirstHit is the divisibility form of a first hit, read on big integers.
+func BigIsFirstHit(q, c, D, n int64, j int) bool {
 	for i := 0; i < j; i++ {
-		if bigDivides(D, bigAffine(q, c, n, i)) {
+		if BigDivides(D, BigAffine(q, c, n, i)) {
 			return false
 		}
 	}
-	return bigDivides(D, bigAffine(q, c, n, j))
+	return BigDivides(D, BigAffine(q, c, n, j))
 }
 
 // TestPredicateRejectsNonHit fails if FirstHitBelowModulus is replaced by true.
@@ -62,7 +62,7 @@ func TestHandOrbit(t *testing.T) {
 	// q = 2, c = 1, n = 1: states 1, 3, 7, 15. Modulus 5 hits at time 3.
 	want := []int64{1, 3, 7, 15}
 	for j, state := range want {
-		if affineAt(2, 1, 1, j) != state {
+		if AffineAt(2, 1, 1, j) != state {
 			t.Fatalf("affine state at %d is not %d", j, state)
 		}
 	}
@@ -81,7 +81,7 @@ func TestHandOrbit(t *testing.T) {
 	// q = 1, c = 1, n = 1, modulus 4: states 1, 2, 3, 4, hit at time 3.
 	acc := []int64{1, 2, 3, 4}
 	for j, state := range acc {
-		if affineAt(1, 1, 1, j) != state {
+		if AffineAt(1, 1, 1, j) != state {
 			t.Fatalf("unit orbit at %d is not %d", j, state)
 		}
 	}
@@ -95,7 +95,7 @@ func TestHandOrbit(t *testing.T) {
 
 // TestModulusTwoCensus counts the six first hits among the eight residue triples.
 func TestModulusTwoCensus(t *testing.T) {
-	got := sweepModulus(2)
+	got := SweepModulus(2)
 	if got.Failures != 0 {
 		t.Fatalf("modulus 2 recorded %d failures", got.Failures)
 	}
@@ -111,8 +111,8 @@ func TestModulusTwoCensus(t *testing.T) {
 func TestCornerMatchesBig(t *testing.T) {
 	const q, c, n int64 = 14, 14, 14
 	const j = 15
-	got := affineAt(q, c, n, j)
-	want := bigAffine(q, c, n, j)
+	got := AffineAt(q, c, n, j)
+	want := BigAffine(q, c, n, j)
 	if !want.IsInt64() || got != want.Int64() {
 		t.Fatalf("corner state %d disagrees with %s", got, want.String())
 	}
@@ -125,10 +125,10 @@ func TestSignedSpotAgreesWithBig(t *testing.T) {
 		for c := int64(-3); c <= 3; c++ {
 			for n := int64(-3); n <= 3; n++ {
 				for _, D := range []int64{-3, -2, 2, 3} {
-					mod := modulusAbs(D)
+					mod := ModulusAbs(D)
 					for j := 0; j <= 6; j++ {
 						got := IsFirstHit(q, c, D, n, j)
-						want := bigIsFirstHit(q, c, D, n, j)
+						want := BigIsFirstHit(q, c, D, n, j)
 						if got != want {
 							t.Fatalf("hit q=%d c=%d D=%d n=%d j=%d", q, c, D, n, j)
 						}

@@ -21,18 +21,23 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\newcommand{\Z}{\mathbb{Z}}
 \newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
 \newcommand{\Q}{\mathbb{Q}}
-\newcommand{\Map}{\mathcal{T}}
-\newcommand{\Iter}{\Map^{\langle k\rangle}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Map}[3]{#1 \colon #2 \to #3}
+\newcommand{\Mod}[1]{#1\text{-}\mathrm{Mod}}
+\newcommand{\GroupHom}{\mathrm{Hom}_{\mathbf{Grp}}}
+\newcommand{\RingHom}{\mathrm{Hom}_{\mathbf{Ring}}}
 
-\title{Multiplicatively Independent Homogeneous Raw Maps}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{Multiplicatively Independent Homogeneous Maps}
 
 \begin{abstract}
 For integers $q,D\geq 2$, consider the homogeneous raw map that divides by
@@ -48,7 +53,7 @@ finite executable certificates without replacing the universal proof.
 \begin{definition}[Positive homogeneous raw map]
 Let $q,D\in\N$ satisfy $q,D\geq 2$.  For $n\in\N_{>0}$, define
 \[
- \Map_{q,D}(n)=
+ T_{q,D}(n)=
  \begin{cases}
   n/D,&D\mid n,\\
   qn,&D\nmid n.
@@ -71,13 +76,13 @@ while $2$ and $4$ are distinct but dependent.
 
 \begin{theorem}[Independent homogeneous escape]\label{thm:escape}
 Let $q,D\geq 2$ be multiplicatively independent.  For every $n\geq 1$,
-the raw orbit $k\mapsto\Iter_{q,D}(n)$ is injective and
+the raw orbit $k\mapsto T_{q,D}^{k}(n)$ is injective and
 \[
- \Iter_{q,D}(n)\longrightarrow\infty
+ T_{q,D}^{k}(n)\longrightarrow\infty
  \qquad (k\longrightarrow\infty).
 \]
 Equivalently, for every $B\in\N$ there is $K$ such that
-$\Iter_{q,D}(n)>B$ for all $k\geq K$.
+$T_{q,D}^{k}(n)>B$ for all $k\geq K$.
 \end{theorem}
 
 The conclusion is genuine convergence to infinity, not merely unboundedness
@@ -115,6 +120,7 @@ cancellation or converse legality assertion is used.
 \end{proof}
 
 \begin{lemma}[No nonempty positive return]\label{lem:noreturn}
+\leavevmode\par
 Under the assumptions of Theorem~\ref{thm:escape}, no nonempty legal word
 can carry a positive integer $x$ back to $x$.
 \end{lemma}
@@ -161,7 +167,7 @@ Proposition~\ref{prop:injective} shows that the orbit is an injective
 sequence in $\N_{>0}$.  Fix $B\in\N$.  At most $B$ orbit terms can lie in
 the finite set $\{1,\ldots,B\}$.  Their time indices form a finite set, so
 a time $K$ exceeds every one of them.  Consequently
-$\Iter_{q,D}(n)>B$ for every $k\geq K$.  This is precisely convergence to
+$T_{q,D}^{k}(n)>B$ for every $k\geq K$.  This is precisely convergence to
 infinity.
 \end{proof}
 

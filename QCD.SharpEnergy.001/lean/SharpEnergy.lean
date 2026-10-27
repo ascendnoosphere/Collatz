@@ -161,19 +161,27 @@ theorem SharpSecondFromBridge (b r i : ℕ) (hb : 1 ≤ b) (hr : 1 ≤ r)
     rw [hlenEq]
     cases hoffset : i - (b - 1) with
     | zero =>
+      {
         have hine : i ≠ b := by omega
         rw [List.getElem?_cons_zero, if_neg hine]
+      }
     | succ j =>
+      {
         rw [List.getElem?_cons_succ]
         cases j with
         | zero =>
+          {
             have hib : i = b := by omega
             rw [List.getElem?_cons_zero, if_pos hib]
+          }
         | succ j =>
+          {
             have hine : i ≠ b := by omega
             have hlt : j < r - 1 := by omega
             rw [List.getElem?_cons_succ, List.getElem?_replicate_of_lt hlt,
               if_neg hine]
+          }
+      }
   rw [List.getD, hopt]
   rfl
 
@@ -184,11 +192,15 @@ theorem SharpHalvesAgree (b r i : ℕ) (hb : 1 ≤ b) (hr : 1 ≤ r)
       (SharpSecond b r).getD i false := by
   cases hside with
   | inl hlt =>
+    {
       rw [SharpFirstLow b r i (by omega), SharpSecondLow b r i hlt]
+    }
   | inr hgt =>
+    {
       rw [SharpFirstHigh b r i (by omega) hi,
         SharpSecondFromBridge b r i hb hr (by omega) hi,
         if_neg (by omega : i ≠ b)]
+    }
 
 /-- The halves differ by swapping the adjacent letters at `b - 1` and `b`. -/
 theorem SharpHalvesDiffer (b r : ℕ) (hb : 1 ≤ b) (hr : 1 ≤ r) :
@@ -377,17 +389,21 @@ theorem SharpEnergyEqHalf (b r : ℕ) :
 /-- A positive power of two is even modulo two. -/
 theorem TwoPowModTwo (h : ℕ) (hh : 1 ≤ h) : 2 ^ h % 2 = 0 := by
   cases h with
-  | zero => omega
+  | zero => { omega }
   | succ k =>
+    {
       rw [Nat.pow_succ]
       exact Nat.mul_mod_left (2 ^ k) 2
+    }
 
 /-- Every power of three is odd modulo two. -/
 theorem ThreePowModTwo (r : ℕ) : 3 ^ r % 2 = 1 := by
   induction r with
-  | zero => decide
+  | zero => { decide }
   | succ r ih =>
+    {
       rw [Nat.pow_succ, Nat.mul_mod, ih]
+    }
 
 /-- A positive power of two is not a power of three. -/
 theorem TwoPowNeThreePow (h r : ℕ) (hh : 1 ≤ h) : 2 ^ h ≠ 3 ^ r := by
@@ -410,8 +426,9 @@ theorem SharpEnergyNeHalf (b r : ℕ) (hb : 1 ≤ b) :
 /-- `2^n (n + 2) ≤ 2 * 3^n`. -/
 theorem TwoThreeGrowth (n : ℕ) : 2 ^ n * (n + 2) ≤ 2 * 3 ^ n := by
   induction n with
-  | zero => decide
+  | zero => { decide }
   | succ n ih =>
+    {
       have hcoef : 2 * (n + 3) ≤ 3 * (n + 2) := by omega
       have hidx : (n + 1) + 2 = n + 3 := by omega
       rw [hidx]
@@ -424,6 +441,7 @@ theorem TwoThreeGrowth (n : ℕ) : 2 ^ n * (n + 2) ≤ 2 * 3 ^ n := by
         _ ≤ 3 * (2 * 3 ^ n) := Nat.mul_le_mul_left 3 ih
         _ = 2 * 3 ^ (n + 1) := by
           rw [Nat.mul_left_comm, Nat.mul_comm 3 (3 ^ n), ← Nat.pow_succ]
+    }
 
 /-- The growth bound scaled by the fixed power `2^b`. -/
 theorem TwoThreeScaled (b r : ℕ) :

@@ -20,7 +20,7 @@ affine state, and every construction after the hitting time.
 
 set_option autoImplicit false
 
-namespace GeneralizedCollatz
+namespace GeneralizedCollatz.SignedReturnClock
 
 /-- Affine state after `j` undivided steps, with offset sum `TrapSum q j`. -/
 def AffineState (q c : ℤ) (j : ℕ) (n : ℤ) : ℤ :=
@@ -211,4 +211,4 @@ theorem FirstHitClock (p : Parameters) (n : ℤ) (j : ℕ)
   have hpred : j ≤ p.D.natAbs - 1 := Nat.le_sub_one_of_lt hlt
   exact ⟨hlt, hpred⟩
 
-end GeneralizedCollatz
+end GeneralizedCollatz.SignedReturnClock

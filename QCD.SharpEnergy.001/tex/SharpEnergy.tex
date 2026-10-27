@@ -1,3 +1,4 @@
+% SPDX-License-Identifier: CC-BY-4.0
 \documentclass[11pt,letterpaper]{article}
 
 \usepackage[T1]{fontenc}
@@ -28,12 +29,13 @@
 \newtheorem{remark}[theorem]{Remark}
 \newenvironment{proof}{\noindent\textit{Proof.}}{\hfill\(\square\)}
 
-\title{Carry energy above one half}
+\title{Generalized Collatz Library}
 \author{}
 \date{\today}
 
 \begin{document}
 \maketitle
+\section*{Carry energy above one half}
 
 \begin{abstract}
 For integers \(b,r\geq 1\), the parity word \(0^{b}1^{r}0^{b-1}101^{r-1}\) has halves of length \(h=b+r\), each containing \(r\) odd letters and differing by one adjacent swap. Its carry energy is the unique rational solution of \(1-\lambda E=E\) with \(\lambda=3^{r}/2^{h}\), hence \(E=2^{h}/(2^{h}+3^{r})\). This value lies strictly above \(1/2\) exactly when \(3^{r}<2^{h}\), and it is never equal to \(1/2\). For fixed \(b\) it tends to \(0\). It tends to \(1/2\) from above along a sequence of exponents exactly when the ratio tends to \(1\) from below.
@@ -184,11 +186,11 @@ E(b,r)<\frac{2^{b+1}}{r+2}.
 The bound \(2^{n}(n+2)\leq 2\cdot 3^{n}\) is proved by induction on \(n\). For \(n=0\) both sides equal \(2\). Assume the bound at \(n\). The inequality \(2(n+3)\leq 3(n+2)\) rearranges to \(0\leq n\), so it holds. Thus
 \begin{align*}
 2^{n+1}(n+3)
-&=2^{n}\cdot\bigl(2(n+3)\bigr)
-\leq 2^{n}\cdot\bigl(3(n+2)\bigr)
-=3\cdot\bigl(2^{n}(n+2)\bigr)
-\leq 3\cdot\bigl(2\cdot 3^{n}\bigr)
-=2\cdot 3^{n+1}.
+&=2^{n}\cdot\bigl(2(n+3)\bigr)\\
+&\leq 2^{n}\cdot\bigl(3(n+2)\bigr)\\
+&=3\cdot\bigl(2^{n}(n+2)\bigr)\\
+&\leq 3\cdot\bigl(2\cdot 3^{n}\bigr)\\
+&=2\cdot 3^{n+1}.
 \end{align*}
 This is the bound at \(n+1\).
 

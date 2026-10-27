@@ -47,11 +47,6 @@ type Cache struct {
 	W    Workspace
 }
 
-// NewWorkspace allocates the power table used by one worker.
-func NewWorkspace() *Workspace {
-	return &Workspace{}
-}
-
 // Prepare fills powers and offset sums for the multiplier q through time 2.
 func (w *Workspace) Prepare(q int64) {
 	w.Pow[0] = 1
@@ -139,8 +134,8 @@ func QuotientAbs(pow, trap, c, n, d int64) int64 {
 	return AbsInt(AffineAt(pow, trap, c, n) / d)
 }
 
-// addTotals sums worker totals. Addition of these counters is commutative.
-func addTotals(parts []Totals) Totals {
+// AddTotals sums worker totals. Addition of these counters is commutative.
+func AddTotals(parts []Totals) Totals {
 	var total Totals
 	parts = parts[:len(parts)]
 	var i int
@@ -153,8 +148,8 @@ func addTotals(parts []Totals) Totals {
 	return total
 }
 
-// checkSeed records the first hit and the absolute-value product at time 2.
-func checkSeed(pow, trap []int64, n, d int64, total *Totals) {
+// CheckSeed records the first hit and the absolute-value product at time 2.
+func CheckSeed(pow, trap []int64, n, d int64, total *Totals) {
 	total.Checks++
 	if !IsFirstHit(pow, trap, witnessC, d, n, witnessJ) {
 		total.Failures++
@@ -166,15 +161,15 @@ func checkSeed(pow, trap []int64, n, d int64, total *Totals) {
 	}
 }
 
-// sweepRange checks the ray n0+t*|d| for t from lo through hi.
-func sweepRange(lo, hi int64, c *Cache, total *Totals) {
+// SweepRange checks the ray n0+t*|d| for t from lo through hi.
+func SweepRange(lo, hi int64, c *Cache, total *Totals) {
 	pow := c.W.Pow[:len(c.W.Pow)]
 	trap := c.W.Trap[:len(c.W.Trap)]
 	var t int64
 	for t = lo; t <= hi; t++ {
 		n := witnessN0 + t*witnessD
-		checkSeed(pow, trap, n, witnessD, total)
-		checkSeed(pow, trap, n, -witnessD, total)
+		CheckSeed(pow, trap, n, witnessD, total)
+		CheckSeed(pow, trap, n, -witnessD, total)
 		total.Checks++
 		if !SameClass(n, witnessN0, witnessD) {
 			total.Failures++
@@ -210,15 +205,15 @@ func RunClassSweep() Totals {
 			defer wg.Done()
 			cache := NewCache()
 			cache.Load(witnessQ)
-			sweepRange(lo, hi, cache, &chunks[idx])
+			SweepRange(lo, hi, cache, &chunks[idx])
 		}(int(i), lo, hi)
 	}
 	wg.Wait()
-	return addTotals(chunks[:])
+	return AddTotals(chunks[:])
 }
 
-// largeWitness reports the seed 1+250*4 and whether 4*|H| exceeds 3*|n|+1000.
-func largeWitness(c *Cache) (n, h, left, right int64, breaks bool) {
+// LargeWitness reports the seed 1+250*4 and whether 4*|H| exceeds 3*|n|+1000.
+func LargeWitness(c *Cache) (n, h, left, right int64, breaks bool) {
 	pow := c.W.Pow[witnessJ]
 	trap := c.W.Trap[witnessJ]
 	n = witnessN0 + largeT*witnessD
@@ -234,7 +229,7 @@ func main() {
 	cache := NewCache()
 	cache.Load(witnessQ)
 	total := RunClassSweep()
-	n, h, left, right, breaks := largeWitness(cache)
+	n, h, left, right, breaks := LargeWitness(cache)
 	fmt.Printf("checks %d\n", total.Checks)
 	fmt.Printf("failures %d\n", total.Failures)
 	fmt.Printf("holds %d\n", total.Holds)

@@ -37,22 +37,22 @@ type Totals struct {
 	Failures uint64
 }
 
-// check records one comparison.
-func (t *Totals) check(ok bool) {
+// Check records one comparison.
+func (t *Totals) Check(ok bool) {
 	t.Checks++
 	if !ok {
 		t.Failures++
 	}
 }
 
-// add accumulates a worker total into the receiver.
-func (t *Totals) add(other Totals) {
+// Add accumulates a worker total into the receiver.
+func (t *Totals) Add(other Totals) {
 	t.Checks += other.Checks
 	t.Failures += other.Failures
 }
 
-// powInt returns q^j for a nonnegative exponent on the stated grid.
-func powInt(q int64, j int) int64 {
+// PowInt returns q^j for a nonnegative exponent on the stated grid.
+func PowInt(q int64, j int) int64 {
 	out := int64(1)
 	for i := 0; i < j; i++ {
 		out *= q
@@ -60,8 +60,8 @@ func powInt(q int64, j int) int64 {
 	return out
 }
 
-// trapSum returns U_j(q), the sum of q^0 through q^(j-1), with U_0(q) = 0.
-func trapSum(q int64, j int) int64 {
+// TrapSum returns U_j(q), the sum of q^0 through q^(j-1), with U_0(q) = 0.
+func TrapSum(q int64, j int) int64 {
 	sum := int64(0)
 	pow := int64(1)
 	for i := 0; i < j; i++ {
@@ -71,45 +71,45 @@ func trapSum(q int64, j int) int64 {
 	return sum
 }
 
-// affineState returns q^j*n + c*U_j(q).
-func affineState(q, c int64, j int, n int64) int64 {
-	return powInt(q, j)*n + c*trapSum(q, j)
+// AffineState returns q^j*n + c*U_j(q).
+func AffineState(q, c int64, j int, n int64) int64 {
+	return PowInt(q, j)*n + c*TrapSum(q, j)
 }
 
-// rawStep applies one raw step. Go truncation toward zero is exact division
+// RawStep applies one raw step. Go truncation toward zero is exact division
 // when D divides n. D is never zero on the stated grid.
-func rawStep(q, c, D, n int64) int64 {
+func RawStep(q, c, D, n int64) int64 {
 	if n%D == 0 {
 		return n / D
 	}
 	return q*n + c
 }
 
-// rawIterate returns the raw state at time j, including steps after a division.
-func rawIterate(q, c, D, n int64, j int) int64 {
+// RawIterate returns the raw state at time j, including steps after a division.
+func RawIterate(q, c, D, n int64, j int) int64 {
 	cur := n
 	for i := 0; i < j; i++ {
-		cur = rawStep(q, c, D, cur)
+		cur = RawStep(q, c, D, cur)
 	}
 	return cur
 }
 
-// rawPrefixClean reports that D divides no raw state at a time i < j.
-func rawPrefixClean(q, c, D, n int64, j int) bool {
+// RawPrefixClean reports that D divides no raw state at a time i < j.
+func RawPrefixClean(q, c, D, n int64, j int) bool {
 	cur := n
 	for i := 0; i < j; i++ {
 		if cur%D == 0 {
 			return false
 		}
-		cur = rawStep(q, c, D, cur)
+		cur = RawStep(q, c, D, cur)
 	}
 	return true
 }
 
-// affinePrefixClean reports that D divides no affine state at a time i < j.
-func affinePrefixClean(q, c, D, n int64, j int) bool {
+// AffinePrefixClean reports that D divides no affine state at a time i < j.
+func AffinePrefixClean(q, c, D, n int64, j int) bool {
 	for i := 0; i < j; i++ {
-		if affineState(q, c, i, n)%D == 0 {
+		if AffineState(q, c, i, n)%D == 0 {
 			return false
 		}
 	}
@@ -119,38 +119,38 @@ func affinePrefixClean(q, c, D, n int64, j int) bool {
 // PrefixAgrees is the forward identity. It is false when an earlier raw state
 // is divisible, and false when the raw state differs from the affine state.
 func PrefixAgrees(q, c, D, n int64, j int) bool {
-	if !rawPrefixClean(q, c, D, n, j) {
+	if !RawPrefixClean(q, c, D, n, j) {
 		return false
 	}
-	return rawIterate(q, c, D, n, j) == affineState(q, c, j, n)
+	return RawIterate(q, c, D, n, j) == AffineState(q, c, j, n)
 }
 
 // AffinePrefixAgrees is the converse identity. It is false when an earlier
 // affine state is divisible, and false when the two sides differ.
 func AffinePrefixAgrees(q, c, D, n int64, j int) bool {
-	if !affinePrefixClean(q, c, D, n, j) {
+	if !AffinePrefixClean(q, c, D, n, j) {
 		return false
 	}
-	return rawIterate(q, c, D, n, j) == affineState(q, c, j, n)
+	return RawIterate(q, c, D, n, j) == AffineState(q, c, j, n)
 }
 
-// sweepQ checks one multiplier on the whole coefficient, divisor, seed, and
+// SweepQ checks one multiplier on the whole coefficient, divisor, seed, and
 // time grid. Each cleanliness agreement and each applicable identity is a
 // comparison. A prefix that has already divided is not an identity comparison.
-func sweepQ(q int64) Totals {
+func SweepQ(q int64) Totals {
 	var t Totals
 	for c := int64(-prefixAbsCoeff); c <= prefixAbsCoeff; c++ {
 		for _, D := range prefixDivisors {
 			for n := int64(-prefixAbsSeed); n <= prefixAbsSeed; n++ {
 				for j := 0; j <= prefixMaxJ; j++ {
-					rawClean := rawPrefixClean(q, c, D, n, j)
-					affClean := affinePrefixClean(q, c, D, n, j)
-					t.check(rawClean == affClean)
+					rawClean := RawPrefixClean(q, c, D, n, j)
+					affClean := AffinePrefixClean(q, c, D, n, j)
+					t.Check(rawClean == affClean)
 					if rawClean {
-						t.check(PrefixAgrees(q, c, D, n, j))
+						t.Check(PrefixAgrees(q, c, D, n, j))
 					}
 					if affClean {
-						t.check(AffinePrefixAgrees(q, c, D, n, j))
+						t.Check(AffinePrefixAgrees(q, c, D, n, j))
 					}
 				}
 			}
@@ -159,8 +159,8 @@ func sweepQ(q int64) Totals {
 	return t
 }
 
-// sweepPrefix splits the multiplier range across workers and sums their totals.
-func sweepPrefix() Totals {
+// SweepPrefix splits the multiplier range across workers and sums their totals.
+func SweepPrefix() Totals {
 	qs := make([]int64, 0, 2*prefixAbsCoeff+1)
 	for q := int64(-prefixAbsCoeff); q <= prefixAbsCoeff; q++ {
 		qs = append(qs, q)
@@ -172,21 +172,21 @@ func sweepPrefix() Totals {
 		go func(worker int) {
 			defer wg.Done()
 			for i := worker; i < len(qs); i += prefixWorkers {
-				parts[i] = sweepQ(qs[i])
+				parts[i] = SweepQ(qs[i])
 			}
 		}(worker)
 	}
 	wg.Wait()
 	var total Totals
 	for _, part := range parts {
-		total.add(part)
+		total.Add(part)
 	}
 	return total
 }
 
 // main prints the number of comparisons and exits nonzero on a disagreement.
 func main() {
-	total := sweepPrefix()
+	total := SweepPrefix()
 	fmt.Printf("prefix checks: %d, failures: %d\n", total.Checks, total.Failures)
 	if total.Failures != 0 {
 		os.Exit(1)

@@ -1,4 +1,4 @@
-SPDX-License-Identifier: CC-BY-4.0
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
 
 # The even row of a local split
 
@@ -26,8 +26,9 @@ Preservation conditions: the hypotheses are $`n>1`$ and divisibility by $`2`$, a
 
 ## What is not claimed
 
-The even row is not a cover of the integers greater than $`1`$. An input congruent to $`2`$ modulo $`3`$, an input congruent to $`1`$ modulo $`4`$, and an input $`2^a u-1`$ with $`u`$ odd are not given parents here. No complement of the even row is classified. No statement asserts that every integer greater than $`1`$ reaches $`1`$, or that a union of local rows contains every such integer.
-
-The following are not proved: an affine lane decomposition; a residue order; a uniform contraction; a repunit divisor law; a reverse search bound; a profile drop; a neutral discriminator; phase rigidity of a continuization; a parent recursion beyond the one even letter; an excursion or cyclic gap; a terminal power; a marginal repair; and the comparison $`2\rho\le\mu\le 4\rho`$.
+This row covers exactly the even integers $`n>1`$. Some also belong to the
+other displayed residue families, but not every member of those families
+is covered. No classification of the odd complement, covering family, or
+convergence theorem is proved.
 
 A finite integer check on the grid $`\{1,2,\ldots,64\}`$ counts exact instances of this row and of its complement inside that grid. The count is not the theorem.
